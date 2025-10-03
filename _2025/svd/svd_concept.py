@@ -14,68 +14,74 @@ class SVDIntro(Scene):
         equation.set_color_by_tex("V^{T}", GREEN)
         equation.next_to(title, DOWN, LARGE_BUFF)
 
+        brace = Brace(equation, DOWN, buff=SMALL_BUFF)
+        descriptions = VGroup(
+            Tex(r"U:\ \text{outputs orthonormal directions}", color=BLUE_C),
+            Tex(r"\Sigma:\ \text{scales by singular values}", color=YELLOW),
+            Tex(r"V^{T}:\ \text{aligns with the input basis}", color=GREEN),
+        )
+        descriptions.arrange(DOWN, aligned_edge=LEFT)
+        descriptions.set_width(6)
+        descriptions.next_to(brace, DOWN, buff=MED_SMALL_BUFF)
+
+        example_matrix = Matrix([[2, 1], [1, 3]])
+        example_matrix.set_column_colors(BLUE_C, GREEN)
+        example_matrix.next_to(descriptions, DOWN, LARGE_BUFF)
+
+        decomposition = np.linalg.svd(np.array([[2.0, 1.0], [1.0, 3.0]]))
+        u_matrix = Matrix(np.round(decomposition[0], 2)).set_color(BLUE_C)
+        sigma_matrix = Matrix(np.diag(np.round(decomposition[1], 2))).set_color(YELLOW)
+        vt_matrix = Matrix(np.round(decomposition[2], 2)).set_color(GREEN)
+        numeric_equation = VGroup(
+            Tex("A ="),
+            u_matrix,
+            Tex("\\cdot"),
+            sigma_matrix,
+            Tex("\\cdot"),
+            vt_matrix,
+        )
+        numeric_equation.arrange(RIGHT, buff=0.3)
+        numeric_equation.next_to(example_matrix, DOWN, LARGE_BUFF)
+
+        footer = Text("Works for any matrix, rectangular or square.")
+        footer.scale(0.7)
+        footer.next_to(numeric_equation, DOWN, LARGE_BUFF)
+
         highlight_boxes = VGroup(
             SurroundingRectangle(equation.get_part_by_tex("U"), buff=0.1, color=BLUE_C),
             SurroundingRectangle(equation.get_part_by_tex("\\Sigma"), buff=0.1, color=YELLOW),
             SurroundingRectangle(equation.get_part_by_tex("V^{T}"), buff=0.12, color=GREEN),
         )
 
-        example_matrix = Matrix([[2, 1], [1, 3]])
-        example_matrix.set_column_colors(BLUE_C, GREEN)
-        example_matrix.next_to(equation, DOWN, LARGE_BUFF)
-
-        example_caption = VGroup(
-            Tex(r"\text{Example matrix whose action we will decompose}", font_size=34),
-            Tex(r"A = \begin{bmatrix}2 & 1 \\ 1 & 3\end{bmatrix}", font_size=34),
-        )
-        example_caption.arrange(DOWN, aligned_edge=LEFT)
-        example_caption.next_to(example_matrix, DOWN, MED_LARGE_BUFF)
-
-        brace = Brace(equation, DOWN, buff=SMALL_BUFF)
-        descriptions = VGroup(
-            Tex(r"U:\ \text{outputs an orthonormal basis}", color=BLUE_C),
-            Tex(r"\Sigma:\ \text{rescales along principal axes}", color=YELLOW),
-            Tex(r"V^{T}:\ \text{aligns to the input basis}", color=GREEN),
-        )
-        descriptions.arrange(DOWN, aligned_edge=LEFT)
-        descriptions.set_width(6)
-        descriptions.next_to(brace, DOWN, buff=MED_SMALL_BUFF)
-
-        footer = Text("Works for any matrix, rectangular or square.")
-        footer.scale(0.7)
-        footer.next_to(descriptions, DOWN, LARGE_BUFF)
-
         self.play(FadeIn(title, shift=DOWN))
         self.wait(0.5)
         self.play(Write(equation))
         self.wait(0.5)
-        self.play(GrowFromCenter(highlight_boxes[0]))
-        self.wait(0.3)
-        self.play(ReplacementTransform(highlight_boxes[0], highlight_boxes[1]))
-        self.wait(0.3)
-        self.play(ReplacementTransform(highlight_boxes[1], highlight_boxes[2]))
-        self.wait(0.3)
-        self.play(FadeOut(highlight_boxes[2]))
+        self.play(GrowFromCenter(brace))
+        for highlight, description in zip(highlight_boxes, descriptions):
+            panel = SurroundingRectangle(description, buff=0.2, color=description.get_color(), stroke_width=2)
+            self.play(GrowFromCenter(highlight))
+            self.play(FadeIn(panel, scale=0.95), Write(description))
+            self.play(Indicate(description, scale_factor=1.05))
+            self.play(FadeOut(panel), FadeOut(highlight))
+
+        example_caption = Tex(r"A = \begin{bmatrix}2 & 1 \\ 1 & 3\end{bmatrix}")
+        example_caption.next_to(example_matrix, UP, SMALL_BUFF)
+
         self.play(
             FadeIn(example_matrix, shift=UP),
-            FadeIn(example_caption[0], shift=DOWN),
+            FadeIn(example_caption, shift=DOWN),
         )
-        self.play(FadeIn(example_caption[1], shift=DOWN))
         self.wait(0.5)
-        self.play(GrowFromCenter(brace))
-        self.wait(0.25)
-        for item in descriptions:
-            panel = SurroundingRectangle(item, buff=0.2, color=item.get_color(), stroke_width=2)
-            self.play(FadeIn(panel, scale=0.95), Write(item))
-            self.play(Indicate(item, scale_factor=1.05))
-            self.play(FadeOut(panel))
+        self.play(Write(numeric_equation))
+        self.wait(0.5)
         self.play(FadeIn(footer, shift=UP))
         self.wait(2)
 
 
 class SVDGeometricDemo(Scene):
     def construct(self):
-        matrix = np.array([[2, 1], [1, 3]])
+        matrix = np.array([[2.0, 1.2], [0.6, 1.5]])
         u_matrix, singular_values, vt_matrix = np.linalg.svd(matrix)
         sigma_matrix = np.diag(singular_values)
 
@@ -123,33 +129,32 @@ class SVDGeometricDemo(Scene):
             Matrix(np.round(sigma_matrix, 2)).set_color(YELLOW),
             Matrix(np.round(u_matrix, 2), h_buff=1.2).set_color(BLUE_C),
         )
-        middle_dots = VGroup(*[Tex("\\cdot") for _ in range(2)])
         factor_equation = VGroup(
             Tex("A"),
             Tex("="),
             factor_group[2],
-            middle_dots[0],
+            Tex("\\cdot"),
             factor_group[1],
-            middle_dots[1],
+            Tex("\\cdot"),
             factor_group[0],
         )
         factor_equation.arrange(RIGHT, buff=0.3)
         factor_equation.to_edge(UP)
 
-        explanations = VGroup(
-            Tex(r"V^{T}:\ \text{align with input directions}", color=GREEN, font_size=36),
-            Tex(r"\Sigma:\ \text{stretch or shrink}", color=YELLOW, font_size=36),
-            Tex(r"U:\ \text{rotate to output basis}", color=BLUE_C, font_size=36),
-        )
-        explanations.arrange(DOWN, aligned_edge=LEFT)
-        explanations.next_to(factor_equation, DOWN, buff=MED_LARGE_BUFF)
+        explanation_templates = [
+            Tex(r"V^{T}:\ \text{realign the input directions}", color=GREEN, font_size=36),
+            Tex(r"\Sigma:\ \text{stretch by singular values}", color=YELLOW, font_size=36),
+            Tex(r"U:\ \text{rotate to the output basis}", color=BLUE_C, font_size=36),
+        ]
+        explanation_templates = VGroup(*explanation_templates)
+        explanation_templates.arrange(DOWN, aligned_edge=LEFT)
+        explanation_templates.next_to(factor_equation, DOWN, buff=MED_LARGE_BUFF)
 
-        narration_box = SurroundingRectangle(explanations, buff=0.3, color=GREY_B)
+        narration_box = SurroundingRectangle(explanation_templates, buff=0.3, color=GREY_B)
 
         self.play(FadeIn(factor_equation, shift=DOWN))
         self.play(FadeIn(matrix_display), FadeIn(matrix_label, shift=UP))
-        self.play(Create(narration_box), FadeIn(explanations[0]))
-        self.wait()
+        self.play(Create(narration_box), FadeIn(explanation_templates[0]))
 
         transform_group = VGroup(plane, unit_circle, *basis_vectors)
 
@@ -160,7 +165,7 @@ class SVDGeometricDemo(Scene):
 
         # Apply Sigma
         self.play(
-            ReplacementTransform(explanations[0], explanations[1]),
+            ReplacementTransform(explanation_templates[0], explanation_templates[1]),
             narration_box.animate.set_color(YELLOW_E),
             Circumscribe(factor_group[1], color=YELLOW),
         )
@@ -169,7 +174,7 @@ class SVDGeometricDemo(Scene):
 
         # Apply U
         self.play(
-            ReplacementTransform(explanations[1], explanations[2]),
+            ReplacementTransform(explanation_templates[1], explanation_templates[2]),
             narration_box.animate.set_color(BLUE_D),
             Circumscribe(factor_group[2], color=BLUE_C),
         )
