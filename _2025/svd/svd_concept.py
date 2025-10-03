@@ -264,3 +264,4 @@
 +        self.play(FadeIn(semi_minor_label, shift=RIGHT))
 +        self.play(FadeIn(axis_labels[1], shift=UP))
 +        self.wait(2)
+
