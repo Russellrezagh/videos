@@ -20,6 +20,24 @@ If you use another text editor, the same functionality can be mimicked. The key 
 
 - Running `manimgl (file name) (scene name) -se (line_number)` will drop you into an interactive mode at that line of the file, like a debugger, with an iPython terminal that can be used to interact with the scene.
 
+If you are working in an environment where helper binaries such as `manimgl` or `xvfb-run` might be absent, use the repository’s `tools/render_scene.py` helper instead of invoking `manimgl` directly. The script checks for both dependencies, amends `PYTHONPATH` so the project imports resolve, and prints actionable guidance when something is missing. For example, to render the SVD intro scene you can run
+
+```
+python tools/render_scene.py _2025/svd/svd_concept.py SVDIntro -- --write_to_movie
+```
+
+### Fallback: Generate an SVD animation without Manim
+
+If you cannot install the 3Blue1Brown Manim fork at all, the repository now includes a Matplotlib-based fallback that produces a GIF illustrating the same SVD transformation. It requires only `numpy`, `matplotlib`, and `Pillow` (all installable with `pip`). Run
+
+```
+python tools/generate_svd_animation.py --duration 6 --fps 20
+```
+
+The helper writes `renders/svd_animation.gif` by default and accepts `--matrix a b c d` to visualise a different \(2\times 2\) matrix or `--output` to change the destination path.
+
+When `xvfb-run` is available it will automatically be used; otherwise the script falls back to launching `manimgl` directly and emits a warning so you know whether a headless display is active.
+
 - Within that interactive mode, if you enter "checkpoint_paste()" to the terminal, it will run whatever bit of code is copied to the clipboard. Moreover, if that copied code begins with a comment, the first time it sees that comment it will save the state of the scene at that point, and for all future calls on code beginning with the same comment, it will first revert to that state of the scene before running the code.
     - The argument "skip" of checkpoint_paste will mean it runs the code without animating, as if all run times set to 0.
     - The argument "record" of checkpoint_paste will cause whatever animations are run with that copied code to be rendered to file.
