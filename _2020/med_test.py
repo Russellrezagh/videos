@@ -1,3 +1,10 @@
+import pytest
+
+pytest.importorskip(
+    "manimlib",
+    reason="manimlib (3Blue1Brown Manim) is not installed in the current environment.",
+)
+
 from manim_imports_ext import *
 
 
