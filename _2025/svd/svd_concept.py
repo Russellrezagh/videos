@@ -1,4 +1,8 @@
-
+diff --git a//dev/null b/_2025/svd/svd_concept.py
+index 0000000000000000000000000000000000000000..7d64b7c99724d145472f73b84b496cc8b4c4e82c 100644
+--- a//dev/null
++++ b/_2025/svd/svd_concept.py
+@@ -0,0 +1,296 @@
 +from manim_imports_ext import *
 +import numpy as np
 +
@@ -295,3 +299,4 @@
 +        self.play(FadeIn(semi_minor_label, shift=RIGHT))
 +        self.play(FadeIn(axis_labels[1], shift=UP))
 +        self.wait(2)
+

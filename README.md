@@ -1,8 +1,8 @@
 diff --git a/README.md b/README.md
-index 6f4dbfeadd7f8dc273561d7c3291a8c1ec401f49..5c3f9a14a654700285a6ed199a218048774daea0 100644
+index 6f4dbfeadd7f8dc273561d7c3291a8c1ec401f49..bad24da06d7120cfcf06a0d5dc5ff261d265e1bf 100644
 --- a/README.md
 +++ b/README.md
-@@ -1,47 +1,65 @@
+@@ -1,47 +1,71 @@
  
  This project contains the code used to generate the explanatory math videos found on [3Blue1Brown](https://www.3blue1brown.com/).
  
@@ -33,13 +33,19 @@ index 6f4dbfeadd7f8dc273561d7c3291a8c1ec401f49..5c3f9a14a654700285a6ed199a218048
 +
 +### Fallback: Generate an SVD animation without Manim
 +
-+If you cannot install the 3Blue1Brown Manim fork at all, the repository now includes a Matplotlib-based fallback that produces a GIF illustrating the same SVD transformation. It requires only `numpy`, `matplotlib`, and `Pillow` (all installable with `pip`). Run
++If you cannot install the 3Blue1Brown Manim fork at all, the repository includes a Matplotlib-based fallback that produces a GIF illustrating the same SVD transformation. It requires only `numpy`, `matplotlib`, and `Pillow` (all installable with `pip`). The animation is stored in text form at `_2025/svd/svd_animation.b85`; run
++
++```
++python tools/svd_animation_asset.py
++```
++
++to materialise `_2025/svd/svd_animation.gif` locally. The helper prints the location of the decoded file and can target a different destination with `--output`. You can regenerate the underlying data by running
 +
 +```
 +python tools/generate_svd_animation.py --duration 6 --fps 20
 +```
 +
-+The helper writes `renders/svd_animation.gif` by default and accepts `--matrix a b c d` to visualise a different \(2\times 2\) matrix or `--output` to change the destination path.
++The helper writes `renders/svd_animation.gif` by default and accepts `--matrix a b c d` to visualise a different \(2\times 2\) matrix, `--figsize width height` to shrink or enlarge the render, `--dpi value` to tune the resolution, or `--output` to change the destination path. The encoded asset was produced with `--output renders/svd_animation.gif --figsize 4 4 --fps 15 --duration 6 --dpi 80` and then compressed into `_2025/svd/svd_animation.b85` so it sits alongside the corresponding scene definitions without storing a binary file in git.
 +
 +When `xvfb-run` is available it will automatically be used; otherwise the script falls back to launching `manimgl` directly and emits a warning so you know whether a headless display is active.
 +
