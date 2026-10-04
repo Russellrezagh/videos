@@ -1,0 +1,2614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Polymerase Chain Reaction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap">
+<style>
+/* Layout: a chapter of a technical textbook. Fixed contents rail on the left, one 44rem
+   reading column, glosses hanging in the left margin, interactive figures in quiet wells.
+   Colour is semantic: every hue names a role in the reaction and never decorates. */
+:root {
+  --bg: #13151a;
+  --bg-raise: #191c22;
+  --bg-sunk: #0f1115;
+  --rule: #2b303a;
+  --rule-soft: #21252d;
+  --fg: #dadde3;
+  --fg-soft: #aab0bb;
+  --fg-faint: #6f7682;
+  --link: #8db4ec;
+  /* semantic roles */
+  --c-template: #74aae4;     /* input: template DNA, starting copies   */
+  --c-product: #f39b4c;      /* output: amplicon, copies after n       */
+  --c-product-dim: #b47d4f;  /* long products: one end undefined       */
+  --c-primer: #e888bb;       /* specification: the primers             */
+  --c-enzyme: #5fcba2;       /* operation: the polymerase              */
+  --c-param: #ab9ef3;        /* knobs: T, n, E, lambda                 */
+  --c-readout: #e7d16b;      /* signals: threshold, Ct, fluorescence   */
+  --c-warn: #f07173;         /* errors, off-target, contamination      */
+  --c-context: #8f96a3;      /* raw material: dNTPs, Mg2+, buffer      */
+  --gel-bg: #07090c;
+  --gel-lane: #12161c;
+  --gel-ink: #c3c9d3;
+  --shadow: rgb(0 0 0 / .45);
+  --font-serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --measure: 44rem;
+  --rail: 17rem;
+  --bar: 3.25rem;
+  --gutter: clamp(16px, 3.5vw, 3rem);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f6f8; --bg-raise: #eceef2; --bg-sunk: #e4e7ec; --rule: #cdd2da; --rule-soft: #dde1e7;
+    --fg: #1b1f27; --fg-soft: #4a5260; --fg-faint: #777f8e; --link: #2b5fae;
+    --c-template: #2867ac; --c-product: #bf5a08; --c-product-dim: #9c6a43; --c-primer: #ad3878;
+    --c-enzyme: #13865b; --c-param: #6350c6; --c-readout: #8a7200; --c-warn: #c33437; --c-context: #687080;
+    --gel-bg: #0b0d11; --gel-lane: #161b22; --gel-ink: #c3c9d3; --shadow: rgb(20 30 50 / .18);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f5f6f8; --bg-raise: #eceef2; --bg-sunk: #e4e7ec; --rule: #cdd2da; --rule-soft: #dde1e7;
+  --fg: #1b1f27; --fg-soft: #4a5260; --fg-faint: #777f8e; --link: #2b5fae;
+  --c-template: #2867ac; --c-product: #bf5a08; --c-product-dim: #9c6a43; --c-primer: #ad3878;
+  --c-enzyme: #13865b; --c-param: #6350c6; --c-readout: #8a7200; --c-warn: #c33437; --c-context: #687080;
+  --gel-bg: #0b0d11; --gel-lane: #161b22; --gel-ink: #c3c9d3; --shadow: rgb(20 30 50 / .18);
+  color-scheme: light;
+}
+
+[hidden] { display: none !important; }
+html { scroll-padding-top: calc(var(--bar) + 1.25rem); -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.62;
+  font-optical-sizing: auto; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+sub, sup { line-height: 0; }
+.mono { font-family: var(--font-mono); }
+
+/* ── contents rail ───────────────────────────────────────────── */
+.rail {
+  position: fixed; inset: 0 auto 0 0; width: var(--rail); box-sizing: border-box; z-index: 40;
+  background: var(--bg-sunk); border-right: 1px solid var(--rule-soft); overflow-y: auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 1.4rem) 1rem 2.5rem 1.1rem;
+  font-size: .9rem; line-height: 1.38;
+}
+.rail .book { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-faint); margin: 0 0 .35rem .75rem; }
+.rail .book-title { font-size: 1.12rem; line-height: 1.25; margin: 0 0 1.4rem .75rem; color: var(--fg); }
+.rail ol { list-style: none; margin: 0; padding: 0; }
+.rail li { margin: 0; }
+.rail a { display: block; color: var(--fg-soft); text-decoration: none; padding: .34rem .5rem .34rem .75rem; border-left: 2px solid transparent; }
+.rail a:hover { color: var(--fg); }
+.rail a .n { font-family: var(--font-mono); font-size: .7rem; color: var(--fg-faint); margin-right: .45rem; }
+.rail ol ol a { padding-left: 1.55rem; font-size: .83rem; color: var(--fg-faint); }
+.rail a.active { color: var(--c-product); border-left-color: var(--c-product); }
+.rail a.active .n { color: var(--c-product); }
+.scrim { position: fixed; inset: 0; z-index: 35; background: rgb(0 0 0 / .45); }
+.shell { margin-left: var(--rail); padding-inline: var(--gutter); padding-block: 0 5rem; }
+@media (max-width: 999px) {
+  .rail { transform: translateX(-102%); transition: transform .25s ease; box-shadow: 0 0 40px var(--shadow); }
+  .rail.open { transform: none; }
+  .shell { margin-left: 0; }
+}
+
+/* ── toolbar ─────────────────────────────────────────────────── */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  display: flex; align-items: center; gap: .2rem; height: var(--bar);
+  margin-inline: calc(-1 * var(--gutter)); padding-inline: clamp(8px, 2vw, 1.25rem);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.icon-btn { flex: none; width: 2.3rem; height: 2.3rem; display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--fg-soft); cursor: pointer; }
+.icon-btn:hover { background: var(--bg-raise); color: var(--fg); }
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn[aria-pressed="false"] { color: var(--fg-faint); }
+.depth { flex: none; display: inline-flex; margin-left: .45rem; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; font-family: var(--font-mono); font-size: .68rem; }
+.depth button { border: 0; background: transparent; color: var(--fg-faint); padding: .32rem .62rem; cursor: pointer; font: inherit; }
+.depth button:hover { color: var(--fg); }
+.depth button[aria-pressed="true"] { background: var(--bg-raise); color: var(--fg); }
+.bar-title { margin-left: auto; min-width: 0; font-size: 1.04rem; color: var(--fg-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 1rem; }
+@media (min-width: 1000px) { .menu-btn { display: none; } }
+@media (max-width: 700px) { .bar-title { display: none; } .depth button { padding: .32rem .45rem; } }
+
+/* ── chapter column ──────────────────────────────────────────── */
+.chapter { max-width: var(--measure); margin-inline: auto; padding-top: 2.75rem; }
+@media (min-width: 1200px) { .chapter { margin-left: max(11.5rem, calc((100% - var(--measure)) / 2)); } }
+.chapter p { margin: 0 0 1.05em; }
+.chapter ul, .chapter ol { padding-left: 1.3rem; margin: 0 0 1.1em; }
+.chapter li { margin: .2em 0; }
+.chapter h2 { font-size: clamp(1.55rem, 1.15rem + 1.3vw, 2.05rem); font-weight: 500; line-height: 1.15; letter-spacing: -.006em; margin: 4.25rem 0 1.1rem; text-wrap: balance; font-variation-settings: "opsz" 60; }
+.chapter h3 { font-size: 1.3rem; font-weight: 600; line-height: 1.25; margin: 2.6rem 0 .65rem; text-wrap: balance; }
+.chapter h2 .num, .chapter h3 .num { font-family: var(--font-mono); font-weight: 400; font-size: .52em; color: var(--fg-faint); margin-right: .7em; vertical-align: .28em; letter-spacing: .04em; }
+.chapter h3 .num { font-size: .62em; vertical-align: .14em; }
+.chapter-head .eyebrow, .label { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-faint); }
+.chapter-head h1 { font-size: clamp(2.35rem, 1.55rem + 3.2vw, 3.7rem); font-weight: 400; line-height: 1.03; letter-spacing: -.016em; margin: .55rem 0 1.1rem; text-wrap: balance; font-variation-settings: "opsz" 72; }
+.lede { font-size: 1.3rem; line-height: 1.5; color: var(--fg-soft); }
+.lede em { color: var(--fg); }
+.small { font-size: .9rem; color: var(--fg-soft); }
+hr.sep { border: 0; border-top: 1px solid var(--rule-soft); margin: 2.5rem 0; }
+
+.gloss { display: block; font-size: .8rem; line-height: 1.42; font-style: italic; color: var(--fg-faint); margin: -.4rem 0 1rem; padding-left: .75rem; border-left: 1px solid var(--rule); }
+@media (min-width: 1200px) {
+  .gloss { float: left; clear: left; width: 9.5rem; margin: .32rem 0 .6rem -11rem; padding: 0; border: 0; text-align: right; }
+}
+
+.orient { display: grid; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); gap: 1.3rem 2rem; margin: 2.2rem 0; padding: 1.3rem 0; border-block: 1px solid var(--rule); }
+.orient > div { min-width: 0; }
+.orient p { font-size: 1rem; line-height: 1.5; margin: .3rem 0 0; }
+
+/* ── semantic references (shared across every view) ──────────── */
+.r { color: var(--rc, inherit); border-radius: 3px; cursor: help; transition: background-color .15s, box-shadow .15s; }
+.r.hl { background: color-mix(in srgb, var(--rc) 20%, transparent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--rc) 20%, transparent); }
+.r:focus-visible { outline: 2px solid var(--rc); outline-offset: 2px; }
+:root.mono .r { color: inherit; }
+mjx-container [data-ref] { fill: var(--rc); color: var(--rc); }
+:root.mono mjx-container [data-ref] { fill: currentColor; color: inherit; }
+mjx-container [data-ref].hl { filter: drop-shadow(0 0 4px var(--rc)); }
+svg [data-ref].hl { filter: drop-shadow(0 0 3px var(--rc)) drop-shadow(0 0 8px var(--rc)); }
+input[data-ref].hl { outline: 2px solid var(--rc); outline-offset: 3px; border-radius: 4px; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding-block: .15em; }
+.tip { position: fixed; z-index: 60; max-width: 19rem; box-sizing: border-box; background: var(--bg-raise); border: 1px solid var(--rule); border-radius: 6px; padding: .55rem .75rem .6rem; font-size: .86rem; line-height: 1.45; color: var(--fg-soft); pointer-events: none; box-shadow: 0 10px 28px var(--shadow); }
+.tip b { display: block; color: var(--rc); font-weight: 600; font-size: .92rem; margin-bottom: .1rem; }
+.sw { display: inline-block; width: .68rem; height: .68rem; border-radius: 2px; background: var(--rc); vertical-align: -.04rem; margin-right: .45rem; }
+
+/* ── callouts ────────────────────────────────────────────────── */
+.callout { border-left: 3px solid var(--cl); padding: .25rem 0 .3rem 1.15rem; margin: 2.2rem 0; }
+.callout.note { --cl: var(--c-template); }
+.callout.warn { --cl: var(--c-warn); }
+.callout.deeper { --cl: var(--c-param); }
+.callout-head { display: flex; align-items: center; gap: .45rem; color: var(--cl); font-weight: 600; font-size: 1.02rem; margin-bottom: .45rem; }
+.callout-head svg { width: 17px; height: 17px; }
+.callout-body { display: flex; gap: 1.1rem; align-items: flex-start; }
+.callout-body > div { min-width: 0; }
+.callout p:last-child { margin-bottom: 0; }
+.mascot { flex: none; width: 86px; height: auto; color: var(--fg-soft); }
+@media (max-width: 520px) { .mascot { width: 62px; } }
+
+details.deep, details.plain { margin: 1.8rem 0; border-left: 3px solid var(--c-param); padding: .2rem 0 .2rem 1.15rem; }
+details.plain { border-left-color: var(--c-template); }
+details.deep > summary, details.plain > summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: .6rem; font-weight: 600; font-size: 1.05rem; }
+details.deep > summary::-webkit-details-marker, details.plain > summary::-webkit-details-marker { display: none; }
+details.deep > summary .label { color: var(--c-param); }
+details.plain > summary .label { color: var(--c-template); }
+details.deep > summary::after, details.plain > summary::after { content: "+"; margin-left: auto; font-family: var(--font-mono); color: var(--fg-faint); font-weight: 400; }
+details.deep[open] > summary::after, details.plain[open] > summary::after { content: "−"; }
+details.deep[open] > summary, details.plain[open] > summary { margin-bottom: .8rem; }
+:root[data-depth="expert"] .intro-only { display: none; }
+
+/* ── figures ─────────────────────────────────────────────────── */
+.fig { margin: 2.1rem 0 2.4rem; }
+.fig svg.figsvg { display: block; width: 100%; height: auto; overflow: visible; }
+.well { background: var(--bg-raise); border: 1px solid var(--rule-soft); border-radius: 6px; padding: clamp(.75rem, 2vw, 1.15rem); }
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.scroll-x > svg.figsvg { min-width: 680px; }
+figcaption { font-size: .95rem; line-height: 1.5; color: var(--fg-soft); margin-top: .8rem; }
+figcaption .fignum { font-style: italic; color: var(--fg); margin-right: .35em; }
+@media (min-width: 1460px) { .fig.wide { margin-right: -8rem; } }
+svg text { font-family: var(--font-serif); fill: var(--fg-soft); }
+svg text.mono, svg .mono text { font-family: var(--font-mono); }
+svg .ink { fill: var(--fg); }
+svg .faint { fill: var(--fg-faint); }
+svg .rule { stroke: var(--rule); }
+svg .rule-soft { stroke: var(--rule-soft); }
+svg .fg-stroke { stroke: var(--fg-soft); }
+.s-template { stroke: var(--c-template); } .f-template { fill: var(--c-template); }
+.s-product { stroke: var(--c-product); } .f-product { fill: var(--c-product); }
+.s-productDim { stroke: var(--c-product-dim); } .f-productDim { fill: var(--c-product-dim); }
+.s-primer { stroke: var(--c-primer); } .f-primer { fill: var(--c-primer); }
+.s-enzyme { stroke: var(--c-enzyme); } .f-enzyme { fill: var(--c-enzyme); }
+.s-param { stroke: var(--c-param); } .f-param { fill: var(--c-param); }
+.s-readout { stroke: var(--c-readout); } .f-readout { fill: var(--c-readout); }
+.s-warn { stroke: var(--c-warn); } .f-warn { fill: var(--c-warn); }
+.s-context { stroke: var(--c-context); } .f-context { fill: var(--c-context); }
+.f-bg { fill: var(--bg); } .f-raise { fill: var(--bg-raise); } .f-sunk { fill: var(--bg-sunk); }
+.f-none { fill: none; }
+svg text.f-template { fill: var(--c-template); } svg text.f-product { fill: var(--c-product); } svg text.f-primer { fill: var(--c-primer); }
+svg text.f-enzyme { fill: var(--c-enzyme); } svg text.f-param { fill: var(--c-param); } svg text.f-readout { fill: var(--c-readout); }
+svg text.f-warn { fill: var(--c-warn); } svg text.f-context { fill: var(--c-context); } svg text.f-productDim { fill: var(--c-product-dim); }
+svg a { cursor: pointer; }
+svg a:hover rect { fill: var(--bg-sunk); }
+svg a:focus-visible rect { stroke: var(--link); stroke-width: 2; }
+.fresh { animation: draw .75s ease-out forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes tipin { to { opacity: 1; } }
+
+/* ── controls ────────────────────────────────────────────────── */
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); gap: .9rem 1.5rem; margin-top: 1rem; }
+.ctl { min-width: 0; }
+.ctl label, .ctl .lab { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; color: var(--fg-soft); letter-spacing: .02em; margin-bottom: .25rem; }
+.ctl output { color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type="range"] { width: 100%; margin: 0; accent-color: var(--c-param); }
+.ctl.template input[type="range"] { accent-color: var(--c-template); }
+.ctl.readout input[type="range"] { accent-color: var(--c-readout); }
+.ctl.warn input[type="range"] { accent-color: var(--c-warn); }
+.ctl.context input[type="range"] { accent-color: var(--c-context); }
+.btn { font-family: var(--font-mono); font-size: .72rem; line-height: 1.2; border: 1px solid var(--rule); background: transparent; color: var(--fg-soft); border-radius: 5px; padding: .42rem .7rem; cursor: pointer; }
+.btn:hover { color: var(--fg); border-color: var(--fg-faint); background: var(--bg-sunk); }
+.btn.primary { color: var(--fg); border-color: var(--fg-faint); }
+.btn-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+.check { display: inline-flex; align-items: center; gap: .45rem; font-family: var(--font-mono); font-size: .72rem; color: var(--fg-soft); cursor: pointer; }
+.check input { accent-color: var(--c-param); margin: 0; }
+.checks { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; align-items: center; }
+.readouts { display: flex; flex-wrap: wrap; gap: .35rem 1.6rem; font-family: var(--font-mono); font-size: .76rem; line-height: 1.5; color: var(--fg-soft); margin-top: .85rem; font-variant-numeric: tabular-nums; }
+.readouts b { color: var(--fg); font-weight: 500; }
+.try { margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid var(--rule-soft); font-size: .95rem; line-height: 1.5; }
+.try .label { margin-bottom: .35rem; }
+.try ol { margin: 0; padding-left: 1.25rem; }
+.objective { font-size: .95rem; color: var(--fg-soft); margin: 0 0 .9rem; }
+.objective b { color: var(--fg); font-weight: 600; }
+
+/* ── animation player ────────────────────────────────────────── */
+.player { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .7rem; margin-top: .6rem; }
+.player .scrub { flex: 1 1 10rem; accent-color: var(--c-product); }
+.player .clock { font-family: var(--font-mono); font-size: .72rem; color: var(--fg-faint); font-variant-numeric: tabular-nums; }
+.scenes { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem; }
+.scenes .btn { padding: .3rem .55rem; font-size: .68rem; }
+.scenes .btn[aria-current="true"] { color: var(--fg); border-color: var(--c-product); }
+.narration { min-height: 4.6em; margin-top: .8rem; font-size: 1.02rem; line-height: 1.5; }
+.narration .label { display: block; margin-bottom: .15rem; }
+
+/* ── socratic checks, ladders, equations ─────────────────────── */
+.socratic { margin: 2.3rem 0; padding: 1rem 1.15rem 1.1rem; border: 1px dashed color-mix(in srgb, var(--c-param) 55%, var(--rule)); border-radius: 8px; }
+.socratic .label { color: var(--c-param); }
+.socratic .q { font-size: 1.08rem; margin: .35rem 0 .85rem; }
+.choices { display: flex; flex-wrap: wrap; gap: .45rem; }
+.choices .btn.right { border-color: var(--c-enzyme); color: var(--c-enzyme); }
+.choices .btn.wrong { border-color: var(--c-warn); color: var(--c-warn); text-decoration: line-through; }
+.feedback { margin: .85rem 0 0; font-size: 1rem; }
+.feedback:empty { display: none; }
+.socratic details { margin-top: .85rem; }
+.socratic summary, .reveal > summary { cursor: pointer; font-family: var(--font-mono); font-size: .74rem; color: var(--fg-soft); }
+.socratic details[open] summary { margin-bottom: .6rem; }
+.ladder { margin: 1.6rem 0 2rem; }
+.ladder-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; font-family: var(--font-mono); font-size: .72rem; color: var(--fg-faint); }
+.rung { margin: 1.1rem 0; padding-left: 1rem; border-left: 2px solid var(--rule); }
+.rung .label { color: var(--c-template); margin-bottom: .35rem; }
+.eqsteps { margin: 1.6rem 0 1.9rem; }
+.eqrow { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; gap: 1rem; align-items: center; padding: .15rem 0; transition: opacity .25s; }
+.eqrow > * { min-width: 0; }
+.eqrow .why { font-size: .86rem; font-style: italic; color: var(--fg-faint); line-height: 1.42; }
+.eqsteps.stepping .eqrow { opacity: .18; }
+.eqsteps.stepping .eqrow.done { opacity: .55; }
+.eqsteps.stepping .eqrow.cur { opacity: 1; }
+.eqsteps.stepping .eqrow.cur .why { color: var(--fg-soft); }
+@media (max-width: 720px) { .eqrow { grid-template-columns: minmax(0, 1fr); gap: 0; } .eqrow .why { margin-bottom: .6rem; } }
+.worked { margin: 1.8rem 0; padding: 1rem 1.15rem; background: var(--bg-raise); border-radius: 6px; }
+.worked .label { color: var(--c-product); margin-bottom: .3rem; }
+.worked p { font-size: 1rem; }
+.worked ol { font-size: 1rem; }
+
+/* ── code cells (notebook) ───────────────────────────────────── */
+.cell { margin: 1.6rem 0 2.1rem; }
+.cell-file { font-family: var(--font-mono); font-size: .72rem; color: var(--link); margin-bottom: .3rem; }
+.prompt { font-family: var(--font-mono); font-size: .74rem; color: var(--link); margin-bottom: .25rem; }
+.cell-row { position: relative; }
+@media (min-width: 1200px) {
+  .prompt { position: absolute; right: calc(100% + .9rem); top: .85rem; margin: 0; white-space: nowrap; }
+}
+pre.code, pre.out { margin: 0; overflow-x: auto; font-family: var(--font-mono); font-size: .78rem; line-height: 1.58; tab-size: 4; }
+pre.code { background: var(--bg-raise); border: 1px solid var(--rule-soft); border-radius: 4px; padding: .9rem 1rem; color: var(--fg); }
+pre.out { padding: .65rem 1rem; border-left: 2px solid var(--rule); color: var(--fg-soft); margin-top: .5rem; }
+.tok-k { color: var(--c-primer); } .tok-s { color: var(--c-enzyme); } .tok-c { color: var(--fg-faint); font-style: italic; }
+.tok-n { color: var(--c-product); } .tok-b { color: var(--c-template); } .tok-f { color: var(--c-readout); }
+
+/* ── tables, contrasts, timeline ─────────────────────────────── */
+.tbl-wrap { overflow-x: auto; margin: 1.3rem 0 1.9rem; }
+table.t { border-collapse: collapse; width: 100%; font-size: .92rem; line-height: 1.45; }
+table.t th { text-align: left; font-family: var(--font-mono); font-size: .66rem; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; color: var(--fg-faint); padding: .5rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: bottom; }
+table.t td { padding: .55rem .6rem; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+table.t td.num, table.t th.num { text-align: right; font-family: var(--font-mono); font-size: .78rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.t tr.cur td { background: color-mix(in srgb, var(--c-product) 11%, transparent); }
+table.t tr.sep td { border-top: 1px solid var(--rule); }
+.contrast { margin: 1.5rem 0 2rem; border-top: 1px solid var(--rule); }
+.contrast .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; padding: .95rem 0; border-bottom: 1px solid var(--rule-soft); font-size: .96rem; line-height: 1.5; }
+.contrast .label { display: block; margin-bottom: .2rem; font-size: .64rem; }
+.contrast .looks { color: var(--fg-soft); }
+.contrast .looks .label { color: var(--c-warn); }
+.contrast .actually .label { color: var(--c-enzyme); }
+@media (max-width: 720px) { .contrast .row { grid-template-columns: minmax(0, 1fr); gap: .45rem; } }
+.timeline { list-style: none; padding: 0 !important; margin: 1.6rem 0 2rem; border-left: 1px solid var(--rule); }
+.timeline li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .9rem; padding: .5rem 0 .5rem 1.1rem; margin: 0; position: relative; font-size: .98rem; line-height: 1.5; }
+.timeline li::before { content: ""; position: absolute; left: -4px; top: 1.02rem; width: 7px; height: 7px; border-radius: 50%; background: var(--fg-faint); }
+.timeline .yr { font-family: var(--font-mono); font-size: .8rem; color: var(--c-product); padding-top: .18rem; font-variant-numeric: tabular-nums; }
+.keycard { margin: 1.7rem 0; padding: 1.1rem 1.3rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg-raise); }
+.keycard .label { margin-bottom: .3rem; }
+
+/* ── primer sandbox & gel ────────────────────────────────────── */
+.sandbox { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.3rem; }
+.sandbox > * { min-width: 0; }
+@media (max-width: 780px) { .sandbox { grid-template-columns: minmax(0, 1fr); } }
+.seq-in { display: block; width: 100%; box-sizing: border-box; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .05em; background: var(--bg-sunk); color: var(--c-primer); border: 1px solid var(--rule); border-radius: 4px; padding: .48rem .55rem; text-transform: uppercase; }
+.seq-in:focus { border-color: var(--c-primer); outline: none; }
+.field { margin-bottom: .8rem; }
+.field > label { display: block; font-family: var(--font-mono); font-size: .72rem; color: var(--fg-soft); margin-bottom: .25rem; }
+table.pstats { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: .72rem; margin-top: .6rem; font-variant-numeric: tabular-nums; }
+table.pstats th, table.pstats td { padding: .3rem .4rem; border-bottom: 1px solid var(--rule-soft); text-align: right; }
+table.pstats th:first-child, table.pstats td:first-child { text-align: left; color: var(--fg-faint); font-weight: 400; }
+table.pstats th { color: var(--c-primer); font-weight: 500; }
+.flags { list-style: none; padding: 0 !important; margin: .6rem 0 0 !important; font-family: var(--font-mono); font-size: .72rem; line-height: 1.45; }
+.flags li { padding-left: 1rem; position: relative; margin: .2rem 0; color: var(--fg-soft); }
+.flags li::before { content: ""; position: absolute; left: 0; top: .42em; width: .45rem; height: .45rem; border-radius: 50%; background: var(--c-enzyme); }
+.flags li.bad::before { background: var(--c-warn); }
+.flags li.meh::before { background: var(--c-readout); }
+.verdict { font-size: .98rem; line-height: 1.45; margin: .7rem 0 0; }
+.aln { font-family: var(--font-mono); font-size: .74rem; line-height: 1.6; white-space: pre; overflow-x: auto; background: var(--bg-sunk); border-radius: 4px; padding: .65rem .8rem; color: var(--fg-faint); margin: 1rem 0 0; }
+.aln .pm { color: var(--c-primer); }
+.aln .am { color: var(--c-product); }
+.aln .mm { background: color-mix(in srgb, var(--c-warn) 40%, transparent); color: var(--fg); border-radius: 2px; }
+.aln .tp { color: var(--c-template); }
+.aln .hd { color: var(--fg-soft); }
+
+/* ── digital PCR & fidelity ──────────────────────────────────── */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: start; }
+.split > * { min-width: 0; }
+@media (max-width: 760px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.gated { position: relative; }
+.gate { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; text-align: center; padding: 1rem; border-radius: 6px; background: color-mix(in srgb, var(--bg-raise) 78%, transparent); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
+.gate p { margin: 0 0 .7rem; font-size: 1rem; }
+
+.objects td:first-child { white-space: nowrap; }
+.relations { list-style: none; padding: 0 !important; font-size: .95rem; }
+.relations li { margin: .35rem 0; }
+.refs-list { font-size: .9rem; color: var(--fg-soft); padding-left: 1.2rem; }
+.refs-list li { margin: .3rem 0; }
+footer.colophon { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); font-size: .88rem; color: var(--fg-faint); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; }
+}
+</style>
+<script>
+window.MathJax = {
+  loader: { load: [] },
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    macros: {
+      NO: '\\class{r-N0}{N_0}', Nn: '\\class{r-Nn}{N_n}', Ef: '\\class{r-E}{E}',
+      Ct: '\\class{r-Ct}{C_t}', Nt: '\\class{r-Nt}{N_t}', nn: '\\class{r-n}{n}',
+      lam: '\\class{r-lambda}{\\lambda}', pp: '\\class{r-p}{p}', eps: '\\class{r-eps}{\\varepsilon}',
+      LL: '\\class{r-L}{L}', dd: '\\class{r-d}{d}', KK: '\\class{r-K}{K}',
+      Tm: '\\class{r-Tm}{T_m}', Ta: '\\class{r-Ta}{T_a}'
+    }
+  },
+  svg: { fontCache: 'global' },
+  options: { enableMenu: false },
+  startup: {
+    ready() {
+      MathJax.startup.defaultReady();
+      MathJax.startup.promise.then(() => { window.__mathReady = true; if (window.__onMath) window.__onMath(); });
+    }
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js" async></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hatch" width="4.5" height="4.5" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+      <line x1="0" y1="0" x2="0" y2="4.5" stroke="currentColor" stroke-width=".7"></line>
+    </pattern>
+    <symbol id="taq" viewBox="0 0 120 92">
+      <rect x="10" y="16" width="100" height="42" rx="21" fill="url(#hatch)" opacity=".38"></rect>
+      <rect x="10" y="16" width="100" height="42" rx="21" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+      <rect x="15" y="21" width="90" height="32" rx="16" fill="none" stroke="currentColor" stroke-width=".6" opacity=".6"></rect>
+      <path d="M30 37c6-9 12 9 18 0s12 9 18 0 12 9 18 0 8 6 10 3" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+      <circle cx="26" cy="29" r="1.6" fill="currentColor"></circle><circle cx="92" cy="46" r="1.6" fill="currentColor"></circle>
+      <circle cx="74" cy="27" r="1.3" fill="currentColor"></circle><circle cx="40" cy="47" r="1.3" fill="currentColor"></circle>
+      <path d="M22 72c5-4 9 4 14 0s9 4 14 0 9 4 14 0 9 4 14 0 9 4 14 0M30 82c5-4 9 4 14 0s9 4 14 0 9 4 14 0 9 4 14 0" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"></path>
+    </symbol>
+  </defs>
+</svg>
+
+<nav class="rail" id="rail" aria-label="Contents">
+  <p class="book">Explorable chapter</p>
+  <p class="book-title">The Polymerase Chain Reaction</p>
+  <ol id="toc"></ol>
+</nav>
+<div class="scrim" id="scrim" hidden></div>
+
+<div class="shell">
+<header class="bar">
+  <button class="icon-btn menu-btn" id="menuBtn" aria-label="Show contents" aria-controls="rail" aria-expanded="false">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+  </button>
+  <button class="icon-btn" id="themeBtn" aria-label="Switch light or dark theme" title="Light or dark">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>
+  </button>
+  <button class="icon-btn" id="colorBtn" aria-pressed="true" aria-label="Color-code terms by role" title="Semantic colors on/off">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 2.8C7.6 6.3 5.2 8.9 5.2 11.9a4.8 4.8 0 0 0 9.6 0c0-3-2.4-5.6-4.8-9.1z"/><path d="M7.7 12.4a2.4 2.4 0 0 0 2.1 2.2" stroke-linecap="round"/></svg>
+  </button>
+  <div class="depth" role="group" aria-label="Reading depth">
+    <button type="button" data-depth="newcomer" aria-pressed="false" title="More background, formal detail folded">Newcomer</button>
+    <button type="button" data-depth="standard" aria-pressed="true" title="Default">Standard</button>
+    <button type="button" data-depth="expert" aria-pressed="false" title="Background folded, all formal detail open">Expert</button>
+  </div>
+  <span class="bar-title">The Polymerase Chain Reaction</span>
+</header>
+
+<main class="chapter" id="chapter">
+
+<header class="chapter-head" id="top">
+  <p class="eyebrow">An explorable chapter · molecular biology, physical chemistry, mathematics</p>
+  <h1>The Polymerase Chain Reaction</h1>
+  <p class="lede">PCR copies one chosen stretch of DNA, and then copies the copies. Thirty rounds of heating and cooling turn a few hundred molecules into hundreds of billions: enough to see, measure, sequence or clone. The chemistry fits on an index card. The power comes from an <em>exponent</em>.</p>
+</header>
+
+<section class="sec" id="s0" data-toc="Orientation">
+  <div class="orient">
+    <div>
+      <p class="label">In one sentence</p>
+      <p>A heat-stable <span class="r" data-ref="polymerase">polymerase</span>, two short <span class="r" data-ref="primer">primers</span> that bracket a target, and a repeating <span class="r" data-ref="T">temperature</span> program that separates strands, aims the primers and copies, so each cycle roughly doubles the target.</p>
+    </div>
+    <div>
+      <p class="label">Mental model</p>
+      <p>Heat to separate, cool to aim, warm to copy. Every new copy becomes a template, so the count multiplies: \(\Nn = \NO(1+\Ef)^{\nn}\).</p>
+    </div>
+    <div>
+      <p class="label">You will need</p>
+      <p>Base pairing (A–T, G–C), the idea that a DNA strand has a direction, and exponents and logarithms. Everything else is introduced where it is used.</p>
+    </div>
+  </div>
+
+  <aside class="callout note">
+    <div class="callout-head"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.1" stroke-linecap="round"/></svg>Note</div>
+    <div class="callout-body">
+      <svg class="mascot" viewBox="0 0 120 92" aria-hidden="true"><use href="#taq"></use></svg>
+      <div>
+        <p>This chapter keeps one visual language. <span class="r" data-ref="template">Template DNA</span> is blue, new <span class="r" data-ref="amplicon">copies</span> are orange, <span class="r" data-ref="primer">primers</span> are pink, the <span class="r" data-ref="polymerase">polymerase</span> is green, the knobs you can turn (<span class="r" data-ref="T">temperature</span>, <span class="r" data-ref="n">cycle number</span>, <span class="r" data-ref="E">efficiency</span>) are purple, the signals we measure (<span class="r" data-ref="Ct">Ct</span>, fluorescence) are yellow, and trouble is <span class="r" data-ref="eps">red</span>.</p>
+        <p>Prose, equations, figures and controls are views of the same objects. Hover over (or tap) any colored term and every view of that object lights up across the page, with a short definition. The droplet in the toolbar switches the coloring off. The three-way switch beside it changes how much background and how much formal detail is shown.</p>
+      </div>
+    </div>
+  </aside>
+
+  <figure class="fig wide" id="fig-0-1">
+    <div class="scroll-x"><svg class="figsvg" id="fig01" viewBox="0 0 900 340" role="img" aria-label="Concept map of PCR: molecules, reagents, process, mathematics, readouts"></svg></div>
+    <figcaption><span class="fignum">Figure 0.1</span>The chapter as a graph. Left to right: the molecules, the reagents built from them, the process that uses the reagents, the mathematics the process obeys, and what we read out at the end. Each node links to its section.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="s1">
+  <h2><span class="num">1</span>A single molecule is invisible</h2>
+  <span class="gloss">One haploid human genome weighs about 3.3 pg, so 1 ng of DNA holds about 300 copies.</span>
+  <p>A human cell carries about 6.4 billion base pairs of DNA: two copies of a 3.1-billion-letter genome. A gene you care about might occupy a few hundred of them. One nanogram of purified human DNA, far too little to see, holds about 300 copies of the genome, and so about 300 copies of a single-copy <span class="r" data-ref="amplicon">target</span>, buried in a ten-million-fold excess of everything else.</p>
+  <p>No ordinary lab instrument can size, sequence or even detect 300 molecules. A visible band on a gel needs around 10<sup>10</sup> of them. PCR closes the gap from the supply side: it leaves the detector alone and makes more of the molecule.</p>
+  <p>How many more, and how fast? Doubling is the natural unit. Since \(2^{10} \approx 10^{3}\), every ten doublings buy a factor of a thousand, and every factor of ten costs \(\log_2 10 \approx 3.3\) doublings. Figure 1.1 puts both scales on one axis.</p>
+  <figure class="fig wide" id="fig-1-1">
+    <div class="scroll-x"><svg class="figsvg" id="fig11" viewBox="0 0 900 262" role="img" aria-label="Log scale of copy numbers aligned with cycles of doubling"></svg></div>
+    <figcaption><span class="fignum">Figure 1.1</span>Copies and cycles are the same axis. The bottom scale counts molecules in powers of ten; the top counts doublings from a single molecule, \(n = \log_2 N\). Going from 300 genomic copies to a detectable 10<sup>10</sup> takes about 25 doublings, which is why typical protocols run 25 to 35 cycles.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="s2">
+  <h2><span class="num">2</span>The molecular cast</h2>
+  <p>PCR is DNA replication with the cell removed. To see why each ingredient is there, we need one structural fact about DNA and one rule about the enzyme that copies it.</p>
+
+  <details class="plain intro-only" data-auto="newcomer">
+    <summary><span class="label">Background</span>DNA in sixty seconds</summary>
+    <p>DNA is a chain of nucleotides. Each nucleotide is a sugar (deoxyribose), a phosphate and one of four bases: adenine (A), cytosine (C), guanine (G) or thymine (T). Sugars and phosphates alternate to form the backbone, and the bases stick out to one side. Two chains wind into a double helix with their bases paired inside, A with T and G with C. The pairs are held by hydrogen bonds between partners and by stacking between neighboring pairs.</p>
+    <p>Because the pairing rule is strict, each strand fully specifies its partner. That is what makes copying possible: separate the strands, and each one is a template for a new partner.</p>
+  </details>
+
+  <h3 id="s2-strands"><span class="num">2.1</span>Two strands, two directions</h3>
+  <p>Each strand has a direction. Its two ends are named 5′ and 3′ after carbon atoms of the sugar, and the two strands of a helix run opposite ways. Wherever one strand reads 5′→3′ from left to right, its partner reads 5′→3′ from right to left. Biologists call this antiparallel.</p>
+  <p>The whole chapter hangs on one rule. A <span class="r" data-ref="polymerase">DNA polymerase</span> can only add a nucleotide to the free 3′-OH end of a strand that is already paired with a template. It reads the <span class="r" data-ref="template">template</span> 3′→5′, builds the new strand 5′→3′, and cannot start a strand from nothing.</p>
+  <figure class="fig" id="fig-2-1">
+    <div class="scroll-x"><svg class="figsvg" id="fig21" viewBox="0 0 760 270" role="img" aria-label="A primer paired with a template; the polymerase adds a nucleotide to the primer's 3-prime end"></svg></div>
+    <figcaption><span class="fignum">Figure 2.1</span>The polymerase rule at the scale of single bases. The <span class="r" data-ref="primerF primer">primer</span> is paired with the <span class="r" data-ref="template">template</span> and ends in a free 3′-OH. The <span class="r" data-ref="polymerase">polymerase</span> binds there and adds the incoming <span class="r" data-ref="dntp">dNTP</span> that pairs with the next template base, releasing pyrophosphate (PP<sub>i</sub>). Two <span class="r" data-ref="mg">Mg²⁺</span> ions in the active site help form the bond. Growth goes one way only, 5′→3′.</figcaption>
+  </figure>
+  <p>Three consequences follow, and each returns later. PCR needs <span class="r" data-ref="primer">primers</span> to give the enzyme a starting 3′ end. The two primers must point toward each other across the target. And a mismatch at a primer’s 3′ end is fatal, while a mismatch at its 5′ end is tolerated.</p>
+
+  <h3 id="s2-cast"><span class="num">2.2</span>The ingredients</h3>
+  <span class="gloss">Taq is named for <i>Thermus aquaticus</i>, a bacterium isolated from a Yellowstone hot spring in 1969.</span>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Component</th><th>Job</th><th>Typical amount in 50 µL</th><th>Without it</th></tr></thead>
+      <tbody>
+        <tr><td><span class="r" data-ref="template">Template DNA</span></td><td>Carries the target; read every cycle, never consumed</td><td>10–100 ng genomic DNA, or ~1 pg–1 ng plasmid</td><td>Nothing to copy</td></tr>
+        <tr><td><span class="r" data-ref="primerF primer">Forward</span> and <span class="r" data-ref="primerR primer">reverse primers</span></td><td>Synthetic 18–25-base single strands that mark the two ends of the target and supply a 3′ end</td><td>0.1–0.5 µM each</td><td>No start point, no product</td></tr>
+        <tr><td><span class="r" data-ref="polymerase">DNA polymerase</span>, usually Taq</td><td>Extends each primer by copying the template</td><td>1–2.5 units</td><td>Primers bind; nothing is made</td></tr>
+        <tr><td><span class="r" data-ref="dntp">dNTPs</span> (dATP, dCTP, dGTP, dTTP)</td><td>Building blocks; each incorporation releases pyrophosphate</td><td>200 µM each</td><td>No material to build with</td></tr>
+        <tr><td><span class="r" data-ref="mg">Mg²⁺</span></td><td>Cofactor in the polymerase active site; also stabilizes duplexes</td><td>1.5–2.5 mM</td><td>Too little: no activity. Too much: sloppy, nonspecific priming</td></tr>
+        <tr><td>Buffer and thermocycler</td><td>Hold pH and salt; run the <span class="r" data-ref="T">temperature</span> program</td><td>e.g. 10 mM Tris-HCl pH 8.3, 50 mM KCl</td><td>No cycling, no chain reaction</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="socratic" data-answer="a">
+    <p class="label">Pause and predict</p>
+    <p class="q">Suppose the tube contains only the <span class="r" data-ref="primerF primer">forward primer</span>. Starting from one double-stranded template, how many new strands does the reaction make in 30 cycles?</p>
+    <div class="choices">
+      <button class="btn" data-v="a" data-fb="Right. Only the original bottom strand can bind the forward primer, so each cycle adds exactly one copy. Growth is linear.">30</button>
+      <button class="btn" data-v="b" data-fb="That would need both original strands to be copied, but the forward primer pairs with only one of them.">60</button>
+      <button class="btn" data-v="c" data-fb="That is what two primers achieve. With one primer the copies are never copied: they have the primer's own sequence, so the primer cannot pair with them.">2³⁰ ≈ 10⁹</button>
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+    <details><summary>Show the reasoning</summary>
+      <p>The forward primer has the sequence of the top strand, so it pairs only with bottom-sense strands. The original bottom strand is copied once per cycle, and every copy is top-sense, which the forward primer cannot bind. Add the <span class="r" data-ref="primerR primer">reverse primer</span>, which pairs with top-sense strands, and the loop closes: every product of one primer is a template for the other. That feedback is the <em>chain</em> in polymerase chain reaction, and it turns \(\NO + \nn\) into \(\NO \cdot 2^{\nn}\).</p>
+    </details>
+  </div>
+</section>
+
+<section class="sec" id="s3">
+  <h2><span class="num">3</span>One cycle, three temperatures</h2>
+  <p>A thermocycler is a metal block that can change <span class="r" data-ref="T">temperature</span> by tens of degrees in seconds. Each cycle runs three steps, and the only thing that changes between them is the temperature. Temperature decides which physical process wins: melting, binding or copying.</p>
+
+  <figure class="fig wide" id="fig-3-1">
+    <div class="well">
+      <svg class="figsvg" id="fig31" viewBox="0 0 960 448" role="img" aria-label="Animation of one PCR cycle: denaturation, annealing, extension, then the start of cycle two"></svg>
+      <div class="player">
+        <button class="btn primary" id="anim-play" type="button" aria-label="Play">▶ Play</button>
+        <button class="btn" id="anim-prev" type="button" aria-label="Previous scene">◀ Scene</button>
+        <button class="btn" id="anim-next" type="button" aria-label="Next scene">Scene ▶</button>
+        <input class="scrub" id="anim-scrub" type="range" min="0" max="1000" value="125" aria-label="Animation time">
+        <span class="clock" id="anim-clock">0.0 s</span>
+      </div>
+      <div class="scenes" id="anim-scenes"></div>
+      <p class="narration" id="anim-narr" aria-live="polite"></p>
+    </div>
+    <figcaption><span class="fignum">Figure 3.1</span>One cycle, then the start of the next. The strip below the molecules is the thermocycler program on the same clock; its annealing level follows the <span class="r" data-ref="Ta">annealing temperature</span> you set in Figure 3.2. Jump with the scene buttons or drag the scrubber.</figcaption>
+  </figure>
+  <p>Notice two things. After one cycle the copies are longer than the target: in cycle 1 nothing tells the polymerase where to stop, so it runs on past the far primer site, producing <span class="r" data-ref="longProduct">long products</span>. In cycle 2 those long copies become templates, and copying one of them stops exactly at its end, which is the other primer. The first strands of exactly the <span class="r" data-ref="amplicon">target</span> length appear there. Section 4 counts what happens next.</p>
+
+  <h3 id="s3-why"><span class="num">3.1</span>Why these temperatures</h3>
+  <ul>
+    <li><b>Denature, 94–98 °C, 15–30 s.</b> Above the melting temperature of the template (about 85–95 °C for genomic DNA in PCR buffer, higher when GC-rich) the strands separate. <span class="r" data-ref="polymerase">Taq</span> survives because it evolved in hot springs: its half-life at 95 °C is roughly 40 minutes, enough for 30–40 cycles.</li>
+    <li><b>Anneal, about 50–65 °C, 15–30 s.</b> Cool enough for the <span class="r" data-ref="primer">primers</span> to pair, warm enough that they pair only where the match is good. The usual starting point is a few degrees below the primers’ <span class="r" data-ref="Tm">melting temperature</span>.</li>
+    <li><b>Extend, 72 °C, about 1 minute per kilobase.</b> Close to Taq’s optimum (75–80 °C) while cool enough for the primers to stay bound. Taq adds tens of nucleotides per second, so the rule of thumb is generous.</li>
+  </ul>
+
+  <div class="socratic">
+    <p class="label">Pause and think</p>
+    <p class="q">When the tube cools, each long template strand could re-pair with its own partner, or bind a primer. Re-pairing would end the cycle with nothing copied. Why do the primers win?</p>
+    <details><summary>Show the reasoning</summary>
+      <p>Concentration. Ten nanograms of human DNA in 50 µL is about 3,000 copies of a target, roughly 10<sup>−16</sup> M. Primers at 0.5 µM outnumber them about five billion to one, and the rate at which a strand meets a partner is proportional to the partner’s concentration. Short primers also diffuse quickly and need only a 20-base match to form a stable duplex.</p>
+      <p>Late in the reaction, though, products reach about 3 nM. Now product strands find their own partners almost as fast as they find primers, and that competition is one reason amplification slows (§5.4).</p>
+    </details>
+  </div>
+
+  <h3 id="s3-tm"><span class="num">3.2</span>Melting temperature and primer design</h3>
+  <span class="gloss">The popular story credits G–C’s third hydrogen bond. Measurements suggest base stacking contributes more to the difference.</span>
+  <p>The <span class="r" data-ref="Tm">melting temperature</span> \(\Tm\) of a duplex is the temperature at which half of it has come apart. Longer duplexes melt higher, and GC-rich ones melt higher than AT-rich ones. Two rules of thumb estimate \(\Tm\) for a short primer of \(N\) bases:</p>
+  \[ \Tm \approx 2\,(\#A + \#T) + 4\,(\#G + \#C)\ {}^{\circ}\mathrm{C} \qquad (N \lt 14) \]
+  \[ \Tm \approx 64.9 + 41\,\frac{\#G + \#C - 16.4}{N}\ {}^{\circ}\mathrm{C} \qquad (N \ge 14) \]
+  <p>Both are approximations. Primer-design software uses nearest-neighbor thermodynamics, which accounts for which bases sit next to each other, for salt and Mg²⁺, and for primer concentration; its numbers can differ from these by several degrees. For seeing how the knobs interact, the simple formula is enough.</p>
+  <p>Specificity is a tug-of-war set by the <span class="r" data-ref="Ta">annealing temperature</span> \(\Ta\) relative to \(\Tm\). Set \(\Ta\) too low and primers stick to near-matches elsewhere in the genome, or to each other. Set it too high and they barely stick at all. The bench below lets you feel this, together with the 3′ rule from Figure 2.1.</p>
+
+  <figure class="fig wide" id="fig-3-2">
+    <div class="well">
+      <p class="objective"><b>Goal:</b> discover that specificity comes from \(\Ta\) relative to the primers’ \(\Tm\), and that only the 3′ end of a primer has to match, by changing \(\Ta\), editing primer bases and watching the gel.</p>
+      <div class="sandbox">
+        <div>
+          <div class="field">
+            <label for="pF">Forward primer, 5′→3′</label>
+            <input class="seq-in" id="pF" type="text" spellcheck="false" autocomplete="off" data-ref="primerF primer">
+            <div class="btn-row">
+              <button class="btn" type="button" data-act="f3">Mutate 3′ end</button>
+              <button class="btn" type="button" data-act="f5">Mutate 5′ end</button>
+              <button class="btn" type="button" data-act="tail">Add 5′ tail</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pR">Reverse primer, 5′→3′</label>
+            <input class="seq-in" id="pR" type="text" spellcheck="false" autocomplete="off" data-ref="primerR primer">
+            <div class="btn-row">
+              <button class="btn" type="button" data-act="dimer">Create 3′ overlap</button>
+              <button class="btn" type="button" data-act="reset">Reset</button>
+            </div>
+          </div>
+          <div class="ctl">
+            <label for="ta"><span>Annealing temperature Tₐ</span> <output id="ta-out">54.0 °C</output></label>
+            <input type="range" id="ta" min="42" max="70" step="0.5" value="54" data-ref="Ta">
+          </div>
+          <table class="pstats" id="pstats"></table>
+          <ul class="flags" id="pflags"></ul>
+        </div>
+        <div>
+          <svg class="figsvg" id="gel" viewBox="0 0 330 368" role="img" aria-label="Simulated agarose gel"></svg>
+          <p class="verdict" id="verdict" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="aln" id="aln"></div>
+      <div class="try">
+        <p class="label">Try this</p>
+        <ol>
+          <li>Drag \(\Ta\) down to about 46 °C. What appears in the sample lane? In the no-template lane?</li>
+          <li>Push \(\Ta\) to 62 °C or above. Why does the band fade?</li>
+          <li>Press <i>Mutate 3′ end</i>. Then press <i>Reset</i> and <i>Mutate 5′ end</i> instead. Which change kills the product? Then try <i>Add 5′ tail</i>.</li>
+          <li>Press <i>Create 3′ overlap</i> and lower \(\Ta\). Where does the new band run, and why is it brightest when there is no template?</li>
+        </ol>
+      </div>
+    </div>
+    <figcaption><span class="fignum">Figure 3.2</span>A primer bench. The template is a 200-base stretch, top strand shown 5′→3′. Primer statistics use the basic \(\Tm\) formula. The gel is a cartoon built from heuristic rules (binding falls off sigmoidally as \(\Ta\) approaches the effective \(\Tm\), each internal mismatch costs about 5 °C, a 3′-terminal mismatch blocks extension), not a thermodynamic simulation. Fragments migrate a distance that falls roughly with the logarithm of their length, so the ladder is evenly spaced in log(bp).</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="s4">
+  <h2><span class="num">4</span>Counting copies: where the exponential comes from</h2>
+  <p>Here is the claim that makes PCR powerful: every strand made in one cycle is a template in the next. If every template is copied, the number of target molecules doubles each cycle, so after \(\nn\) cycles one molecule has become \(2^{\nn}\).</p>
+
+  <div class="ladder intro-only" id="ladder">
+    <div class="ladder-ctl">
+      <span id="ladder-q">Does “every copy is a template” make the doubling feel inevitable?</span>
+      <button class="btn" type="button" id="ladder-yes">Yes, continue</button>
+      <button class="btn primary" type="button" id="ladder-more">Not yet: show it another way</button>
+    </div>
+    <div class="rung" data-rung="1" hidden>
+      <p class="label">A picture</p>
+      <figure class="fig" id="fig-4-1" style="margin:.5rem 0 0">
+        <svg class="figsvg" id="fig41" viewBox="0 0 640 236" role="img" aria-label="Binary tree of duplexes doubling each cycle"></svg>
+        <figcaption><span class="fignum">Figure 4.1</span>Each duplex splits into two strands, and each strand gets a new partner. Blue is original template; orange is newly made. Count the duplexes in each column: 1, 2, 4, 8.</figcaption>
+      </figure>
+    </div>
+    <div class="rung" data-rung="2" hidden>
+      <p class="label">An analogy, and where it breaks</p>
+      <p>Compound interest at 100% per period: interest earns interest, so the balance doubles every period. The analogy captures the feedback, output becoming input. It breaks in two places. Money has no reagents to run out of, while PCR stalls when primers and dNTPs run low (§5.4). And a bank never forgets a dollar, while the polymerase misses some templates every cycle, so the real multiplier is \(1+\Ef\), a little below 2 (§5.2).</p>
+    </div>
+    <div class="rung" data-rung="3" hidden>
+      <p class="label">Hands on</p>
+      <p>Step through the cycles yourself in <a href="#fig-4-2">Figure 4.2</a>, then change the “interest rate” \(\Ef\) in <a href="#fig-5-1">Figure 5.1</a>. If it still feels slippery, answer the prediction question just below before looking: doing the bookkeeping once usually settles it.</p>
+    </div>
+  </div>
+
+  <h3 id="s4-long"><span class="num">4.1</span>Long products and short products</h3>
+  <p>Doubling counts all strands, but not every strand has the length we want. The original <span class="r" data-ref="template">template</span> runs far past the target in both directions. Figure 3.1 showed that cycle-1 copies start at a primer and run on past the other site: these <span class="r" data-ref="longProduct">long products</span> have one defined end. Copies of exactly the <span class="r" data-ref="amplicon">target length</span>, bounded by both primers, come later.</p>
+
+  <div class="socratic" data-answer="3" data-gate="lineage">
+    <p class="label">Pause and predict</p>
+    <p class="q">In which cycle does the first double-stranded molecule of exactly the target length appear, with both strands bounded by the two primers?</p>
+    <div class="choices">
+      <button class="btn" data-v="1" data-fb="Cycle-1 copies run past the far primer site, so each has only one defined end.">Cycle 1</button>
+      <button class="btn" data-v="2" data-fb="Close. Cycle 2 makes the first exact-length strand, but its partner is a long product, so the duplex is not exact yet.">Cycle 2</button>
+      <button class="btn" data-v="3" data-fb="Right. In cycle 3 the exact strands from cycle 2 are copied, and both template and copy are exact.">Cycle 3</button>
+      <button class="btn" data-v="4" data-fb="Earlier than that. Step through Figure 4.2 to watch it happen.">Cycle 4</button>
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+    <details><summary>Show the reasoning</summary>
+      <p>Track three strand types. Copying an original strand (O) gives a long strand (L). Copying a long strand gives a short, exact strand (S), because copying stops at the template’s end, which is a primer site. Copying an S gives another S. Cycle 1: O→L. Cycle 2: O→L and L→S, so the first S strands appear, each paired with the L it was copied from. Cycle 3: S→S, and an S paired with an S is the first exact duplex.</p>
+    </details>
+  </div>
+
+  <figure class="fig wide" id="fig-4-2">
+    <div class="well gated" id="lineage-well">
+      <div class="gate" id="lineage-gate">
+        <div><p>Make a prediction above first.</p><button class="btn" type="button" id="lineage-skip">Show me anyway</button></div>
+      </div>
+      <svg class="figsvg" id="fig42" viewBox="0 0 960 440" role="img" aria-label="All duplexes at the current cycle, drawn along the template"></svg>
+      <div class="player">
+        <button class="btn" type="button" id="lin-prev">◀ Cycle</button>
+        <button class="btn primary" type="button" id="lin-next">Cycle ▶</button>
+        <button class="btn" type="button" id="lin-reset">Reset</button>
+        <span class="clock" id="lin-label"></span>
+      </div>
+      <div class="tbl-wrap" style="margin-bottom:0">
+        <table class="t" id="lin-table"></table>
+      </div>
+    </div>
+    <figcaption><span class="fignum">Figure 4.2</span>Every duplex at cycle \(\nn\), drawn to scale along the template. Blue: original strands. Muted orange: <span class="r" data-ref="longProduct">long products</span>, with their overhang beyond the primer sites dimmed. Bright orange: <span class="r" data-ref="amplicon">exact-length</span> strands. A dot marks duplexes in which both strands are exact; the arrowhead on each strand marks its 3′ end.</figcaption>
+  </figure>
+
+  <p>The table’s last column has a closed form. Count by exclusion:</p>
+  <div class="eqsteps" id="eq-exact">
+    <div class="eqrow"><div>\[ \#\,\text{exact} = \#\,\text{all} - \#\,\text{with an original} - \#\,\text{with a long strand} \]</div><p class="why">Every duplex at cycle n is one template plus the copy made from it during cycle n.</p></div>
+    <div class="eqrow"><div>\[ = 2^{\nn} - 2 - 2(\nn - 1) \]</div><p class="why">Two originals, each copied once per cycle. Long strands appear two per cycle, so 2(n − 1) were around to be templates in cycle n.</p></div>
+    <div class="eqrow"><div>\[ = 2^{\nn} - 2\nn \]</div><p class="why">Exponential minus linear. Check: n = 3 gives 8 − 6 = 2.</p></div>
+    <div class="eqrow"><div>\[ \nn = 30:\quad 2^{30} - 60 = 1\,073\,741\,764 \]</div><p class="why">Long products become a rounding error: 60 duplexes among a billion.</p></div>
+    <div class="btn-row"><button class="btn" type="button" data-walk>Walk through the steps</button></div>
+  </div>
+  <p>So the product is defined by the <span class="r" data-ref="primer">primers</span>, not by the template. Whatever the template looked like beyond the primer sites, after 30 cycles essentially every molecule in the tube starts at one primer and ends at the other. This is also why the 5′ end of a primer can carry extra sequence: from cycle 2 on, the primer itself is part of the template.</p>
+</section>
+
+<section class="sec" id="s5">
+  <h2><span class="num">5</span>The mathematics of amplification</h2>
+
+  <h3 id="s5-ideal"><span class="num">5.1</span>Ideal doubling</h3>
+  <p>Write \(\NO\) for the number of <span class="r" data-ref="N0">target copies before cycling</span> and \(\Nn\) for the number <span class="r" data-ref="Nn">after \(n\) cycles</span>. If every copy is copied in every cycle,</p>
+  \[ \Nn = \NO \cdot 2^{\nn}. \]
+  <p>The count is a geometric sequence: each cycle multiplies it by the same factor.</p>
+
+  <h3 id="s5-eff"><span class="num">5.2</span>Efficiency</h3>
+  <p>Real cycles miss some templates: a primer fails to bind in time, a polymerase stalls, a strand re-pairs before it is primed. Let the <span class="r" data-ref="E">efficiency</span> \(\Ef\) be the fraction of templates copied per cycle, between 0 and 1. A cycle turns \(N\) molecules into \(N + \Ef N\), so</p>
+  \[ \Nn = \NO\,(1+\Ef)^{\nn}. \]
+  <p>Well-designed assays run at \(\Ef \approx 0.9\)–\(1.0\). The difference looks small per cycle and is not small after thirty.</p>
+  <div class="worked">
+    <p class="label">Worked example 5.1</p>
+    <p>Start with \(\NO = 100\) copies and run 30 cycles.</p>
+    <ol>
+      <li>At \(\Ef = 1\): \(N_{30} = 100 \cdot 2^{30} = 1.07 \times 10^{11}\).</li>
+      <li>At \(\Ef = 0.95\): \(N_{30} = 100 \cdot 1.95^{30} = 5.02 \times 10^{10}\).</li>
+      <li>The ratio is \((2/1.95)^{30} = 1.0256^{30} = 2.14\). A 2.5% shortfall per cycle compounds into a factor of two, because the exponent multiplies every per-cycle loss together.</li>
+    </ol>
+  </div>
+
+  <h3 id="s5-log"><span class="num">5.3</span>Logarithms make it a line</h3>
+  <p>Take the logarithm of both sides and the exponent comes down:</p>
+  \[ \log_{10}\Nn = \log_{10}\NO + \nn \cdot \log_{10}(1+\Ef). \]
+  <p>Plotted against cycle number on a log axis, the growth phase is a straight line. Its slope is \(\log_{10}(1+\Ef)\) decades per cycle (0.301 at \(\Ef = 1\)) and its intercept is \(\log_{10}\NO\). The intercept is what we want to measure; the slope tells us how well the reaction is running. This is the entire basis of quantitative PCR.</p>
+
+  <h3 id="s5-plateau"><span class="num">5.4</span>The plateau</h3>
+  <p>Exponential growth cannot last. After 25–35 cycles the reaction slows and stops at a <span class="r" data-ref="K">plateau</span> of roughly 10<sup>11</sup>–10<sup>12</sup> copies, for several reasons acting together:</p>
+  <ul>
+    <li>Primers and <span class="r" data-ref="dntp">dNTPs</span> are consumed; by the end, much of them is built into product.</li>
+    <li>The <span class="r" data-ref="polymerase">polymerase</span> is outnumbered: there are more templates than enzyme molecules can copy within one extension step.</li>
+    <li>Products re-anneal. At nanomolar concentrations each product strand finds its full-length partner almost as fast as it finds a primer: the race from §3, now lost.</li>
+    <li>By-products such as pyrophosphate accumulate, and the enzyme slowly loses activity.</li>
+  </ul>
+  <p>A convenient description is the logistic map, in which the effective efficiency falls as the count approaches a ceiling \(\KK\):</p>
+  \[ N_{\nn+1} = \Nn + \Ef\,\Nn\left(1 - \frac{\Nn}{\KK}\right). \]
+  <p>This describes the curve’s shape; it is not a mechanism. It is what Figure 5.1 simulates.</p>
+
+  <figure class="fig wide" id="fig-5-1">
+    <div class="well">
+      <p class="objective"><b>Goal:</b> discover that on a log axis the growth phase is a straight line whose position encodes \(\NO\), that a ten-fold difference in \(\NO\) shifts the curve by about 3.3 cycles, and that end-point measurements hide these differences.</p>
+      <svg class="figsvg" id="fig51" viewBox="0 0 900 420" role="img" aria-label="Amplification curves: copies versus cycle number"></svg>
+      <div class="controls">
+        <div class="ctl template"><label for="amp-n0">starting copies N₀ <output id="amp-n0-out"></output></label><input type="range" id="amp-n0" min="0" max="8" step="0.1" value="3" data-ref="N0"></div>
+        <div class="ctl"><label for="amp-e">efficiency E <output id="amp-e-out"></output></label><input type="range" id="amp-e" min="0.5" max="1" step="0.01" value="0.95" data-ref="E"></div>
+        <div class="ctl readout"><label for="amp-nt">threshold Nₜ <output id="amp-nt-out"></output></label><input type="range" id="amp-nt" min="9" max="11" step="0.1" value="10" data-ref="Nt"></div>
+      </div>
+      <div class="checks" style="margin-top:.9rem">
+        <label class="check"><input type="checkbox" id="amp-log"> log axis</label>
+        <label class="check"><input type="checkbox" id="amp-dil"> ten-fold dilution series</label>
+        <button class="btn" type="button" id="amp-reset">Reset</button>
+      </div>
+      <div class="readouts" id="amp-read"></div>
+      <div class="try">
+        <p class="label">Try this</p>
+        <ol>
+          <li>Switch to the log axis. The growth phase becomes a straight line; compare its slope with \(\log_{10}(1+\Ef)\).</li>
+          <li>Turn on the dilution series. How many cycles separate neighboring curves? Lower \(\Ef\) to 0.8 and watch the spacing widen.</li>
+          <li>Go back to the linear axis with the series on. At cycle 45, can you tell which reaction started with a million times more template?</li>
+        </ol>
+      </div>
+    </div>
+    <figcaption><span class="fignum">Figure 5.1</span>Amplification curves from the logistic model with \(\KK = 10^{12}\). The <span class="r" data-ref="Nt">threshold</span> sits in the exponential phase, above background noise (shaded on the log axis). Hover over the plot to read off any cycle.</figcaption>
+  </figure>
+
+  <h3 id="s5-ct"><span class="num">5.5</span>The threshold cycle</h3>
+  <span class="gloss">The MIQE reporting guidelines call it the quantification cycle, Cq. Instrument software also says Ct or Cp.</span>
+  <p>Real-time PCR (qPCR) measures fluorescence every cycle and reports the <span class="r" data-ref="Ct">threshold cycle</span> \(\Ct\): the fractional cycle at which the signal crosses a <span class="r" data-ref="Nt">threshold</span> \(\Nt\) set inside the exponential phase. Because \(\Ct\) is read where every curve is still a straight line on a log axis, it carries the information about \(\NO\) that the plateau erases.</p>
+  <div class="eqsteps" id="eq-ct">
+    <div class="eqrow"><div>\[ \NO\,(1+\Ef)^{\Ct} = \Nt \]</div><p class="why">Definition: after Ct cycles, the copies reach the threshold.</p></div>
+    <div class="eqrow"><div>\[ \log_{10}\NO + \Ct\,\log_{10}(1+\Ef) = \log_{10}\Nt \]</div><p class="why">Take log₁₀ of both sides. The product becomes a sum and the exponent comes down.</p></div>
+    <div class="eqrow"><div>\[ \Ct = \frac{\log_{10}\Nt - \log_{10}\NO}{\log_{10}(1+\Ef)} \]</div><p class="why">Solve for Ct.</p></div>
+    <div class="eqrow"><div>\[ \Ct = \underbrace{-\frac{1}{\log_{10}(1+\Ef)}}_{\text{slope}}\,\log_{10}\NO + \underbrace{\frac{\log_{10}\Nt}{\log_{10}(1+\Ef)}}_{\text{intercept}} \]</div><p class="why">Separate the terms: Ct is a straight line in log₁₀ N₀.</p></div>
+    <div class="eqrow"><div>\[ \Ef = 10^{-1/\text{slope}} - 1 \]</div><p class="why">Run a dilution series, fit the line, and read the efficiency off its slope.</p></div>
+    <div class="btn-row"><button class="btn" type="button" data-walk>Walk through the steps</button></div>
+  </div>
+  <p>At \(\Ef = 1\) the slope is \(-1/\log_{10}2 = -3.32\): each ten-fold dilution delays the crossing by 3.32 cycles, and each two-fold dilution by exactly one.</p>
+  <div class="worked">
+    <p class="label">Worked example 5.2</p>
+    <p>A ten-fold dilution series of a standard gives a line with slope −3.45.</p>
+    <ol>
+      <li>\(\Ef = 10^{1/3.45} - 1 = 0.949\): about 95% efficiency, inside the commonly accepted 90–110% window.</li>
+      <li>A slope of −3.1 would give \(\Ef = 10^{1/3.1} - 1 = 1.10\). Efficiency above 100% is impossible for the chemistry, so it flags an artifact, often inhibitors in the concentrated samples that delay their Ct and flatten the line (§8).</li>
+    </ol>
+  </div>
+
+  <div class="socratic" data-answer="b">
+    <p class="label">Pause and predict</p>
+    <p class="q">Two patient samples run with the same assay. Sample X crosses the threshold at \(\Ct = 18\), sample Y at \(\Ct = 32\). Which contained more target, and roughly by how much?</p>
+    <div class="choices">
+      <button class="btn" data-v="a" data-fb="Right direction, wrong scale. Ct is a logarithm: each cycle is a factor of 1 + E, so 14 cycles is a factor of about 2¹⁴.">X, about 14×</button>
+      <button class="btn" data-v="b" data-fb="Right. Fewer cycles to threshold means more starting template. A 14-cycle gap at E ≈ 1 is 2¹⁴ ≈ 16,000× (about 11,500× at E = 0.95).">X, about 16,000×</button>
+      <button class="btn" data-v="c" data-fb="A higher Ct means the reaction needed more cycles to reach the threshold, so it started with less.">Y, about 16,000×</button>
+      <button class="btn" data-v="d" data-fb="A higher Ct means the reaction needed more cycles to reach the threshold, so it started with less. And the factor is exponential in the Ct gap.">Y, about 14×</button>
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+  </div>
+
+  <h3 id="s5-ddct"><span class="num">5.6</span>Relative quantification</h3>
+  <p>Often you need only how much a gene’s level changed between conditions, not absolute copy numbers. The ΔΔCt method (Livak and Schmittgen, 2001) normalizes the target gene to a reference gene in each sample, then compares samples:</p>
+  \[ \Delta\Ct = \Ct^{\,\text{target}} - \Ct^{\,\text{ref}}, \qquad \Delta\Delta\Ct = \Delta\Ct^{\,\text{treated}} - \Delta\Ct^{\,\text{control}}, \qquad \text{fold change} = (1+\Ef)^{-\Delta\Delta \Ct} \approx 2^{-\Delta\Delta \Ct}. \]
+  <div class="worked">
+    <p class="label">Worked example 5.3</p>
+    <p>Control: target Ct 25.0, reference Ct 18.0, so ΔCt = 7.0. Treated: target Ct 22.5, reference Ct 18.2, so ΔCt = 4.3.</p>
+    <p>Then ΔΔCt = 4.3 − 7.0 = −2.7 and the fold change is \(2^{2.7} = 6.5\): the gene is about 6.5 times higher in the treated sample. The shortcut \(2^{-\Delta\Delta C_t}\) assumes both assays run near 100% efficiency. When they differ, use the efficiency-corrected form (Pfaffl, 2001).</p>
+  </div>
+
+  <details class="deep" id="s5-chance-d">
+    <summary><span class="label">Deeper</span><h3 id="s5-chance" style="margin:0;font-size:1.05rem"><span class="num">5.7</span>Chance in the first cycles</h3></summary>
+    <p>The equation \(\Nn = \NO(1+\Ef)^{\nn}\) describes an average. Each molecule is copied or not, by chance, with probability \(\Ef\). When \(\NO\) is large the luck averages out. When it is small, one miss in cycle 1 delays everything by a full cycle. Mathematically, PCR is a Galton–Watson branching process: every molecule independently leaves behind one or two molecules.</p>
+    <div class="cell">
+      <p class="cell-file">_2026/pcr/pcr_branching.py</p>
+      <div class="cell-row"><p class="prompt">In [1]:</p><pre class="code" data-lang="py" id="code-branch">import math
+import random
+
+
+def binomial(n: int, p: float, rng: random.Random) -&gt; int:
+    """Number of molecules (out of n) that get copied this cycle."""
+    if n &lt; 1000:
+        return sum(rng.random() &lt; p for _ in range(n))
+    # Normal approximation is accurate once n is large.
+    return max(0, round(rng.gauss(n * p, math.sqrt(n * p * (1 - p)))))
+
+
+def amplify(n0: int, E: float, cycles: int, rng: random.Random) -&gt; int:
+    """Galton-Watson PCR: each molecule is copied with probability E per cycle."""
+    N = n0
+    for _ in range(cycles):
+        N += binomial(N, E, rng)
+    return N
+
+
+def ct(n0: int, E: float, rng: random.Random, early: int = 10, Nt: float = 1e10) -&gt; float:
+    """Simulate the random early cycles exactly, then grow deterministically to Nt."""
+    N = amplify(n0, E, early, rng)
+    return early + math.log(Nt / N) / math.log(1 + E)
+
+
+rng = random.Random(1983)  # the year PCR was conceived
+E = 0.90
+
+print("Eight reactions, each starting from ONE molecule:")
+for run in range(8):
+    N10 = amplify(1, E, 10, rng)
+    print(f"  run {run}:  N_10 = {N10:4d}   Ct = {10 + math.log(1e10 / N10) / math.log(1 + E):5.2f}")
+print(f"  expected N_10 = (1+E)^10 = {(1 + E) ** 10:.0f}\n")
+
+print("Spread of Ct over 500 replicates:")
+for n0 in (1, 10, 100, 10_000):
+    cts = [ct(n0, E, rng) for _ in range(500)]
+    m = sum(cts) / len(cts)
+    sd = math.sqrt(sum((c - m) ** 2 for c in cts) / (len(cts) - 1))
+    print(f"  N0 = {n0:6d}:  mean Ct {m:5.2f}   sd {sd:.2f} cycles")</pre></div>
+      <pre class="out">Eight reactions, each starting from ONE molecule:
+  run 0:  N_10 =  381   Ct = 36.62
+  run 1:  N_10 =  666   Ct = 35.75
+  run 2:  N_10 =  317   Ct = 36.90
+  run 3:  N_10 =  650   Ct = 35.78
+  run 4:  N_10 =  640   Ct = 35.81
+  run 5:  N_10 =  377   Ct = 36.63
+  run 6:  N_10 =  605   Ct = 35.89
+  run 7:  N_10 =  596   Ct = 35.92
+  expected N_10 = (1+E)^10 = 613
+
+Spread of Ct over 500 replicates:
+  N0 =      1:  mean Ct 35.93   sd 0.46 cycles
+  N0 =     10:  mean Ct 32.30   sd 0.12 cycles
+  N0 =    100:  mean Ct 28.70   sd 0.04 cycles
+  N0 =  10000:  mean Ct 21.52   sd 0.00 cycles</pre>
+    </div>
+    <p>Two lessons. Starting from a single molecule, \(\Ct\) values scatter with a standard deviation of about half a cycle, and the scatter shrinks roughly as \(1/\sqrt{\NO}\): 0.46, 0.12 and 0.04 cycles for 1, 10 and 100 copies. And this is only the copying noise. Before cycling starts, pipetting from a sample that averages 3 copies per reaction puts zero copies in the tube \(e^{-3} \approx 5\%\) of the time (Poisson sampling), which is why replicates near the detection limit disagree.</p>
+  </details>
+
+  <details class="deep" id="s5-errors-d">
+    <summary><span class="label">Deeper</span><h3 id="s5-errors" style="margin:0;font-size:1.05rem"><span class="num">5.8</span>Copying errors</h3></summary>
+    <p>Taq has no 3′→5′ proofreading exonuclease, so a wrong base, once added, stays. <span class="r" data-ref="eps">Error rates</span> are reported per base per doubling. Published values for Taq span roughly 10<sup>−5</sup> to 10<sup>−4</sup> depending on the assay, and proofreading enzymes such as Pfu or engineered high-fidelity polymerases are one to two orders of magnitude more accurate.</p>
+    <p>With error rate \(\eps\), amplicon length \(\LL\) and \(\dd = \nn\log_2(1+\Ef)\) doublings, the expected number of errors per product molecule is about \(\eps\LL\dd\). If errors are rare and independent, the fraction of products with no error at all is</p>
+    \[ P(\text{error-free}) \approx e^{-\eps\,\LL\,\dd}. \]
+    <div class="split" style="margin-top:1rem">
+      <div>
+        <div class="ctl warn"><label for="fid-eps">error rate ε <output id="fid-eps-out"></output></label><input type="range" id="fid-eps" min="-7" max="-4" step="0.1" value="-5" data-ref="eps"></div>
+        <div class="ctl context" style="margin-top:.8rem"><label for="fid-l">amplicon length L <output id="fid-l-out"></output></label><input type="range" id="fid-l" min="2" max="4" step="0.05" value="3" data-ref="L"></div>
+        <div class="ctl" style="margin-top:.8rem"><label for="fid-d">doublings d <output id="fid-d-out"></output></label><input type="range" id="fid-d" min="10" max="40" step="1" value="25" data-ref="d"></div>
+        <div class="readouts" id="fid-read"></div>
+      </div>
+      <div><svg class="figsvg" id="fid-grid" viewBox="0 0 210 210" role="img" aria-label="Unit chart of error-free versus mutated products" style="max-width:15rem;margin-inline:auto"></svg></div>
+    </div>
+    <p style="margin-top:1rem">Errors grow linearly with the number of doublings while copies grow exponentially, which is why PCR products are usable at all. For cloning a long gene, though, the linear term matters, and high-fidelity enzymes earn their price.</p>
+  </details>
+</section>
+
+<section class="sec" id="s6">
+  <h2><span class="num">6</span>Reading the result</h2>
+  <p>Amplification is half the experiment. The other half is finding out what was made, and how much.</p>
+
+  <h3 id="s6-gel"><span class="num">6.1</span>Gel electrophoresis</h3>
+  <span class="gloss">A visible band needs roughly 10 ng of DNA: about 2×10¹⁰ copies of a 500-bp product.</span>
+  <p>DNA’s phosphate backbone carries one negative charge per nucleotide, so in an electric field every fragment is pulled toward the positive electrode. Charge and friction both grow with length, so in free solution all fragments would move at about the same speed. An agarose gel breaks the tie: it is a mesh through which short fragments slip and long ones snake slowly. Over a useful range, the distance a fragment travels falls roughly linearly with the logarithm of its length. That is why a size ladder (fragments of known length) is spaced evenly in log(bp), as in Figure 3.2. A dye such as ethidium bromide or a SYBR stain fluoresces when bound to DNA and makes each band glow.</p>
+
+  <h3 id="s6-qpcr"><span class="num">6.2</span>Watching it happen: real-time PCR</h3>
+  <p>Quantitative PCR adds a fluorescent reporter and a camera, and reads the tube every cycle. Two chemistries dominate.</p>
+  <p><b>Intercalating dyes</b> such as SYBR Green fluoresce strongly only when bound to double-stranded DNA, so the signal tracks total double-stranded product. They are cheap and work with any primer pair, but they cannot tell the target from a primer-dimer. The fix uses the physics of §3: after cycling, the instrument heats the tube slowly and watches the signal drop as products melt. A specific product melts at its own \(\Tm\) in one sharp step; primer-dimers, being short, melt lower.</p>
+  <p><b>Hydrolysis probes</b> (TaqMan) add a third oligo, the <span class="r" data-ref="probe">probe</span>, that binds inside the amplicon and carries a fluorescent reporter at one end and a quencher at the other. While the probe is intact, the quencher absorbs the reporter’s energy. Taq has a second activity, a 5′→3′ exonuclease, which chops the probe apart when the polymerase runs into it.</p>
+  <figure class="fig wide" id="fig-6-1">
+    <div class="split" id="fig61" style="grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))"></div>
+    <figcaption><span class="fignum">Figure 6.1</span>A hydrolysis probe turns each act of copying into a flash. The signal therefore rises in proportion to the copies made, and only when the probe’s sequence, a third independent check of identity, is present.</figcaption>
+  </figure>
+
+  <h3 id="s6-rt"><span class="num">6.3</span>RNA first: RT-PCR</h3>
+  <span class="gloss">Without a no-reverse-transcriptase control, contaminating genomic DNA can masquerade as RNA signal.</span>
+  <p>Taq copies DNA, not RNA. To detect an RNA virus or to measure gene expression from messenger RNA, a reverse transcriptase, an enzyme borrowed from retroviruses, first copies the RNA into complementary DNA (cDNA). PCR then amplifies the cDNA. Combined with real-time detection this is RT-qPCR, the reference test for SARS-CoV-2 since early 2020. The Ct values reported for such tests follow the arithmetic of §5: every 3.3 cycles is about a ten-fold difference in viral RNA, and Ct values in the high 30s are near the single-copy limit.</p>
+
+  <h3 id="s6-dpcr"><span class="num">6.4</span>Counting molecules one at a time: digital PCR</h3>
+  <p>Ct measures template indirectly, through a calibration curve. Digital PCR counts molecules. Split the sample into thousands of tiny partitions (droplets or wells) so that most hold zero or one template molecule, run PCR to the end, and count the partitions that light up. Each partition gives a yes-or-no answer, hence “digital”.</p>
+  <p>The catch is that a partition with two or three molecules lights up exactly like one with a single molecule. If molecules land independently with an average of \(\lam\) per partition, the count in each partition follows a Poisson distribution, and the chance that a partition receives none is \(e^{-\lam}\). So the expected <span class="r" data-ref="p">fraction of positive partitions</span> is</p>
+  \[ \pp = 1 - e^{-\lam} \quad\Longrightarrow\quad \lam = -\ln(1-\pp). \]
+  <p>Measure \(\pp\), invert, and multiply by the number of partitions to get the number of molecules, with no standard curve and no assumption about efficiency.</p>
+  <figure class="fig wide" id="fig-6-2">
+    <div class="well">
+      <p class="objective"><b>Goal:</b> see that counting positive partitions undercounts molecules once partitions start receiving more than one, and that the Poisson correction recovers the true count, by changing \(\lam\) and comparing the two estimates.</p>
+      <div class="split">
+        <svg class="figsvg" id="dpcr-grid" viewBox="0 0 440 440" role="img" aria-label="Grid of 400 partitions; glowing ones received at least one molecule"></svg>
+        <div>
+          <div class="ctl"><label for="dp-lam">mean molecules per partition λ <output id="dp-lam-out"></output></label><input type="range" id="dp-lam" min="0.05" max="3" step="0.05" value="1.2" data-ref="lambda"></div>
+          <div class="btn-row"><button class="btn primary" type="button" id="dp-again">Re-partition</button></div>
+          <div class="readouts" id="dp-read" style="flex-direction:column;gap:.3rem"></div>
+          <svg class="figsvg" id="dpcr-curve" viewBox="0 0 320 214" role="img" aria-label="Fraction positive versus mean occupancy" style="margin-top:1rem"></svg>
+        </div>
+      </div>
+      <div class="try">
+        <p class="label">Try this</p>
+        <ol>
+          <li>At \(\lam = 0.1\) the naive and Poisson estimates agree. Why?</li>
+          <li>Raise \(\lam\) to 1.5. How far off is the naive count?</li>
+          <li>Push \(\lam\) to 3 and re-partition a few times. Why do the Poisson estimates now scatter more?</li>
+        </ol>
+      </div>
+    </div>
+    <figcaption><span class="fignum">Figure 6.2</span>Four hundred partitions filled by Poisson sampling. Small blue dots are template molecules; a partition glows if it received at least one. Real instruments use about 20,000 droplets or more, which shrinks the statistical error.</figcaption>
+  </figure>
+
+  <div class="socratic" data-answer="b">
+    <p class="label">Pause and predict</p>
+    <p class="q">In a digital PCR run, 63% of partitions are positive. What is the average number of template molecules per partition?</p>
+    <div class="choices">
+      <button class="btn" data-v="a" data-fb="That is the naive count: it assumes each positive partition holds exactly one molecule.">0.63</button>
+      <button class="btn" data-v="b" data-fb="Right. λ = −ln(1 − 0.63) = −ln 0.37 ≈ 0.99. When 63% of partitions are positive, the average partition held one molecule: 37% received none, and the rest one, two or more.">1.0</button>
+      <button class="btn" data-v="c" data-fb="That is 1 / 0.63, which inverts the fraction instead of the Poisson relation p = 1 − e^(−λ).">1.6</button>
+    </div>
+    <p class="feedback" aria-live="polite"></p>
+  </div>
+
+  <h3 id="s6-variants"><span class="num">6.5</span>A family of variants</h3>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Variant</th><th>What changes</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Hot-start</td><td>The polymerase is blocked by an antibody or chemical group until the first heat step</td><td>Stops primer-dimers forming while the tube sits at room temperature</td></tr>
+        <tr><td>Touchdown</td><td>\(\Ta\) starts high and drops about 1 °C per cycle</td><td>Early cycles are strict, so the correct product gets a head start</td></tr>
+        <tr><td>Nested</td><td>A second primer pair inside the first product, in a second reaction</td><td>Two independent recognition events give very high specificity</td></tr>
+        <tr><td>Multiplex</td><td>Several primer pairs in one tube</td><td>Many targets at once; forensic STR kits amplify about 20 loci together</td></tr>
+        <tr><td>Long-range, high-fidelity</td><td>Proofreading enzyme blends and longer extension</td><td>Products of 5–20 kb with fewer errors</td></tr>
+        <tr><td>Isothermal (LAMP, RPA)</td><td>No thermal cycling: strand-displacing enzymes separate strands at one temperature</td><td>Simple field devices, still exponential growth</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec" id="s7">
+  <h2><span class="num">7</span>Misconceptions</h2>
+  <div class="contrast">
+    <div class="row">
+      <div class="looks"><span class="label">Looks like</span>PCR copies the whole DNA sample.</div>
+      <div class="actually"><span class="label">Actually</span>It copies only the region between the two <span class="r" data-ref="primer">primers</span>.</div>
+      <div><span class="label">Because</span>Products of one primer are templates for the other, and only exact-length copies grow exponentially: \(2^{\nn} - 2\nn\) against \(2\nn\) (§4).</div>
+    </div>
+    <div class="row">
+      <div class="looks"><span class="label">Looks like</span>A higher Ct means more target.</div>
+      <div class="actually"><span class="label">Actually</span>A higher <span class="r" data-ref="Ct">Ct</span> means less.</div>
+      <div><span class="label">Because</span>Ct counts the cycles needed to reach the threshold. More starting copies need fewer cycles; every 3.3 cycles is about ten-fold.</div>
+    </div>
+    <div class="row">
+      <div class="looks"><span class="label">Looks like</span>A brighter end-point band means proportionally more starting template.</div>
+      <div class="actually"><span class="label">Actually</span>End-point signals are compressed by the <span class="r" data-ref="K">plateau</span>.</div>
+      <div><span class="label">Because</span>Every reaction converges on the same ceiling. Turn on the dilution series in Figure 5.1 and compare cycle 45.</div>
+    </div>
+    <div class="row">
+      <div class="looks"><span class="label">Looks like</span>Each cycle exactly doubles the product.</div>
+      <div class="actually"><span class="label">Actually</span>Each cycle multiplies by \(1+\Ef\) with \(\Ef \lt 1\), and \(\Ef\) falls toward the plateau.</div>
+      <div><span class="label">Because</span>Not every template gets a primer and a polymerase in time, and late in the run reagents and enzyme run short.</div>
+    </div>
+    <div class="row">
+      <div class="looks"><span class="label">Looks like</span>More cycles always mean more sensitivity.</div>
+      <div class="actually"><span class="label">Actually</span>Past about 35–40 cycles you mostly amplify noise.</div>
+      <div><span class="label">Because</span>A single molecule reaches the threshold around cycle 35; anything that appears much later is likely primer-dimer, mispriming or contamination.</div>
+    </div>
+    <div class="row">
+      <div class="looks"><span class="label">Looks like</span>The polymerase recognizes the gene.</div>
+      <div class="actually"><span class="label">Actually</span>It recognizes only a paired 3′ end.</div>
+      <div><span class="label">Because</span>Specificity comes entirely from where the primers bind, which the <span class="r" data-ref="Ta">annealing temperature</span> controls (Figure 3.2).</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s8">
+  <h2><span class="num">8</span>Failure modes and edge cases</h2>
+  <p>PCR’s sensitivity is also its main weakness. A method that can find one molecule will just as happily find the wrong one.</p>
+  <aside class="callout warn">
+    <div class="callout-head"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 2.8 18 16.6H2z"/><path d="M10 8v4.2M10 14.4v.1" stroke-linecap="round"/></svg>Warning: contamination</div>
+    <p>A finished reaction holds about 10<sup>11</sup> copies in 50 µL, which is 2×10<sup>6</sup> copies per nanoliter. A single invisible aerosol droplet from an opened tube can seed a new reaction with more template than a genuine low-copy sample. Labs keep pre- and post-PCR work physically separate, run a no-template control (NTC) in every experiment, and often build products with dUTP instead of dTTP so that the enzyme uracil-DNA glycosylase can destroy carried-over amplicons before the next run.</p>
+  </aside>
+  <p><b>Primer-dimers and mispriming.</b> Primers that pair with each other, or with near-matches elsewhere, make short or wrong products (Figure 3.2). Remedies: better primer design, a higher \(\Ta\), touchdown cycling, hot-start enzymes.</p>
+  <p><b>Inhibitors.</b> Heme from blood, heparin, humic acids from soil, EDTA (which captures Mg²⁺) and simply too much template DNA all slow the polymerase. A telltale sign is a standard curve that is too shallow: the concentrated samples are inhibited, their Ct comes late, the slope is flatter than −3.32, and the computed efficiency exceeds 100%.</p>
+  <p><b>Difficult templates.</b> GC-rich regions resist melting and fold into secondary structures; additives such as DMSO or betaine help. Products longer than about 5 kb need long-range enzyme blends and longer extension times.</p>
+  <p><b>Skewed mixtures.</b> When several templates compete (microbial communities, two alleles), small differences in efficiency compound. Two templates that start 1:1 at \(\Ef = 0.95\) and \(\Ef = 0.90\) end 2.2:1 after 30 cycles, because \((1.95/1.90)^{30} = 2.18\). Partially extended strands can also prime on a related template and create chimeras.</p>
+  <p><b>Too few molecules.</b> Near the detection limit, Poisson sampling decides whether the target is in the tube at all (§5.7), so a negative result at low copy number is weak evidence of absence.</p>
+  <p><b>Genomic DNA in RT-PCR.</b> Run a no-RT control, or design primers that span an exon–exon junction so that only spliced cDNA amplifies.</p>
+</section>
+
+<section class="sec" id="s9">
+  <h2><span class="num">9</span>A short history</h2>
+  <ol class="timeline">
+    <li><span class="yr">1953</span><span>Watson and Crick, building on X-ray data from Rosalind Franklin and Maurice Wilkins, propose the double helix. Complementary pairing implies a copying mechanism.</span></li>
+    <li><span class="yr">1956</span><span>Arthur Kornberg isolates DNA polymerase from <i>E. coli</i>.</span></li>
+    <li><span class="yr">1969</span><span>Thomas Brock and Hudson Freeze isolate <i>Thermus aquaticus</i> from a Yellowstone hot spring.</span></li>
+    <li><span class="yr">1971</span><span>Kleppe, Khorana and colleagues describe repair replication of short DNA with two primers, a conceptual precursor.</span></li>
+    <li><span class="yr">1976</span><span>Chien, Edgar and Trela purify a heat-stable DNA polymerase from <i>T. aquaticus</i>.</span></li>
+    <li><span class="yr">1983</span><span>Kary Mullis, at Cetus Corporation, conceives of cycling two primers to amplify a target exponentially.</span></li>
+    <li><span class="yr">1985</span><span>Saiki and colleagues publish the first application, a test for sickle-cell anemia. Fresh polymerase (Klenow fragment) had to be added after every heat step.</span></li>
+    <li><span class="yr">1988</span><span>Saiki and colleagues switch to Taq polymerase, and PCR becomes automatable.</span></li>
+    <li><span class="yr">1991</span><span>Holland and colleagues use Taq’s 5′→3′ exonuclease to release a probe signal, the basis of TaqMan.</span></li>
+    <li><span class="yr">1992</span><span>Higuchi and colleagues watch amplification in real time with a fluorescent dye and a video camera.</span></li>
+    <li><span class="yr">1993</span><span>Mullis shares the Nobel Prize in Chemistry with Michael Smith (site-directed mutagenesis).</span></li>
+    <li><span class="yr">1999</span><span>Vogelstein and Kinzler name and demonstrate digital PCR.</span></li>
+    <li><span class="yr">2020</span><span>Corman and colleagues publish an RT-qPCR assay for SARS-CoV-2 within weeks of the first genome sequence, and Ct values enter the news.</span></li>
+  </ol>
+</section>
+
+<section class="sec" id="s10">
+  <h2><span class="num">10</span>Where PCR shows up</h2>
+  <ul>
+    <li><b>Diagnostics.</b> Pathogen detection by (RT-)qPCR; genetic tests for inherited variants.</li>
+    <li><b>Forensics.</b> Kits co-amplify about 20 short tandem repeat (STR) loci, and the repeat counts at each locus make up a DNA profile. Because the amplicons are short, degraded samples still work.</li>
+    <li><b>Cloning and engineering.</b> 5′ tails on primers add restriction sites or tags, and deliberately mismatched primers introduce mutations. Both exploit the 3′ rule of Figure 2.1.</li>
+    <li><b>Sequencing.</b> Sanger sequencing reads PCR products, and most next-generation library preparations include a PCR step to attach adapters.</li>
+    <li><b>Ancient and environmental DNA.</b> Fragments from bones, sediments or seawater can be amplified, which makes contamination control (§8) decisive.</li>
+  </ul>
+  <h3 id="s10-conn"><span class="num">10.1</span>Connections</h3>
+  <p><b>Cellular DNA replication.</b> PCR keeps the copying chemistry and replaces the rest of the machinery with physics and synthesis:</p>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Job</th><th>In a cell</th><th>In PCR</th></tr></thead>
+      <tbody>
+        <tr><td>Separate the strands</td><td>Helicase unwinds the helix</td><td>Heat, 95 °C</td></tr>
+        <tr><td>Start new strands</td><td>Primase lays down short RNA primers</td><td>Synthetic DNA <span class="r" data-ref="primer">primers</span></td></tr>
+        <tr><td>Copy</td><td>Replicative polymerases with proofreading</td><td><span class="r" data-ref="polymerase">Taq</span> (no proofreading) or a high-fidelity enzyme</td></tr>
+        <tr><td>What gets copied</td><td>The whole genome, once per division</td><td>One primer-defined region, 25–40 times</td></tr>
+        <tr><td>Join fragments</td><td>Ligase seals Okazaki fragments</td><td>Not needed: both strands are copied continuously from fixed starts</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><b>Exponential growth elsewhere.</b> Compound interest, bacterial growth and the early phase of an epidemic all follow \(N_0(1+r)^n\) with \(r\) the growth per step, and for the same reason a logarithmic axis turns them into straight lines.</p>
+  <p><b>Poisson counting.</b> Digital PCR, limiting-dilution assays and photon counting share the same inversion, \(\lambda = -\ln(1-p)\).</p>
+  <p><b>Branching processes.</b> The randomness of the first cycles obeys the mathematics Galton and Watson developed for the extinction of surnames, which also describes neutron chain reactions.</p>
+  <p><b>Isothermal amplification.</b> LAMP and RPA keep the exponential and drop the thermocycler. The transfer question below asks what that costs.</p>
+</section>
+
+<section class="sec" id="s11">
+  <h2><span class="num">11</span>Synthesis</h2>
+  <p>PCR is a feedback loop built from one chemical rule. A <span class="r" data-ref="polymerase">polymerase</span> extends only a paired 3′ end, so two <span class="r" data-ref="primer">primers</span> pointing at each other define a <span class="r" data-ref="amplicon">target</span>. Every copy made from one primer is a template for the other, and <span class="r" data-ref="T">temperature</span> switches the reaction between separating, aiming and copying. The loop makes the target grow geometrically while everything else grows linearly or not at all.</p>
+  <div class="keycard">
+    <p class="label">Key relations</p>
+    \[ \Nn = \NO(1+\Ef)^{\nn} \qquad \Ct = \frac{\log_{10}\Nt - \log_{10}\NO}{\log_{10}(1+\Ef)} \qquad \lam = -\ln(1-\pp) \]
+  </div>
+  <p>The picture to keep: on a log axis the amplification curve is a straight ramp whose position, not its height, records how much you started with. Ten times more template slides the ramp about 3.3 cycles to the left. The plateau at the top is the same for everyone.</p>
+
+  <div class="socratic">
+    <p class="label">Transfer question</p>
+    <p class="q">LAMP amplifies DNA at a constant 60–65 °C using a polymerase that peels apart a double strand as it copies (strand displacement). Which of PCR’s three temperature steps has it made unnecessary? Would you still expect a threshold-crossing readout like Ct?</p>
+    <details><summary>Show an answer</summary>
+      <p>It removes denaturation: strand displacement does the job heat did, so binding and copying happen at one temperature. The growth is still a feedback loop in which products seed further copying, so the signal rises exponentially and then plateaus. Real-time LAMP instruments report a time to threshold that plays the role of Ct, measured in minutes instead of cycles.</p>
+    </details>
+  </div>
+
+  <h3 id="s11-ex"><span class="num">11.1</span>Exercises</h3>
+  <ol>
+    <li>How many cycles take 50 copies to 10<sup>10</sup> at \(\Ef = 0.92\)?
+      <details class="reveal"><summary>Answer</summary><p>\(\nn = \log(10^{10}/50)/\log 1.92 = 8.30/0.283 \approx 29.3\), so 30 cycles.</p></details></li>
+    <li>A dilution series has slope −3.1. What efficiency does that imply, and what would you check?
+      <details class="reveal"><summary>Answer</summary><p>\(\Ef = 10^{1/3.1} - 1 \approx 1.10\), impossible for the chemistry. Check the most concentrated standards for inhibition (re-run them diluted), and look for pipetting errors or primer-dimer signal if you use a dye.</p></details></li>
+    <li>A digital PCR run has 20,000 partitions, 4,000 of them positive. How many template molecules were loaded?
+      <details class="reveal"><summary>Answer</summary><p>\(\pp = 0.2\), so \(\lam = -\ln 0.8 = 0.223\) and molecules ≈ 20,000 × 0.223 ≈ 4,460: about 12% more than the 4,000 positives.</p></details></li>
+  </ol>
+  <p><b>Where to go next:</b> nearest-neighbor thermodynamics of DNA duplexes; polymerase kinetics and processivity; the statistics of qPCR and the MIQE guidelines; library preparation for next-generation sequencing; CRISPR-based diagnostics, which pair isothermal amplification with programmable detection.</p>
+</section>
+
+<section class="sec" id="appendix">
+  <h2><span class="num">A</span>Appendix: the model behind this page</h2>
+  <p>This chapter is built the way it teaches: one shared model of the reaction, rendered several ways. Every colored word, equation symbol, figure element and control points back to one of the objects below, which is how hovering a term lights up all of its appearances. The counts are computed live from the page: mentions in prose, symbols in equations, how many figures draw the object, and how many controls set it.</p>
+  <div class="tbl-wrap"><table class="t objects" id="objects"></table></div>
+  <h3 id="ap-rel"><span class="num">A.1</span>Relations</h3>
+  <ul class="relations" id="relations"></ul>
+  <h3 id="ap-media"><span class="num">A.2</span>Why each idea got the medium it did</h3>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Idea</th><th>Medium</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Scale of the problem</td><td>Static figure, two aligned axes</td><td>One relationship (copies ↔ cycles) to see at a glance</td></tr>
+        <tr><td>Antiparallel strands, the 3′ rule</td><td>Annotated static diagram</td><td>Structure, not change</td></tr>
+        <tr><td>One thermal cycle</td><td>Guided animation synced to a thermal profile</td><td>A transformation over time with a fixed order</td></tr>
+        <tr><td>Primer design and specificity</td><td>Sandbox with a simulated gel</td><td>The point is the consequence of turning a knob</td></tr>
+        <tr><td>Doubling</td><td>Escalation ladder: picture, analogy, hands-on</td><td>Shown only if the plain statement does not land</td></tr>
+        <tr><td>Long and short products</td><td>Prediction, then a stepper, a table and a derivation</td><td>Discrete algorithm state, then its closed form</td></tr>
+        <tr><td>Growth, plateau, Ct</td><td>Interactive plot and equation walk-through</td><td>Continuous parameters and a formal relationship</td></tr>
+        <tr><td>Early-cycle randomness</td><td>Code with real output</td><td>A mechanism best seen by repeated simulation</td></tr>
+        <tr><td>Digital PCR</td><td>Sampling simulation</td><td>Statistics need repetition to feel</td></tr>
+        <tr><td>History</td><td>Timeline</td><td>Order in time is the content</td></tr>
+        <tr><td>Misconceptions</td><td>Contrast rows</td><td>Wrong and right side by side</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="ap-src"><span class="num">A.3</span>Sources and further reading</h3>
+  <ul class="refs-list">
+    <li>Saiki R. K. et al. (1985). Enzymatic amplification of β-globin genomic sequences and restriction site analysis for diagnosis of sickle cell anemia. <i>Science</i> 230, 1350–1354.</li>
+    <li>Mullis K. B. &amp; Faloona F. A. (1987). Specific synthesis of DNA in vitro via a polymerase-catalyzed chain reaction. <i>Methods in Enzymology</i> 155, 335–350.</li>
+    <li>Saiki R. K. et al. (1988). Primer-directed enzymatic amplification of DNA with a thermostable DNA polymerase. <i>Science</i> 239, 487–491.</li>
+    <li>Holland P. M. et al. (1991). Detection of specific polymerase chain reaction product by utilizing the 5′→3′ exonuclease activity of <i>Thermus aquaticus</i> DNA polymerase. <i>PNAS</i> 88, 7276–7280.</li>
+    <li>Higuchi R. et al. (1993). Kinetic PCR analysis: real-time monitoring of DNA amplification reactions. <i>Bio/Technology</i> 11, 1026–1030.</li>
+    <li>SantaLucia J. (1998). A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. <i>PNAS</i> 95, 1460–1465.</li>
+    <li>Vogelstein B. &amp; Kinzler K. W. (1999). Digital PCR. <i>PNAS</i> 96, 9236–9241.</li>
+    <li>Livak K. J. &amp; Schmittgen T. D. (2001). Analysis of relative gene expression data using real-time quantitative PCR and the 2<sup>−ΔΔCT</sup> method. <i>Methods</i> 25, 402–408.</li>
+    <li>Pfaffl M. W. (2001). A new mathematical model for relative quantification in real-time RT-PCR. <i>Nucleic Acids Research</i> 29, e45.</li>
+    <li>Yakovchuk P., Protozanova E. &amp; Frank-Kamenetskii M. D. (2006). Base-stacking and base-pairing contributions into thermal stability of the DNA double helix. <i>Nucleic Acids Research</i> 34, 564–574.</li>
+    <li>Bustin S. A. et al. (2009). The MIQE guidelines: minimum information for publication of quantitative real-time PCR experiments. <i>Clinical Chemistry</i> 55, 611–622.</li>
+    <li>Corman V. M. et al. (2020). Detection of 2019 novel coronavirus (2019-nCoV) by real-time RT-PCR. <i>Eurosurveillance</i> 25, 2000045.</li>
+  </ul>
+  <footer class="colophon">One self-contained HTML file. Equations are typeset with MathJax; every figure is hand-built SVG driven by the shared model in the page’s script. Typical reagent amounts and temperatures are common starting points, not a protocol.</footer>
+</section>
+
+</main>
+</div>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script>
+(() => {
+'use strict';
+
+/* ════════════════════════════════════════════════════════════════════
+   1. DOMAIN MODEL
+   One semantic model of the reaction. Prose, equations, figures and
+   controls never own their meaning: each marks the objects it shows with
+   data-ref="<id> [<id>…]" (most specific id first), and every view
+   derives its colour, highlight and definition from this table.
+   ════════════════════════════════════════════════════════════════════ */
+const ROLES = {
+  template:   { css: '--c-template',    name: 'input' },
+  product:    { css: '--c-product',     name: 'output' },
+  productDim: { css: '--c-product-dim', name: 'partial output' },
+  primer:     { css: '--c-primer',      name: 'specification' },
+  enzyme:     { css: '--c-enzyme',      name: 'operation' },
+  param:      { css: '--c-param',       name: 'parameter' },
+  readout:    { css: '--c-readout',     name: 'signal' },
+  warn:       { css: '--c-warn',        name: 'error' },
+  context:    { css: '--c-context',     name: 'material' },
+};
+
+const OBJECTS = {
+  template:    { role: 'template',   label: 'template DNA',            def: 'The double-stranded DNA that contains the target. It is separated and read every cycle, never consumed.' },
+  amplicon:    { role: 'product',    label: 'amplicon (exact target)', def: 'The stretch between the two primers. Exact-length copies of it are what grow exponentially.' },
+  longProduct: { role: 'productDim', label: 'long product',            def: 'A copy with one end fixed by a primer and the other running past the target. Only two new ones appear per cycle: linear growth.' },
+  primer:      { role: 'primer',     label: 'primers',                 def: 'Short synthetic single strands (about 18–25 bases) that pair with the two ends of the target and give the polymerase a 3′ end to extend.' },
+  primerF:     { role: 'primer',     label: 'forward primer',          def: 'Has the top strand’s sequence at the left end of the target, so it binds the bottom strand and extends rightward.' },
+  primerR:     { role: 'primer',     label: 'reverse primer',          def: 'Reverse complement of the top strand at the right end of the target, so it binds the top strand and extends leftward.' },
+  polymerase:  { role: 'enzyme',     label: 'DNA polymerase (Taq)',    def: 'Adds nucleotides to a paired 3′-OH end, reading the template 3′→5′. Taq comes from a hot-spring bacterium and survives 95 °C.' },
+  dntp:        { role: 'context',    label: 'dNTPs',                   def: 'Deoxynucleoside triphosphates (dATP, dCTP, dGTP, dTTP): the building blocks. Each incorporation releases pyrophosphate.' },
+  mg:          { role: 'context',    label: 'Mg²⁺',                    def: 'Magnesium ions: cofactor in the polymerase active site; they also stabilize DNA duplexes.' },
+  T:           { role: 'param',      label: 'temperature',             def: 'The one knob the thermocycler turns. It decides whether strands separate, primers bind, or the polymerase copies.' },
+  Tm:          { role: 'param',      label: 'melting temperature Tₘ',  def: 'Temperature at which half of a given duplex has come apart. Rises with length and GC content.' },
+  Ta:          { role: 'param',      label: 'annealing temperature Tₐ',def: 'Temperature of the binding step. Lower is permissive (more off-target binding); higher is strict (less binding overall).' },
+  n:           { role: 'param',      label: 'cycle number n',          def: 'How many heat–cool–warm cycles have run.' },
+  E:           { role: 'param',      label: 'efficiency E',            def: 'Fraction of templates copied per cycle, from 0 to 1. Each cycle multiplies the count by 1 + E.' },
+  N0:          { role: 'template',   label: 'starting copies N₀',      def: 'Copies of the target in the tube before cycling: the quantity qPCR sets out to measure.' },
+  Nn:          { role: 'product',    label: 'copies after n cycles Nₙ',def: 'Copies of the target after n cycles: N₀(1+E)ⁿ while reagents last.' },
+  K:           { role: 'context',    label: 'plateau K',               def: 'The ceiling set by finite primers, dNTPs and enzyme, and by products re-annealing: roughly 10¹¹–10¹² copies.' },
+  Nt:          { role: 'readout',    label: 'threshold Nₜ',            def: 'Signal level chosen inside the exponential phase, safely above background noise.' },
+  Ct:          { role: 'readout',    label: 'threshold cycle Ct',      def: 'The fractional cycle at which the signal crosses the threshold. Lower Ct means more starting template. Also called Cq.' },
+  lambda:      { role: 'param',      label: 'mean occupancy λ',        def: 'Average number of template molecules per partition in digital PCR.' },
+  p:           { role: 'readout',    label: 'fraction positive p',     def: 'Share of partitions that light up: p = 1 − e^(−λ).' },
+  probe:       { role: 'readout',    label: 'hydrolysis probe',        def: 'An oligo that binds inside the amplicon with a reporter and a quencher; the polymerase cuts it while copying, freeing the reporter to glow.' },
+  eps:         { role: 'warn',       label: 'error rate ε',            def: 'Probability that the polymerase inserts a wrong base, per base per doubling.' },
+  offTarget:   { role: 'warn',       label: 'off-target product',      def: 'A product primed from a near-match elsewhere in the genome. Appears when Tₐ is far below the primers’ Tₘ.' },
+  dimer:       { role: 'warn',       label: 'primer-dimer',            def: 'A short artifact made when one primer’s 3′ end pairs with another primer and gets extended.' },
+  L:           { role: 'context',    label: 'amplicon length L',       def: 'Length of the target region, in base pairs.' },
+  d:           { role: 'param',      label: 'doublings d',             def: 'Effective number of doublings: d = n · log₂(1+E).' },
+};
+
+const RELATIONS = [
+  ['primerF', 'pairs with the bottom strand at the left edge of the', 'amplicon'],
+  ['primerR', 'pairs with the top strand at the right edge of the', 'amplicon'],
+  ['polymerase', 'extends the 3′ end of each', 'primer', 'consuming dNTPs, with Mg²⁺ as cofactor'],
+  ['T', 'selects which process wins for the', 'template', 'melting, binding or copying'],
+  ['Ta', 'set against Tₘ decides the specificity of the', 'primer'],
+  ['amplicon', 'is a template for the next', 'amplicon', 'Nₙ = N₀(1+E)ⁿ'],
+  ['longProduct', 'grows only linearly with', 'n', '2n strands after n cycles'],
+  ['Nn', 'crosses the', 'Nt', 'at Ct = log(Nₜ/N₀) / log(1+E)'],
+  ['K', 'caps', 'Nn', 'logistic plateau'],
+  ['lambda', 'sets', 'p', 'p = 1 − e^(−λ)'],
+  ['eps', 'accumulates over', 'd', 'P(error-free) ≈ e^(−εLd)'],
+];
+
+/* Shared reaction state: the few quantities that more than one view reads. */
+const reaction = (() => {
+  const state = { Ta: 54, ampliconLength: 156 };
+  const subs = new Set();
+  return {
+    get: () => state,
+    set(patch) { Object.assign(state, patch); subs.forEach(f => f(state)); },
+    subscribe(f) { subs.add(f); f(state); },
+  };
+})();
+
+/* ════════════════════════════════════════════════════════════════════
+   2. UTILITIES
+   ════════════════════════════════════════════════════════════════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const seg = (p, a, b, f = smooth) => f(clamp((p - a) / (b - a)));
+const sigmoid = x => 1 / (1 + Math.exp(-x));
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SUP = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' };
+const sup = n => String(n).replace(/[-0-9]/g, c => SUP[c]);
+function fmtN(x, d = 2) {
+  if (!isFinite(x)) return '∞';
+  if (Math.abs(x) < 1e5) return Math.round(x).toLocaleString('en-US');
+  let e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e);
+  if (+m.toFixed(d) >= 10) { m /= 10; e += 1; }
+  return `${m.toFixed(d)} × 10${sup(e)}`;
+}
+function mulberry32(a) {
+  return () => {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const NS = 'http://www.w3.org/2000/svg';
+function S(tag, attrs, parent) {
+  const el = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v == null) continue;
+    if (k === 'text') el.textContent = v;
+    else if (k === 'ref') el.setAttribute('data-ref', v);
+    else el.setAttribute(k, v);
+  }
+  if (parent) parent.appendChild(el);
+  return el;
+}
+function pref(key, value) {
+  try {
+    if (value === undefined) return localStorage.getItem('pcr.' + key);
+    localStorage.setItem('pcr.' + key, value);
+  } catch (e) { return null; }
+  return null;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   3. LINKING LAYER: colour, highlight and definitions from the model
+   ════════════════════════════════════════════════════════════════════ */
+const firstRef = el => el.getAttribute('data-ref').split(' ')[0];
+const roleVar = id => OBJECTS[id] ? `var(${ROLES[OBJECTS[id].role].css})` : null;
+
+function paint(root = document) {
+  const els = root.querySelectorAll ? root.querySelectorAll('[data-ref]') : [];
+  for (const el of els) {
+    const v = roleVar(firstRef(el));
+    if (!v) continue;
+    el.style.setProperty('--rc', v);
+    if (el.classList.contains('r') && !el.hasAttribute('tabindex')) el.tabIndex = 0;
+  }
+}
+let focusId = null;
+function setFocus(id) {
+  if (id === focusId) return;
+  $$('.hl').forEach(e => e.classList.remove('hl'));
+  focusId = id;
+  if (id) $$(`[data-ref~="${id}"]`).forEach(e => e.classList.add('hl'));
+}
+function refresh(root) {
+  paint(root);
+  if (focusId) root.querySelectorAll(`[data-ref~="${focusId}"]`).forEach(e => e.classList.add('hl'));
+}
+const tip = $('#tip');
+function showTip(el, px, py) {
+  const id = firstRef(el), o = OBJECTS[id];
+  if (!o) { tip.hidden = true; return; }
+  tip.style.setProperty('--rc', roleVar(id));
+  tip.textContent = '';
+  const b = document.createElement('b');
+  b.textContent = o.label;
+  tip.append(b, document.createTextNode(o.def));
+  tip.hidden = false;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let left, top;
+  const inFigure = el.ownerSVGElement && !el.closest('mjx-container');
+  if (inFigure && px != null) { left = px + 14; top = py + 18; }
+  else {
+    const r = el.getBoundingClientRect();
+    left = r.left + r.width / 2 - tw / 2; top = r.bottom + 8;
+  }
+  left = clamp(left, 8, innerWidth - tw - 8);
+  if (top + th > innerHeight - 8) top = Math.max(8, (inFigure ? py - 12 : el.getBoundingClientRect().top - 8) - th);
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+document.addEventListener('pointerover', e => {
+  const el = e.target.closest ? e.target.closest('[data-ref]') : null;
+  if (!el || !OBJECTS[firstRef(el)]) { setFocus(null); tip.hidden = true; return; }
+  setFocus(firstRef(el));
+  if (el.matches('input')) { tip.hidden = true; return; }
+  showTip(el, e.clientX, e.clientY);
+});
+document.addEventListener('focusin', e => {
+  const el = e.target.closest ? e.target.closest('.r[data-ref]') : null;
+  if (el) { setFocus(firstRef(el)); showTip(el); }
+});
+document.addEventListener('focusout', e => {
+  if (e.target.closest && e.target.closest('.r[data-ref]')) { setFocus(null); tip.hidden = true; }
+});
+addEventListener('scroll', () => { tip.hidden = true; }, { passive: true });
+
+function adoptMath() {
+  for (const g of $$('mjx-container svg [class]')) {
+    const cls = Array.from(g.classList).find(c => c.startsWith('r-'));
+    if (cls && !g.hasAttribute('data-ref')) g.setAttribute('data-ref', cls.slice(2));
+  }
+  paint();
+  buildInventory();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   4. PAGE CHROME: contents rail, theme, colour, depth
+   ════════════════════════════════════════════════════════════════════ */
+const root = document.documentElement;
+
+function buildToc() {
+  const ol = $('#toc');
+  const links = [];
+  for (const sec of $$('main section.sec')) {
+    const h2 = sec.querySelector('h2');
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#' + sec.id;
+    const n = document.createElement('span');
+    n.className = 'n';
+    n.textContent = h2 ? (h2.querySelector('.num') || {}).textContent || '' : '0';
+    a.append(n, document.createTextNode(h2 ? Array.from(h2.childNodes).filter(x => !(x.classList && x.classList.contains('num'))).map(x => x.textContent).join('').trim() : sec.dataset.toc));
+    li.append(a);
+    links.push({ el: sec, a, top: true });
+    const subs = $$('h3[id]', sec);
+    if (subs.length) {
+      const sub = document.createElement('ol');
+      for (const h3 of subs) {
+        const sli = document.createElement('li');
+        const sa = document.createElement('a');
+        sa.href = '#' + h3.id;
+        sa.textContent = Array.from(h3.childNodes).filter(x => !(x.classList && x.classList.contains('num'))).map(x => x.textContent).join('').trim();
+        sli.append(sa);
+        sub.append(sli);
+        links.push({ el: h3.closest('details') || h3, a: sa, top: false, parent: a });
+      }
+      li.append(sub);
+    }
+    ol.append(li);
+  }
+  let ticking = false;
+  const spy = () => {
+    ticking = false;
+    const y = 140;
+    let curTop = null, curSub = null;
+    for (const l of links) {
+      if (l.el.getBoundingClientRect().top < y) { if (l.top) { curTop = l; curSub = null; } else curSub = l; }
+    }
+    for (const l of links) l.a.classList.toggle('active', l === curTop || l === curSub);
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
+  spy();
+  const rail = $('#rail'), scrim = $('#scrim'), btn = $('#menuBtn');
+  const setOpen = open => { rail.classList.toggle('open', open); scrim.hidden = !open; btn.setAttribute('aria-expanded', String(open)); };
+  btn.addEventListener('click', () => setOpen(!rail.classList.contains('open')));
+  scrim.addEventListener('click', () => setOpen(false));
+  ol.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+}
+
+function initChrome() {
+  const savedTheme = pref('theme');
+  if (savedTheme === 'light' || savedTheme === 'dark') root.dataset.theme = savedTheme;
+  const lightMQ = matchMedia('(prefers-color-scheme: light)');
+  $('#themeBtn').addEventListener('click', () => {
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : !lightMQ.matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    pref('theme', root.dataset.theme);
+  });
+  const colorBtn = $('#colorBtn');
+  const setMono = mono => { root.classList.toggle('mono', mono); colorBtn.setAttribute('aria-pressed', String(!mono)); };
+  setMono(pref('mono') === '1');
+  colorBtn.addEventListener('click', () => { const mono = !root.classList.contains('mono'); setMono(mono); pref('mono', mono ? '1' : '0'); });
+  $$('.depth button').forEach(b => b.addEventListener('click', () => setDepth(b.dataset.depth)));
+}
+
+function setDepth(d) {
+  root.dataset.depth = d;
+  $$('.depth button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.depth === d)));
+  $$('details.deep').forEach(x => { x.open = d === 'expert'; });
+  $$('details.plain').forEach(x => { x.open = d === 'newcomer'; });
+  if (d === 'newcomer') ladder.atLeast(1);
+  pref('depth', d);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   5. VIEWS
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Figure 0.1: concept map ------------------------------------------- */
+function mountConceptMap() {
+  const svg = $('#fig01');
+  const cols = ['Molecules', 'Ingredients & rules', 'Process', 'Mathematics', 'Readouts & uses'];
+  const X = c => 12 + c * 178, W = 158, H = 36, Y = r => 50 + r * 70;
+  const nodes = [
+    { id: 'helix', c: 0, r: 0, t: 'Double helix', ref: 'template', href: '#s2' },
+    { id: 'pair', c: 0, r: 1, t: 'Base pairing', ref: 'template', href: '#s2-strands' },
+    { id: 'dir', c: 0, r: 2, t: '5′→3′ direction', ref: 'template', href: '#s2-strands' },
+    { id: 'primers', c: 1, r: 0, t: 'Primers', ref: 'primer', href: '#s2-cast' },
+    { id: 'pol', c: 1, r: 1, t: 'Polymerase (Taq)', ref: 'polymerase', href: '#s2-cast' },
+    { id: 'dntp', c: 1, r: 2, t: 'dNTPs + Mg²⁺', ref: 'dntp', href: '#s2-cast' },
+    { id: 'melt', c: 1, r: 3, t: 'Melting, Tₘ', ref: 'Tm', href: '#s3-tm' },
+    { id: 'den', c: 2, r: 0, t: 'Denature · 95 °C', ref: 'T', href: '#s3' },
+    { id: 'ann', c: 2, r: 1, t: 'Anneal · Tₐ', ref: 'Ta', href: '#s3-why' },
+    { id: 'ext', c: 2, r: 2, t: 'Extend · 72 °C', ref: 'polymerase', href: '#s3-why' },
+    { id: 'rep', c: 2, r: 3, t: 'Repeat × 30', ref: 'n', href: '#s4' },
+    { id: 'dbl', c: 3, r: 0, t: 'Doubling 2ⁿ', ref: 'Nn', href: '#s4' },
+    { id: 'eff', c: 3, r: 1, t: 'Efficiency (1+E)ⁿ', ref: 'E', href: '#s5-eff' },
+    { id: 'log', c: 3, r: 2, t: 'Logs → Ct', ref: 'Ct', href: '#s5-ct' },
+    { id: 'poi', c: 3, r: 3, t: 'Poisson & chance', ref: 'lambda', href: '#s5-chance' },
+    { id: 'gel', c: 4, r: 0, t: 'Gel bands', ref: 'amplicon', href: '#s6-gel' },
+    { id: 'qpcr', c: 4, r: 1, t: 'Real-time qPCR', ref: 'Ct', href: '#s6-qpcr' },
+    { id: 'dpcr', c: 4, r: 2, t: 'Digital PCR', ref: 'p', href: '#s6-dpcr' },
+    { id: 'use', c: 4, r: 3, t: 'Diagnostics, forensics', ref: null, href: '#s10' },
+  ];
+  const edges = [['helix', 'pair'], ['pair', 'dir'], ['pair', 'primers'], ['dir', 'pol'], ['pair', 'melt'],
+    ['primers', 'ann'], ['pol', 'ext'], ['dntp', 'ext'], ['melt', 'den'], ['den', 'ann'], ['ann', 'ext'], ['ext', 'rep'],
+    ['rep', 'dbl'], ['dbl', 'eff'], ['eff', 'log'], ['log', 'qpcr'], ['poi', 'dpcr'], ['dbl', 'gel'], ['dpcr', 'use']];
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const defs = S('defs', null, svg);
+  const m = S('marker', { id: 'cm-arrow', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto' }, defs);
+  S('path', { d: 'M0,1 L9,5 L0,9 z', style: 'fill:var(--fg-faint)' }, m);
+  cols.forEach((t, c) => S('text', { x: X(c) + W / 2, y: 24, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 10.5, 'letter-spacing': '1.2', text: t.toUpperCase() }, svg));
+  for (const [a, b] of edges) {
+    const s = byId[a], t = byId[b];
+    let d;
+    if (s.c === t.c) d = `M${X(s.c) + W / 2},${Y(s.r) + H} L${X(t.c) + W / 2},${Y(t.r) - 2}`;
+    else {
+      const x1 = X(s.c) + W, y1 = Y(s.r) + H / 2, x2 = X(t.c) - 2, y2 = Y(t.r) + H / 2, mx = (x1 + x2) / 2;
+      d = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
+    }
+    S('path', { d, fill: 'none', style: 'stroke:var(--rule)', 'stroke-width': 1.4, 'marker-end': 'url(#cm-arrow)' }, svg);
+  }
+  for (const n of nodes) {
+    const a = S('a', { href: n.href }, svg);
+    S('rect', { x: X(n.c), y: Y(n.r), width: W, height: H, rx: 5, class: 'f-raise', ref: n.ref,
+      style: `stroke:${n.ref ? roleVar(n.ref) : 'var(--rule)'}`, 'stroke-width': 1.4 }, a);
+    S('text', { x: X(n.c) + W / 2, y: Y(n.r) + H / 2 + 5, 'text-anchor': 'middle', class: 'ink', 'font-size': 14.5, text: n.t }, a);
+  }
+  refresh(svg);
+}
+
+/* Figure 1.1: copies and cycles on one axis --------------------------- */
+function mountScale() {
+  const svg = $('#fig11');
+  const x = log2N => 60 + 20 * log2N, yTop = 70, yBot = 150;
+  S('text', { x: 60, y: 24, class: 'mono faint', 'font-size': 11, text: 'CYCLES OF DOUBLING FROM ONE MOLECULE (E = 1)', ref: 'n' }, svg);
+  S('line', { x1: 60, x2: 860, y1: yTop, y2: yTop, class: 'fg-stroke', 'stroke-width': 1.2 }, svg);
+  for (let c = 0; c <= 40; c += 5) {
+    S('line', { x1: x(c), x2: x(c), y1: yTop - 6, y2: yTop, class: 'fg-stroke' }, svg);
+    S('text', { x: x(c), y: yTop - 12, 'text-anchor': 'middle', class: 'mono f-param', 'font-size': 12, text: c, ref: 'n' }, svg);
+    if (c % 10 === 0 && c > 0) S('line', { x1: x(c), x2: x(c), y1: yTop + 4, y2: yBot - 4, class: 'rule', 'stroke-dasharray': '2 4' }, svg);
+  }
+  S('line', { x1: 60, x2: 860, y1: yBot, y2: yBot, class: 'fg-stroke', 'stroke-width': 1.2 }, svg);
+  for (let k = 0; k <= 12; k++) {
+    const X0 = x(k * Math.log2(10));
+    S('line', { x1: X0, x2: X0, y1: yBot, y2: yBot + 6, class: 'fg-stroke' }, svg);
+    S('text', { x: X0, y: yBot + 22, 'text-anchor': 'middle', class: 'mono', 'font-size': 12, text: '10' + sup(k) }, svg);
+  }
+  S('text', { x: 38, y: yTop + 4, 'text-anchor': 'end', class: 'f-param', 'font-size': 15, 'font-style': 'italic', text: 'n', ref: 'n' }, svg);
+  S('text', { x: 38, y: yBot + 5, 'text-anchor': 'end', class: 'f-product', 'font-size': 15, 'font-style': 'italic', text: 'N', ref: 'Nn' }, svg);
+  const a = x(Math.log2(300)), b = x(Math.log2(1e10)), yb = 112;
+  S('path', { d: `M${a},${yb + 6} L${a},${yb} L${b},${yb} L${b},${yb + 6}`, fill: 'none', class: 's-param', 'stroke-width': 1.5, ref: 'n' }, svg);
+  S('text', { x: (a + b) / 2, y: yb - 7, 'text-anchor': 'middle', class: 'f-param', 'font-size': 14, text: '≈ 25 doublings: the work of a typical genomic PCR', ref: 'n' }, svg);
+  const marks = [
+    { N: 1, t: 'one target molecule', ref: 'N0', row: 0, anchor: 'start', cls: 'template' },
+    { N: 300, t: '1 ng human DNA ≈ 300 genome copies', ref: 'N0', row: 0, anchor: 'start', cls: 'template' },
+    { N: 1e10, t: 'qPCR threshold ≈ 10¹⁰', ref: 'Nt', row: 0, anchor: 'end', cls: 'readout' },
+    { N: 2e10, t: 'visible gel band ≈ 2×10¹⁰ (10 ng of 500 bp)', ref: 'amplicon', row: 1, anchor: 'end', cls: 'product' },
+    { N: 1e12, t: 'plateau ≈ 10¹² (0.5 µg of 500 bp)', ref: 'K', row: 2, anchor: 'end', cls: 'context' },
+  ];
+  for (const mk of marks) {
+    const X0 = x(Math.log2(mk.N)), ry = 204 + mk.row * 22;
+    S('line', { x1: X0, x2: X0, y1: yBot + 28, y2: ry - 13, class: `s-${mk.cls}`, 'stroke-width': 1, opacity: .7 }, svg);
+    S('path', { d: `M${X0},${yBot - 7} L${X0 + 6},${yBot} L${X0},${yBot + 7} L${X0 - 6},${yBot} z`, class: `f-${mk.cls}`, ref: mk.ref }, svg);
+    S('text', { x: mk.anchor === 'end' ? X0 + 4 : X0 - 2, y: ry, 'text-anchor': mk.anchor, class: `f-${mk.cls}`, 'font-size': 13.5, text: mk.t, ref: mk.ref }, svg);
+  }
+  refresh(svg);
+}
+
+/* Figure 2.1: the polymerase rule, base by base ---------------------- */
+function mountActiveSite() {
+  const svg = $('#fig21');
+  const tpl = 'TACGGATCCAGTCA';
+  const COMP1 = { A: 'T', T: 'A', G: 'C', C: 'G' };
+  const x = i => 92 + i * 42, yT = 186, yN = 132;
+  S('ellipse', { cx: 446, cy: 152, rx: 100, ry: 80, class: 'f-enzyme s-enzyme', 'fill-opacity': .1, 'stroke-width': 1.5, 'stroke-dasharray': '6 5', ref: 'polymerase' }, svg);
+  S('text', { x: 446, y: 254, 'text-anchor': 'middle', class: 'f-enzyme', 'font-size': 15, text: 'DNA polymerase', ref: 'polymerase' }, svg);
+  for (let i = 0; i <= 8; i++) S('line', { x1: x(i), x2: x(i), y1: yN + 9, y2: yT - 18, class: 's-context', 'stroke-width': 1.6, 'stroke-dasharray': '2 3' }, svg);
+  S('line', { x1: 70, x2: 660, y1: yT + 16, y2: yT + 16, class: 's-template', 'stroke-width': 4, 'stroke-linecap': 'round', ref: 'template' }, svg);
+  S('text', { x: 50, y: yT + 21, class: 'f-template', 'font-size': 16, text: '3′' }, svg);
+  S('text', { x: 670, y: yT + 21, class: 'f-template', 'font-size': 16, text: '5′' }, svg);
+  for (let i = 0; i < tpl.length; i++) S('text', { x: x(i), y: yT, 'text-anchor': 'middle', class: 'mono f-template', 'font-size': 17, text: tpl[i], ref: 'template' }, svg);
+  S('circle', { cx: x(9), cy: yT - 6, r: 14, fill: 'none', class: 's-template', 'stroke-dasharray': '3 3' }, svg);
+  S('line', { x1: 70, x2: x(5) + 21, y1: yN - 22, y2: yN - 22, class: 's-primer', 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'primerF primer' }, svg);
+  S('line', { x1: x(5) + 21, x2: x(8) + 18, y1: yN - 22, y2: yN - 22, class: 's-product', 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'amplicon' }, svg);
+  S('text', { x: 50, y: yN - 17, class: 'f-primer', 'font-size': 16, text: '5′' }, svg);
+  for (let i = 0; i <= 8; i++) S('text', { x: x(i), y: yN + 4, 'text-anchor': 'middle', class: `mono ${i < 6 ? 'f-primer' : 'f-product'}`, 'font-size': 17, text: COMP1[tpl[i]], ref: i < 6 ? 'primerF primer' : 'amplicon' }, svg);
+  S('text', { x: x(8) + 20, y: yN - 32, 'text-anchor': 'end', class: 'ink', 'font-size': 14, text: '3′-OH' }, svg);
+  const g = S('g', { ref: 'dntp' }, svg);
+  S('text', { x: x(9), y: 58, 'text-anchor': 'middle', class: 'mono f-context', 'font-size': 17, text: 'T' }, g);
+  [[16, 52], [30, 46], [44, 40]].forEach(([dx, y]) => S('circle', { cx: x(9) + dx, cy: y, r: 5.5, fill: 'none', class: 's-context', 'stroke-width': 1.4 }, g));
+  S('text', { x: x(9) + 56, y: 40, class: 'f-context', 'font-size': 13, text: 'incoming dTTP' }, g);
+  S('line', { x1: x(9), x2: x(9), y1: 66, y2: yN - 8, class: 's-context', 'stroke-width': 1.4, 'stroke-dasharray': '3 3' }, svg);
+  S('path', { d: `M${x(9) - 5},${yN - 15} L${x(9)},${yN - 6} L${x(9) + 5},${yN - 15}`, fill: 'none', class: 's-context', 'stroke-width': 1.4 }, svg);
+  S('text', { x: x(9) + 56, y: 60, class: 'faint', 'font-size': 12.5, text: '→ PPᵢ released on joining' }, svg);
+  const mg = S('g', { ref: 'mg' }, svg);
+  S('circle', { cx: 502, cy: 118, r: 6, class: 'f-context', opacity: .85 }, mg);
+  S('circle', { cx: 518, cy: 136, r: 6, class: 'f-context', opacity: .85 }, mg);
+  S('text', { x: 530, y: 132, class: 'f-context', 'font-size': 12.5, text: 'Mg²⁺' }, mg);
+  S('text', { x: 92, y: 80, class: 'f-product', 'font-size': 14, text: 'new strand grows 5′ → 3′  ⟶' }, svg);
+  S('text', { x: 92, y: 238, class: 'f-template', 'font-size': 14, text: 'template is read 3′ → 5′  ⟶', ref: 'template' }, svg);
+  refresh(svg);
+}
+
+/* Figure 3.1: one thermal cycle, animated ---------------------------- */
+const cycleAnim = (() => {
+  const svg = $('#fig31');
+  const FS = 300, FE = 360, RS = 600, RE = 660, X0 = 80, X1 = 880;
+  const yNR = 108, yNF = 202, yS = 174;
+  const SC = [
+    { name: 'Template', dur: 3, cap: 'One double-stranded template. Only the stretch between the two primer sites matters; the strands continue far beyond it in both directions.' },
+    { name: 'Denature · 95 °C', dur: 3, cap: 'Heat breaks the base pairs and the duplex comes apart into two single strands, each now exposed as a template.' },
+    { name: 'Anneal · Tₐ', dur: 3.5, cap: 'Cooling lets each primer find its complementary site: the forward primer on the bottom strand, the reverse primer on the top strand, 3′ ends pointing toward each other.' },
+    { name: 'Extend · 72 °C', dur: 5, cap: 'The polymerase adds dNTPs to each primer’s 3′ end, reading the template. In cycle 1 nothing tells it where to stop, so it runs past the far primer site.' },
+    { name: 'Two duplexes', dur: 2.5, cap: 'Each old strand now has a new partner: one duplex has become two. The new strands are long products, with one end fixed by a primer and the other undefined.' },
+    { name: 'Cycle 2 · first exact strand', dur: 7, cap: 'In cycle 2 a long product is the template. Copying it stops where it ends, at the far primer, so this new strand runs exactly from primer to primer.' },
+  ];
+  let acc = 0;
+  SC.forEach(s => { s.start = acc; acc += s.dur; });
+  const TOTAL = acc;
+  const st = {};
+  function reset() {
+    Object.assign(st, {
+      draw: 0, rungT: 0, labT: 0, guides: 0, br0: 0, yT: 120, yB: 150,
+      pF: { dx: -240, dy: 80, op: 0 }, pR: { dx: 240, dy: -80, op: 0 }, chev: 1, rungP: 0,
+      xF: FE, xR: RS, pol: 0, polDy: 0, s3: 0, s4: 0, top: 1, bot: 1, rungFop: 1, dnC: 0,
+      p2: { dx: 240, dy: -60, op: 0 }, rungP2: 0, pol2: 0, xS: RS, s5: 0, chev2: 1, pol2off: 0, br5: 0, nc: 0,
+    });
+  }
+  const RUN = [
+    p => { st.draw = seg(p, 0, .55); st.rungT = seg(p, .35, .75); st.labT = seg(p, .4, .8); st.guides = seg(p, .55, .9); st.br0 = seg(p, .6, 1); },
+    p => { const q = seg(p, .2, .9); st.yT = lerp(120, 80, q); st.yB = lerp(150, 230, q); st.rungT = 1 - seg(p, 0, .45); st.br0 = 1 - seg(p, 0, .3); },
+    p => {
+      const a = seg(p, .22, .75), o = seg(p, .15, .35);
+      st.pF = { dx: lerp(-240, 0, a), dy: lerp(80, 0, a), op: o };
+      st.pR = { dx: lerp(240, 0, a), dy: lerp(-80, 0, a), op: o };
+      st.rungP = seg(p, .7, .95);
+    },
+    p => { st.pol = seg(p, 0, .12); const g = seg(p, .14, .97, v => v); st.xF = lerp(FE, X1, g); st.xR = lerp(RS, X0, g); st.s3 = p; st.chev = 1 - seg(p, .06, .16); },
+    p => { st.pol = 1 - seg(p, 0, .4); st.polDy = 26 * seg(p, 0, .4); st.s4 = seg(p, .3, .7); },
+    p => {
+      const a = seg(p, 0, .14);
+      st.top = lerp(1, .14, a); st.bot = lerp(1, .14, a); st.yB = lerp(230, 262, a); st.rungFop = 1 - a; st.s4 = 1 - a; st.dnC = a;
+      const b = seg(p, .14, .3);
+      st.p2 = { dx: lerp(240, 0, b), dy: lerp(-60, 0, b), op: seg(p, .12, .2) };
+      st.rungP2 = seg(p, .27, .34);
+      st.pol2 = seg(p, .33, .38);
+      const c = seg(p, .38, .84, v => v);
+      st.xS = lerp(RS, FS, c); st.s5 = c; st.chev2 = 1 - seg(p, .36, .42);
+      st.pol2off = seg(p, .85, .97); st.br5 = seg(p, .86, 1); st.nc = seg(p, .88, 1);
+    },
+  ];
+  const keyframes = Ta => [[0, 25], [3, 25], [3.7, 95], [6, 95], [7, Ta], [9.5, Ta], [10.1, 72], [17, 72],
+    [17.6, 95], [18, 95], [18.7, Ta], [19.6, Ta], [20.1, 72], [24, 72]];
+  function tempAt(t, K) {
+    for (let i = 0; i < K.length - 1; i++) {
+      if (t <= K[i + 1][0]) return lerp(K[i][1], K[i + 1][1], smooth(clamp((t - K[i][0]) / (K[i + 1][0] - K[i][0]))));
+    }
+    return K[K.length - 1][1];
+  }
+  const Ty = T => 430 - (T - 20) / 80 * 92;
+  const xt = t => X0 + t / TOTAL * (X1 - X0);
+
+  /* build the scene graph once; draw() only moves it */
+  const E = {};
+  let KF = keyframes(54);
+  function build() {
+    svg.textContent = '';
+    const defs = S('defs', null, svg);
+    const grad = (id, x1, x2, stops, color) => {
+      const g = S('linearGradient', { id, gradientUnits: 'userSpaceOnUse', x1, x2, y1: 0, y2: 0 }, defs);
+      stops.forEach(([o, a]) => S('stop', { offset: o, style: `stop-color:var(${color});stop-opacity:${a}` }, g));
+      return `url(#${id})`;
+    };
+    const gT = grad('a31-t', X0, X1, [[0, 0], [.08, 1], [.92, 1], [1, 0]], '--c-template');
+    const gF = grad('a31-f', 740, X1, [[0, 1], [1, .05]], '--c-product-dim');
+    const gR = grad('a31-r', 220, X0, [[0, 1], [1, .05]], '--c-product-dim');
+    const marker = (id, cls) => {
+      const m = S('marker', { id, viewBox: '0 0 10 10', refX: 4, refY: 5, markerWidth: 2.6, markerHeight: 2.6, orient: 'auto' }, defs);
+      S('path', { d: 'M0,0 L10,5 L0,10 z', class: cls }, m);
+      return `url(#${id})`;
+    };
+    E.mkL = marker('a31-ml', 'f-productDim');
+    E.mkS = marker('a31-ms', 'f-product');
+
+    const gGuide = S('g', null, svg);
+    E.guides = gGuide;
+    for (const [x, lab] of [[FS, 'forward primer site'], [RE, 'reverse primer site']]) {
+      S('line', { x1: x, x2: x, y1: 70, y2: 292, class: 's-primer', 'stroke-dasharray': '2 6', opacity: .55 }, gGuide);
+      S('text', { x: x === FS ? x - 6 : x + 6, y: 306, 'text-anchor': x === FS ? 'end' : 'start', class: 'f-primer', 'font-size': 14, text: lab, ref: x === FS ? 'primerF primer' : 'primerR primer' }, gGuide);
+    }
+    E.br0 = S('g', { ref: 'amplicon' }, svg);
+    S('path', { d: `M${FS},104 L${FS},98 L${RE},98 L${RE},104`, fill: 'none', class: 's-product', 'stroke-width': 1.6 }, E.br0);
+    S('text', { x: (FS + RE) / 2, y: 90, 'text-anchor': 'middle', class: 'f-product', 'font-size': 15, text: 'target' }, E.br0);
+
+    const rungs = (parent, xs) => xs.map(x => S('line', { x1: x, x2: x, class: 's-context', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, parent));
+    const range = (a, b) => { const out = []; for (let x = a; x <= b; x += 12) out.push(x); return out; };
+    E.rT = rungs(S('g', null, svg), range(86, 874));
+
+    E.top = S('g', null, svg);
+    E.rR = rungs(E.top, range(86, RE - 4));
+    E.topS = S('line', { x1: X0, x2: X1, stroke: gT, 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'template', 'stroke-dasharray': 800 }, E.top);
+    E.topL5 = S('text', { x: 62, 'text-anchor': 'end', class: 'f-template', 'font-size': 15, text: '5′' }, E.top);
+    E.topL3 = S('text', { x: 898, class: 'f-template', 'font-size': 15, text: '3′' }, E.top);
+    E.newR = S('line', { x1: RS, x2: RS, y1: yNR, y2: yNR, stroke: gR, 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'longProduct' }, E.top);
+    E.pR = S('g', { ref: 'primerR primer' }, E.top);
+    S('line', { x1: RS, x2: RE, y1: yNR, y2: yNR, class: 's-primer', 'stroke-width': 7, 'stroke-linecap': 'round' }, E.pR);
+    E.chevR = S('path', { d: `M${RS + 8},${yNR - 9} L${RS - 4},${yNR} L${RS + 8},${yNR + 9}`, fill: 'none', class: 's-primer', 'stroke-width': 2.4, 'stroke-linejoin': 'round' }, E.pR);
+    E.polR = S('g', { ref: 'polymerase' }, E.top);
+    S('ellipse', { rx: 30, ry: 16, class: 'f-enzyme s-enzyme', 'fill-opacity': .22, 'stroke-width': 1.6 }, E.polR);
+    S('text', { y: 5, 'text-anchor': 'middle', class: 'f-enzyme', 'font-size': 13, text: 'Taq' }, E.polR);
+
+    E.bot = S('g', null, svg);
+    E.botS = S('line', { x1: X0, x2: X1, stroke: gT, 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'template', 'stroke-dasharray': 800, 'stroke-dashoffset': 0 }, E.bot);
+    E.botL3 = S('text', { x: 62, 'text-anchor': 'end', class: 'f-template', 'font-size': 15, text: '3′' }, E.bot);
+    E.botL5 = S('text', { x: 898, class: 'f-template', 'font-size': 15, text: '5′' }, E.bot);
+
+    E.long = S('g', null, svg);
+    E.rF = rungs(E.long, range(FS + 6, 874));
+    E.newF = S('line', { x1: FE, x2: FE, y1: yNF, y2: yNF, stroke: gF, 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'longProduct' }, E.long);
+    E.pF = S('g', { ref: 'primerF primer' }, E.long);
+    S('line', { x1: FS, x2: FE, y1: yNF, y2: yNF, class: 's-primer', 'stroke-width': 7, 'stroke-linecap': 'round' }, E.pF);
+    E.chevF = S('path', { d: `M${FE - 8},${yNF - 9} L${FE + 4},${yNF} L${FE - 8},${yNF + 9}`, fill: 'none', class: 's-primer', 'stroke-width': 2.4, 'stroke-linejoin': 'round' }, E.pF);
+    E.polF = S('g', { ref: 'polymerase' }, E.long);
+    S('ellipse', { rx: 30, ry: 16, class: 'f-enzyme s-enzyme', 'fill-opacity': .22, 'stroke-width': 1.6 }, E.polF);
+    S('text', { y: 5, 'text-anchor': 'middle', class: 'f-enzyme', 'font-size': 13, text: 'Taq' }, E.polF);
+
+    E.s5 = S('g', null, svg);
+    E.rS = rungs(E.s5, range(FS + 6, RE - 4));
+    E.newS = S('line', { x1: RS, x2: RS, y1: yS, y2: yS, class: 's-product', 'stroke-width': 5, 'stroke-linecap': 'round', ref: 'amplicon' }, E.s5);
+    E.p2 = S('g', { ref: 'primerR primer' }, E.s5);
+    S('line', { x1: RS, x2: RE, y1: yS, y2: yS, class: 's-primer', 'stroke-width': 7, 'stroke-linecap': 'round' }, E.p2);
+    E.chev2 = S('path', { d: `M${RS + 8},${yS - 9} L${RS - 4},${yS} L${RS + 8},${yS + 9}`, fill: 'none', class: 's-primer', 'stroke-width': 2.4, 'stroke-linejoin': 'round' }, E.p2);
+    E.pol2 = S('g', { ref: 'polymerase' }, E.s5);
+    S('ellipse', { rx: 30, ry: 16, class: 'f-enzyme s-enzyme', 'fill-opacity': .22, 'stroke-width': 1.6 }, E.pol2);
+    S('text', { y: 5, 'text-anchor': 'middle', class: 'f-enzyme', 'font-size': 13, text: 'Taq' }, E.pol2);
+    E.br5 = S('g', { ref: 'amplicon' }, E.s5);
+    S('path', { d: `M${FS},156 L${FS},150 L${RE},150 L${RE},156`, fill: 'none', class: 's-product', 'stroke-width': 1.8 }, E.br5);
+    S('text', { x: (FS + RE) / 2, y: 141, 'text-anchor': 'middle', class: 'f-product', 'font-size': 15.5, text: 'exact target length: both ends set by primers' }, E.br5);
+    E.nc = S('text', { x: FS - 8, y: 207, 'text-anchor': 'end', class: 'f-productDim', 'font-size': 13.5, text: 'template ends here, so copying stops', ref: 'longProduct' }, E.s5);
+
+    const rnd = mulberry32(11);
+    const dn = (n, xa, xb, ya, yb) => Array.from({ length: n }, (_, i) => {
+      const hx = lerp(xa, xb, (i + .5) / n) + (rnd() - .5) * 30, hy = lerp(ya, yb, rnd());
+      return { hx, hy, el: S('circle', { r: 4.5, class: 'f-context', ref: 'dntp' }, svg), ph: rnd() * 6 };
+    });
+    E.dnA = dn(9, 120, 560, 26, 56);
+    E.dnB = dn(9, 400, 860, 252, 288);
+    E.dnC = dn(7, 330, 570, 118, 132);
+    E.dnA.forEach(d => { d.tau = .14 + .83 * (RS - d.hx) / (RS - X0); });
+    E.dnB.forEach(d => { d.tau = .14 + .83 * (d.hx - FE) / (X1 - FE); });
+    E.dnC.forEach(d => { d.tau = (RS - d.hx) / (RS - FS); });
+
+    E.s4 = S('g', null, svg);
+    S('text', { x: 800, y: 186, 'text-anchor': 'middle', class: 'f-productDim', 'font-size': 14.5, text: 'long product', ref: 'longProduct' }, E.s4);
+    S('text', { x: 160, y: 132, 'text-anchor': 'middle', class: 'f-productDim', 'font-size': 14.5, text: 'long product', ref: 'longProduct' }, E.s4);
+    S('text', { x: 480, y: 36, 'text-anchor': 'middle', class: 'ink', 'font-size': 20, text: '1 duplex → 2 duplexes' }, E.s4);
+    E.temp = S('text', { x: 880, y: 36, 'text-anchor': 'end', class: 'f-param', 'font-size': 21, ref: 'T' }, svg);
+
+    E.strip = S('g', null, svg);
+    E.play = S('g', null, svg);
+    E.playLine = S('line', { y1: 330, y2: 432, class: 'fg-stroke', 'stroke-width': 1, opacity: .6 }, E.play);
+    E.playDot = S('circle', { r: 5.5, class: 'f-param', ref: 'T' }, E.play);
+    buildStrip();
+  }
+  function buildStrip() {
+    const g = E.strip;
+    g.textContent = '';
+    const Ta = reaction.get().Ta;
+    KF = keyframes(Ta);
+    const near = Math.abs(Ta - 72) < 9;
+    for (const [T, lab, cls, ref, dy] of [[95, '95 °C', 'f-param', 'T', 0], [72, '72 °C', 'f-enzyme', 'polymerase', near ? -5 : 0], [Ta, `Tₐ ${Ta.toFixed(1)} °C`, 'f-primer', 'Ta', near ? 9 : 0]]) {
+      S('line', { x1: X0, x2: X1, y1: Ty(T), y2: Ty(T), class: 'rule', 'stroke-dasharray': '3 5' }, g);
+      S('text', { x: 886, y: Ty(T) + 4 + dy, class: cls, 'font-size': 12.5, text: lab, ref }, g);
+    }
+    let d = '';
+    for (let t = 0; t <= TOTAL + 1e-9; t += .04) d += (d ? 'L' : 'M') + xt(t).toFixed(1) + ',' + Ty(tempAt(t, KF)).toFixed(1);
+    S('path', { d, fill: 'none', class: 'fg-stroke', 'stroke-width': 1.6, opacity: .5 }, g);
+    const holds = [[3.7, 6, 95, 'param', 'T', 'denature'], [7, 9.5, Ta, 'primer', 'Ta', 'anneal'], [10.1, 17, 72, 'enzyme', 'polymerase', 'extend'],
+      [17.6, 18, 95, 'param', 'T'], [18.7, 19.6, Ta, 'primer', 'Ta'], [20.1, 24, 72, 'enzyme', 'polymerase']];
+    for (const [a, b, T, cls, ref, lab] of holds) {
+      S('line', { x1: xt(a), x2: xt(b), y1: Ty(T), y2: Ty(T), class: `s-${cls}`, 'stroke-width': 4, 'stroke-linecap': 'round', ref }, g);
+      if (lab) S('text', { x: (xt(a) + xt(b)) / 2, y: Ty(T) - 8, 'text-anchor': 'middle', class: `f-${cls}`, 'font-size': 12.5, text: lab, ref }, g);
+    }
+    S('line', { x1: X0, x2: X1, y1: 431, y2: 431, class: 'rule' }, g);
+    for (const t of [3, 17]) S('line', { x1: xt(t), x2: xt(t), y1: 427, y2: 435, class: 'fg-stroke', opacity: .6 }, g);
+    S('text', { x: xt(10), y: 446, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 11, text: 'cycle 1', ref: 'n' }, g);
+    S('text', { x: xt(20.5), y: 446, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 11, text: 'cycle 2 (started)', ref: 'n' }, g);
+    S('text', { x: 70, y: Ty(60), 'text-anchor': 'end', class: 'f-param', 'font-size': 15, 'font-style': 'italic', text: 'T', ref: 'T' }, g);
+    refresh(g);
+  }
+  const vis = (el, on) => el.setAttribute('visibility', on ? 'visible' : 'hidden');
+  function draw(t) {
+    const set = (el, a) => { for (const k in a) el.setAttribute(k, a[k]); };
+    set(E.topS, { y1: st.yT, y2: st.yT, 'stroke-dashoffset': 800 * (1 - st.draw) });
+    set(E.botS, { y1: st.yB, y2: st.yB, 'stroke-dashoffset': 800 * (1 - st.draw) });
+    for (const [el, y] of [[E.topL5, st.yT + 5], [E.topL3, st.yT + 5]]) set(el, { y, opacity: st.labT });
+    for (const [el, y] of [[E.botL3, st.yB + 5], [E.botL5, st.yB + 5]]) set(el, { y, opacity: st.labT });
+    for (const l of E.rT) set(l, { y1: st.yT + 5, y2: st.yB - 5, opacity: st.rungT });
+    E.guides.setAttribute('opacity', st.guides);
+    E.br0.setAttribute('opacity', st.br0);
+    set(E.pF, { transform: `translate(${st.pF.dx},${st.pF.dy})`, opacity: st.pF.op });
+    set(E.pR, { transform: `translate(${st.pR.dx},${st.pR.dy})`, opacity: st.pR.op });
+    E.chevF.setAttribute('opacity', st.chev);
+    E.chevR.setAttribute('opacity', st.chev);
+    for (const l of E.rR) {
+      const x = +l.getAttribute('x1');
+      const on = x >= RS ? st.rungP : (st.xR < RS - 2 && x >= st.xR ? 1 : 0);
+      set(l, { y1: st.yT + 5, y2: yNR - 5, opacity: on });
+    }
+    for (const l of E.rF) {
+      const x = +l.getAttribute('x1');
+      const on = x <= FE ? st.rungP : (st.xF > FE + 2 && x <= st.xF ? 1 : 0);
+      set(l, { y1: yNF + 5, y2: st.yB - 5, opacity: on * st.rungFop });
+    }
+    set(E.newF, { x2: st.xF });
+    vis(E.newF, st.xF > FE + 2);
+    if (st.xF > FE + 2 && st.xF < X1 - 4 && st.pol > .5) E.newF.setAttribute('marker-end', E.mkL); else E.newF.removeAttribute('marker-end');
+    set(E.newR, { x2: st.xR });
+    vis(E.newR, st.xR < RS - 2);
+    if (st.xR < RS - 2 && st.xR > X0 + 4 && st.pol > .5) E.newR.setAttribute('marker-end', E.mkL); else E.newR.removeAttribute('marker-end');
+    set(E.polF, { transform: `translate(${st.xF},${216 + st.polDy})`, opacity: st.pol });
+    set(E.polR, { transform: `translate(${st.xR},${94 - st.polDy})`, opacity: st.pol });
+    E.s4.setAttribute('opacity', st.s4);
+    E.top.setAttribute('opacity', st.top);
+    E.bot.setAttribute('opacity', st.bot);
+    set(E.p2, { transform: `translate(${st.p2.dx},${st.p2.dy})`, opacity: st.p2.op });
+    E.chev2.setAttribute('opacity', st.chev2);
+    for (const l of E.rS) {
+      const x = +l.getAttribute('x1');
+      const on = x >= RS ? st.rungP2 : (st.xS < RS - 2 && x >= st.xS ? 1 : 0);
+      set(l, { y1: yS + 5, y2: yNF - 5, opacity: on });
+    }
+    set(E.newS, { x2: st.xS });
+    vis(E.newS, st.xS < RS - 2);
+    if (st.xS < RS - 2 && st.xS > FS + 4) E.newS.setAttribute('marker-end', E.mkS); else E.newS.removeAttribute('marker-end');
+    set(E.pol2, { transform: `translate(${st.xS - 22 * st.pol2off},${188 - 34 * st.pol2off})`, opacity: st.pol2 * (1 - st.pol2off) });
+    E.br5.setAttribute('opacity', st.br5);
+    E.nc.setAttribute('opacity', st.nc);
+    const dnt = (list, q, px, py, base) => list.forEach((d, i) => {
+      let x = d.hx, y = d.hy + 3 * Math.sin(1.7 * t + d.ph), op = base;
+      if (q >= d.tau) op = 0;
+      else if (q > d.tau - .12) { const u = smooth((q - (d.tau - .12)) / .12); x = lerp(x, px, u); y = lerp(y, py, u); }
+      set(d.el, { cx: x.toFixed(1), cy: y.toFixed(1), opacity: op });
+    });
+    const soup = .8 * seg(st.draw, 0, 1, v => v);
+    dnt(E.dnA, st.s3, st.xR, 94, soup);
+    dnt(E.dnB, st.s3, st.xF, 216, soup);
+    dnt(E.dnC, st.s5, st.xS, 188, .8 * st.dnC);
+    const T = tempAt(t, KF);
+    E.temp.textContent = `T = ${Math.round(T)} °C`;
+    set(E.playLine, { x1: xt(t), x2: xt(t) });
+    set(E.playDot, { cx: xt(t), cy: Ty(T) });
+  }
+
+  /* player */
+  let t = SC[0].dur, playing = false, last = 0, timer = null;
+  const btn = $('#anim-play'), scrub = $('#anim-scrub'), clock = $('#anim-clock'), narr = $('#anim-narr'), chips = $('#anim-scenes');
+  const sceneAt = time => { for (let i = SC.length - 1; i >= 0; i--) if (time > SC[i].start + 1e-6) return i; return 0; };
+  function render() {
+    reset();
+    for (let i = 0; i < SC.length; i++) {
+      const s = SC[i];
+      if (t >= s.start + s.dur) RUN[i](1);
+      else { if (t > s.start) RUN[i]((t - s.start) / s.dur); break; }
+    }
+    draw(t);
+    scrub.value = Math.round(t / TOTAL * 1000);
+    clock.textContent = `${t.toFixed(1)} s / ${TOTAL} s`;
+    const k = sceneAt(t);
+    narr.innerHTML = '';
+    const lab = document.createElement('span');
+    lab.className = 'label';
+    lab.textContent = `Scene ${k + 1} of ${SC.length} · ${SC[k].name}`;
+    narr.append(lab, document.createTextNode(SC[k].cap));
+    $$('button', chips).forEach((b, i) => b.setAttribute('aria-current', String(i === k)));
+  }
+  function setPlaying(on) {
+    playing = on;
+    btn.textContent = on ? '❚❚ Pause' : (t >= TOTAL - 1e-6 ? '↺ Replay' : '▶ Play');
+    btn.setAttribute('aria-label', on ? 'Pause' : 'Play');
+    clearTimeout(timer);
+    if (!on) return;
+    if (REDUCED) {
+      const step = () => {
+        const k = sceneAt(t);
+        const next = t >= SC[k].start + SC[k].dur - 1e-6 ? k + 1 : k;
+        if (next >= SC.length) { setPlaying(false); return; }
+        t = SC[next].start + SC[next].dur; render();
+        timer = setTimeout(step, 2600);
+      };
+      step();
+      return;
+    }
+    last = performance.now();
+    requestAnimationFrame(function frame(now) {
+      if (!playing) return;
+      t = Math.min(TOTAL, t + (now - last) / 1000);
+      last = now;
+      render();
+      if (t >= TOTAL) { setPlaying(false); return; }
+      requestAnimationFrame(frame);
+    });
+  }
+  function mount() {
+    build();
+    SC.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn';
+      b.textContent = `${i + 1} ${s.name}`;
+      b.addEventListener('click', () => { t = REDUCED ? s.start + s.dur : s.start + 1e-3; render(); setPlaying(!REDUCED); });
+      chips.append(b);
+    });
+    btn.addEventListener('click', () => { if (playing) setPlaying(false); else { if (t >= TOTAL - 1e-6) t = 0; setPlaying(true); } });
+    $('#anim-prev').addEventListener('click', () => {
+      setPlaying(false);
+      const k = sceneAt(t), end = SC[k].start + SC[k].dur;
+      const target = t >= end - 1e-6 && k > 0 ? k - 1 : Math.max(0, k - 1);
+      t = SC[target].start + SC[target].dur; render();
+    });
+    $('#anim-next').addEventListener('click', () => {
+      setPlaying(false);
+      const k = sceneAt(t), end = SC[k].start + SC[k].dur;
+      t = t < end - 1e-6 ? end : SC[Math.min(SC.length - 1, k + 1)].start + SC[Math.min(SC.length - 1, k + 1)].dur;
+      render();
+    });
+    scrub.addEventListener('input', () => { setPlaying(false); t = scrub.value / 1000 * TOTAL; render(); });
+    reaction.subscribe(() => { buildStrip(); render(); });
+    refresh(svg);
+  }
+  return { mount };
+})();
+
+/* Figure 3.2: primer bench and virtual gel --------------------------- */
+const TEMPLATE = 'CTGAGGTAGTACGAACCCCGTCGTCTCTTCGTCATGACTGCCGGAGGCAACTCCGGCCAGAGTCATTTTCCAGGTTGCCGGTACTTTCACTGTAATAGGCGTACGTTGGGGTACCGAAAAGGTTCAACGACCCGTTTATGGGATTCCCGTGCGTGGTGGAACGCGGTCTATTGTCAGAATATGGAATGGGTACGTCCATC';
+const F0 = 'CGTCGTCTCTTCGTCATGACTG', R0 = 'ACAATAGACCGCGTTCCACCAC';
+const COMP = { A: 'T', T: 'A', G: 'C', C: 'G' };
+const revcomp = s => Array.from(s).reverse().map(c => COMP[c] || 'N').join('');
+const gcCount = s => Array.from(s).filter(c => c === 'G' || c === 'C').length;
+const tmBasic = s => s.length < 14 ? 2 * (s.length - gcCount(s)) + 4 * gcCount(s) : 64.9 + 41 * (gcCount(s) - 16.4) / s.length;
+
+/* Best site for a primer on a same-sense strand, weighting the 3′ end. */
+function alignPrimer(primer, strand) {
+  const P = primer.length, Ls = strand.length;
+  let best = null;
+  for (let off = -P + 8; off <= Ls - P; off++) {
+    let score = 0;
+    const mm = new Set();
+    for (let i = 0; i < P; i++) {
+      const j = off + i, ok = j >= 0 && j < Ls && strand[j] === primer[i];
+      if (ok) score += 1 + 3 * Math.pow(i / (P - 1), 2); else mm.add(i);
+    }
+    if (!best || score > best.score) best = { off, score, mm };
+  }
+  return best;
+}
+function analysePrimer(primer, strand) {
+  const P = primer.length, a = alignPrimer(primer, strand);
+  let tmEff = -Infinity, tail = 0;
+  for (let s = 0; s <= P - 8; s++) {
+    let mmIn = 0;
+    a.mm.forEach(i => { if (i >= s) mmIn++; });
+    const t = tmBasic(primer.slice(s)) - 5 * mmIn;
+    if (t > tmEff) { tmEff = t; tail = s; }
+  }
+  let ext = 1;
+  if (a.mm.has(P - 1)) ext *= .02;
+  if (a.mm.has(P - 2)) ext *= .25;
+  if (a.mm.has(P - 3)) ext *= .6;
+  const internal = Array.from(a.mm).filter(i => i >= tail).length;
+  return { ...a, P, tm: tmBasic(primer), tmEff, tail, ext, internal, gc: gcCount(primer) / P };
+}
+const threePrimeOverlap = (a, b, k = 5) => a.length >= k && b.includes(revcomp(a.slice(-k)));
+
+const primerBench = (() => {
+  const inF = $('#pF'), inR = $('#pR'), ta = $('#ta'), taOut = $('#ta-out');
+  const clean = s => s.toUpperCase().replace(/[^ACGT]/g, '');
+  function evaluate(F, R, Ta) {
+    const L = TEMPLATE.length, bottom = revcomp(TEMPLATE);
+    const f = analysePrimer(F, TEMPLATE), r = analysePrimer(R, bottom);
+    const fStart = f.off, rEndTop = L - 1 - r.off;
+    const len = rEndTop - fStart + 1;
+    const oriented = len >= Math.max(F.length, R.length) + 10;
+    const bind = x => sigmoid((x.tmEff - Ta) / 1.6);
+    const spec = oriented ? bind(f) * bind(r) * f.ext * r.ext : 0;
+    const minTm = Math.min(f.tmEff, r.tmEff);
+    const off = .7 * sigmoid((minTm - 8 - Ta) / 1.6) * Math.min(f.ext, r.ext) * (oriented ? 1 : .5);
+    const risk = threePrimeOverlap(F, R) || threePrimeOverlap(R, F) || threePrimeOverlap(F, F) || threePrimeOverlap(R, R);
+    const dim = sigmoid((Math.min(f.tm, r.tm) - 10 - Ta) / 2) * (risk ? 1 : .15);
+    return { f, r, len, oriented, spec, off, dim, risk, fStart, rEndTop };
+  }
+  function render() {
+    const F = clean(inF.value), R = clean(inR.value), Ta = +ta.value;
+    taOut.textContent = `${Ta.toFixed(1)} °C`;
+    if (F.length < 10 || R.length < 10) {
+      $('#verdict').textContent = 'Each primer needs at least 10 bases (A, C, G, T) to be evaluated.';
+      return;
+    }
+    const res = evaluate(F, R, Ta);
+    const { f, r } = res;
+    /* statistics */
+    const rows = [
+      ['', 'forward', 'reverse'],
+      ['length', `${F.length} nt`, `${R.length} nt`],
+      ['GC', `${Math.round(f.gc * 100)}%`, `${Math.round(r.gc * 100)}%`],
+      ['Tₘ formula', `${f.tm.toFixed(1)} °C`, `${r.tm.toFixed(1)} °C`],
+      ['Tₘ on site', `${f.tmEff.toFixed(1)} °C`, `${r.tmEff.toFixed(1)} °C`],
+      ['mismatches', `${f.mm.size}`, `${r.mm.size}`],
+      ['3′ base', `${F[F.length - 1]}${f.mm.has(f.P - 1) ? ' ✗' : ' ✓'}`, `${R[R.length - 1]}${r.mm.has(r.P - 1) ? ' ✗' : ' ✓'}`],
+    ];
+    const tbl = $('#pstats');
+    tbl.textContent = '';
+    rows.forEach((row, i) => {
+      const tr = document.createElement('tr');
+      row.forEach((c, j) => { const cell = document.createElement(i === 0 || j === 0 ? 'th' : 'td'); cell.textContent = c; tr.append(cell); });
+      if (i === 0) { tr.children[1].setAttribute('data-ref', 'primerF primer'); tr.children[2].setAttribute('data-ref', 'primerR primer'); }
+      tbl.append(tr);
+    });
+    /* flags */
+    const flags = [];
+    const add = (cls, text) => flags.push([cls, text]);
+    if (res.oriented) add('', `Primers face each other: ${res.len}-bp product.`);
+    else add('bad', 'The primers do not point toward each other on this template.');
+    const dTm = Math.abs(f.tmEff - r.tmEff);
+    add(dTm < 3 ? '' : dTm < 5 ? 'meh' : 'bad', `ΔTₘ between primers ${dTm.toFixed(1)} °C ${dTm < 3 ? '(well matched)' : '(one primer will be favored)'}.`);
+    const gap = Math.min(f.tmEff, r.tmEff) - Ta;
+    add(gap >= 1 && gap <= 6 ? '' : gap > 6 ? 'meh' : 'bad', gap > 6 ? `Tₐ is ${gap.toFixed(1)} °C below the lower Tₘ: permissive.` : gap >= 1 ? `Tₐ is ${gap.toFixed(1)} °C below the lower Tₘ.` : `Tₐ is ${(-gap).toFixed(1)} °C above the lower Tₘ: primers barely bind.`);
+    for (const [name, x, seq] of [['forward', f, F], ['reverse', r, R]]) {
+      if (x.mm.has(x.P - 1)) add('bad', `3′-terminal mismatch on the ${name} primer: nothing to extend.`);
+      else if (x.mm.has(x.P - 2) || x.mm.has(x.P - 3)) add('meh', `Mismatch near the ${name} primer’s 3′ end weakens extension.`);
+      if (x.tail > 0) add('', `${x.tail}-base 5′ tail on the ${name} primer: it will be built into every product from cycle 2.`);
+      else if (x.internal > 0) add('meh', `${x.internal} internal mismatch${x.internal > 1 ? 'es' : ''} on the ${name} primer lower its effective Tₘ.`);
+      const clamp5 = gcCount(seq.slice(-5));
+      if (clamp5 === 0) add('meh', `No G or C in the ${name} primer’s last 5 bases: weak 3′ clamp.`);
+      if (clamp5 > 3) add('meh', `${clamp5} G/C in the ${name} primer’s last 5 bases: sticky 3′ end, more mispriming.`);
+      if (/(A{4,}|C{4,}|G{4,}|T{4,})/.test(seq)) add('meh', `Run of four or more identical bases in the ${name} primer.`);
+    }
+    if (res.risk) add('bad', '3′ ends can pair with a primer: primer-dimer risk.');
+    const ul = $('#pflags');
+    ul.textContent = '';
+    flags.forEach(([cls, text]) => { const li = document.createElement('li'); if (cls) li.className = cls; li.textContent = text; ul.append(li); });
+    /* verdict */
+    let v;
+    if (!res.oriented) v = 'No product: the primers do not face each other across a target.';
+    else if (res.spec < .08) {
+      if (Math.min(f.ext, r.ext) < .1) v = 'No product. A primer’s 3′ end is mismatched, so the polymerase has no paired end to extend.';
+      else v = 'Little or no product: at this Tₐ the primers barely stay bound.';
+    } else if (res.off > .25) v = `Product at ${res.len} bp, plus off-target bands: annealing is too permissive.`;
+    else v = `A clean band at ${res.len} bp.`;
+    if (res.dim > .2) v += ' A primer-dimer runs near the bottom, strongest without template, where nothing competes for the primers.';
+    $('#verdict').textContent = v;
+    drawGel(res);
+    drawAlignment(F, R, res);
+    reaction.set({ Ta, ampliconLength: res.oriented ? res.len : reaction.get().ampliconLength });
+  }
+  function drawGel(res) {
+    const svg = $('#gel');
+    svg.textContent = '';
+    const defs = S('defs', null, svg);
+    const flt = S('filter', { id: 'gel-glow', x: '-30%', y: '-200%', width: '160%', height: '500%' }, defs);
+    S('feGaussianBlur', { stdDeviation: 2.2, result: 'b' }, flt);
+    const mg = S('feMerge', null, flt);
+    S('feMergeNode', { in: 'b' }, mg);
+    S('feMergeNode', { in: 'SourceGraphic' }, mg);
+    S('rect', { x: 46, y: 8, width: 278, height: 352, rx: 6, style: 'fill:var(--gel-bg)' }, svg);
+    const lanes = [96, 186, 276];
+    const yOf = bp => 46 + (Math.log10(1500) - Math.log10(bp)) / (Math.log10(1500) - Math.log10(30)) * 280;
+    ['ladder', 'sample', 'no template'].forEach((name, i) => {
+      S('rect', { x: lanes[i] - 28, y: 18, width: 56, height: 9, rx: 1.5, style: 'fill:var(--gel-lane)' }, svg);
+      S('text', { x: lanes[i], y: 350, 'text-anchor': 'middle', class: 'mono', 'font-size': 10.5, style: 'fill:var(--gel-ink)', opacity: .8, text: name }, svg);
+    });
+    for (const bp of [1000, 700, 500, 400, 300, 200, 150, 100, 50]) {
+      S('rect', { x: lanes[0] - 25, y: yOf(bp) - 2, width: 50, height: 4, rx: 1, style: 'fill:var(--gel-ink)', opacity: bp === 500 ? .95 : .55 }, svg);
+      S('text', { x: 40, y: yOf(bp) + 3.5, 'text-anchor': 'end', class: 'mono faint', 'font-size': 10, text: bp }, svg);
+    }
+    S('text', { x: 40, y: 22, 'text-anchor': 'end', class: 'mono faint', 'font-size': 10, text: 'bp' }, svg);
+    const band = (lane, bp, amt, cls, ref, h = 7) => {
+      if (amt < .05) return;
+      S('rect', { x: lanes[lane] - 27, y: yOf(bp) - h / 2, width: 54, height: h, rx: 2, class: cls, opacity: (.18 + .82 * clamp(amt)).toFixed(3), filter: 'url(#gel-glow)', ref }, svg);
+    };
+    if (res.oriented) band(1, res.len, res.spec, 'f-product', 'amplicon');
+    band(1, 420, res.off, 'f-warn', 'offTarget');
+    band(1, 95, res.off * .65, 'f-warn', 'offTarget');
+    band(1, 44, res.dim * (1 - .5 * res.spec), 'f-warn', 'dimer', 11);
+    band(2, 44, Math.min(1, res.dim * 1.3), 'f-warn', 'dimer', 11);
+    if (res.oriented && res.spec >= .05) S('text', { x: lanes[1] + 32, y: yOf(res.len) + 3.5, class: 'mono', 'font-size': 10, style: 'fill:var(--gel-ink)', text: res.len }, svg);
+    refresh(svg);
+  }
+  function drawAlignment(F, R, res) {
+    const box = $('#aln');
+    const L = TEMPLATE.length, bottom = revcomp(TEMPLATE);
+    const span = (cls, s) => `<span class="${cls}">${s}</span>`;
+    const row = (label, seqs) => label.padEnd(15) + seqs;
+    function pair(primer, a, strand) {
+      let tLine = '', pLine = '';
+      for (let i = 0; i < primer.length; i++) {
+        const j = a.off + i, tb = j >= 0 && j < strand.length ? strand[j] : '-';
+        const mm = a.mm.has(i);
+        tLine += mm ? span('mm', tb) : span('tp', tb);
+        pLine += mm ? span('mm', primer[i]) : span('pm', primer[i]);
+      }
+      return [tLine, pLine];
+    }
+    const [ft, fp] = pair(F, res.f, TEMPLATE);
+    const [rt, rp] = pair(R, res.r, bottom);
+    const fFrom = res.f.off + 1, fTo = res.f.off + F.length;
+    const lines = [
+      span('hd', 'Forward primer against the top strand (same sense, so it pairs with the bottom strand):'),
+      row(`top ${String(fFrom).padStart(4)}–${String(fTo).padEnd(4)}`, `5′ ${ft} 3′`),
+      row('primer F', `5′ ${fp} 3′ →`),
+      '',
+      span('hd', 'Reverse primer against the bottom strand, read 5′→3′ (so it pairs with the top strand):'),
+      row('bottom strand', `5′ ${rt} 3′`),
+      row('primer R', `5′ ${rp} 3′ →`),
+      '',
+      span('hd', 'Template, top strand 5′→3′. Pink: primer sites. Orange: the region only the product contains.'),
+    ];
+    const fSite = [Math.max(0, res.f.off + res.f.tail), res.f.off + F.length - 1];
+    const rSite = [L - 1 - (res.r.off + R.length - 1), L - 1 - (res.r.off + res.r.tail)];
+    const mmTop = new Set();
+    res.f.mm.forEach(i => mmTop.add(res.f.off + i));
+    res.r.mm.forEach(i => mmTop.add(L - 1 - (res.r.off + i)));
+    for (let start = 0; start < L; start += 60) {
+      let s = String(start + 1).padStart(6) + ' ';
+      for (let k = start; k < Math.min(L, start + 60); k++) {
+        if (k > start && (k - start) % 10 === 0) s += ' ';
+        const b = TEMPLATE[k].toLowerCase();
+        const inF = k >= fSite[0] && k <= fSite[1], inR = k >= rSite[0] && k <= rSite[1];
+        const inAmp = res.oriented && k > fSite[1] && k < rSite[0];
+        if ((inF || inR) && mmTop.has(k)) s += span('mm', b);
+        else if (inF || inR) s += span('pm', b);
+        else if (inAmp) s += span('am', b);
+        else s += b;
+      }
+      lines.push(s);
+    }
+    box.innerHTML = lines.join('\n');
+  }
+  function mount() {
+    const reset = () => { inF.value = F0; inR.value = R0; ta.value = 54; };
+    reset();
+    inF.addEventListener('input', render);
+    inR.addEventListener('input', render);
+    ta.addEventListener('input', render);
+    $$('[data-act]').forEach(b => b.addEventListener('click', () => {
+      const F = clean(inF.value), R = clean(inR.value);
+      const swap = c => ({ A: 'C', C: 'A', G: 'T', T: 'G' })[c] || 'A';
+      switch (b.dataset.act) {
+        case 'f3': inF.value = F.slice(0, -1) + swap(F[F.length - 1]); break;
+        case 'f5': inF.value = swap(F[0]) + F.slice(1); break;
+        case 'tail': inF.value = 'CGGAATTC' + F; break;
+        case 'dimer': inR.value = revcomp(F.slice(-6)) + R.slice(6); break;
+        case 'reset': reset(); break;
+      }
+      render();
+    }));
+    render();
+  }
+  return { mount };
+})();
+
+/* Figure 4.1: doubling tree (escalation ladder, rung 1) -------------- */
+function mountDoublingTree() {
+  const svg = $('#fig41');
+  let level = [['o', 'o']];
+  const levels = [level];
+  for (let k = 1; k <= 3; k++) { level = level.flatMap(d => [[d[0], 'n'], [d[1], 'n']]); levels.push(level); }
+  const X = k => 40 + k * 160, W = 56, top = 36, span = 170;
+  const yOf = (k, i) => top + (i + .5) * span / levels[k].length;
+  levels.forEach((lv, k) => {
+    S('text', { x: X(k) + W / 2, y: 20, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 11, text: `cycle ${k}`, ref: 'n' }, svg);
+    S('text', { x: X(k) + W / 2, y: 228, 'text-anchor': 'middle', class: 'f-product', 'font-size': 18, text: lv.length, ref: 'Nn' }, svg);
+    lv.forEach((d, i) => {
+      const y = yOf(k, i);
+      if (k > 0) S('path', { d: `M${X(k - 1) + W + 4},${yOf(k - 1, i >> 1)} C${X(k) - 40},${yOf(k - 1, i >> 1)} ${X(k) - 50},${y} ${X(k) - 4},${y}`, fill: 'none', class: 'rule', 'stroke-width': 1.2 }, svg);
+      d.forEach((s, j) => S('line', { x1: X(k), x2: X(k) + W, y1: y + (j ? 3 : -3), y2: y + (j ? 3 : -3), class: s === 'o' ? 's-template' : 's-product', 'stroke-width': 3.5, 'stroke-linecap': 'round', ref: s === 'o' ? 'template' : 'amplicon' }, svg));
+    });
+  });
+  refresh(svg);
+}
+
+/* Figure 4.2: lineage stepper ---------------------------------------- */
+const lineage = (() => {
+  const svg = $('#fig42'), NMAX = 5;
+  const copy = (s, c) => s.s === 'top' ? { s: 'bot', a: s.a, b: 70, born: c } : { s: 'top', a: 30, b: s.b, born: c };
+  const history = [[[{ s: 'top', a: 0, b: 100, born: 0 }, { s: 'bot', a: 0, b: 100, born: 0 }]]];
+  for (let c = 1; c <= NMAX; c++) history.push(history[c - 1].flatMap(d => d.map(strand => [strand, copy(strand, c)])));
+  const kind = s => s.a === 0 && s.b === 100 ? 'O' : s.a === 30 && s.b === 70 ? 'S' : 'L';
+  const STYLE = { O: ['s-template', 'f-template', 'template'], L: ['s-productDim', 'f-productDim', 'longProduct'], S: ['s-product', 'f-product', 'amplicon'] };
+  const X = u => 60 + u * 8.2;
+  let n = 1;
+  function render(animate) {
+    svg.textContent = '';
+    for (const [u, lab, ref] of [[30, 'F', 'primerF primer'], [70, 'R', 'primerR primer']]) {
+      S('line', { x1: X(u), x2: X(u), y1: 26, y2: 432, class: 's-primer', 'stroke-dasharray': '2 6', opacity: .6 }, svg);
+      S('text', { x: X(u), y: 18, 'text-anchor': 'middle', class: 'f-primer', 'font-size': 14, text: lab, ref }, svg);
+    }
+    S('text', { x: X(50), y: 18, 'text-anchor': 'middle', class: 'f-product', 'font-size': 14, text: 'target', ref: 'amplicon' }, svg);
+    const rows = history[n], count = rows.length;
+    const h = Math.min(46, 396 / count), y0 = 30 + (396 - h * count) / 2;
+    const sw = clamp(h * .2, 1.7, 5), gap = Math.min(h * .34, 10), tipS = sw * 1.5;
+    rows.forEach((d, i) => {
+      const yc = y0 + (i + .5) * h;
+      for (const strand of d) {
+        const k = kind(strand), [sc, fc, ref] = STYLE[k];
+        const y = strand.s === 'top' ? yc - gap / 2 : yc + gap / 2;
+        const g = S('g', { ref }, svg);
+        const parts = [[strand.a, Math.max(strand.a, 30), .38], [Math.max(strand.a, 30), Math.min(strand.b, 70), 1], [Math.min(strand.b, 70), strand.b, .38]]
+          .filter(([a, b]) => b - a > .01);
+        const fresh = animate && strand.born === n && n > 0 && !REDUCED;
+        const ordered = strand.s === 'top' ? parts : parts.slice().reverse();
+        const total = ordered.reduce((s, [a, b]) => s + (b - a), 0);
+        let acc = 0;
+        for (const [a, b, op] of ordered) {
+          const [x1, x2] = strand.s === 'top' ? [X(a), X(b)] : [X(b), X(a)];
+          const len = Math.abs(x2 - x1);
+          const line = S('line', { x1, x2, y1: y, y2: y, class: sc, 'stroke-width': sw, opacity: op }, g);
+          if (fresh) {
+            line.style.strokeDasharray = len;
+            line.style.strokeDashoffset = len;
+            line.style.animation = `draw ${(.75 * (b - a) / total).toFixed(3)}s linear ${(.75 * acc / total).toFixed(3)}s forwards`;
+          }
+          acc += b - a;
+        }
+        const tx = strand.s === 'top' ? X(strand.b) : X(strand.a), dir = strand.s === 'top' ? 1 : -1;
+        const tri = S('path', { d: `M${tx},${y - tipS} L${tx + dir * tipS * 1.4},${y} L${tx},${y + tipS} z`, class: fc }, g);
+        if (fresh) { tri.style.opacity = 0; tri.style.animation = 'tipin .2s ease-out .75s forwards'; }
+      }
+      if (kind(d[0]) === 'S' && kind(d[1]) === 'S') S('circle', { cx: X(100) + 22, cy: yc, r: Math.min(5, h * .32), class: 'f-product', ref: 'amplicon' }, svg);
+    });
+    $('#lin-label').textContent = `cycle ${n} of ${NMAX} · ${count} duplex${count > 1 ? 'es' : ''}`;
+    $$('#lin-table tbody tr').forEach(tr => tr.classList.toggle('cur', +tr.dataset.n === n));
+    refresh(svg);
+  }
+  function table() {
+    const tbl = $('#lin-table');
+    const head = '<thead><tr><th class="num">n</th><th class="num">all, 2ⁿ</th><th class="num">has original</th><th class="num">has long</th><th class="num">exact, 2ⁿ−2n</th><th class="num">exact %</th></tr></thead>';
+    const rowFor = k => {
+      const all = Math.pow(2, k), orig = k === 0 ? 1 : 2, lng = k === 0 ? 0 : 2 * (k - 1), ex = k === 0 ? 0 : all - 2 * k;
+      const share = (ex / all * 100);
+      return `<tr data-n="${k}"${k > NMAX ? ' class="sep"' : ''}><td class="num">${k}</td><td class="num">${all.toLocaleString('en-US')}</td><td class="num">${orig}</td><td class="num">${lng}</td><td class="num">${ex.toLocaleString('en-US')}</td><td class="num">${share >= 99.99 ? '> 99.99' : share.toFixed(share < 10 ? 1 : 2)}%</td></tr>`;
+    };
+    tbl.innerHTML = head + '<tbody>' + [0, 1, 2, 3, 4, 5, 10, 20, 30].map(rowFor).join('') + '</tbody>';
+  }
+  function mount() {
+    table();
+    render(false);
+    $('#lin-next').addEventListener('click', () => { if (n < NMAX) { n++; render(true); } });
+    $('#lin-prev').addEventListener('click', () => { if (n > 0) { n--; render(false); } });
+    $('#lin-reset').addEventListener('click', () => { n = 0; render(false); });
+    $('#lineage-skip').addEventListener('click', unlock);
+  }
+  function unlock() { const g = $('#lineage-gate'); if (g) g.hidden = true; }
+  return { mount, unlock };
+})();
+
+/* Figure 5.1: amplification curves ----------------------------------- */
+const amplification = (() => {
+  const svg = $('#fig51');
+  const K = 1e12, CYC = 45, x0 = 80, x1 = 880, y0 = 20, y1 = 360;
+  const inN0 = $('#amp-n0'), inE = $('#amp-e'), inNt = $('#amp-nt'), inLog = $('#amp-log'), inDil = $('#amp-dil');
+  const simulate = (N0, E) => { const out = [N0]; let N = N0; for (let c = 0; c < CYC; c++) { N += E * N * Math.max(0, 1 - N / K); out.push(N); } return out; };
+  const ctOf = (s, Nt) => {
+    if (s[0] >= Nt) return 0;
+    for (let c = 0; c < s.length - 1; c++) if (s[c] < Nt && s[c + 1] >= Nt) {
+      const a = Math.log10(s[c]), b = Math.log10(s[c + 1]);
+      return c + (Math.log10(Nt) - a) / (b - a);
+    }
+    return NaN;
+  };
+  const X = c => x0 + c / CYC * (x1 - x0);
+  let cross = null;
+  function render() {
+    const N0 = Math.pow(10, +inN0.value), E = +inE.value, Nt = Math.pow(10, +inNt.value), log = inLog.checked, dil = inDil.checked;
+    $('#amp-n0-out').textContent = fmtN(N0);
+    $('#amp-e-out').textContent = E.toFixed(2);
+    $('#amp-nt-out').textContent = fmtN(Nt, 1);
+    inN0.disabled = dil;
+    const Y = log ? N => y1 - Math.log10(Math.max(N, 1)) / 13 * (y1 - y0) : N => y1 - N / 1.1e12 * (y1 - y0);
+    svg.textContent = '';
+    for (let c = 0; c <= CYC; c += 5) {
+      S('line', { x1: X(c), x2: X(c), y1: y0, y2: y1, class: 'rule-soft' }, svg);
+      S('text', { x: X(c), y: y1 + 20, 'text-anchor': 'middle', class: 'mono', 'font-size': 12, text: c }, svg);
+    }
+    const yt = log ? [0, 2, 4, 6, 8, 10, 12].map(k => [Math.pow(10, k), '10' + sup(k)]) : [0, .2, .4, .6, .8, 1].map(v => [v * 1e12, v === 0 ? '0' : v.toFixed(1)]);
+    for (const [v, lab] of yt) {
+      S('line', { x1: x0, x2: x1, y1: Y(v), y2: Y(v), class: 'rule-soft' }, svg);
+      S('text', { x: x0 - 8, y: Y(v) + 4, 'text-anchor': 'end', class: 'mono', 'font-size': 12, text: lab }, svg);
+    }
+    S('line', { x1: x0, x2: x1, y1: y1, y2: y1, class: 'fg-stroke' }, svg);
+    S('line', { x1: x0, x2: x0, y1: y0, y2: y1, class: 'fg-stroke' }, svg);
+    S('text', { x: (x0 + x1) / 2, y: y1 + 44, 'text-anchor': 'middle', class: 'f-param', 'font-size': 15, text: 'cycle n', ref: 'n' }, svg);
+    S('text', { x: 18, y: (y0 + y1) / 2, 'text-anchor': 'middle', transform: `rotate(-90 18 ${(y0 + y1) / 2})`, class: 'f-product', 'font-size': 15, text: log ? 'copies Nₙ (log scale)' : 'copies Nₙ (× 10¹²)', ref: 'Nn' }, svg);
+    if (log) {
+      S('rect', { x: x0, y: Y(1e9), width: x1 - x0, height: y1 - Y(1e9), style: 'fill:var(--fg-faint)', opacity: .08 }, svg);
+      S('text', { x: x1 - 10, y: Y(1e9) + 18, 'text-anchor': 'end', class: 'faint', 'font-size': 13, text: 'below detection: lost in background fluorescence' }, svg);
+      S('line', { x1: x0, x2: x1, y1: Y(K), y2: Y(K), class: 's-context', 'stroke-dasharray': '6 4', opacity: .7, ref: 'K' }, svg);
+      S('text', { x: x0 + 10, y: Y(K) - 6, class: 'f-context', 'font-size': 13, text: 'plateau K', ref: 'K' }, svg);
+    }
+    S('line', { x1: x0, x2: x1, y1: Y(Nt), y2: Y(Nt), class: 's-readout', 'stroke-width': 1.5, 'stroke-dasharray': '7 5', ref: 'Nt' }, svg);
+    S('text', { x: x1 - 6, y: Y(Nt) - 7, 'text-anchor': 'end', class: 'f-readout', 'font-size': 14, text: 'threshold Nₜ', ref: 'Nt' }, svg);
+    const starts = dil ? [7, 6, 5, 4, 3, 2, 1].map(k => Math.pow(10, k)) : [N0];
+    const series = starts.map(s => simulate(s, E));
+    const cts = series.map(s => ctOf(s, Nt));
+    series.forEach((s, i) => {
+      const d = s.map((N, c) => `${c ? 'L' : 'M'}${X(c).toFixed(1)},${Y(N).toFixed(1)}`).join('');
+      S('path', { d, fill: 'none', class: 's-product', 'stroke-width': 2.4, opacity: dil ? (1 - i * .09).toFixed(2) : 1, ref: 'Nn' }, svg);
+    });
+    cts.forEach((ct, i) => {
+      if (!isFinite(ct)) return;
+      S('line', { x1: X(ct), x2: X(ct), y1: Y(Nt), y2: y1, class: 's-readout', 'stroke-dasharray': '2 4', opacity: .8 }, svg);
+      S('circle', { cx: X(ct), cy: Y(Nt), r: 4.5, class: 'f-readout', ref: 'Ct' }, svg);
+      if (!dil) S('text', { x: X(ct) + 7, y: y1 - 9, class: 'f-readout mono', 'font-size': 12.5, text: `Ct = ${ct.toFixed(2)}`, ref: 'Ct' }, svg);
+      else if (i === 0 || i === cts.length - 1) S('text', { x: X(ct), y: Y(Nt) + 20, 'text-anchor': 'middle', class: 'f-readout mono', 'font-size': 11.5, text: `N₀ = 10${sup(7 - i)}`, ref: 'N0' }, svg);
+    });
+    /* crosshair */
+    const ch = S('g', { visibility: 'hidden' }, svg);
+    const chLine = S('line', { y1: y0, y2: y1, class: 'fg-stroke', opacity: .5 }, ch);
+    const chDot = S('circle', { r: 4, class: 'f-product' }, ch);
+    const chBox = S('rect', { x: x0 + 10, y: y0 + 8, width: 250, height: 26, rx: 4, class: 'f-sunk', opacity: .92 }, ch);
+    const chTxt = S('text', { x: x0 + 20, y: y0 + 26, class: 'mono ink', 'font-size': 12.5 }, ch);
+    const hit = S('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: 'transparent' }, svg);
+    const move = ev => {
+      const pt = svg.createSVGPoint();
+      pt.x = ev.clientX; pt.y = ev.clientY;
+      const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+      const c = Math.round(clamp((p.x - x0) / (x1 - x0)) * CYC);
+      const s = series[0];
+      ch.setAttribute('visibility', 'visible');
+      chLine.setAttribute('x1', X(c)); chLine.setAttribute('x2', X(c));
+      chDot.setAttribute('cx', X(c)); chDot.setAttribute('cy', Y(s[c]));
+      chTxt.textContent = `cycle ${c}: N = ${fmtN(s[c])}${dil ? ' (top curve)' : ''}`;
+      chBox.setAttribute('width', chTxt.getComputedTextLength() + 20);
+      chBox.setAttribute('x', c > CYC / 2 ? x0 + 10 : x1 - chTxt.getComputedTextLength() - 30);
+      chTxt.setAttribute('x', c > CYC / 2 ? x0 + 20 : x1 - chTxt.getComputedTextLength() - 20);
+    };
+    hit.addEventListener('pointermove', move);
+    hit.addEventListener('pointerdown', move);
+    hit.addEventListener('pointerleave', () => ch.setAttribute('visibility', 'hidden'));
+    cross = ch;
+    /* readouts */
+    const r = $('#amp-read');
+    const item = (label, value, ref) => `<span${ref ? ` class="r" data-ref="${ref}"` : ''}>${label} <b>${value}</b></span>`;
+    const formula = (Math.log10(Nt) - Math.log10(starts[0])) / Math.log10(1 + E);
+    if (!dil) {
+      r.innerHTML = [
+        item('Ct read off the curve', isFinite(cts[0]) ? cts[0].toFixed(2) : 'never crosses', 'Ct'),
+        item('Ct from the formula', formula >= 0 ? formula.toFixed(2) : '—', 'Ct'),
+        item('slope on the log axis', `${Math.log10(1 + E).toFixed(3)} decades / cycle`, 'E'),
+        item('N at cycle 45', fmtN(series[0][CYC]), 'Nn'),
+      ].join('');
+    } else {
+      const fin = cts.filter(isFinite);
+      const dct = fin.length > 1 ? (fin[fin.length - 1] - fin[0]) / (fin.length - 1) : NaN;
+      const ends = series.map(s => s[CYC]);
+      r.innerHTML = [
+        item('ΔCt per ten-fold dilution', isFinite(dct) ? dct.toFixed(2) + ' cycles' : '—', 'Ct'),
+        item('formula log 10 / log(1+E)', (1 / Math.log10(1 + E)).toFixed(2) + ' cycles', 'E'),
+        item('spread at cycle 0', '× 1,000,000', 'N0'),
+        item('spread at cycle 45', '× ' + (Math.max(...ends) / Math.min(...ends)).toFixed(2), 'Nn'),
+      ].join('');
+    }
+    refresh(svg);
+    refresh(r);
+  }
+  function mount() {
+    [inN0, inE, inNt].forEach(i => i.addEventListener('input', render));
+    [inLog, inDil].forEach(i => i.addEventListener('change', render));
+    $('#amp-reset').addEventListener('click', () => { inN0.value = 3; inE.value = .95; inNt.value = 10; inLog.checked = false; inDil.checked = false; render(); });
+    render();
+  }
+  return { mount };
+})();
+
+/* Figure 6.1: hydrolysis probe in three frames ------------------------ */
+function mountTaqman() {
+  const host = $('#fig61');
+  const frames = [
+    ['1 · Probe binds', 'The probe pairs inside the target. Its quencher keeps the reporter dark.'],
+    ['2 · Polymerase arrives', 'Extending from the primer, the polymerase runs into the probe.'],
+    ['3 · Probe cut, reporter freed', 'Taq’s 5′→3′ exonuclease chops the probe. Freed from the quencher, the reporter glows.'],
+  ];
+  frames.forEach(([title, text], k) => {
+    const wrap = document.createElement('div');
+    const svg = S('svg', { class: 'figsvg', viewBox: '0 0 300 150', role: 'img', 'aria-label': title });
+    const defs = S('defs', null, svg);
+    const flt = S('filter', { id: `tq-glow-${k}`, x: '-100%', y: '-100%', width: '300%', height: '300%' }, defs);
+    S('feGaussianBlur', { stdDeviation: 4 }, flt);
+    S('line', { x1: 10, x2: 290, y1: 112, y2: 112, class: 's-template', 'stroke-width': 4, 'stroke-linecap': 'round', ref: 'template' }, svg);
+    S('line', { x1: 22, x2: 70, y1: 97, y2: 97, class: 's-primer', 'stroke-width': 6, 'stroke-linecap': 'round', ref: 'primerF primer' }, svg);
+    const xEnd = [70, 146, 262][k];
+    if (k > 0) S('line', { x1: 70, x2: xEnd, y1: 97, y2: 97, class: 's-product', 'stroke-width': 4, 'stroke-linecap': 'round', ref: 'amplicon' }, svg);
+    if (k < 2) {
+      const g = S('g', { ref: 'probe' }, svg);
+      S('line', { x1: 170, x2: 250, y1: 97, y2: 97, class: 's-readout', 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+      S('circle', { cx: 170, cy: 97, r: 8, class: 'f-readout', opacity: .3 }, g);
+      S('text', { x: 170, y: 101, 'text-anchor': 'middle', class: 'ink mono', 'font-size': 9, text: 'R' }, g);
+      S('circle', { cx: 250, cy: 97, r: 8, class: 'f-context' }, g);
+      S('text', { x: 250, y: 101, 'text-anchor': 'middle', class: 'mono', 'font-size': 9, style: 'fill:var(--bg)', text: 'Q' }, g);
+    } else {
+      const g = S('g', { ref: 'probe' }, svg);
+      S('circle', { cx: 196, cy: 40, r: 16, class: 'f-readout', opacity: .55, filter: `url(#tq-glow-${k})` }, g);
+      S('circle', { cx: 196, cy: 40, r: 8, class: 'f-readout' }, g);
+      S('text', { x: 196, y: 44, 'text-anchor': 'middle', class: 'mono', 'font-size': 9, style: 'fill:var(--bg)', text: 'R' }, g);
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        S('line', { x1: 196 + 13 * Math.cos(a), y1: 40 + 13 * Math.sin(a), x2: 196 + 20 * Math.cos(a), y2: 40 + 20 * Math.sin(a), class: 's-readout', 'stroke-width': 1.5 }, g);
+      }
+      [[150, 64], [168, 70], [222, 66]].forEach(([x, y]) => S('line', { x1: x, x2: x + 12, y1: y, y2: y - 4, class: 's-readout', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .7 }, g));
+      S('circle', { cx: 270, cy: 58, r: 8, class: 'f-context' }, g);
+      S('text', { x: 270, y: 62, 'text-anchor': 'middle', class: 'mono', 'font-size': 9, style: 'fill:var(--bg)', text: 'Q' }, g);
+    }
+    if (k > 0) {
+      const g = S('g', { ref: 'polymerase', transform: `translate(${xEnd},${k === 1 ? 90 : 90})` }, svg);
+      S('ellipse', { rx: 22, ry: 13, class: 'f-enzyme s-enzyme', 'fill-opacity': .22, 'stroke-width': 1.5 }, g);
+      S('text', { y: 4, 'text-anchor': 'middle', class: 'f-enzyme', 'font-size': 10.5, text: 'Taq' }, g);
+    }
+    S('text', { x: 10, y: 140, class: 'faint mono', 'font-size': 10, text: 'template 3′ ··· 5′' }, svg);
+    const cap = document.createElement('p');
+    cap.className = 'small';
+    cap.style.margin = '.4rem 0 0';
+    const b = document.createElement('b');
+    b.textContent = title + '. ';
+    cap.append(b, document.createTextNode(text));
+    wrap.append(svg, cap);
+    host.append(wrap);
+    refresh(svg);
+  });
+}
+
+/* Figure 6.2: digital PCR -------------------------------------------- */
+const digital = (() => {
+  const grid = $('#dpcr-grid'), curve = $('#dpcr-curve'), lam = $('#dp-lam');
+  let seed = 7;
+  const poisson = (l, rnd) => { const Lm = Math.exp(-l); let k = 0, p = 1; do { k++; p *= rnd(); } while (p > Lm); return k - 1; };
+  const offs = { 1: [[0, 0]], 2: [[-3, -2], [3, 2]], 3: [[-3, -3], [3, -2], [0, 3.5]], 4: [[-3, -3], [3, -3], [-3, 3], [3, 3]] };
+  function render() {
+    const l = +lam.value, rnd = mulberry32(seed);
+    $('#dp-lam-out').textContent = l.toFixed(2);
+    grid.textContent = '';
+    let M = 0, P = 0;
+    for (let r = 0; r < 20; r++) for (let c = 0; c < 20; c++) {
+      const k = poisson(l, rnd), cx = 11 + c * 22, cy = 11 + r * 22;
+      M += k;
+      if (k) P++;
+      S('circle', { cx, cy, r: 9.2, class: k ? 'f-readout' : 'f-none rule', 'fill-opacity': k ? .82 : null, 'stroke-width': k ? null : 1, ref: k ? 'p' : null }, grid);
+      if (k) (offs[Math.min(k, 4)]).forEach(([dx, dy]) => S('circle', { cx: cx + dx, cy: cy + dy, r: 1.9, class: 'f-template', ref: 'N0' }, grid));
+    }
+    const p = P / 400, est = P < 400 ? -400 * Math.log(1 - p) : Infinity;
+    const pct = x => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(1)}%`;
+    $('#dp-read').innerHTML = [
+      `<span>true molecules <b>${M}</b></span>`,
+      `<span class="r" data-ref="p">positive partitions <b>${P} / 400</b> (p = ${p.toFixed(3)})</span>`,
+      `<span>naive count, one per positive <b>${P}</b> (${M ? pct(P / M - 1) : '—'})</span>`,
+      `<span class="r" data-ref="lambda">Poisson: −400 · ln(1 − p) <b>${isFinite(est) ? est.toFixed(1) : 'saturated'}</b> (${isFinite(est) && M ? pct(est / M - 1) : 'every partition is positive; λ cannot be recovered'})</span>`,
+    ].join('');
+    drawCurve(l, p);
+    refresh(grid);
+    refresh($('#dp-read'));
+  }
+  function drawCurve(l, p) {
+    const svg = curve;
+    svg.textContent = '';
+    const X = v => 44 + v / 3 * 260, Y = v => 184 - v * 164;
+    for (const v of [0, 1, 2, 3]) { S('text', { x: X(v), y: 202, 'text-anchor': 'middle', class: 'mono', 'font-size': 11, text: v }, svg); S('line', { x1: X(v), x2: X(v), y1: Y(0), y2: Y(1), class: 'rule-soft' }, svg); }
+    for (const v of [0, .5, 1]) { S('text', { x: 36, y: Y(v) + 4, 'text-anchor': 'end', class: 'mono', 'font-size': 11, text: v }, svg); S('line', { x1: X(0), x2: X(3), y1: Y(v), y2: Y(v), class: 'rule-soft' }, svg); }
+    S('text', { x: X(3), y: 202 + 12, 'text-anchor': 'end', class: 'f-param', 'font-size': 13, 'font-style': 'italic', text: 'λ', ref: 'lambda' }, svg);
+    S('text', { x: 12, y: Y(1) + 4, class: 'f-readout', 'font-size': 13, 'font-style': 'italic', text: 'p', ref: 'p' }, svg);
+    S('line', { x1: X(0), x2: X(1), y1: Y(0), y2: Y(1), class: 's-context', 'stroke-dasharray': '4 4', 'stroke-width': 1.5 }, svg);
+    S('text', { x: X(1) + 6, y: Y(1) + 14, class: 'f-context', 'font-size': 12, text: 'naive: p = λ' }, svg);
+    let d = '';
+    for (let v = 0; v <= 3.0001; v += .05) d += `${d ? 'L' : 'M'}${X(v).toFixed(1)},${Y(1 - Math.exp(-v)).toFixed(1)}`;
+    S('path', { d, fill: 'none', class: 's-readout', 'stroke-width': 2.2, ref: 'p' }, svg);
+    S('text', { x: X(2.1), y: Y(1 - Math.exp(-2.1)) + 18, class: 'f-readout', 'font-size': 12, text: 'p = 1 − e^(−λ)', ref: 'p' }, svg);
+    S('line', { x1: X(l), x2: X(l), y1: Y(0), y2: Y(p), class: 's-param', 'stroke-dasharray': '2 3' }, svg);
+    S('circle', { cx: X(l), cy: Y(p), r: 5, class: 'f-readout', ref: 'p' }, svg);
+    refresh(svg);
+  }
+  function mount() {
+    lam.addEventListener('input', render);
+    $('#dp-again').addEventListener('click', () => { seed++; render(); });
+    render();
+  }
+  return { mount };
+})();
+
+/* §5.8: fidelity calculator ------------------------------------------- */
+function mountFidelity() {
+  const ie = $('#fid-eps'), il = $('#fid-l'), id = $('#fid-d'), grid = $('#fid-grid');
+  const cells = [];
+  for (let i = 0; i < 100; i++) cells.push(S('rect', { x: 6 + (i % 10) * 20, y: 6 + Math.floor(i / 10) * 20, width: 16, height: 16, rx: 2 }, grid));
+  function render() {
+    const eps = Math.pow(10, +ie.value), L = Math.round(Math.pow(10, +il.value)), d = +id.value;
+    const mu = eps * L * d, free = Math.exp(-mu), bad = Math.round((1 - free) * 100);
+    const ee = Math.floor(Math.log10(eps) + 1e-9), mm = eps / Math.pow(10, ee);
+    $('#fid-eps-out').textContent = `${mm.toFixed(1)} × 10${sup(ee)}`;
+    $('#fid-l-out').textContent = `${L.toLocaleString('en-US')} bp`;
+    $('#fid-d-out').textContent = d;
+    cells.forEach((c, i) => { c.setAttribute('class', i < bad ? 'f-warn' : 'f-product'); c.setAttribute('data-ref', i < bad ? 'eps' : 'amplicon'); c.setAttribute('opacity', i < bad ? .9 : .55); });
+    $('#fid-read').innerHTML = `<span>errors per product, εLd <b>${mu < .01 ? mu.toExponential(1) : mu.toFixed(2)}</b></span><span>error-free <b>${(free * 100).toFixed(1)}%</b></span><span>at least one error <b>${((1 - free) * 100).toFixed(1)}%</b></span>`;
+    refresh(grid);
+  }
+  [ie, il, id].forEach(i => i.addEventListener('input', render));
+  render();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   6. PEDAGOGY COMPONENTS: predictions, escalation ladder, equation walks
+   ════════════════════════════════════════════════════════════════════ */
+function mountSocratic() {
+  for (const box of $$('.socratic[data-answer]')) {
+    const fb = box.querySelector('.feedback');
+    $$('.choices .btn', box).forEach(b => b.addEventListener('click', () => {
+      const right = b.dataset.v === box.dataset.answer;
+      b.classList.add(right ? 'right' : 'wrong');
+      fb.textContent = b.dataset.fb || '';
+      if (box.dataset.gate === 'lineage') lineage.unlock();
+    }));
+  }
+}
+
+const ladder = (() => {
+  let step = 0;
+  const show = k => {
+    for (let i = 1; i <= k; i++) { const r = $(`.rung[data-rung="${i}"]`); if (r) r.hidden = false; }
+    step = Math.max(step, k);
+    if (step >= 3) { $('#ladder-more').hidden = true; $('#ladder-q').textContent = 'Three more views are open below the question.'; }
+    else if (step > 0) $('#ladder-q').textContent = 'Still not obvious?';
+  };
+  function mount() {
+    $('#ladder-more').addEventListener('click', () => show(step + 1));
+    $('#ladder-yes').addEventListener('click', () => {
+      $('#ladder-q').textContent = 'Good. On to the subtle part: not every copy has the right length.';
+      $('#ladder-yes').hidden = true; $('#ladder-more').hidden = true;
+    });
+  }
+  return { mount, atLeast: k => { if (step < k) show(k); } };
+})();
+
+function mountEquationWalks() {
+  for (const box of $$('.eqsteps')) {
+    const rows = $$('.eqrow', box), btn = box.querySelector('[data-walk]');
+    if (!btn) continue;
+    let i = -1;
+    btn.addEventListener('click', () => {
+      i = box.classList.contains('stepping') ? i + 1 : 0;
+      box.classList.add('stepping');
+      if (i >= rows.length) {
+        box.classList.remove('stepping');
+        rows.forEach(r => r.classList.remove('cur', 'done'));
+        btn.textContent = 'Walk through the steps';
+        return;
+      }
+      rows.forEach((r, k) => { r.classList.toggle('cur', k === i); r.classList.toggle('done', k < i); });
+      btn.textContent = i === rows.length - 1 ? 'Show all steps' : `Next step (${i + 2} of ${rows.length})`;
+    });
+  }
+}
+
+function highlightCode() {
+  const KW = new Set(['def', 'return', 'for', 'in', 'if', 'import', 'from', 'as', 'while', 'not', 'and', 'or', 'lambda', 'None', 'True', 'False']);
+  const BI = new Set(['print', 'range', 'max', 'round', 'sum', 'len', 'int', 'float']);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(#[^\n]*)|("""[\s\S]*?"""|f?"(?:[^"\\\n]|\\.)*"|f?'(?:[^'\\\n]|\\.)*')|\b([A-Za-z_]\w*)\b|\b(\d[\d_]*(?:\.\d+)?(?:e-?\d+)?)\b/g;
+  for (const pre of $$('pre.code[data-lang="py"]')) {
+    const src = pre.textContent;
+    let out = '', last = 0, m, prevDef = false;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      const [tok, com, str, word, num] = m;
+      if (com) out += `<span class="tok-c">${esc(com)}</span>`;
+      else if (str) out += `<span class="tok-s">${esc(str)}</span>`;
+      else if (word) {
+        if (prevDef) out += `<span class="tok-f">${word}</span>`;
+        else if (KW.has(word)) out += `<span class="tok-k">${word}</span>`;
+        else if (BI.has(word)) out += `<span class="tok-b">${word}</span>`;
+        else out += word;
+        prevDef = word === 'def';
+      } else if (num) out += `<span class="tok-n">${num}</span>`;
+      else out += esc(tok);
+      last = m.index + tok.length;
+    }
+    pre.innerHTML = out + esc(src.slice(last));
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   7. APPENDIX: the model, counted from the page itself
+   ════════════════════════════════════════════════════════════════════ */
+function buildInventory() {
+  const tbl = $('#objects');
+  if (!tbl) return;
+  const rows = Object.keys(OBJECTS).map(id => {
+    let prose = 0, math = 0, ctl = 0;
+    const figs = new Set();
+    for (const e of $$(`[data-ref~="${id}"]`)) {
+      if (e.closest('#objects, #relations, #tip, mjx-assistive-mml')) continue;
+      if (e.closest('mjx-container')) math++;
+      else if (e.matches('input')) ctl++;
+      else if (e.closest('svg')) figs.add((e.closest('figure') || {}).id || 'inline');
+      else prose++;
+    }
+    const fig = figs.size;
+    return { id, o: OBJECTS[id], prose, math, fig, ctl, total: (prose > 0) + (math > 0) + fig + ctl };
+  }).sort((a, b) => b.total - a.total || (b.prose + b.math) - (a.prose + a.math));
+  tbl.innerHTML = '<thead><tr><th>Object</th><th>Role</th><th class="num">Prose mentions</th><th class="num">Equation symbols</th><th class="num">Figures</th><th class="num">Controls</th></tr></thead><tbody>' +
+    rows.map(r => `<tr><td><span class="sw" data-ref="${r.id}"></span><span class="r" data-ref="${r.id}">${r.o.label}</span></td><td>${ROLES[r.o.role].name}</td><td class="num">${r.prose}</td><td class="num">${r.math}</td><td class="num">${r.fig}</td><td class="num">${r.ctl}</td></tr>`).join('') + '</tbody>';
+  refresh(tbl);
+}
+function buildRelations() {
+  const ul = $('#relations');
+  for (const [a, verb, b, note] of RELATIONS) {
+    const li = document.createElement('li');
+    const chip = id => { const s = document.createElement('span'); s.className = 'r'; s.setAttribute('data-ref', id); s.textContent = OBJECTS[id].label; return s; };
+    li.append(chip(a), document.createTextNode(` ${verb} `), chip(b));
+    if (note) { const m = document.createElement('span'); m.className = 'mono small'; m.textContent = `  ·  ${note}`; li.append(m); }
+    ul.append(li);
+  }
+  refresh(ul);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   8. BOOT
+   ════════════════════════════════════════════════════════════════════ */
+const safely = (name, f) => { try { f(); } catch (err) { console.error(`[${name}]`, err); } };
+safely('chrome', initChrome);
+safely('toc', buildToc);
+safely('concept map', mountConceptMap);
+safely('scale', mountScale);
+safely('active site', mountActiveSite);
+safely('cycle animation', cycleAnim.mount);
+safely('primer bench', primerBench.mount);
+safely('doubling tree', mountDoublingTree);
+safely('lineage', lineage.mount);
+safely('amplification', amplification.mount);
+safely('taqman', mountTaqman);
+safely('digital pcr', digital.mount);
+safely('fidelity', mountFidelity);
+safely('socratic', mountSocratic);
+safely('ladder', ladder.mount);
+safely('equation walks', mountEquationWalks);
+safely('code', highlightCode);
+safely('relations', buildRelations);
+safely('depth', () => setDepth(['newcomer', 'standard', 'expert'].includes(pref('depth')) ? pref('depth') : 'standard'));
+paint();
+buildInventory();
+window.__onMath = adoptMath;
+if (window.__mathReady) adoptMath();
+})();
+</script>
+</body>
+</html>
