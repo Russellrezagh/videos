@@ -1,0 +1,17 @@
+subtitles:
+- A single copy of a gene is invisible. To see it, measure it, or read it, you need billions of copies.
+- The polymerase chain reaction makes them, by copying one chosen stretch of DNA, and then copying the copies.
+- Start with one double-stranded template. Only the stretch between two primer sites matters.
+- Heat it to ninety-five degrees, and the two strands come apart.
+- Cool it down, and two short primers bind their matching sites, with their three-prime ends pointing toward each other.
+- At seventy-two degrees, the polymerase extends each primer, reading the template one base at a time.
+- One duplex has become two. But these first copies run past the far primer, so only one of their ends is defined.
+- In the next cycle, a long copy is the template. Copying it stops where it ends, which is at the other primer.
+- So this new strand runs exactly from primer to primer. From now on, exact copies make more exact copies.
+- Every strand is a template in the next cycle, so after n cycles there are two to the n duplexes.
+- Long products gain only two per cycle. Subtract them, and exact copies number two to the n, minus two n.
+- After thirty cycles, that is about a billion exact copies, and just sixty long ones.
+- Real cycles miss a few templates, so each one multiplies the count by one plus E, the efficiency.
+- On a logarithmic axis, that growth is a straight line, and its height records how much template you started with.
+- A threshold in the growth phase is crossed at a cycle called C T. Ten times more template crosses it about three point three cycles sooner.
+- That shift is how a real-time PCR test reads the amount of DNA in a sample.

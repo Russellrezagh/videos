@@ -1,0 +1,66 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.864
+A single copy of a gene is invisible. To see it, measure it, or read it, you need billions of copies.
+
+2
+00:00:06.833 --> 00:00:14.177
+The polymerase chain reaction makes them, by copying one chosen stretch of DNA, and then copying the copies.
+
+3
+00:00:14.167 --> 00:00:20.119
+Start with one double-stranded template. Only the stretch between two primer sites matters.
+
+4
+00:00:20.133 --> 00:00:24.117
+Heat it to ninety-five degrees, and the two strands come apart.
+
+5
+00:00:24.133 --> 00:00:31.069
+Cool it down, and two short primers bind their matching sites, with their three-prime ends pointing toward each other.
+
+6
+00:00:31.100 --> 00:00:37.868
+At seventy-two degrees, the polymerase extends each primer, reading the template one base at a time.
+
+7
+00:00:37.900 --> 00:00:45.748
+One duplex has become two. But these first copies run past the far primer, so only one of their ends is defined.
+
+8
+00:00:45.767 --> 00:00:52.775
+In the next cycle, a long copy is the template. Copying it stops where it ends, which is at the other primer.
+
+9
+00:00:52.767 --> 00:01:00.447
+So this new strand runs exactly from primer to primer. From now on, exact copies make more exact copies.
+
+10
+00:01:00.433 --> 00:01:06.937
+Every strand is a template in the next cycle, so after n cycles there are two to the n duplexes.
+
+11
+00:01:06.933 --> 00:01:14.541
+Long products gain only two per cycle. Subtract them, and exact copies number two to the n, minus two n.
+
+12
+00:01:14.533 --> 00:01:20.557
+After thirty cycles, that is about a billion exact copies, and just sixty long ones.
+
+13
+00:01:20.533 --> 00:01:27.301
+Real cycles miss a few templates, so each one multiplies the count by one plus E, the efficiency.
+
+14
+00:01:27.299 --> 00:01:34.475
+On a logarithmic axis, that growth is a straight line, and its height records how much template you started with.
+
+15
+00:01:34.466 --> 00:01:43.442
+A threshold in the growth phase is crossed at a cycle called C T. Ten times more template crosses it about three point three cycles sooner.
+
+16
+00:01:43.433 --> 00:01:49.433
+That shift is how a real-time PCR test reads the amount of DNA in a sample.
+

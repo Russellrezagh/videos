@@ -31,6 +31,7 @@
   --c-readout: #e7d16b;      /* signals: threshold, Ct, fluorescence   */
   --c-warn: #f07173;         /* errors, off-target, contamination      */
   --c-context: #8f96a3;      /* raw material: dNTPs, Mg2+, buffer      */
+  --video-bg: #13151a;       /* the video's own background, same in both themes */
   --gel-bg: #07090c;
   --gel-lane: #12161c;
   --gel-ink: #c3c9d3;
@@ -222,6 +223,11 @@ svg a:focus-visible rect { stroke: var(--link); stroke-width: 2; }
 .fresh { animation: draw .75s ease-out forwards; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes tipin { to { opacity: 1; } }
+
+.video-wrap { border-radius: 6px; overflow: hidden; background: var(--video-bg); border: 1px solid var(--rule-soft); }
+.video-wrap video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--video-bg); }
+video::cue { font-family: var(--font-serif); font-size: 1rem; line-height: 1.35; background: rgb(0 0 0 / .62); color: #f2f3f5; }
+.btn[data-ref].hl { border-color: var(--rc); color: var(--rc); }
 
 /* ── controls ────────────────────────────────────────────────── */
 .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); gap: .9rem 1.5rem; margin-top: 1rem; }
@@ -473,6 +479,8 @@ window.MathJax = {
     </div>
   </aside>
 
+  <p class="small">Short on time? <a href="#video-3-1" data-seek="0">Video 3.1</a> tells the whole story in under two minutes. Every figure after it lets you test one piece of it.</p>
+
   <figure class="fig wide" id="fig-0-1">
     <div class="scroll-x"><svg class="figsvg" id="fig01" viewBox="0 0 900 340" role="img" aria-label="Concept map of PCR: molecules, reagents, process, mathematics, readouts"></svg></div>
     <figcaption><span class="fignum">Figure 0.1</span>The chapter as a graph. Left to right: the molecules, the reagents built from them, the process that uses the reagents, the mathematics the process obeys, and what we read out at the end. Each node links to its section.</figcaption>
@@ -545,6 +553,18 @@ window.MathJax = {
   <h2><span class="num">3</span>One cycle, three temperatures</h2>
   <p>A thermocycler is a metal block that can change <span class="r" data-ref="T">temperature</span> by tens of degrees in seconds. Each cycle runs three steps, and the only thing that changes between them is the temperature. Temperature decides which physical process wins: melting, binding or copying.</p>
 
+  <p>Watch it once with narration first, then take the controls. Video 3.1 runs one cycle, follows it into the next, and goes on to count the copies and read them out as a C<sub>t</sub>, the subject of §4 and §5.</p>
+  <figure class="fig wide" id="video-3-1">
+    <div class="video-wrap">
+      <video id="pcr-video" controls preload="metadata" playsinline poster="pcr_explained_poster.jpg">
+        <source src="pcr_explained.mp4" type="video/mp4">
+        <source src="pcr_explained.webm" type="video/webm">
+      </video>
+    </div>
+    <div class="scenes video-chapters" id="video-chapters" aria-label="Video chapters"></div>
+    <figcaption><span class="fignum">Video 3.1</span>PCR, narrated (1 min 49 s, captions on). Rendered with Manim from the same model as the rest of the page: the same objects, colors and geometry as Figure 3.1, so the guided version and the one you can scrub are two views of one thing.</figcaption>
+  </figure>
+
   <figure class="fig wide" id="fig-3-1">
     <div class="well">
       <svg class="figsvg" id="fig31" viewBox="0 0 960 448" role="img" aria-label="Animation of one PCR cycle: denaturation, annealing, extension, then the start of cycle two"></svg>
@@ -558,7 +578,7 @@ window.MathJax = {
       <div class="scenes" id="anim-scenes"></div>
       <p class="narration" id="anim-narr" aria-live="polite"></p>
     </div>
-    <figcaption><span class="fignum">Figure 3.1</span>One cycle, then the start of the next. The strip below the molecules is the thermocycler program on the same clock; its annealing level follows the <span class="r" data-ref="Ta">annealing temperature</span> you set in Figure 3.2. Jump with the scene buttons or drag the scrubber.</figcaption>
+    <figcaption><span class="fignum">Figure 3.1</span>One cycle, then the start of the next, now under your control. The strip below the molecules is the thermocycler program on the same clock; its annealing level follows the <span class="r" data-ref="Ta">annealing temperature</span> you set in Figure 3.2. Jump with the scene buttons or drag the scrubber.</figcaption>
   </figure>
   <p>Notice two things. After one cycle the copies are longer than the target: in cycle 1 nothing tells the polymerase where to stop, so it runs on past the far primer site, producing <span class="r" data-ref="longProduct">long products</span>. In cycle 2 those long copies become templates, and copying one of them stops exactly at its end, which is the other primer. The first strands of exactly the <span class="r" data-ref="amplicon">target</span> length appear there. Section 4 counts what happens next.</p>
 
@@ -637,7 +657,7 @@ window.MathJax = {
 
 <section class="sec" id="s4">
   <h2><span class="num">4</span>Counting copies: where the exponential comes from</h2>
-  <p>Here is the claim that makes PCR powerful: every strand made in one cycle is a template in the next. If every template is copied, the number of target molecules doubles each cycle, so after \(\nn\) cycles one molecule has become \(2^{\nn}\).</p>
+  <p>Here is the claim that makes PCR powerful: every strand made in one cycle is a template in the next. If every template is copied, the number of target molecules doubles each cycle, so after \(\nn\) cycles one molecule has become \(2^{\nn}\). Chapter 4 of <a href="#video-3-1" data-seek="60.45">Video 3.1</a> animates this count.</p>
 
   <div class="ladder intro-only" id="ladder">
     <div class="ladder-ctl">
@@ -787,7 +807,7 @@ window.MathJax = {
     <div class="eqrow"><div>\[ \Ef = 10^{-1/\text{slope}} - 1 \]</div><p class="why">Run a dilution series, fit the line, and read the efficiency off its slope.</p></div>
     <div class="btn-row"><button class="btn" type="button" data-walk>Walk through the steps</button></div>
   </div>
-  <p>At \(\Ef = 1\) the slope is \(-1/\log_{10}2 = -3.32\): each ten-fold dilution delays the crossing by 3.32 cycles, and each two-fold dilution by exactly one.</p>
+  <p>At \(\Ef = 1\) the slope is \(-1/\log_{10}2 = -3.32\): each ten-fold dilution delays the crossing by 3.32 cycles, and each two-fold dilution by exactly one. Chapter 5 of <a href="#video-3-1" data-seek="80.55">Video 3.1</a> shows the same shift on three curves.</p>
   <div class="worked">
     <p class="label">Worked example 5.2</p>
     <p>A ten-fold dilution series of a standard gives a line with slope −3.45.</p>
@@ -1118,6 +1138,7 @@ Spread of Ct over 500 replicates:
     <table class="t">
       <thead><tr><th>Idea</th><th>Medium</th><th>Reason</th></tr></thead>
       <tbody>
+        <tr><td>The whole story, first pass</td><td>Narrated Manim video with chapters</td><td>A fixed order and a voice set up the mental model; the figures after it let you test each piece</td></tr>
         <tr><td>Scale of the problem</td><td>Static figure, two aligned axes</td><td>One relationship (copies ↔ cycles) to see at a glance</td></tr>
         <tr><td>Antiparallel strands, the 3′ rule</td><td>Annotated static diagram</td><td>Structure, not change</td></tr>
         <tr><td>One thermal cycle</td><td>Guided animation synced to a thermal profile</td><td>A transformation over time with a fixed order</td></tr>
@@ -1147,7 +1168,7 @@ Spread of Ct over 500 replicates:
     <li>Bustin S. A. et al. (2009). The MIQE guidelines: minimum information for publication of quantitative real-time PCR experiments. <i>Clinical Chemistry</i> 55, 611–622.</li>
     <li>Corman V. M. et al. (2020). Detection of 2019 novel coronavirus (2019-nCoV) by real-time RT-PCR. <i>Eurosurveillance</i> 25, 2000045.</li>
   </ul>
-  <footer class="colophon">One self-contained HTML file. Equations are typeset with MathJax; every figure is hand-built SVG driven by the shared model in the page’s script. Typical reagent amounts and temperatures are common starting points, not a protocol.</footer>
+  <footer class="colophon">Equations are typeset with MathJax, and every figure is hand-built SVG driven by the shared model in the page’s script. Video 3.1 was rendered with Manim Community Edition and narrated with the Kokoro text-to-speech model, using the same colors and geometry as that model. Typical reagent amounts and temperatures are common starting points, not a protocol.</footer>
 </section>
 
 </main>
@@ -1334,7 +1355,7 @@ document.addEventListener('pointerover', e => {
   const el = e.target.closest ? e.target.closest('[data-ref]') : null;
   if (!el || !OBJECTS[firstRef(el)]) { setFocus(null); tip.hidden = true; return; }
   setFocus(firstRef(el));
-  if (el.matches('input')) { tip.hidden = true; return; }
+  if (el.matches('input, button')) { tip.hidden = true; return; }
   showTip(el, e.clientX, e.clientY);
 });
 document.addEventListener('focusin', e => {
@@ -2466,6 +2487,56 @@ function mountFidelity() {
   render();
 }
 
+/* Video 3.1: the Manim render, chaptered by scene ----------------------
+   Chapter starts are the rendered scene boundaries; each chapter is tagged
+   with the model object it is about, so it joins the hover linking. */
+function mountVideo() {
+  const v = $('#pcr-video'), host = $('#video-chapters');
+  if (!v || !host) return;
+  const CHAPTERS = [[0, 'The problem', 'N0'], [14.167, 'One cycle', 'T'], [45.767, 'Cycle 2: exact copies', 'amplicon'],
+    [60.433, 'Counting copies', 'n'], [80.533, 'From copies to Ct', 'Ct']];
+  CHAPTERS.forEach(([t, name, ref], i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn';
+    b.textContent = `${i + 1} ${name}`;
+    b.setAttribute('data-ref', ref);
+    b.addEventListener('click', () => { v.currentTime = t + .02; const p = v.play(); if (p) p.catch(() => {}); });
+    host.append(b);
+  });
+  /* Captions, from pcr_explained.vtt; added in script so they work wherever the page is served. */
+  const CUES = [
+    [0.0, 6.864, "A single copy of a gene is invisible. To see it, measure it, or read it, you need billions of copies."],
+    [6.833, 14.177, "The polymerase chain reaction makes them, by copying one chosen stretch of DNA, and then copying the copies."],
+    [14.167, 20.119, "Start with one double-stranded template. Only the stretch between two primer sites matters."],
+    [20.133, 24.117, "Heat it to ninety-five degrees, and the two strands come apart."],
+    [24.133, 31.069, "Cool it down, and two short primers bind their matching sites, with their three-prime ends pointing toward each other."],
+    [31.1, 37.868, "At seventy-two degrees, the polymerase extends each primer, reading the template one base at a time."],
+    [37.9, 45.748, "One duplex has become two. But these first copies run past the far primer, so only one of their ends is defined."],
+    [45.767, 52.775, "In the next cycle, a long copy is the template. Copying it stops where it ends, which is at the other primer."],
+    [52.767, 60.447, "So this new strand runs exactly from primer to primer. From now on, exact copies make more exact copies."],
+    [60.433, 66.937, "Every strand is a template in the next cycle, so after n cycles there are two to the n duplexes."],
+    [66.933, 74.541, "Long products gain only two per cycle. Subtract them, and exact copies number two to the n, minus two n."],
+    [74.533, 80.557, "After thirty cycles, that is about a billion exact copies, and just sixty long ones."],
+    [80.533, 87.301, "Real cycles miss a few templates, so each one multiplies the count by one plus E, the efficiency."],
+    [87.299, 94.475, "On a logarithmic axis, that growth is a straight line, and its height records how much template you started with."],
+    [94.466, 103.442, "A threshold in the growth phase is crossed at a cycle called C T. Ten times more template crosses it about three point three cycles sooner."],
+    [103.433, 109.433, "That shift is how a real-time PCR test reads the amount of DNA in a sample."],
+  ];
+  if (window.VTTCue && v.addTextTrack) {
+    const track = v.addTextTrack('captions', 'English', 'en');
+    CUES.forEach(([a, b, text]) => track.addCue(new VTTCue(a, b, text)));
+    track.mode = 'showing';
+  }
+  const mark = () => {
+    const k = CHAPTERS.reduce((acc, [t], i) => (v.currentTime >= t - .05 ? i : acc), 0);
+    $$('button', host).forEach((b, i) => b.setAttribute('aria-current', String(i === k)));
+  };
+  v.addEventListener('timeupdate', mark);
+  mark();
+  $$('a[data-seek]').forEach(a => a.addEventListener('click', () => { v.currentTime = +a.dataset.seek; }));
+  refresh(host);
+}
+
 /* ════════════════════════════════════════════════════════════════════
    6. PEDAGOGY COMPONENTS: predictions, escalation ladder, equation walks
    ════════════════════════════════════════════════════════════════════ */
@@ -2559,7 +2630,7 @@ function buildInventory() {
       if (e.closest('#objects, #relations, #tip, mjx-assistive-mml')) continue;
       if (e.closest('mjx-container')) math++;
       else if (e.matches('input')) ctl++;
-      else if (e.closest('svg')) figs.add((e.closest('figure') || {}).id || 'inline');
+      else if (e.closest('svg, #video-chapters')) figs.add((e.closest('figure') || {}).id || 'inline');
       else prose++;
     }
     const fig = figs.size;
@@ -2590,6 +2661,7 @@ safely('toc', buildToc);
 safely('concept map', mountConceptMap);
 safely('scale', mountScale);
 safely('active site', mountActiveSite);
+safely('video', mountVideo);
 safely('cycle animation', cycleAnim.mount);
 safely('primer bench', primerBench.mount);
 safely('doubling tree', mountDoublingTree);
