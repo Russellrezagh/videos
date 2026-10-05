@@ -215,6 +215,40 @@ svg .fg-stroke { stroke: var(--fg-soft); }
 .s-context { stroke: var(--c-context); } .f-context { fill: var(--c-context); }
 .f-bg { fill: var(--bg); } .f-raise { fill: var(--bg-raise); } .f-sunk { fill: var(--bg-sunk); }
 .f-none { fill: none; }
+.f-fg { fill: var(--fg); } .f-soft { fill: var(--fg-soft); } .f-faint { fill: var(--fg-faint); }
+.s-fg { stroke: var(--fg); } .s-soft { stroke: var(--fg-soft); } .s-faint { stroke: var(--fg-faint); }
+
+/* Stages: the figures as Manim-style loops. A stage keeps the dark palette of Video 0.1
+   in both themes, so each figure reads as one more frame of the video. */
+.stage {
+  --bg: #13151a; --bg-raise: #1b1e25; --bg-sunk: #1c1f27; --rule: #3a404c; --rule-soft: #262a33;
+  --fg: #dadde3; --fg-soft: #aab0bb; --fg-faint: #6f7682;
+  --c-public: #74aae4; --c-policy: #f39b4c; --c-policy-dim: #b47d4f; --c-hidden: #e888bb; --c-value: #5fcba2;
+  --c-param: #ab9ef3; --c-belief: #e7d16b; --c-warn: #f07173; --c-context: #8f96a3;
+  color-scheme: dark; color: var(--fg); background: var(--video-bg);
+  border: 1px solid var(--rule-soft); border-radius: 6px; overflow: hidden;
+}
+.stage-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.stage svg.stage-svg { display: block; width: 100%; height: auto; }
+.stage svg text { font-family: var(--font-serif); }
+.stage:fullscreen, .stage.zoomed { display: flex; flex-direction: column; justify-content: center; border: 0; border-radius: 0; }
+.stage.zoomed { position: fixed; inset: 0; z-index: 60; }
+.stage:fullscreen .stage-scroll, .stage.zoomed .stage-scroll { flex: 1; min-height: 0; display: flex; align-items: center; }
+.stage:fullscreen svg.stage-svg, .stage.zoomed svg.stage-svg { height: 100%; max-height: calc(100vh - 3.4rem); }
+.stage-btn.stage-fs::before { content: none; }
+.stage-cap { margin: 0; padding: .1rem 1.1rem .5rem; min-height: 3.3em; font-size: .95rem; line-height: 1.45; color: var(--fg-soft); }
+.stage-cap b { color: var(--fg); font-weight: 600; }
+.stage-bar { display: flex; align-items: center; gap: .75rem; padding: .3rem .8rem .55rem; }
+.stage-btn { flex: none; width: 1.85rem; height: 1.85rem; border-radius: 50%; border: 1px solid var(--rule); background: transparent; color: var(--fg-soft); cursor: pointer; display: grid; place-items: center; padding: 0; }
+.stage-btn:hover, .stage-btn:focus-visible { color: var(--fg); border-color: var(--fg-faint); }
+.stage-btn::before { content: ""; box-sizing: border-box; width: .62rem; height: .68rem; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
+.stage-btn.paused::before { width: 0; height: 0; border-right: 0; border-left: .6rem solid currentColor; border-top: .36rem solid transparent; border-bottom: .36rem solid transparent; margin-left: .18rem; }
+.stage-track { flex: 1; position: relative; height: 4px; border-radius: 2px; background: var(--rule-soft); cursor: pointer; touch-action: none; }
+.stage-track::after { content: ""; position: absolute; inset: -9px 0; }
+.stage-track:focus-visible { outline: 2px solid var(--fg-faint); outline-offset: 5px; }
+.stage-fill { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: var(--fg-faint); }
+.stage-track i { position: absolute; top: -3px; width: 2px; height: 10px; margin-left: -1px; background: var(--rule); }
+.stage-mode { flex: none; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-faint); }
 svg text.f-public { fill: var(--c-public); } svg text.f-policy { fill: var(--c-policy); } svg text.f-hidden { fill: var(--c-hidden); }
 svg text.f-value { fill: var(--c-value); } svg text.f-param { fill: var(--c-param); } svg text.f-belief { fill: var(--c-belief); }
 svg text.f-warn { fill: var(--c-warn); } svg text.f-context { fill: var(--c-context); } svg text.f-policyDim { fill: var(--c-policy-dim); }
@@ -533,14 +567,15 @@ window.MathJax = {
     <div class="callout-body">
       <svg class="mascot" viewBox="0 0 120 92" aria-hidden="true"><use href="#piece"></use></svg>
       <div>
-        <p>This page uses one color for each role. <span class="r" data-ref="public">Public information</span> is blue. <span class="r" data-ref="hidden">Hidden information</span> is pink. A <span class="r" data-ref="policy">policy</span> (the probabilities of decisions) is orange. A <span class="r" data-ref="value">value</span> (an expected result) is green. A <span class="r" data-ref="belief">belief</span> (a guess about hidden information) is yellow. The knobs of the method are purple. Errors are <span class="r" data-ref="exploit">red</span>.</p>
+        <p>This page uses one color for each role. <span class="r" data-ref="public">Public information</span> is blue. <span class="r" data-ref="hidden">Hidden information</span> is pink. A <span class="r" data-ref="policy">policy</span> (the probabilities of decisions) is orange. A <span class="r" data-ref="value">value</span> (an expected result) is green. A <span class="r" data-ref="belief">belief</span> (a guess about hidden information) is yellow.</p>
+        <p>The knobs of the method are purple, and errors are <span class="r" data-ref="exploit">red</span>. The figures and Video 0.1 use the same colors.</p>
         <p>Hover over (or tap) a colored term. All views of the same object then glow: text, equations, figures and controls. The droplet in the toolbar removes the colors. The switch next to it changes the amount of background and detail.</p>
         <p>The text follows the rules of ASD-STE100 Simplified Technical English for most sentences. Appendix B measures how closely.</p>
       </div>
     </div>
   </aside>
 
-  <p class="small">Short on time? <a href="#video-0-1" data-seek="0">Video 0.1</a> tells the full story in under three minutes. Each lab after it lets you test one part.</p>
+  <p class="small">Short on time? <a href="#video-0-1" data-seek="0">Video 0.1</a> tells the full story in under three minutes, without sound. Each figure after it repeats one part as a short loop in the same style.</p>
 
   <figure class="fig wide" id="video-0-1">
     <div class="video-wrap">
@@ -550,7 +585,7 @@ window.MathJax = {
       </video>
     </div>
     <div class="scenes video-chapters" id="video-chapters" aria-label="Video chapters"></div>
-    <figcaption><span class="fignum">Video 0.1</span>Decisions in the dark, narrated (captions on). It uses the same objects, colors and toy games as the labs on this page.</figcaption>
+    <figcaption><span class="fignum">Video 0.1</span>Decisions in the dark: a silent Manim animation in five chapters. A headline at the top left names each step. The figures on this page use the same objects, colors and toy games.</figcaption>
   </figure>
 
   <figure class="fig wide" id="fig-0-1">
@@ -585,12 +620,13 @@ window.MathJax = {
   <p>Harsanyi connected the two pairs in 1967. He added a chance player, “Nature”, that selects each player’s type at the start. After this change, incomplete information becomes imperfect information about a chance move. For this work, Harsanyi shared the 1994 Nobel Memorial Prize in Economics with Nash and Selten.</p>
 
   <figure class="fig wide" id="fig-1-1">
-    <div class="well">
-      <p class="objective"><b>Goal:</b> sort games by what the players can see and what they know. Select a game to read why it is in its cell.</p>
-      <div class="tax" id="tax"></div>
-      <p class="tax-detail" id="tax-detail" aria-live="polite"></p>
-    </div>
-    <figcaption><span class="fignum">Figure 1.1</span>Two independent questions. Columns: does each player see all earlier events (perfect information)? Rows: does each player know the rules and all payoffs (complete information)? Chance is a third, separate property, shown by the tag “chance”. The same table, with chess and Stratego, is in <a href="#video-0-1" data-seek="@1">Video 0.1, chapter 1</a>.</figcaption>
+    <div class="stage" id="st-two-questions" data-scene="two-questions"></div>
+    <figcaption><span class="fignum">Figure 1.1</span>Two different questions about information. Columns: does each player see the whole state, with all earlier events (perfect information)? Rows: does each player know the rules and all payoffs (complete information)? Chess is in the top left cell. Stratego is in the top right cell. The same loop is chapter 1 of <a href="#video-0-1" data-seek="@1">Video 0.1</a>.</figcaption>
+  </figure>
+
+  <figure class="fig wide" id="fig-1-2">
+    <div class="stage" id="st-taxonomy" data-scene="taxonomy"></div>
+    <figcaption><span class="fignum">Figure 1.2</span>Fifteen games on the same two axes. The loop visits each game in turn and gives the reason for its cell. Select a game to stop on it. The tag “chance” marks games with random events. Chance is a third, separate property.</figcaption>
   </figure>
 
   <div class="socratic" data-answer="a">
@@ -626,9 +662,9 @@ window.MathJax = {
   <span class="gloss">Stratego comes from the French game L’Attaque (patent 1908). The Dutch designer Jacques Mogendorff created the modern game before 1942.</span>
   <p>When a piece moves onto an enemy piece, a battle occurs. Both ranks become <span class="r" data-ref="public">public</span>. The piece with the higher rank wins. If the ranks are equal, both pieces go. A player wins if they capture the enemy Flag, or if the enemy cannot move.</p>
 
-  <figure class="fig" id="fig-2-1">
-    <div class="scroll-x"><svg class="figsvg" id="fig21" viewBox="0 0 520 482" role="img" aria-label="A Stratego position from the perspective of your army" style="max-width:34rem;margin-inline:auto"></svg></div>
-    <figcaption><span class="fignum">Figure 2.1</span>A position from your side. You see your own ranks. The enemy ranks are <span class="r" data-ref="hidden">hidden</span> (pink “?”). One enemy piece fought a battle, so its rank (7, a Major) is <span class="r" data-ref="public">public</span>. A small dot marks enemy pieces that moved: they cannot be Bombs or Flags. Your Flag (F) has Bombs on three sides, a “bombed-in” Flag. The two blocks in the center are lakes.</figcaption>
+  <figure class="fig wide" id="fig-2-1">
+    <div class="stage" id="st-board" data-scene="board"></div>
+    <figcaption><span class="fignum">Figure 2.1</span>What one position tells you. You see your own ranks, but the enemy ranks are <span class="r" data-ref="hidden">hidden</span> (pink “?”). A move shows that a piece is not a Bomb and not the Flag (small dot). A battle makes both ranks <span class="r" data-ref="public">public</span>. A move of more than one square identifies a Scout for certain. The two blocks in the center are lakes.</figcaption>
   </figure>
 
   <div class="tbl-wrap">
@@ -681,67 +717,45 @@ window.MathJax = {
     </div>
     <div class="rung" data-rung="1" hidden>
       <p class="label">An everyday picture</p>
-      <p>Think of a penalty kick in football. The kicker selects left or right. The goalkeeper selects left or right at the same time. If the kicker always goes left, the goalkeeper always dives left. So the value of “kick left” depends on how often the kicker kicks right. Economists measured real penalty kicks in 2003. Professional players mix their choices at close to the rates that game theory predicts.</p>
+      <p>Think of a penalty kick in football. The kicker selects left or right. The goalkeeper selects left or right at the same time.</p>
+      <p>If the kicker always goes left, the goalkeeper always dives left. So the value of “kick left” depends on how often the kicker kicks right. Economists measured real penalty kicks in 2003. Professional players mix their choices at close to the rates that game theory predicts.</p>
     </div>
     <div class="rung" data-rung="2" hidden>
       <p class="label">A story</p>
       <p>In a Sherlock Holmes story, a dog did not bark during the night. Holmes concludes that the dog knew the intruder. An action that did <em>not</em> occur gave the information. Stratego is the same. If an enemy piece does not attack your Scout, you learn something about its rank. But what you learn depends on how often that player usually attacks.</p>
     </div>
     <div class="rung" data-rung="3" hidden>
-      <p class="label">Hands on</p>
-      <p>Use the sliders in <a href="#fig-3-1">Figure 3.1</a>. Move the bluff rate and watch the opponent’s belief and the values change together.</p>
+      <p class="label">Watch it move</p>
+      <p>Look at <a href="#fig-3-2">Figure 3.2</a>. The bluff rate and the stand rate go around a slow circle. Watch each action value rise and fall with the decisions of the other player.</p>
     </div>
   </div>
 
   <figure class="fig wide" id="fig-3-1">
-    <div class="well">
-      <p class="objective"><b>Goal:</b> see that the value of a bluff depends on how often the opponent stands, and that the value of standing depends on how often you bluff. Change <span class="r" data-ref="b">b</span> and <span class="r" data-ref="s">s</span>, and watch every number move.</p>
-      <div class="lab-grid">
-        <div>
-          <p class="small" style="margin-top:0"><b>The bluff game.</b> One of your <span class="r" data-ref="hidden">hidden</span> pieces is next to an enemy Major (7). Your piece is a General (9) with probability 0.25, or a Scout (2) with probability 0.75. With the General, you always advance. With the Scout, you advance with probability <span class="r" data-ref="b">b</span> (a <span class="r" data-ref="bluff">bluff</span>), or you stay. The opponent sees the advance, but not the rank. The opponent stands with probability <span class="r" data-ref="s">s</span>, or retreats.</p>
-          <div class="tbl-wrap" style="margin:.4rem 0 .8rem">
-            <table class="vtable">
-              <thead><tr><th>Your piece</th><th>Opponent stands</th><th>Opponent retreats</th></tr></thead>
-              <tbody>
-                <tr><td>General advances</td><td class="num">+1.0 (you take the Major)</td><td class="num">+0.2 (you gain space)</td></tr>
-                <tr><td>Scout advances</td><td class="num">−0.5 (you lose the Scout)</td><td class="num">+0.2 (the bluff works)</td></tr>
-                <tr><td>Scout stays</td><td class="num" colspan="2" style="text-align:center">0</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="controls" style="margin-top:.4rem">
-            <div class="ctl"><label for="bl-b">your bluff rate b <output id="bl-b-out"></output></label><input type="range" id="bl-b" min="0" max="1" step="0.01" value="0.7" data-ref="b"></div>
-            <div class="ctl"><label for="bl-s">opponent stand rate s <output id="bl-s-out"></output></label><input type="range" id="bl-s" min="0" max="1" step="0.01" value="0.6" data-ref="s"></div>
-          </div>
-          <div class="btn-row">
-            <button class="btn" type="button" id="bl-br-opp">Opponent best-responds</button>
-            <button class="btn" type="button" id="bl-br-you">You best-respond</button>
-            <button class="btn primary" type="button" id="bl-eq">Go to the equilibrium</button>
-          </div>
-          <div class="statline" id="bl-stats"></div>
-        </div>
-        <div>
-          <svg class="figsvg" id="bl-graph" viewBox="0 0 420 300" role="img" aria-label="Influence graph of decisions and values"></svg>
-          <div class="legend"><span><i style="--lc:var(--c-value)"></i>raising this frequency raises that value</span><span><i class="dash" style="--lc:var(--c-warn)"></i>raising it lowers that value</span></div>
-          <svg class="figsvg" id="bl-curve" viewBox="0 0 420 210" role="img" aria-label="Your guaranteed value as a function of bluff rate" style="margin-top:.8rem"></svg>
-        </div>
-      </div>
-      <div class="try">
-        <p class="label">Try this</p>
-        <ol>
-          <li>Set <span class="r" data-ref="b">b</span> to 1 (always bluff). Press <i>Opponent best-responds</i>. What does the opponent do, and what is your value now?</li>
-          <li>Set <span class="r" data-ref="b">b</span> to 0 (never bluff). Press <i>Opponent best-responds</i> again. Why does the opponent now retreat from every advance?</li>
-          <li>Press <i>Go to the equilibrium</i>. Move either slider a little. Who loses value?</li>
-        </ol>
-      </div>
-    </div>
-    <figcaption><span class="fignum">Figure 3.1</span>A live version of the paper’s Figure 1. Each node is a decision; the number is its current <span class="r" data-ref="qvalue">action value</span>. An arrow means: a change in the frequency of the decision at the tail changes the value of the decision at the head. The lower plot shows your <em>guaranteed</em> value for each bluff rate: the value if the opponent knows <span class="r" data-ref="b">b</span> and best-responds. Its peak is the equilibrium. The same game, narrated, is in <a href="#video-0-1" data-seek="@2">Video 0.1, chapter 2</a>.</figcaption>
+    <div class="stage" id="st-bluff" data-scene="bluff"></div>
+    <figcaption><span class="fignum">Figure 3.1</span>The bluff game. Your <span class="r" data-ref="hidden">hidden</span> piece next to an enemy Major (7) is a General (9) with probability 0.25, or a Scout (2) with probability 0.75. The General always advances, and the Scout advances with probability <span class="r" data-ref="b">b</span> (a <span class="r" data-ref="bluff">bluff</span>) or stays. The opponent sees the advance but not the rank. It stands with probability <span class="r" data-ref="s">s</span>, or retreats. The table below gives the payoffs, and chapter 2 of <a href="#video-0-1" data-seek="@2">Video 0.1</a> shows the same loop.</figcaption>
+  </figure>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Your piece and action</th><th class="num">Opponent stands</th><th class="num">Opponent retreats</th></tr></thead>
+      <tbody>
+        <tr><td>General advances</td><td class="num">+1.0 (you take the Major)</td><td class="num">+0.2 (you gain space)</td></tr>
+        <tr><td>Scout advances (bluff)</td><td class="num">−0.5 (you lose the Scout)</td><td class="num">+0.2 (the bluff works)</td></tr>
+        <tr><td>Scout stays</td><td class="num">0</td><td class="num">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The paper’s Figure 1 draws these dependencies as a web of decisions. Figure 3.2 makes the web move. The frequencies <span class="r" data-ref="b">b</span> and <span class="r" data-ref="s">s</span> go around a slow circle, and each action value changes with them.</p>
+
+  <figure class="fig wide" id="fig-3-2">
+    <div class="stage" id="st-web" data-scene="web"></div>
+    <figcaption><span class="fignum">Figure 3.2</span>A moving version of the paper’s Figure 1. Each box is a decision, with its current <span class="r" data-ref="qvalue">action value</span> q and a bar for how often it occurs. A solid arrow means: more of the decision at the tail raises the value at the head. A dashed arrow means: it lowers that value. Right: your <em>guaranteed</em> value for each bluff rate, if the opponent knows <span class="r" data-ref="b">b</span> and best-responds. Its peak is the equilibrium.</figcaption>
   </figure>
 
   <h3 id="s3-eq"><span class="num">3.3</span>Mixed strategies, equilibrium and exploitability</h3>
   <p>In the bluff game, every pure policy loses value. If you never bluff, the opponent retreats from every advance. If you always bluff, the opponent stands every time. The best policy mixes. It bluffs often enough to keep the opponent unsure, but not so often that standing becomes safe.</p>
   <p>A <span class="r" data-ref="equilibrium">Nash equilibrium</span> is a set of policies, one for each player, in which no player can gain by a change of their own policy alone. In the bluff game, the equilibrium is <span class="r" data-ref="b">b</span>* ≈ 0.381 and <span class="r" data-ref="s">s</span>* ≈ 0.286. Your expected payoff there is ≈ 0.107.</p>
-  <p>In a two-player zero-sum game, the equilibrium has a strong property. It guarantees its value against every opponent. Von Neumann proved this in 1928 (the minimax theorem). The <span class="r" data-ref="exploit">exploitability</span> of a policy measures how far it is from this guarantee. It is the amount that a perfect opponent can take from you, beyond the equilibrium value. Ataraxos does not try to read or exploit its opponent. It tries to have low exploitability.</p>
+  <p>In a two-player zero-sum game, the equilibrium has a strong property. It guarantees its value against every opponent. Von Neumann proved this in 1928 (the minimax theorem). The <span class="r" data-ref="exploit">exploitability</span> of a policy measures how far it is from this guarantee.</p>
+  <p>It is the amount that a perfect opponent can take from you, beyond the equilibrium value. Ataraxos does not try to read or exploit its opponent. It tries to have low exploitability.</p>
   <div class="eqsteps" id="eq-bluff">
     <div class="eqrow"><div>\[ \pBel(\text{General}\mid\text{advance}) = \frac{0.25}{0.25 + 0.75\,\pB} \]</div><p class="why">The opponent’s belief after an advance. More bluffs make an advance less frightening.</p></div>
     <div class="eqrow"><div>\[ \pQ(\text{stand}) = 0.5 - 1.5\,\pBel, \qquad \pQ(\text{retreat}) = -0.2 \]</div><p class="why">The opponent’s action values. They depend on <i>b</i> only through the belief.</p></div>
@@ -753,42 +767,11 @@ window.MathJax = {
   <h3 id="s3-belief"><span class="num">3.4</span>Beliefs: what the moves tell you</h3>
   <p>A <span class="r" data-ref="belief">belief</span> is a probability for each possible value of the hidden information. When you see a new action, you update the belief with Bayes’ rule:</p>
   \[ \pBel(\pH \mid \pO) \;=\; \frac{\pBel(\pO \mid \pH)\,\pBel(\pH)}{\sum_{\pH'} \pBel(\pO \mid \pH')\,\pBel(\pH')} \]
-  <p>Here <span class="r" data-ref="hidden">h</span> is the hidden information (for example, a rank) and <span class="r" data-ref="public">o</span> is what you observe (for example, a move). The important term is <i>P</i>(<i>o</i> | <i>h</i>): how often a piece of rank <i>h</i> makes move <i>o</i>. This term comes from the opponent’s policy. So your belief depends on the policy of your opponent. Figure 3.2 lets you feel this.</p>
+  <p>Here <span class="r" data-ref="hidden">h</span> is the hidden information (for example, a rank) and <span class="r" data-ref="public">o</span> is what you observe (for example, a move). The important term is <i>P</i>(<i>o</i> | <i>h</i>): how often a piece of rank <i>h</i> makes move <i>o</i>. This term comes from the opponent’s policy. So your belief depends on the policy of your opponent. Figure 3.3 shows this.</p>
 
-  <figure class="fig wide" id="fig-3-2">
-    <div class="well">
-      <p class="objective"><b>Goal:</b> see that some observations remove possibilities for certain, and that other observations change the belief only through the opponent’s policy. Select observations about one enemy piece, then change the opponent’s style.</p>
-      <div class="lab-grid">
-        <div>
-          <div class="obs" id="bel-obs">
-            <label><input type="checkbox" data-obs="moved"> The piece moved at least once.</label>
-            <label><input type="checkbox" data-obs="far"> The piece moved 4 squares in one turn.</label>
-            <label><input type="checkbox" data-obs="approach"> The piece advanced next to your Captain (6).</label>
-            <label><input type="checkbox" data-obs="retreat"> The piece retreated from your Major (7).</label>
-            <label><input type="checkbox" data-obs="spared"> The piece did not attack your Scout (2) beside it.</label>
-          </div>
-          <div class="controls">
-            <div class="ctl"><label for="bel-bluff">opponent bluff rate <output id="bel-bluff-out"></output></label><input type="range" id="bel-bluff" min="0" max="0.6" step="0.01" value="0.15" data-ref="bluff"></div>
-            <div class="ctl"><label for="bel-sand">opponent hide rate <output id="bel-sand-out"></output></label><input type="range" id="bel-sand" min="0" max="0.6" step="0.01" value="0.1" data-ref="hidden"></div>
-          </div>
-          <p class="small">“Bluff rate”: how often a weak piece advances like a strong one. “Hide rate”: how often a strong piece retreats to hide its rank.</p>
-          <div class="statline" id="bel-stats"></div>
-        </div>
-        <div>
-          <div class="bars" id="bel-bars"></div>
-          <div class="legend"><span><i class="box" style="--lc:color-mix(in srgb, var(--fg-faint) 35%, transparent)"></i>prior (before observations)</span><span><i class="box" style="--lc:var(--c-belief)"></i>belief now</span></div>
-        </div>
-      </div>
-      <div class="try">
-        <p class="label">Try this</p>
-        <ol>
-          <li>Select <i>The piece moved 4 squares</i>. The belief jumps to one rank. Why is this certain?</li>
-          <li>Clear it. Select <i>advanced next to your Captain</i>. Now drag the bluff rate from 0 to 0.6. What happens to the chance that the piece is weak?</li>
-          <li>Add <i>did not attack your Scout</i>. Which ranks does this rule out, and which does it only make less likely?</li>
-        </ol>
-      </div>
-    </div>
-    <figcaption><span class="fignum">Figure 3.2</span>A belief about one enemy piece. The prior uses the counts of the 40 pieces. Each observation multiplies the belief by a likelihood. Two likelihoods come from the rules (moved; moved far). The others come from a simple model of the opponent’s policy, which the sliders control. Ataraxos’s <span class="r" data-ref="beliefNet">belief network</span> does this for all hidden pieces together, from the full history of the game.</figcaption>
+  <figure class="fig wide" id="fig-3-3">
+    <div class="stage" id="st-beliefs" data-scene="beliefs"></div>
+    <figcaption><span class="fignum">Figure 3.3</span>A belief about one enemy piece. The prior uses the counts of the 40 pieces. Each observation multiplies the belief by a likelihood. Two observations come from the rules and are certain, and the others come from a simple model of the opponent’s policy. The loop moves the opponent’s bluff rate from 0 to 0.6 to show this dependence. Ataraxos’s <span class="r" data-ref="beliefNet">belief network</span> does this for all hidden pieces together, from the full history of the game.</figcaption>
   </figure>
 
   <div class="socratic" data-answer="c">
@@ -805,7 +788,8 @@ window.MathJax = {
   <h3 id="s3-old"><span class="num">3.5</span>Why the older solutions do not scale</h3>
   <p>Poker AI solved the problem of counterfactuals in a different way. DeepStack and Libratus (2017), Pluribus (2019) and ReBeL (2020) use <span class="r" data-ref="publicBelief">public belief states</span>. A public belief state lists, for each possible private hand, the probability that each player holds it. The program then solves a small game over all these hands together.</p>
   <p>This works in Texas hold’em, with 1,326 possible hands. The paper explains the limit: the cost of these transformations grows with the amount of hidden information. A list over 10<sup>33</sup> Stratego set-ups is not possible.</p>
-  <p>A second old method is <b>perfect-information Monte Carlo</b> (PIMC). It samples guesses of the hidden information. It solves each guess as if all information were public, and then it averages the results. Bridge programs used it in the 1990s. In 1998, Frank and Basin showed its main error, <span class="r" data-ref="fusion">strategy fusion</span>. In each sampled world, the program pretends it will know the hidden information later. A real player does not know it. Section 5 shows this error in a lab.</p>
+  <p>A second old method is <b>perfect-information Monte Carlo</b> (PIMC). It samples guesses of the hidden information. It solves each guess as if all information were public, and then it averages the results. Bridge programs used it in the 1990s.</p>
+  <p>In 1998, Frank and Basin showed its main error, <span class="r" data-ref="fusion">strategy fusion</span>. In each sampled world, the program pretends it will know the hidden information later. A real player does not know it. Figure 5.2 shows this error.</p>
   <p>A third method uses no search at all. DeepNash learned a policy by regularized self-play and played without search. It reached expert level but not superhuman level.</p>
   <details class="deep" id="s3-cfr-d">
     <summary><span class="label">Deeper</span><h3 id="s3-cfr" style="margin:0;font-size:1.05rem"><span class="num">3.6</span>Counterfactual regret minimization</h3></summary>
@@ -848,38 +832,8 @@ window.MathJax = {
   <p>The two knobs must agree. With strong regularization, the dynamics are calm, so large steps are safe. But the rest point is far from the equilibrium, because the magnet pulls too much. With weak regularization, the rest point is close to the equilibrium, but only small steps are safe. Ataraxos therefore uses both schedules together: strong regularization and large updates early, weak regularization and small updates late.</p>
 
   <figure class="fig wide" id="fig-4-1">
-    <div class="well">
-      <p class="objective"><b>Goal:</b> discover that the step size must match the regularization strength. Set <span class="r" data-ref="reg">α</span> and <span class="r" data-ref="step">η</span>, or select a point on the stability map. Then compare a coordinated schedule with a schedule that drops regularization too fast.</p>
-      <div class="lab-grid">
-        <div>
-          <svg class="figsvg" id="dyn-phase" viewBox="0 0 400 400" role="img" aria-label="Trajectory of the bluff rate and the stand rate during self-play"></svg>
-          <div class="legend"><span><i style="--lc:var(--c-policy)"></i>self-play path of (b, s)</span><span><i class="box" style="--lc:var(--c-value)"></i>Nash equilibrium</span><span><i class="box" style="--lc:var(--c-param)"></i>QRE for this α</span></div>
-        </div>
-        <div>
-          <svg class="figsvg" id="dyn-map" viewBox="0 0 400 346" role="img" aria-label="Stability map: final exploitability for each step size and regularization strength"></svg>
-          <svg class="figsvg" id="dyn-expl" viewBox="0 0 400 170" role="img" aria-label="Exploitability over the iterations" style="margin-top:.6rem"></svg>
-        </div>
-      </div>
-      <div class="controls">
-        <div class="ctl"><label for="dyn-alpha">regularization α <output id="dyn-alpha-out"></output></label><input type="range" id="dyn-alpha" min="0" max="1" step="0.01" value="0" data-ref="reg"></div>
-        <div class="ctl"><label for="dyn-eta">step size η <output id="dyn-eta-out"></output></label><input type="range" id="dyn-eta" min="-0.3" max="1.9" step="0.02" value="0.6" data-ref="step"></div>
-      </div>
-      <div class="btn-row">
-        <button class="btn primary" type="button" id="dyn-coord">Coordinated schedule (Ataraxos style)</button>
-        <button class="btn" type="button" id="dyn-fast">Regularization falls too fast</button>
-        <button class="btn" type="button" id="dyn-const">Constant settings</button>
-      </div>
-      <div class="statline" id="dyn-stats"></div>
-      <div class="try">
-        <p class="label">Try this</p>
-        <ol>
-          <li>Start with α = 0 (no damping). Watch the path run to the corners of the square.</li>
-          <li>Set α = 0.15. Then raise η from 1 to 60. Where does the path start to swing again?</li>
-          <li>Press <i>Coordinated schedule</i>. Watch the white marker move across the stability map. Then press <i>Regularization falls too fast</i>.</li>
-        </ol>
-      </div>
-    </div>
-    <figcaption><span class="fignum">Figure 4.1</span>Self-play with magnetic mirror descent on the bluff game. Left: the path of (<span class="r" data-ref="b">b</span>, <span class="r" data-ref="s">s</span>) over 300 updates, from the start point (0.85, 0.85). Right, top: the stability map. Each cell runs self-play with one pair (η, α) and shows the final <span class="r" data-ref="exploit">exploitability</span>; darker red is worse. Right, bottom: exploitability over the updates. The figure is an analogy at small scale: Ataraxos applies the same rule to a transformer with millions of weights. The same paths, narrated, are in <a href="#video-0-1" data-seek="@3">Video 0.1, chapter 3</a>.</figcaption>
+    <div class="stage" id="st-dynamics" data-scene="dynamics"></div>
+    <figcaption><span class="fignum">Figure 4.1</span>Self-play with magnetic mirror descent on the bluff game, in four runs (also chapter 3 of <a href="#video-0-1" data-seek="@3">Video 0.1</a>). Left: the path of (<span class="r" data-ref="b">b</span>, <span class="r" data-ref="s">s</span>) from the start point (0.85, 0.85). Right, top: the stability map, with the final <span class="r" data-ref="exploit">exploitability</span> for each constant pair (<span class="r" data-ref="step">η</span>, <span class="r" data-ref="reg">α</span>). The ring marks the current run, and the dotted line is the coordinated schedule. Right, bottom: exploitability over the updates. At full scale, Ataraxos applies the same rule to a transformer with millions of weights.</figcaption>
   </figure>
 
   <div class="cell">
@@ -960,8 +914,8 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
   <h3 id="s4-ataraxos"><span class="num">4.4</span>How Ataraxos trains on Stratego</h3>
   <p>Stratego has two phases, so Ataraxos has two self-play processes. They learn separately but at the same time. The <span class="r" data-ref="setupNet">set-up network</span> makes the starting boards. The <span class="r" data-ref="moveNet">move network</span> plays the games from these boards. The results of the games update both networks.</p>
   <figure class="fig wide" id="fig-4-2">
-    <div class="scroll-x"><svg class="figsvg" id="fig42" viewBox="0 0 900 380" role="img" aria-label="The Ataraxos design: training lane and playing lane"></svg></div>
-    <figcaption><span class="fignum">Figure 4.2</span>The design pattern. Top lane: training. A GPU simulator runs thousands of games at the same time; two transformers learn from them with damped updates. Middle: after training, a belief network learns from games of the final policy. Bottom lane: play. Before each move, the search samples hidden boards, plays them forward with the move network, and makes one more damped update.</figcaption>
+    <div class="stage" id="st-pipeline" data-scene="pipeline"></div>
+    <figcaption><span class="fignum">Figure 4.2</span>The design pattern, with dots for the moving data. Top lane: training. A GPU simulator runs thousands of games at the same time, and two transformers learn from them with damped updates. Middle: after training, a belief network learns from games of the final policy. Bottom lane: play. Before each move, the search samples hidden boards, plays them forward with the move network, and makes one more damped update.</figcaption>
   </figure>
   <div class="tbl-wrap">
     <table class="t">
@@ -1024,45 +978,21 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
   </ul>
 
   <figure class="fig wide" id="fig-5-1">
-    <div class="well">
-      <p class="objective"><b>Goal, part A:</b> see why rollouts must not look at the sampled hidden world. <b>Part B:</b> see that the strength of one search update must match the accuracy of its estimates.</p>
-      <div class="lab-grid">
-        <div>
-          <p class="label">A · Strategy fusion</p>
-          <p class="small" style="margin-top:.3rem">You can make a <b>safe</b> move with value <output id="sf-safe-out"></output>. Or you can <b>gamble</b>: later, you must attack one of two hidden squares. The Flag is on the left or the right, with probability 0.5 each. A correct guess wins (value 1). A wrong guess loses (value 0).</p>
-          <div class="ctl"><label for="sf-safe">value of the safe move <output id="sf-safe-out2"></output></label><input type="range" id="sf-safe" min="0.3" max="0.9" step="0.01" value="0.65" data-ref="value"></div>
-          <label class="check" style="margin-top:.7rem"><input type="checkbox" id="sf-peek"> rollouts may look at the sampled world (perfect-information Monte Carlo)</label>
-          <svg class="figsvg" id="sf-bars" viewBox="0 0 380 150" role="img" aria-label="Estimated values of the safe move and the gamble" style="margin-top:.6rem"></svg>
-          <p class="verdict" id="sf-verdict" aria-live="polite"></p>
-        </div>
-        <div>
-          <p class="label">B · One update, four moves</p>
-          <div class="controls" style="margin-top:.4rem">
-            <div class="ctl value"><label for="su-n">rollouts <output id="su-n-out"></output></label><input type="range" id="su-n" min="1" max="3.3" step="0.05" value="3" data-ref="rollout"></div>
-            <div class="ctl"><label for="su-beta">leash to network β <output id="su-beta-out"></output></label><input type="range" id="su-beta" min="-3" max="0" step="0.05" value="-1.7" data-ref="netkl"></div>
-          </div>
-          <svg class="figsvg" id="su-bars" viewBox="0 0 380 210" role="img" aria-label="Policy before and after the search update" style="margin-top:.4rem"></svg>
-          <div class="btn-row"><button class="btn" type="button" id="su-again">New rollouts</button></div>
-          <div class="statline" id="su-stats"></div>
-        </div>
-      </div>
-      <div class="try">
-        <p class="label">Try this</p>
-        <ol>
-          <li>In part A, select the check box. Why does the gamble now look like a sure win?</li>
-          <li>In part B, set the rollouts to 10 and the leash to 0.001. Press <i>New rollouts</i> a few times. How often does the update make the policy worse?</li>
-          <li>Set the rollouts to 2,000. Is a weak leash now safe?</li>
-        </ol>
-      </div>
-    </div>
-    <figcaption><span class="fignum">Figure 5.1</span>Two lessons about search. A: if each rollout can see its sampled world, it always guesses the Flag correctly, and the gamble gets value 1. A real player cannot see the world, so the true value is 0.5. B: the search update uses noisy averages \(\hat{\pQ}\). The true values are fixed in this toy (best move: “advance Scout”). The bars show the network policy (outline) and the policy after the update (fill). The statline shows the true expected value of each. One search update, narrated, is in <a href="#video-0-1" data-seek="@4">Video 0.1, chapter 4</a>.</figcaption>
+    <div class="stage" id="st-search" data-scene="search"></div>
+    <figcaption><span class="fignum">Figure 5.1</span>One search update in a toy with four legal moves. The belief network samples set-ups, and the rollouts give noisy averages \(\hat{\pQ}\). The last move is a blunder, and its average is high only by chance. With the leash <span class="r" data-ref="netkl">β</span> = 0.02, the update stays near the network policy (dashed outline) and moves weight to good moves. With β = 0, it puts all weight on the blunder. The Elo values come from arXiv Table 28, and chapter 4 of <a href="#video-0-1" data-seek="@4">Video 0.1</a> shows the same loop.</figcaption>
+  </figure>
+
+  <p>The first safety fact prevents an old error. Figure 5.2 shows that error in a small case.</p>
+  <figure class="fig wide" id="fig-5-2">
+    <div class="stage" id="st-fusion" data-scene="fusion"></div>
+    <figcaption><span class="fignum">Figure 5.2</span><span class="r" data-ref="fusion">Strategy fusion</span> (Frank and Basin, 1998). First half of the loop: each rollout can see its sampled world. So it always finds the Flag, and the gamble gets value 1. Second half: a real player cannot see the world, so the rollout must guess. Then the gamble gets its true value, 0.5. In Ataraxos, each player in a rollout sees only its own information, so this error does not occur.</figcaption>
   </figure>
 
   <h3 id="s5-strength"><span class="num">5.3</span>How much the search adds</h3>
   <p>The arXiv version of the paper reports the Elo rating of the search under different settings. Elo is a rating scale from chess. A difference of 100 points means the stronger player scores approximately 64% of the points.</p>
-  <figure class="fig" id="fig-5-2">
-    <div id="elo-bars"></div>
-    <figcaption><span class="fignum">Figure 5.2</span>Elo of Ataraxos in Stratego with different search settings (arXiv Table 28, with 95% confidence intervals in the hover text). “Depth” is the rollout length in moves. The setting in the match against Pim Niemeijer is at the top. Without the leash to the network (β = 0), the search overfits to quirks of its own network and plays far below the network alone.</figcaption>
+  <figure class="fig wide" id="fig-5-3">
+    <div class="stage" id="st-elo" data-scene="elo"></div>
+    <figcaption><span class="fignum">Figure 5.3</span>Elo of Ataraxos in Stratego with different search settings (arXiv Table 28). Thin lines show the 95% confidence intervals. “Depth” is the rollout length in moves. The setting in the match against Pim Niemeijer is at the top. Without the leash to the network (β = 0), the search overfits to quirks of its own network and plays far below the network alone.</figcaption>
   </figure>
   <p>The last bar is the most important lesson of search. Without the leash β, the search trusts its noisy averages too much. It then exploits mistakes of its own move network in the rollouts, and these mistakes do not exist in real opponents. The authors also note a limit: one update step can only improve the policy by a bounded amount. A search that improves without limit with more compute is future work.</p>
 </section>
@@ -1073,9 +1003,9 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
   <h3 id="s6-pim"><span class="num">6.1</span>The match against Pim Niemeijer</h3>
   <p>Pim Niemeijer has 4 world titles, 15 Dutch titles, 2 online world titles, and more than 600 weeks as number 1. George Franka, the only player who has competed in every world championship since 1997, calls him “the best Stratego player ever”.</p>
   <p>The match had 20 games over 3 weeks on the website Strategus, with 15 minutes plus 3 seconds per move for each player. Pim knew that Ataraxos would not adapt to his play. So he could look for a weakness and use it again and again. Three-time world champion Vincent de Boer called this a large handicap for the AI. Pim received US$1,000, plus US$100 for each win and US$50 for each draw.</p>
-  <figure class="fig" id="fig-6-1">
-    <div id="res-main"></div>
-    <figcaption><span class="fignum">Figure 6.1</span>Results against people and programs. The effective win rate counts a draw as half a win. Games are grouped by result, not shown in order.</figcaption>
+  <figure class="fig wide" id="fig-6-1">
+    <div class="stage" id="st-results" data-scene="results"></div>
+    <figcaption><span class="fignum">Figure 6.1</span>Results against people. Top: the 20 games against Pim Niemeijer, grouped by result, not shown in order. Below: the demonstration at the 2025 World Championship and the four Barrage series. The effective win rate counts a draw as half a win.</figcaption>
   </figure>
   <p>An 85% effective win rate is without precedent at the top level. Max Roelofs, three times the world runner-up, says that margins between top players are “razor thin”, because each game requires risk.</p>
   <div class="socratic" data-answer="b">
@@ -1136,9 +1066,9 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
   </div>
 
   <h3 id="s6-cost"><span class="num">6.4</span>Cost, compared with DeepNash</h3>
-  <figure class="fig" id="fig-6-2">
-    <div id="cost-bars"></div>
-    <figcaption><span class="fignum">Figure 6.2</span>Training resources of DeepNash (DeepMind, 2022) and Ataraxos, on a logarithmic scale. Each step of the scale is a factor of 10. Values from the paper; DeepNash cost is the authors’ estimate at 2025 prices.</figcaption>
+  <figure class="fig wide" id="fig-6-2">
+    <div class="stage" id="st-cost" data-scene="cost"></div>
+    <figcaption><span class="fignum">Figure 6.2</span>Training resources of DeepNash (DeepMind, 2022) and Ataraxos, on a logarithmic scale. Each grid line is a factor of 100. The values come from the paper. The DeepNash cost is the authors’ estimate at 2025 prices.</figcaption>
   </figure>
   <p>Ataraxos used approximately 1/500 of the compute cost, 1/30 of the self-play games, and 1/100 of the training examples of DeepNash. The smaller numbers of games and examples show that the gain is not only fast code. The method learns more from each game.</p>
   <p>The two systems never played each other. The authors asked DeepMind for a match. DeepMind replied that the DeepNash code no longer works.</p>
@@ -1161,7 +1091,7 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
     <div class="row">
       <div class="looks"><span class="label">Looks like</span>Make the best guess of the hidden pieces, then play as in chess.</div>
       <div class="actually"><span class="label">Actually</span>This causes <span class="r" data-ref="fusion">strategy fusion</span>.</div>
-      <div><span class="label">Because</span>A plan for a known world can use information that a real player never gets (Figure 5.1, part A).</div>
+      <div><span class="label">Because</span>A plan for a known world can use information that a real player never gets (Figure 5.2).</div>
     </div>
     <div class="row">
       <div class="looks"><span class="label">Looks like</span>Random choices are a weakness.</div>
@@ -1181,7 +1111,7 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
     <div class="row">
       <div class="looks"><span class="label">Looks like</span>More trust in the search is always better.</div>
       <div class="actually"><span class="label">Actually</span>Without a leash, search falls from 2218 to 1733 Elo.</div>
-      <div><span class="label">Because</span>Noisy averages overfit to the quirks of the network’s own rollouts (Figure 5.2).</div>
+      <div><span class="label">Because</span>Noisy averages overfit to the quirks of the network’s own rollouts (Figures 5.1 and 5.3).</div>
     </div>
     <div class="row">
       <div class="looks"><span class="label">Looks like</span>Ataraxos reads its opponent and adapts.</div>
@@ -1290,13 +1220,13 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
     <table class="t">
       <thead><tr><th>Idea</th><th>Medium</th><th>Reason</th></tr></thead>
       <tbody>
-        <tr><td>The full story, first pass</td><td>Narrated Manim video with chapters</td><td>A fixed order and a voice set up the mental model</td></tr>
-        <tr><td>Perfect, complete, chance</td><td>Clickable 2 × 2 sorter</td><td>Two independent questions are easiest to see as two axes</td></tr>
-        <tr><td>Counterfactual values</td><td>Live influence graph (the paper’s Figure 1)</td><td>The point is how numbers move together</td></tr>
-        <tr><td>Beliefs</td><td>Bayes lab with an opponent-style slider</td><td>The policy dependence is invisible until you change it</td></tr>
-        <tr><td>Damped self-play</td><td>Phase path plus stability map</td><td>Dynamics and the safe region need both a path and a map</td></tr>
+        <tr><td>The full story, first pass</td><td>Silent Manim video with chapters</td><td>A fixed order sets up the mental model; a headline names each step</td></tr>
+        <tr><td>Perfect, complete, chance</td><td>Two looping 2 × 2 tables</td><td>Two independent questions are easiest to see as two axes</td></tr>
+        <tr><td>Counterfactual values</td><td>Moving influence graph (the paper’s Figure 1)</td><td>The point is how numbers move together</td></tr>
+        <tr><td>Beliefs</td><td>Looping Bayes bars with a sweep of the bluff rate</td><td>The policy dependence is invisible until it changes</td></tr>
+        <tr><td>Damped self-play</td><td>Four looping phase paths plus a stability map</td><td>Dynamics and the safe region need both a path and a map</td></tr>
         <tr><td>Training code</td><td>Python with real output</td><td>A mechanism best checked by a run</td></tr>
-        <tr><td>Search</td><td>Two toy labs and an Elo chart</td><td>Strategy fusion and overfitting are failures you must see to trust the fix</td></tr>
+        <tr><td>Search</td><td>Two looping toys and an Elo chart</td><td>Strategy fusion and overfitting are failures you must see to trust the fix</td></tr>
         <tr><td>Results</td><td>Labeled bars and tables</td><td>Exact numbers matter more than shape</td></tr>
         <tr><td>History</td><td>Timeline</td><td>The order is the content</td></tr>
       </tbody>
@@ -1343,7 +1273,7 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
     <li>Palacios-Huerta I. (2003). Professionals play minimax. <i>Review of Economic Studies</i> 70, 395–415.</li>
     <li>MIT News (30 September 2026), report on Ataraxos. · ASD-STE100 Simplified Technical English, Issue 9 (2025).</li>
   </ul>
-  <footer class="colophon">Equations are typeset with MathJax. Every figure is hand-built SVG driven by the shared model in the page’s script. Video 0.1 was rendered with Manim Community Edition and narrated with the Kokoro text-to-speech model. The toy games are teaching models, not parts of Ataraxos; the Stratego numbers come from the paper and its arXiv version.</footer>
+  <footer class="colophon">Equations are typeset with MathJax. Video 0.1 was rendered with Manim Community Edition. Every figure on the page is hand-built SVG in the same visual style, driven by the shared model in the page’s script. Each figure is a function of time, so it can loop, pause and jump. The toy games are teaching models, not parts of Ataraxos; the Stratego numbers come from the paper and its arXiv version.</footer>
 </section>
 
 </main>
@@ -1352,7 +1282,6 @@ equilibrium: b* = 0.381, s* = 0.286, exploitability 0</pre>
 <div class="tip" id="tip" role="tooltip" hidden></div>
 <script>
 window.__ATA_CHAPTERS = [[0.0, "Hidden information", "hidden"], [28.533, "The bluff game", "bluff"], [63.833, "Damped self-play", "reg"], [107.267, "Search as an update", "search"], [135.367, "Results", "value"]];
-window.__ATA_CUES = [[0.0, 5.592, "In chess, both players see every piece. Nothing about the state of the game is hidden."], [5.592, 13.296, "In Stratego, you see where the enemy pieces stand, but not their ranks. Each player arranges forty hidden pieces."], [13.296, 21.0, "Both players know the rules, so the information is complete. But the state is hidden, so the information is imperfect."], [21.0, 28.56, "One player can arrange the pieces in about ten to the thirty-three ways. You cannot list them, and you cannot search them all."], [28.533, 36.093, "Here is a small version of the problem. Your hidden piece is a General, with probability one quarter, or else a Scout."], [36.093, 42.957, "The General always advances. The Scout advances with probability b. That advance is a bluff."], [42.957, 49.653, "The opponent sees an advance, but not the rank. By Bayes' rule, more bluffs make a General less likely."], [49.653, 55.965, "So the value of a bluff depends on how often you bluff. A move has no fixed value of its own."], [55.965, 63.861, "At equilibrium, the Scout bluffs about thirty-eight percent of the time, and the opponent stands about twenty-nine percent of the time."], [63.833, 70.769, "Ataraxos learns by self-play. Each policy moves toward the actions that score well against the other."], [70.769, 76.193, "Without control, the two policies chase each other in circles. They never settle."], [76.193, 85.577, "Ataraxos damps each update. A step size, eta, limits how far the policy moves. A pull, alpha, holds it near a random magnet."], [85.577, 92.633, "The new policy is a weighted mix of the old policy, the magnet, and the exponential of the action values."], [92.633, 98.729, "If the pull is too weak for the step, the path keeps circling. With a strong enough pull, it settles."], [98.729, 107.297, "Ataraxos reduces the pull and the step together. Then the path walks to the equilibrium, and exploitability goes near zero."], [107.267, 114.587, "In a match, a belief network samples possible arrangements of the hidden pieces, given everything seen so far."], [114.587, 121.715, "For each sample, the search plays a thousand short games with the policy, and averages the result of each move."], [121.715, 128.675, "Then it makes one damped update of the network policy. A leash, beta, keeps the result near the network."], [128.675, 135.395, "Without the leash, the search trusts noisy estimates, and the rating falls by almost five hundred Elo."], [135.367, 144.151, "In July 2025, Ataraxos played Pim Niemeijer, the world number one. It won fifteen games, drew four, and lost one."], [144.151, 150.895, "Training cost less than eight thousand dollars. That is about one five-hundredth of the cost of DeepNash."], [150.895, 159.559, "The same method also beats top humans at Barrage Stratego, sets a new best score in Hanabi, and beats the best dou dizhu programs."], [159.559, 167.033, "The lesson: when information is hidden, control the learning dynamics, and treat search as one more careful update."]];
 </script>
 <script>
 (() => {
@@ -1664,145 +1593,9 @@ function mountConceptMap() {
   refresh(svg);
 }
 
-/* Figure 1.1: the information sorter */
-function mountTaxonomy() {
-  const host = $('#tax'), detail = $('#tax-detail');
-  const GAMES = [
-    ['Tic-tac-toe', 'cp', '0-sum', 'Both players see the full board. Both know the rules and the goal. Nothing is hidden and nothing is random.'],
-    ['Chess', 'cp', '0-sum', 'Each player sees every earlier move, so each information set has one state. The value of a position is well defined.'],
-    ['Go', 'cp', '0-sum', 'Perfect and complete information. AlphaGo and AlphaZero solved the problem of scale here, not the problem of hidden information.'],
-    ['Backgammon', 'cp', '0-sum · chance', 'The dice add chance, but each roll is public. So the game has perfect information. Chance and hidden information are different properties.'],
-    ['Stratego', 'ci', '0-sum', 'The rules and the goal are known to both players: complete information. The set-ups are hidden: imperfect information. More than 10³³ set-ups per player.'],
-    ['Texas hold’em', 'ci', '0-sum · chance', 'Each player has 2 private cards: 1,326 possible hands. Poker AI can list all of them in a public belief state. Stratego is far larger.'],
-    ['Rock–paper–scissors', 'ci', '0-sum', 'The players choose at the same time. When you choose, you do not see the other choice. A simultaneous move is a form of imperfect information.'],
-    ['Battleship', 'ci', '0-sum', 'Each player hides one large set-up, as in Stratego. The shots and the hits are public.'],
-    ['Fog-of-War chess', 'ci', '0-sum', 'Chess, but you see only the squares that your pieces can reach. Obscuro (2025) reached superhuman level with a search method.'],
-    ['Hanabi', 'ci', 'co-op · chance', 'You see the cards of your teammates but not your own. All players share one score, so it is fully cooperative.'],
-    ['Dou dizhu', 'ci', 'team · chance', 'One landlord plays against two peasants who cooperate without talk. The deal of the cards is hidden.'],
-    ['Bridge', 'ci', 'team · chance', 'Two teams of two. Each player sees only some cards. Bridge programs used perfect-information Monte Carlo and met strategy fusion.'],
-    ['Open auction', 'ip', 'private values', 'All bids are public, so each bidder sees every earlier action. But each bidder has a private value that others do not know: incomplete information.'],
-    ['Sealed-bid auction', 'ii', 'private values', 'The values are private (incomplete) and the bids are secret until the end (imperfect).'],
-    ['Negotiation', 'ii', 'general-sum', 'Each side hides its limits and does not fully know the goals of the other side. Most real decisions are of this type.'],
-  ];
-  const cells = { cp: 'Chess-like: all is public', ci: 'The Stratego cell', ip: 'Rare in board games', ii: 'Most real-world decisions' };
-  const ax = (txt, cls = '') => H('div', { cls: 'ax ' + cls }, host).append(...[document.createTextNode(''), Object.assign(document.createElement('b'), { textContent: txt })]);
-  ax('', 'corner');
-  ax('Perfect information');
-  ax('Imperfect information');
-  const order = [['Complete information', 'cp', 'ci'], ['Incomplete information', 'ip', 'ii']];
-  const buttons = [];
-  for (const [rowName, a, b] of order) {
-    ax(rowName);
-    for (const key of [a, b]) {
-      const cell = H('div', { cls: 'tcell', 'data-cell': key }, host);
-      H('span', { cls: 'cap', text: cells[key] }, cell);
-      for (const g of GAMES.filter(x => x[1] === key)) {
-        const btn = H('button', { cls: 'chip', type: 'button', 'aria-pressed': 'false' }, cell);
-        btn.append(document.createTextNode(g[0]), H('span', { cls: 'tag', text: g[2] }));
-        btn.addEventListener('click', () => select(g, btn));
-        buttons.push([g, btn]);
-      }
-    }
-  }
-  function select(g, btn) {
-    buttons.forEach(([, b]) => b.setAttribute('aria-pressed', String(b === btn)));
-    const where = { cp: 'complete and perfect information', ci: 'complete but imperfect information', ip: 'incomplete but perfect information', ii: 'incomplete and imperfect information' }[g[1]];
-    detail.textContent = '';
-    detail.append(H('b', { cls: 'name', text: g[0] }), document.createTextNode(` has ${where}. ${g[3]}`));
-  }
-  select(GAMES[4], buttons[4][1]);
-}
-
-/* Figure 2.1: a Stratego position */
-function mountBoard() {
-  const svg = $('#fig21');
-  const Q = 44, X0 = 50, Y0 = 12;
-  const lake = (x, y) => (y === 4 || y === 5) && (x === 2 || x === 3 || x === 6 || x === 7);
-  const ours = [
-    ['2', '6', '2', '3', '9', '2', '7', '2', '6', '2'],
-    ['5', '7', 'S', '10', 'B', '8', '4', '6', '3', '5'],
-    ['4', 'B', '8', '3', '2', '6', '7', '4', '3', '2'],
-    ['B', 'F', 'B', '5', '2', '4', '3', 'B', '5', 'B'],
-  ];
-  for (let y = 0; y < 10; y++) for (let x = 0; x < 10; x++) {
-    S('rect', { x: X0 + x * Q, y: Y0 + y * Q, width: Q, height: Q, class: lake(x, y) ? 'f-sunk' : 'f-raise', style: 'stroke:var(--rule-soft)' }, svg);
-  }
-  for (const [x, y] of [[2, 4], [6, 4]]) S('rect', { x: X0 + x * Q + 3, y: Y0 + y * Q + 3, width: 2 * Q - 6, height: 2 * Q - 6, rx: 6, fill: 'url(#hatch)', style: 'color:var(--c-context)', opacity: .5 }, svg);
-  'abcdefghij'.split('').forEach((c, i) => S('text', { x: X0 + i * Q + Q / 2, y: Y0 + 10 * Q + 17, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 11, text: c }, svg));
-  for (let r = 0; r < 10; r++) S('text', { x: X0 - 10, y: Y0 + r * Q + Q / 2 + 4, 'text-anchor': 'end', class: 'mono faint', 'font-size': 11, text: 10 - r }, svg);
-  const piece = (x, y, label, kind, moved) => {
-    const g = S('g', { ref: kind === 'enemy' ? 'hidden' : kind === 'revealed' ? 'public' : null }, svg);
-    const cx = X0 + x * Q, cy = Y0 + y * Q;
-    S('rect', { x: cx + 4, y: cy + 4, width: Q - 8, height: Q - 8, rx: 6,
-      class: kind === 'enemy' ? 'f-hidden s-hidden' : kind === 'revealed' ? 'f-public s-public' : kind === 'ownShown' ? 'f-bg s-public' : 'f-bg rule',
-      'fill-opacity': kind === 'enemy' ? .14 : kind === 'revealed' ? .18 : 1, 'stroke-width': kind === 'ownShown' ? 2 : 1.2 }, g);
-    S('text', { x: cx + Q / 2, y: cy + Q / 2 + 5.5, 'text-anchor': 'middle', class: `mono ${kind === 'enemy' ? 'f-hidden' : kind === 'revealed' ? 'f-public' : 'ink'}`, 'font-size': label.length > 1 ? 13 : 15, 'font-weight': 500, text: label }, g);
-    if (moved) S('circle', { cx: cx + Q - 10, cy: cy + 10, r: 3, class: 'f-hidden' }, g);
-  };
-  for (let y = 0; y < 4; y++) for (let x = 0; x < 10; x++) {
-    if (y === 3 && x === 4) piece(x, y, '7', 'revealed');
-    else if (y === 3 && x === 5) continue;
-    else piece(x, y, '?', 'enemy', (y === 3 && (x === 1 || x === 8)) || (y === 2 && x === 6));
-  }
-  piece(5, 5, '?', 'enemy', true);
-  ours.forEach((row, r) => row.forEach((p, x) => piece(x, 6 + r, p, r === 0 && x === 4 ? 'ownShown' : 'own')));
-  S('text', { x: X0 + 10 * Q + 8, y: Y0 + 2 * Q, class: 'f-hidden', 'font-size': 13, transform: `rotate(90 ${X0 + 10 * Q + 8} ${Y0 + 2 * Q})`, 'text-anchor': 'middle', text: 'enemy (hidden)', ref: 'hidden' }, svg);
-  S('text', { x: X0 + 10 * Q + 8, y: Y0 + 8 * Q, class: 'ink', 'font-size': 13, transform: `rotate(90 ${X0 + 10 * Q + 8} ${Y0 + 8 * Q})`, 'text-anchor': 'middle', text: 'your army' }, svg);
-  refresh(svg);
-}
-
-/* Figure 4.2: the design pattern */
-function mountPipeline() {
-  const svg = $('#fig42');
-  const defs = S('defs', null, svg);
-  const mk = S('marker', { id: 'pl-arrow', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto' }, defs);
-  S('path', { d: 'M0,1 L9,5 L0,9 z', style: 'fill:var(--fg-soft)' }, mk);
-  const lane = (y, h, title) => {
-    S('rect', { x: 6, y, width: 888, height: h, rx: 8, class: 'f-none', style: 'stroke:var(--rule-soft)', 'stroke-dasharray': '4 5' }, svg);
-    S('text', { x: 18, y: y + 18, class: 'mono faint', 'font-size': 10.5, 'letter-spacing': '1.2', text: title }, svg);
-  };
-  lane(8, 140, 'TRAINING · 16 H100 GPUs · 1 WEEK');
-  lane(158, 64, 'BELIEF TRAINING · 4 H100 · 4 DAYS');
-  lane(232, 140, 'PLAY · ONE H100 · ≈ 1.26 S PER MOVE');
-  const box = (x, y, w, h, title, sub, ref) => {
-    const g = S('g', { ref }, svg);
-    S('rect', { x, y, width: w, height: h, rx: 6, class: 'f-raise', style: `stroke:${ref ? roleVar(ref) : 'var(--rule)'}`, 'stroke-width': 1.5 }, g);
-    S('text', { x: x + w / 2, y: y + (sub ? h / 2 - 3 : h / 2 + 5), 'text-anchor': 'middle', class: 'ink', 'font-size': 14, text: title }, g);
-    if (sub) S('text', { x: x + w / 2, y: y + h / 2 + 15, 'text-anchor': 'middle', class: 'faint', 'font-size': 11.5, text: sub }, g);
-    return { x, y, w, h };
-  };
-  const arrow = (d, label, lx, ly) => {
-    S('path', { d, fill: 'none', style: 'stroke:var(--fg-soft)', 'stroke-width': 1.4, 'marker-end': 'url(#pl-arrow)' }, svg);
-    if (label) S('text', { x: lx, y: ly, 'text-anchor': 'middle', class: 'faint', 'font-size': 11, text: label }, svg);
-  };
-  box(24, 40, 170, 56, 'GPU simulator', '≈ 10⁷ board updates / s', 'simulator');
-  box(250, 30, 180, 48, 'Set-up network', 'decoder · writes 40 pieces', 'setupNet');
-  box(250, 88, 180, 48, 'Move network', 'encoder · policy + value', 'moveNet');
-  box(488, 52, 170, 60, 'Self-play games', '163 million in total', 'selfplay');
-  box(712, 40, 170, 84, 'Damped update', 'α and η fall together', 'reg');
-  arrow('M194,68 L246,54');
-  arrow('M194,68 L246,112', '', 0, 0);
-  arrow('M430,54 L484,74', '', 0, 0);
-  arrow('M430,112 L484,92', '', 0, 0);
-  arrow('M658,82 L708,82', 'results', 683, 74);
-  arrow('M797,40 C797,16 340,16 340,26', 'new weights for both networks', 568, 22);
-  box(300, 168, 270, 44, 'Belief network', 'learns hidden ranks from final self-play', 'beliefNet');
-  arrow('M340,138 L340,164', '', 0, 0);
-  box(24, 262, 150, 56, 'Your position', 'public + own pieces', 'public');
-  box(206, 262, 150, 56, 'Sample armies', '≈ 1,000 / legal moves', 'beliefNet');
-  box(388, 262, 160, 56, 'Rollouts', '1,000 × 40 moves', 'rollout');
-  box(580, 262, 150, 56, 'Average q̂', 'per legal move', 'qvalue');
-  box(762, 252, 120, 76, 'One MMD step', 'leash β to network', 'search');
-  arrow('M174,290 L202,290'); arrow('M356,290 L384,290'); arrow('M548,290 L576,290'); arrow('M730,290 L758,290');
-  arrow('M400,212 C400,236 281,236 281,258', '', 0, 0);
-  arrow('M822,328 L822,352', '', 0, 0);
-  S('text', { x: 822, y: 366, 'text-anchor': 'middle', class: 'f-policy', 'font-size': 13, text: 'move to play', ref: 'policy' }, svg);
-  S('text', { x: 468, y: 345, 'text-anchor': 'middle', class: 'faint', 'font-size': 11.5, text: 'the move network plays both sides; each side sees only its own information' }, svg);
-  refresh(svg);
-}
 
 /* ════════════════════════════════════════════════════════════════════
-   6. THE BLUFF GAME: one toy model shared by Figures 3.1, 4.1 and the video
+   6. THE BLUFF GAME: one toy model shared by Figures 3.1 to 3.2, 4.1 and the video
    ════════════════════════════════════════════════════════════════════ */
 const BLUFF = (() => {
   const P_GEN = 0.25, WIN = 1, LOSE = -0.5, TEMPO = 0.2;
@@ -1851,409 +1644,1087 @@ const SCHEDULES = {
   fast: t => [20 * Math.pow(1 + t / 30, -.7), .6 * Math.pow(1 + t / 30, -1.6)],
 };
 
-/* Figure 3.1: the bluff lab */
-function mountBluffLab() {
-  const inB = $('#bl-b'), inS = $('#bl-s'), graph = $('#bl-graph'), curve = $('#bl-curve');
-  function render() {
-    const b = +inB.value, s = +inS.value;
-    $('#bl-b-out').textContent = b.toFixed(2);
-    $('#bl-s-out').textContent = s.toFixed(2);
-    const qy = BLUFF.qYou(s), qo = BLUFF.qOpp(b), bel = BLUFF.belief(b), u = BLUFF.payoff(b, s);
-    /* influence graph */
-    graph.textContent = '';
-    const defs = S('defs', null, graph);
-    for (const [id, cls] of [['ig-up', 'f-value'], ['ig-down', 'f-warn']]) {
-      const m = S('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto' }, defs);
-      S('path', { d: 'M0,1 L9,5 L0,9 z', class: cls }, m);
-    }
-    S('text', { x: 85, y: 16, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 10.5, text: 'YOUR DECISIONS' }, graph);
-    S('text', { x: 335, y: 16, 'text-anchor': 'middle', class: 'mono faint', 'font-size': 10.5, text: 'OPPONENT DECISIONS' }, graph);
-    const N = {
-      gen: { x: 85, y: 62, t: 'General advances', q: qy.general, f: 1, ref: 'policy' },
-      bluff: { x: 85, y: 150, t: 'Scout advances', q: qy.bluff, f: b, ref: 'b bluff' },
-      stay: { x: 85, y: 238, t: 'Scout stays', q: qy.stay, f: 1 - b, ref: 'counterfactual' },
-      stand: { x: 335, y: 106, t: 'Stand', q: qo.stand, f: s, ref: 's' },
-      retreat: { x: 335, y: 194, t: 'Retreat', q: qo.retreat, f: 1 - s, ref: 's' },
-    };
-    const dStand = .28125 / Math.pow(.25 + .75 * b, 2);
-    const E = [['bluff', 'stand', dStand], ['stand', 'bluff', -.7], ['stand', 'gen', .8]];
-    for (const [from, to, d] of E) {
-      const a = N[from], c = N[to];
-      const x1 = a.x + (c.x > a.x ? 72 : -72), x2 = c.x + (c.x > a.x ? -74 : 74);
-      const bend = from === 'stand' && to === 'gen' ? -26 : from === 'stand' ? 22 : -10;
-      const path = `M${x1},${a.y} C${(x1 + x2) / 2},${a.y + bend} ${(x1 + x2) / 2},${c.y + bend} ${x2},${c.y}`;
-      S('path', { d: path, fill: 'none', class: d > 0 ? 's-value' : 's-warn', 'stroke-width': (1 + 3.2 * Math.min(1, Math.abs(d) / 1.5)).toFixed(2), 'stroke-dasharray': d > 0 ? null : '6 4', 'marker-end': `url(#${d > 0 ? 'ig-up' : 'ig-down'})` }, graph);
-    }
-    const bestYou = qy.bluff > qy.stay ? 'bluff' : qy.bluff < qy.stay ? 'stay' : null;
-    const bestOpp = qo.stand > qo.retreat ? 'stand' : qo.stand < qo.retreat ? 'retreat' : null;
-    for (const [k, n] of Object.entries(N)) {
-      const g = S('g', { ref: n.ref }, graph);
-      const best = k === bestYou || k === bestOpp;
-      S('rect', { x: n.x - 72, y: n.y - 26, width: 144, height: 52, rx: 7, class: 'f-raise', style: `stroke:${best ? 'var(--c-value)' : 'var(--rule)'}`, 'stroke-width': best ? 2 : 1.2 }, g);
-      S('text', { x: n.x, y: n.y - 7, 'text-anchor': 'middle', class: 'ink', 'font-size': 13, text: n.t }, g);
-      S('text', { x: n.x - 62, y: n.y + 15, class: 'mono f-value', 'font-size': 11.5, text: `q = ${fmt(n.q, 2)}`, ref: 'qvalue' }, g);
-      S('rect', { x: n.x + 14, y: n.y + 7, width: 48, height: 8, rx: 2, class: 'f-sunk' }, g);
-      S('rect', { x: n.x + 14, y: n.y + 7, width: Math.max(.5, 48 * n.f), height: 8, rx: 2, class: k === 'stand' || k === 'retreat' ? 'f-policyDim' : 'f-policy' }, g);
-    }
-    S('text', { x: 210, y: 288, 'text-anchor': 'middle', class: 'faint', 'font-size': 11.5, text: 'bar: how often the decision is made · green border: best action now' }, graph);
-    refresh(graph);
-    /* guaranteed-value curve */
-    curve.textContent = '';
-    const x0 = 46, x1 = 404, y0 = 14, y1 = 172, ymin = -.35, ymax = .3;
-    const X = v => x0 + v * (x1 - x0), Y = v => y1 - (v - ymin) / (ymax - ymin) * (y1 - y0);
-    for (const v of [-.3, -.2, -.1, 0, .1, .2, .3]) {
-      S('line', { x1: x0, x2: x1, y1: Y(v), y2: Y(v), class: v === 0 ? 'rule' : 'rule-soft' }, curve);
-      S('text', { x: x0 - 6, y: Y(v) + 4, 'text-anchor': 'end', class: 'mono', 'font-size': 10.5, text: fmt(v, 1) }, curve);
-    }
-    for (const v of [0, .25, .5, .75, 1]) S('text', { x: X(v), y: y1 + 16, 'text-anchor': 'middle', class: 'mono', 'font-size': 10.5, text: v }, curve);
-    S('text', { x: (x0 + x1) / 2, y: y1 + 34, 'text-anchor': 'middle', class: 'f-policy', 'font-size': 12.5, text: 'your bluff rate b', ref: 'b' }, curve);
-    let dG = '', dU = '';
-    for (let i = 0; i <= 100; i++) { const v = i / 100; dG += `${i ? 'L' : 'M'}${X(v).toFixed(1)},${Y(BLUFF.guaranteed(v)).toFixed(1)}`; dU += `${i ? 'L' : 'M'}${X(v).toFixed(1)},${Y(BLUFF.payoff(v, s)).toFixed(1)}`; }
-    S('path', { d: dU, fill: 'none', class: 's-policyDim', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', ref: 's' }, curve);
-    S('path', { d: dG, fill: 'none', class: 's-value', 'stroke-width': 2.4, ref: 'equilibrium' }, curve);
-    S('circle', { cx: X(BLUFF.B_STAR), cy: Y(BLUFF.V_STAR), r: 5, class: 'f-value', ref: 'equilibrium' }, curve);
-    S('text', { x: X(BLUFF.B_STAR) + 8, y: Y(BLUFF.V_STAR) - 8, class: 'ink', 'font-size': 11.5, text: `equilibrium: b* = ${BLUFF.B_STAR.toFixed(3)}, value ${BLUFF.V_STAR.toFixed(3)}` }, curve);
-    S('line', { x1: X(b), x2: X(b), y1: y0, y2: y1, class: 's-policy', 'stroke-dasharray': '2 3' }, curve);
-    S('circle', { cx: X(b), cy: Y(BLUFF.guaranteed(b)), r: 5, class: 'f-policy', ref: 'b' }, curve);
-    S('text', { x: x1, y: y0 + 4, 'text-anchor': 'end', class: 'faint', 'font-size': 10.5, text: 'solid: guaranteed value · dashed: value against the current s' }, curve);
-    refresh(curve);
-    /* stats */
-    const exYou = BLUFF.V_STAR - BLUFF.guaranteed(b);
-    const exOpp = Math.max(BLUFF.payoff(0, s), BLUFF.payoff(1, s)) - BLUFF.V_STAR;
-    $('#bl-stats').innerHTML = `<span class="r" data-ref="belief">opponent’s belief P(General | advance) <b>${bel.toFixed(3)}</b></span>` +
-      `<span class="r" data-ref="value">your expected payoff <b>${fmt(u, 3)}</b></span>` +
-      `<span class="r" data-ref="exploit">your exploitability <b>${exYou.toFixed(3)}</b></span>` +
-      `<span class="r" data-ref="exploit">opponent’s exploitability <b>${exOpp.toFixed(3)}</b></span>`;
-    refresh($('#bl-stats'));
-  }
-  [inB, inS].forEach(i => i.addEventListener('input', render));
-  $('#bl-br-opp').addEventListener('click', () => { const qo = BLUFF.qOpp(+inB.value); if (Math.abs(qo.stand - qo.retreat) > 1e-9) inS.value = qo.stand > qo.retreat ? 1 : 0; render(); });
-  $('#bl-br-you').addEventListener('click', () => { const qy = BLUFF.qYou(+inS.value); if (Math.abs(qy.bluff - qy.stay) > 1e-9) inB.value = qy.bluff > qy.stay ? 1 : 0; render(); });
-  $('#bl-eq').addEventListener('click', () => { inB.value = BLUFF.B_STAR.toFixed(3); inS.value = BLUFF.S_STAR.toFixed(3); render(); });
-  render();
+
+/* ════════════════════════════════════════════════════════════════════
+   7. STAGES: the figures as Manim-style loops
+   A stage is a dark canvas in the visual language of Video 0.1: the same
+   colours, tiles, boards and paths. Each scene is a pure function of time.
+   build() draws the objects once; frame(t) sets every changing attribute
+   from t alone. So a loop can restart, pause or jump with no hidden state.
+   ════════════════════════════════════════════════════════════════════ */
+const M = (x, y) => [480 + 60 * x, 270 - 60 * y];                    /* Manim frame units → stage pixels */
+const prog = (t, a, b, f = smooth) => f(clamp((t - a) / (b - a)));   /* progress of one animation from a to b */
+const linear = x => x;
+const inWin = (t, a, b, fade = .4) => Math.min(prog(t, a, a + fade), 1 - prog(t, b - fade, b));
+const wave = (t, a, b) => (t < a || t > b) ? 0 : Math.sin(Math.PI * (t - a) / (b - a));   /* 0 → 1 → 0: Indicate */
+const op = (el, v) => el.setAttribute('opacity', clamp(v).toFixed(3));
+const place = (el, x, y, s = 1) => el.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})${s === 1 ? '' : ` scale(${s.toFixed(4)})`}`);
+const setText = (el, s) => { if (el.textContent !== s) el.textContent = s; };
+const pts = list => list.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+
+/* Create: reveal a stroke along its length */
+function draw(el, v) {
+  if (el.hasAttribute('stroke-dasharray')) { op(el, v); return; }   /* a dashed stroke keeps its dashes and fades in */
+  if (el.__len == null) el.__len = el.getTotalLength();
+  const L = el.__len + 1;
+  el.style.strokeDasharray = `${L} ${L}`;
+  el.style.strokeDashoffset = (L * (1 - clamp(v))).toFixed(1);
+  op(el, v > 0 ? 1 : 0);
+}
+/* GrowArrow: move the end of a line; the marker follows the end */
+function grow(line, v) {
+  const [x1, y1, x2, y2] = line.__xy || (line.__xy = ['x1', 'y1', 'x2', 'y2'].map(k => +line.getAttribute(k)));
+  line.setAttribute('x2', lerp(x1, x2, clamp(v)).toFixed(1));
+  line.setAttribute('y2', lerp(y1, y2, clamp(v)).toFixed(1));
+  op(line, v > .02 ? 1 : 0);
+}
+/* a growing polyline through the first k of n points: exact heads for self-play paths */
+function trail(el, P, v, head) {
+  const n = Math.max(1, Math.round(clamp(v) * (P.length - 1)) + 1);
+  el.setAttribute('points', pts(P.slice(0, n)));
+  op(el, v > 0 ? 1 : 0);
+  if (head) { head.setAttribute('cx', P[n - 1][0].toFixed(1)); head.setAttribute('cy', P[n - 1][1].toFixed(1)); op(head, v > 0 && v < 1 ? 1 : 0); }
 }
 
-/* Figure 3.2: the belief lab */
-function mountBeliefLab() {
-  const TYPES = [['Marshal', 10, 1], ['General', 9, 1], ['Colonel', 8, 2], ['Major', 7, 3], ['Captain', 6, 4], ['Lieutenant', 5, 4], ['Sergeant', 4, 4], ['Miner', 3, 5], ['Scout', 2, 8], ['Spy', 1, 1], ['Bomb', null, 6], ['Flag', null, 1]];
-  const bars = $('#bel-bars'), inBluff = $('#bel-bluff'), inSand = $('#bel-sand');
-  const rows = TYPES.map(([name]) => {
-    H('span', { cls: 'lab', text: name }, bars);
-    const track = H('span', { cls: 'track' }, bars);
-    const prior = H('span', { cls: 'prior' }, track), post = H('span', { cls: 'post', ref: 'belief' }, track);
-    const val = H('span', { cls: 'val' }, bars);
+/* text with inline roles: "{policy|b}" becomes an italic tspan in the policy colour */
+function rich(parent, attrs, str) {
+  const t = S('text', attrs, parent);
+  for (const part of str.split(/(\{[a-zA-Z]+\|[^}]*\})/)) {
+    const m = part.match(/^\{([a-zA-Z]+)\|([^}]*)\}$/);
+    if (m) S('tspan', { class: `f-${m[1]}`, 'font-style': m[2].length <= 2 ? 'italic' : null, text: m[2] }, t);
+    else if (part) t.appendChild(document.createTextNode(part));
+  }
+  return t;
+}
+/* one line of math; parts are [text, role, 'sup' | 'sub'] */
+function mathLine(parent, x, y, parts, { size = 22, anchor = 'start', ref } = {}) {
+  const t = S('text', { x, y, 'font-size': size, 'text-anchor': anchor, class: 'f-fg', ref }, parent);
+  let base = 0;
+  for (const [s, role, pos] of parts) {
+    const want = pos === 'sup' ? -size * .4 : pos === 'sub' ? size * .24 : 0;
+    S('tspan', { dy: (want - base).toFixed(1), 'font-size': pos ? (size * .66).toFixed(1) : null, class: role ? `f-${role}` : null,
+      'font-style': /^[a-zA-Zπρθαβηq̂]{1,2}$/.test(s) && !/^(e|P)$/.test(s) ? 'italic' : null, text: s }, t);
+    base = want;
+  }
+  return t;
+}
+/* the headline at the top left of a stage: one per beat, cross-faded like a Manim Transform */
+function headlines(root, list, x = 28, y = 42) {
+  const els = list.map(([, , s]) => rich(root, { x, y, 'font-size': 24, class: 'f-soft' }, s));
+  return t => list.forEach(([a, b], i) => op(els[i], inWin(t, a, b, .35)));
+}
+/* a Stratego tile, centred on (0, 0) in its own group */
+function tileG(parent, side, label, role, { fill = .28, font = side * .5, labelClass, stroke = 1.6, ref } = {}) {
+  const g = S('g', { ref }, parent);
+  S('rect', { x: -side / 2, y: -side / 2, width: side, height: side, rx: side * .16, class: `s-${role} f-${role}`, 'fill-opacity': fill, 'stroke-width': stroke }, g);
+  S('text', { x: 0, y: font * .36, 'text-anchor': 'middle', 'font-size': font.toFixed(1), class: labelClass || `f-${role}`, text: label }, g);
+  return g;
+}
+/* a rounded node with a centred label, like node() in the video script */
+function nodeG(parent, w, h, label, role, { font = 16, ref } = {}) {
+  const g = S('g', { ref }, parent);
+  S('rect', { x: -w / 2, y: -h / 2, width: w, height: h, rx: 7, class: `s-${role} f-${role}`, 'fill-opacity': .12, 'stroke-width': 2 }, g);
+  rich(g, { x: 0, y: font * .35, 'text-anchor': 'middle', 'font-size': font, class: 'f-fg' }, label);
+  return g;
+}
+let stageSeq = 0;
+function arrowHeads(svg, roles) {
+  const defs = S('defs', null, svg), id = `stg${++stageSeq}`, out = {};
+  for (const r of roles) {
+    const m = S('marker', { id: `${id}-${r}`, viewBox: '0 0 10 10', refX: 7, refY: 5, markerWidth: 4, markerHeight: 4, orient: 'auto-start-reverse' }, defs);
+    S('path', { d: 'M0,0 L10,5 L0,10 z', class: `f-${r}` }, m);
+    out[r] = `url(#${id}-${r})`;
+  }
+  return out;
+}
+function arrowLine(parent, [x1, y1], [x2, y2], role, heads, { width = 3, ref } = {}) {
+  return S('line', { x1, y1, x2, y2, class: `s-${role}`, 'stroke-width': width, 'stroke-linecap': 'round', 'marker-end': heads[role], ref }, parent);
+}
+function brace(parent, x, y1, y2, role) {
+  const m = (y1 + y2) / 2;
+  return S('path', { d: `M${x + 9},${y1} Q${x},${y1} ${x},${y1 + 9} L${x},${m - 7} Q${x},${m} ${x - 8},${m} Q${x},${m} ${x},${m + 7} L${x},${y2 - 9} Q${x},${y2} ${x + 9},${y2}`, class: `s-${role}`, 'stroke-width': 2.2, fill: 'none' }, parent);
+}
+
+/* The player: autoplay while visible, a pause button, and a time bar that can be dragged.
+   With reduced motion, a stage shows a still frame and plays only on request. */
+const STAGES = {};
+function makeStage(host, { w = 960, h = 540, dur, mode = 'loop', still = dur * .97, beats = [], label, fade = true, build }) {
+  host.classList.add('stage');
+  const wrap = H('div', { cls: 'stage-scroll' }, host);
+  const svg = S('svg', { viewBox: `0 0 ${w} ${h}`, role: 'img', 'aria-label': label, class: 'stage-svg' }, wrap);
+  const root = S('g', null, svg);
+  const st = { t: 0, playing: false, visible: false, last: null, raf: 0, dur };
+  const api = {
+    seek: t => { st.t = clamp(t, 0, dur); render(); },
+    pause: () => setPlaying(false),
+    host, svg,
+  };
+  const frame = build(root, svg, api);
+  const bar = H('div', { cls: 'stage-bar' }, host);
+  const btn = H('button', { type: 'button', cls: 'stage-btn' }, bar);
+  const track = H('div', { cls: 'stage-track', role: 'slider', tabindex: '0', 'aria-label': 'Animation time', 'aria-valuemin': '0', 'aria-valuemax': dur.toFixed(1) }, bar);
+  const fill = H('span', { cls: 'stage-fill' }, track);
+  beats.forEach(b => H('i', { style: `left:${(b / dur * 100).toFixed(2)}%` }, track));
+  H('span', { cls: 'stage-mode', text: mode === 'loop' ? 'loop' : '' }, bar);
+  /* full screen: the figure fills a rotated phone like a video does */
+  const fs = H('button', { type: 'button', cls: 'stage-btn stage-fs', 'aria-label': 'Show the figure on the full screen' }, bar);
+  S('path', { d: 'M1,5 V1 H5 M9,1 H13 V5 M13,9 V13 H9 M5,13 H1 V9', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.6 }, S('svg', { viewBox: '0 0 14 14', width: 13, height: 13, 'aria-hidden': 'true' }, fs));
+  fs.addEventListener('click', () => {
+    if (document.fullscreenElement === host) return document.exitFullscreen();
+    if (host.requestFullscreen && document.fullscreenEnabled) return host.requestFullscreen().catch(() => host.classList.toggle('zoomed'));
+    host.classList.toggle('zoomed');
+  });
+  function render() {
+    frame(st.t);
+    if (mode === 'loop' && fade) op(root, 1 - prog(st.t, dur - .75, dur - .1));
+    fill.style.width = (st.t / dur * 100).toFixed(2) + '%';
+    track.setAttribute('aria-valuenow', st.t.toFixed(1));
+  }
+  function tick(ts) {
+    st.raf = 0;
+    if (!st.playing || !st.visible) { st.last = null; return; }
+    if (st.last != null) st.t += Math.min(.1, (ts - st.last) / 1000);
+    st.last = ts;
+    if (st.t >= dur) {
+      if (mode === 'loop') st.t %= dur;
+      else { st.t = dur; render(); setPlaying(false); return; }
+    }
+    render();
+    st.raf = requestAnimationFrame(tick);
+  }
+  function kick() { if (!st.raf && st.playing && st.visible) st.raf = requestAnimationFrame(tick); }
+  function setPlaying(p) {
+    if (p && mode === 'once' && st.t >= dur - .01) st.t = 0;
+    st.playing = p;
+    btn.classList.toggle('paused', !p);
+    btn.setAttribute('aria-label', p ? 'Pause the animation' : 'Play the animation');
+    st.last = null;
+    kick();
+  }
+  btn.addEventListener('click', () => setPlaying(!st.playing));
+  const seekAt = e => { const r = track.getBoundingClientRect(); api.seek(clamp((e.clientX - r.left) / r.width) * dur * .9999); };
+  track.addEventListener('pointerdown', e => { setPlaying(false); seekAt(e); track.setPointerCapture(e.pointerId); });
+  track.addEventListener('pointermove', e => { if (track.hasPointerCapture(e.pointerId)) seekAt(e); });
+  track.addEventListener('keydown', e => {
+    const d = { ArrowRight: 1, ArrowLeft: -1, PageUp: 5, PageDown: -5 }[e.key];
+    if (d) { e.preventDefault(); setPlaying(false); api.seek(st.t + d); }
+    if (e.key === ' ') { e.preventDefault(); setPlaying(!st.playing); }
+  });
+  new IntersectionObserver(es => { st.visible = es[0].isIntersecting; kick(); }, { threshold: .25 }).observe(host);
+  st.t = REDUCED ? still : 0;
+  setPlaying(!REDUCED);
+  render();
+  refresh(svg);
+  return (STAGES[host.id] = { st, api, render, setPlaying });
+}
+
+/* ── Section 1: two questions about information ─────────────────────── */
+const ARMY = ['F', 'S', '9', '10', ...'BBBBBB', ...'22222222', ...'33333', ...'4444', ...'5555', ...'6666', ...'777', '8', '8'];
+function shuffled(list, seed) {
+  const rnd = mulberry32(seed), a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const CHESS_LAYOUT = [['K', 6, 0, 1], ['R', 5, 0, 1], ['P', 5, 1, 1], ['P', 6, 1, 1], ['P', 7, 2, 1], ['Q', 3, 2, 1], ['N', 5, 2, 1], ['B', 2, 3, 1], ['P', 0, 1, 1], ['P', 3, 3, 1],
+  ['K', 6, 7, 0], ['R', 3, 7, 0], ['P', 5, 6, 0], ['P', 6, 6, 0], ['P', 7, 5, 0], ['Q', 1, 5, 0], ['N', 2, 5, 0], ['B', 4, 4, 0], ['P', 0, 6, 0], ['P', 3, 4, 0]];
+
+function chessBoard(parent, sq) {
+  const g = S('g', { ref: 'public' }, parent), squares = S('g', null, g), pieces = [];
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) S('rect', { x: (c - 4) * sq, y: (3 - r) * sq, width: sq, height: sq, fill: (r + c) % 2 ? '#2a2f3a' : '#1f232c' }, squares);
+  for (const [l, c, r, white] of CHESS_LAYOUT) {
+    const p = S('g', null, g);
+    S('circle', { r: sq * .38, style: white ? 'fill:var(--c-public);fill-opacity:.92' : 'fill:var(--bg);stroke:var(--c-public);stroke-width:2' }, p);
+    S('text', { y: sq * .17, 'text-anchor': 'middle', 'font-size': (sq * .46).toFixed(1), 'font-weight': 700, style: `fill:${white ? 'var(--bg)' : 'var(--c-public)'}`, text: l }, p);
+    pieces.push([p, (c - 3.5) * sq, (3.5 - r) * sq]);
+  }
+  return { g, squares, pieces };
+}
+function strategoBoard(parent, sq, seed = 7) {
+  const g = S('g', null, parent), base = S('g', null, g), enemy = [], own = [];
+  for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) S('rect', { x: (c - 5) * sq, y: (4 - r) * sq, width: sq, height: sq, style: 'fill:var(--bg-sunk);stroke:var(--fg-faint)', 'stroke-width': .6 }, base);
+  for (const c0 of [2, 6]) S('rect', { x: (c0 - 5) * sq, y: -sq, width: 2 * sq, height: 2 * sq, class: 'f-context', 'fill-opacity': .35 }, base);
+  const army = shuffled(ARMY, seed);
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 10; c++) {
+    const t = tileG(g, sq * .84, army[r * 10 + c], 'faint', { fill: 0, stroke: 1.1, labelClass: 'f-soft' });
+    own.push([t, (c - 4.5) * sq, (4.5 - r) * sq]);
+  }
+  for (let r = 6; r < 10; r++) for (let c = 0; c < 10; c++) {
+    const t = tileG(g, sq * .84, '?', 'hidden', { ref: 'hidden' });
+    enemy.push([t, (c - 4.5) * sq, (4.5 - r) * sq]);
+  }
+  return { g, base, enemy, own };
+}
+
+function sceneTwoQuestions(root) {
+  const hd = headlines(root, [[0, 4.3, 'Chess: every piece is in view'], [4.3, 8.7, 'Stratego: you see where the enemy pieces stand, not what they are'], [8.7, 18, 'Two different questions about information']]);
+  const chess = chessBoard(root, 28), strat = strategoBoard(root, 22);
+  const labC = S('text', { x: 240, y: 430, 'text-anchor': 'middle', 'font-size': 20, class: 'f-public', text: 'perfect information', ref: 'public' }, root);
+  const labS = S('text', { x: 700, y: 430, 'text-anchor': 'middle', 'font-size': 20, class: 'f-hidden', text: 'imperfect information', ref: 'hidden' }, root);
+  const grid = S('g', null, root);
+  for (const [x, y, w, h] of [[204, 144, 360, 150], [564, 144, 360, 150], [204, 312, 720, 138]]) S('rect', { x, y, width: w, height: h, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.2 }, grid);
+  const lines = (x, y, rows, cls, size = 16, anchor = 'middle') => rows.forEach((s, i) => S('text', { x, y: y + i * (size + 4), 'text-anchor': anchor, 'font-size': size, class: cls, 'font-weight': i === 0 && size === 18 ? 700 : null, text: s }, grid));
+  lines(384, 98, ['perfect', 'you see the whole state'], 'f-public', 18);
+  lines(744, 98, ['imperfect', 'part of the state is hidden'], 'f-hidden', 18);
+  lines(111, 198, ['complete', 'all players know', 'the rules and payoffs'], 'f-fg', 18);
+  lines(111, 362, ['incomplete', 'some rules or payoffs', 'are unknown'], 'f-context', 18);
+  const names = S('g', null, root);
+  ['chess', 'Go', 'checkers'].forEach((s, i) => S('text', { x: 478, y: 200 + i * 22, 'text-anchor': 'middle', 'font-size': 18, class: 'f-fg', text: s }, names));
+  ['Stratego', 'poker', 'Kriegspiel'].forEach((s, i) => S('text', { x: 838, y: 200 + i * 22, 'text-anchor': 'middle', 'font-size': 18, class: 'f-fg', text: s }, names));
+  const hars = S('g', null, root);
+  ['Harsanyi (1967): model the unknown rules or payoffs as hidden moves', 'of chance. Then an incomplete game becomes an imperfect one.'].forEach((s, i) =>
+    S('text', { x: 564, y: 375 + i * 22, 'text-anchor': 'middle', 'font-size': 16, class: 'f-context', text: s }, hars));
+  const hl = S('rect', { x: 564, y: 144, width: 360, height: 150, class: 'f-none s-hidden', 'stroke-width': 3.5, ref: 'hidden' }, root);
+  return t => {
+    hd(t);
+    const mv = prog(t, 9.0, 10.6);
+    place(chess.g, lerp(240, 306, mv), lerp(278, 219, mv), lerp(1, .58, mv));
+    op(chess.squares, prog(t, .3, 1.4));
+    chess.pieces.forEach(([p, x, y], i) => { const k = prog(t, 1.1 + i * .07, 1.45 + i * .07); op(p, k); place(p, x, y, .6 + .4 * k); });
+    op(labC, prog(t, 2.9, 3.5) * (1 - prog(t, 8.7, 9.1)));
+    place(strat.g, lerp(700, 666, mv), lerp(278, 219, mv), lerp(1, .55, mv));
+    op(strat.base, prog(t, 4.4, 5.3));
+    strat.enemy.forEach(([g, x, y], i) => { const k = prog(t, 5.0 + i * .03, 5.4 + i * .03); op(g, k); place(g, x, y - 4 * (1 - k)); });
+    strat.own.forEach(([g, x, y], i) => { const k = prog(t, 6.3 + i * .03, 6.7 + i * .03); op(g, k); place(g, x, y + 4 * (1 - k)); });
+    op(labS, prog(t, 7.7, 8.2) * (1 - prog(t, 8.7, 9.1)));
+    op(grid, prog(t, 9.0, 10.3));
+    op(names, prog(t, 10.6, 11.3));
+    op(hars, prog(t, 11.4, 12.3));
+    draw(hl, prog(t, 12.4, 13.3));
+  };
+}
+
+/* Figure 1.2: fifteen games on the same two axes, visited in turn */
+const GAMES = [
+  ['Tic-tac-toe', 'cp', '', 'Both players see the full board. Both know the rules and the goal. Nothing is hidden and nothing is random.'],
+  ['Chess', 'cp', '', 'Each player sees every earlier move, so each information set has one state. The value of a position is well defined.'],
+  ['Go', 'cp', '', 'Perfect and complete information. AlphaGo and AlphaZero solved the problem of scale here, not the problem of hidden information.'],
+  ['Backgammon', 'cp', 'chance', 'The dice add chance, but each roll is public. So the game has perfect information. Chance and hidden information are different properties.'],
+  ['Stratego', 'ci', '', 'The rules and the goal are known to both players: complete information. The set-ups are hidden: imperfect information. More than 10³³ set-ups per player.'],
+  ['Texas hold’em', 'ci', 'chance', 'Each player has 2 private cards: 1,326 possible hands. Poker AI can list all of them in a public belief state. Stratego is far larger.'],
+  ['Rock–paper–scissors', 'ci', '', 'The players choose at the same time. When you choose, you do not see the other choice. A simultaneous move is a form of imperfect information.'],
+  ['Battleship', 'ci', '', 'Each player hides one large set-up, as in Stratego. The shots and the hits are public.'],
+  ['Fog-of-War chess', 'ci', '', 'Chess, but you see only the squares that your pieces can reach. Obscuro (2025) reached superhuman level with a search method.'],
+  ['Hanabi', 'ci', 'chance', 'You see the cards of your teammates but not your own. All players share one score, so it is fully cooperative.'],
+  ['Dou dizhu', 'ci', 'chance', 'One landlord plays against two peasants who cooperate without talk. The deal of the cards is hidden.'],
+  ['Bridge', 'ci', 'chance', 'Two teams of two. Each player sees only some cards. Bridge programs used perfect-information Monte Carlo and met strategy fusion.'],
+  ['Open auction', 'ip', '', 'All bids are public, so each bidder sees every earlier action. But each bidder has a private value that others do not know: incomplete information.'],
+  ['Sealed-bid auction', 'ii', '', 'The values are private (incomplete) and the bids are secret until the end (imperfect).'],
+  ['Negotiation', 'ii', '', 'Each side hides its limits and does not fully know the goals of the other side. Most real decisions are of this type.'],
+];
+function sceneTaxonomy(root, svg, api) {
+  const SLOT = 3.4;
+  const CELL = { cp: [200, 78, 360, 224], ci: [576, 78, 360, 224], ip: [200, 314, 360, 112], ii: [576, 314, 360, 112] };
+  const ROLE_OF = { cp: 'public', ci: 'hidden', ip: 'public', ii: 'hidden' };
+  S('text', { x: 380, y: 56, 'text-anchor': 'middle', 'font-size': 18, class: 'f-public', 'font-weight': 700, text: 'perfect information', ref: 'public' }, root);
+  S('text', { x: 756, y: 56, 'text-anchor': 'middle', 'font-size': 18, class: 'f-hidden', 'font-weight': 700, text: 'imperfect information', ref: 'hidden' }, root);
+  [['complete', 'rules and payoffs known', 190], ['incomplete', 'some payoffs unknown', 370]].forEach(([a, b, y], i) => {
+    S('text', { x: 100, y, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 700, class: i ? 'f-context' : 'f-fg', text: a }, root);
+    S('text', { x: 100, y: y + 21, 'text-anchor': 'middle', 'font-size': 14, class: i ? 'f-context' : 'f-soft', text: b }, root);
+  });
+  for (const [x, y, w, h] of Object.values(CELL)) S('rect', { x, y, width: w, height: h, rx: 8, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.1 }, root);
+  const cursor = {};
+  const chips = GAMES.map((g, i) => {
+    const [x, y, w] = CELL[g[1]];
+    const c = cursor[g[1]] || (cursor[g[1]] = { x: x + 14, y: y + 16 });
+    const el = S('g', { style: 'cursor:pointer', ref: g[1][1] === 'i' ? 'hidden' : 'public' }, root);
+    const r = S('rect', { height: 34, rx: 17, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.2 }, el);
+    const tx = S('text', { y: 23, 'font-size': 16, class: 'f-soft', text: g[0] }, el);
+    if (g[2]) S('tspan', { class: 'f-context', 'font-size': 12, dx: 6, text: g[2] }, tx);
+    const tw = tx.getComputedTextLength ? tx.getComputedTextLength() : g[0].length * 8;
+    const cw = Math.max(64, tw + 30);
+    if (c.x + cw > x + w - 12) { c.x = x + 14; c.y += 46; }
+    r.setAttribute('x', c.x); r.setAttribute('y', c.y); r.setAttribute('width', cw);
+    tx.setAttribute('x', c.x + 15); tx.setAttribute('y', c.y + 23);
+    c.x += cw + 10;
+    el.addEventListener('click', () => { api.pause(); api.seek(i * SLOT + 1); });
+    return { r, tx, role: ROLE_OF[g[1]] };
+  });
+  const cap = H('p', { cls: 'stage-cap', 'aria-live': 'polite' }, api.host);
+  api.host.insertBefore(cap, api.host.querySelector('.stage-bar'));
+  let shown = -1;
+  return t => {
+    const i = Math.min(GAMES.length - 1, Math.floor(t / SLOT)), k = prog(t - i * SLOT, 0, .35);
+    chips.forEach((c, j) => {
+      const on = j === i;
+      c.r.setAttribute('style', `stroke:${on ? `var(--c-${c.role})` : 'var(--fg-faint)'};fill:${on ? `var(--c-${c.role})` : 'none'};fill-opacity:${on ? (.2 * k).toFixed(2) : 0}`);
+      c.r.setAttribute('stroke-width', on ? 1.2 + 1.6 * k : 1.2);
+      c.tx.setAttribute('class', on ? 'f-fg' : 'f-soft');
+    });
+    if (i !== shown) {
+      shown = i;
+      const g = GAMES[i];
+      const where = { cp: 'complete and perfect information', ci: 'complete but imperfect information', ip: 'incomplete but perfect information', ii: 'incomplete and imperfect information' }[g[1]];
+      cap.textContent = '';
+      cap.append(H('b', { text: g[0] }), document.createTextNode(` has ${where}. ${g[3]}`));
+    }
+  };
+}
+
+/* ── Section 2: what one position tells you ─────────────────────────── */
+function sceneBoard(root, svg) {
+  const Q = 40, X0 = 60, Y0 = 70;
+  const at = (x, y) => [X0 + x * Q + Q / 2, Y0 + y * Q + Q / 2];
+  const lake = (x, y) => (y === 4 || y === 5) && (x === 2 || x === 3 || x === 6 || x === 7);
+  const hd = headlines(root, [[0, 2.6, 'A position, seen from your side'], [2.6, 6.4, 'A move tells you something'], [6.4, 10.2, 'A battle makes both ranks public'],
+    [10.2, 13.6, 'A long move tells you everything'], [13.6, 19, 'The rest stays hidden']]);
+  const board = S('g', null, root);
+  for (let y = 0; y < 10; y++) for (let x = 0; x < 10; x++) S('rect', { x: X0 + x * Q, y: Y0 + y * Q, width: Q, height: Q, style: `fill:${lake(x, y) ? 'var(--bg)' : 'var(--bg-sunk)'};stroke:var(--fg-faint)`, 'stroke-width': .6 }, board);
+  for (const x of [2, 6]) S('rect', { x: X0 + x * Q + 3, y: Y0 + 4 * Q + 3, width: 2 * Q - 6, height: 2 * Q - 6, rx: 6, class: 'f-context', 'fill-opacity': .3 }, board);
+  'abcdefghij'.split('').forEach((c, i) => S('text', { x: X0 + i * Q + Q / 2, y: Y0 + 10 * Q + 18, 'text-anchor': 'middle', class: 'mono f-faint', 'font-size': 12, text: c }, board));
+  for (let r = 0; r < 10; r++) S('text', { x: X0 - 10, y: Y0 + r * Q + Q / 2 + 4, 'text-anchor': 'end', class: 'mono f-faint', 'font-size': 12, text: 10 - r }, board);
+  const OURS = [['2', '6', '2', '3', '9', '2', '7', '2', '6', '2'], ['5', '7', 'S', '10', 'B', '8', '4', '6', '3', '5'], ['4', 'B', '8', '3', '2', '6', '7', '4', '3', '2'], ['B', 'F', 'B', '5', '2', '4', '3', 'B', '5', 'B']];
+  const own = [], enemy = {};
+  OURS.forEach((row, r) => row.forEach((p, x) => own.push([tileG(root, Q - 8, p, 'faint', { fill: 0, stroke: 1.2, labelClass: 'f-soft', font: p.length > 1 ? 15 : 18 }), x, 6 + r])));
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 10; x++) {
+    const g = S('g', { ref: 'hidden' }, root);
+    const hid = tileG(g, Q - 8, '?', 'hidden', { font: 18 });
+    const pub = tileG(g, Q - 8, '', 'public', { font: 18, fill: .22 });
+    const dot = S('circle', { cx: Q / 2 - 9, cy: -Q / 2 + 9, r: 3.4, class: 'f-hidden' }, g);
+    enemy[`${x},${y}`] = { g, hid, pub, dot, x, y };
+  }
+  const scout = enemy['9,3'], major = enemy['5,3'], mover = enemy['1,3'];
+  setText(major.pub.lastChild, '7');
+  setText(scout.pub.lastChild, '2');
+  scout.pub.firstChild.setAttribute('class', 's-belief f-belief'); scout.pub.lastChild.setAttribute('class', 'f-belief');
+  const victim = own.find(([, x, y]) => x === 5 && y === 6);
+  const flash = S('circle', { r: 26, class: 'f-none s-warn', 'stroke-width': 3 }, root);
+  const LOG = [
+    ['hidden', 2.9, ['It moved one square: it is not a Bomb', 'and not the Flag.']],
+    ['public', 8.6, ['A battle: both ranks become public.', 'The Major (7) beats your Scout (2).']],
+    ['belief', 11.8, ['It moved 2 squares in one turn. Only a', 'Scout can do this. It is a 2, for certain.']],
+    ['context', 13.8, ['The other enemy ranks stay hidden.', 'Very many set-ups still fit what you saw.']],
+  ];
+  const log = LOG.map(([role, t0, rows], i) => {
+    const g = S('g', null, root);
+    S('circle', { cx: 512, cy: 128 + i * 92, r: 6, class: `f-${role}` }, g);
+    rows.forEach((s, j) => S('text', { x: 530, y: 134 + i * 92 + j * 24, 'font-size': 18, class: j ? 'f-soft' : 'f-fg', text: s }, g));
+    return [g, t0];
+  });
+  const path = (steps, t, a, b) => {           /* position along a list of squares */
+    const k = prog(t, a, b), n = steps.length - 1, i = Math.min(n - 1, Math.floor(k * n)), f = k * n - i;
+    const [x1, y1] = at(...steps[i]), [x2, y2] = at(...steps[Math.min(n, i + 1)]);
+    return [lerp(x1, x2, f), lerp(y1, y2, f)];
+  };
+  return t => {
+    hd(t);
+    op(board, prog(t, 0, 1.0));
+    own.forEach(([g, x, y], i) => { const k = prog(t, .6 + i * .02, 1.0 + i * .02); const [px, py] = at(x, y); op(g, k); place(g, px, py + 5 * (1 - k)); });
+    Object.values(enemy).forEach(e => {
+      const i = e.y * 10 + e.x, k = prog(t, 1.0 + i * .02, 1.4 + i * .02);
+      let [px, py] = at(e.x, e.y);
+      if (e === mover) [px, py] = path([[1, 3], [1, 4]], t, 3.0, 3.6);
+      if (e === major) [px, py] = t < 7.7 ? path([[5, 3], [5, 4], [5, 5]], t, 6.6, 7.6) : t < 8.3 ? path([[5, 5], [5, 5.45]], t, 7.7, 8.0) : path([[5, 5.45], [5, 6]], t, 8.9, 9.3);
+      if (e === scout) [px, py] = path([[9, 3], [9, 5]], t, 10.5, 11.1);
+      const pulse = t > 13.8 && e.hid && e !== scout && e !== major ? .78 + .22 * Math.cos((t - 13.8) * 4) : 1;
+      op(e.g, k);
+      place(e.g, px, py - 5 * (1 - k));
+      const reveal = e === major ? prog(t, 8.1, 8.5) : e === scout ? prog(t, 11.3, 11.8) : 0;
+      op(e.hid, (1 - reveal) * pulse);
+      op(e.pub, reveal);
+      op(e.dot, e === mover ? prog(t, 3.7, 4.0) : e === major ? prog(t, 6.9, 7.1) * (1 - reveal) : e === scout ? prog(t, 11.1, 11.3) * (1 - reveal) : 0);
+    });
+    const [vx, vy] = at(5, 6);
+    op(victim[0], prog(t, .6, 1.2) * (1 - prog(t, 8.5, 8.9)));
+    place(flash, vx, vy - 20, .6 + .8 * prog(t, 8.0, 8.6));
+    op(flash, wave(t, 8.0, 8.8));
+    log.forEach(([g, t0]) => { op(g, prog(t, t0, t0 + .5)); place(g, 8 * (1 - prog(t, t0, t0 + .5)), 0); });
+  };
+}
+
+/* ── Section 3: the bluff game, the web of values, and beliefs ──────── */
+function bluffValue(b) {                       /* your Scout's bluff against the opponent's best reply */
+  if (Math.abs(b - BLUFF.B_STAR) < .004) return BLUFF.qYou(BLUFF.S_STAR).bluff;
+  return b < BLUFF.B_STAR ? .2 : -.5;
+}
+function sceneBluff(root, svg) {
+  const heads = arrowHeads(svg, ['policy', 'context']);
+  const hd = headlines(root, [[0, 3.8, 'The bluff game: your hidden piece stands next to an enemy Major (7)'],
+    [3.8, 7.6, 'The General always advances. The Scout may bluff, with probability {policy|b}'],
+    [7.6, 13.0, 'The opponent sees only an advance, and updates its belief'],
+    [13.0, 18.2, 'The value of a bluff depends on how often you bluff'],
+    [18.2, 26, 'Equilibrium: no player gains by a change alone']]);
+  /* the tree, at the same places as in Video 0.1 */
+  const chance = S('g', null, root);
+  S('circle', { cx: M(-6.9, .2)[0], cy: M(-6.9, .2)[1], r: 5.5, class: 'f-context' }, chance);
+  S('text', { x: M(-6.9, .2)[0], y: M(-6.9, .2)[1] + 24, 'text-anchor': 'middle', 'font-size': 14, class: 'f-context', text: 'chance' }, chance);
+  const gen = tileG(root, 36, '9', 'hidden', { font: 19, ref: 'hidden' }), sco = tileG(root, 36, '2', 'hidden', { font: 19, ref: 'hidden' });
+  place(gen, ...M(-4.7, 1.5)); place(sco, ...M(-4.7, -1.1));
+  const genLab = S('text', { x: M(-4.7, 1.5)[0], y: M(-4.7, 1.5)[1] - 28, 'text-anchor': 'middle', 'font-size': 16, class: 'f-hidden', text: 'General' }, root);
+  const scoLab = S('text', { x: M(-4.7, -1.1)[0], y: M(-4.7, -1.1)[1] + 38, 'text-anchor': 'middle', 'font-size': 16, class: 'f-hidden', text: 'Scout' }, root);
+  const eGen = S('line', { x1: M(-6.9, .2)[0] + 7, y1: M(-6.9, .2)[1] - 4, x2: M(-4.7, 1.5)[0] - 22, y2: M(-4.7, 1.5)[1] + 6, class: 's-context', 'stroke-width': 2.4 }, root);
+  const eSco = S('line', { x1: M(-6.9, .2)[0] + 7, y1: M(-6.9, .2)[1] + 4, x2: M(-4.7, -1.1)[0] - 22, y2: M(-4.7, -1.1)[1] - 6, class: 's-context', 'stroke-width': 2.4 }, root);
+  const pGen = S('text', { x: 114, y: 205, 'font-size': 18, class: 'f-belief', text: '0.25', ref: 'belief' }, root);
+  const pSco = S('text', { x: 114, y: 330, 'font-size': 18, class: 'f-belief', text: '0.75', ref: 'belief' }, root);
+  const advG = nodeG(root, 102, 30, 'advance', 'policy', { ref: 'policy' }), advS = nodeG(root, 138, 30, 'advance (bluff)', 'policy', { ref: 'bluff' }), stay = nodeG(root, 102, 30, 'stay', 'policy', { ref: 'counterfactual' });
+  place(advG, ...M(-1.9, 1.5)); place(advS, ...M(-1.9, -.35)); place(stay, ...M(-1.9, -1.95));
+  const aG = arrowLine(root, [222, 180], [310, 180], 'policy', heads), aB = arrowLine(root, [218, 326], [292, 295], 'policy', heads), aS = arrowLine(root, [218, 346], [310, 384], 'policy', heads);
+  const lG = S('text', { x: 262, y: 170, 'text-anchor': 'middle', 'font-size': 17, class: 'f-policy', text: '1' }, root);
+  const lB = S('text', { x: 244, y: 300, 'font-size': 20, 'font-style': 'italic', class: 'f-policy', text: 'b', ref: 'b' }, root);
+  const lS = S('text', { x: 236, y: 390, 'font-size': 17, class: 'f-policy', text: '1 − b', ref: 'counterfactual' }, root);
+  /* the opponent's information set and belief */
+  const info = S('rect', { x: 366 - 82, y: 235 - 82, width: 164, height: 164, rx: 12, class: 'f-none s-public', 'stroke-width': 2.4, 'stroke-dasharray': '8 6', ref: 'infoSet' }, root);
+  const infoLab = S('text', { x: 366, y: 142, 'text-anchor': 'middle', 'font-size': 15, class: 'f-public', text: 'the opponent sees: an advance', ref: 'infoSet' }, root);
+  const formula = S('g', { ref: 'belief' }, root);
+  S('text', { x: 762, y: 124, 'text-anchor': 'end', 'font-size': 21, class: 'f-belief', text: 'P(General | advance)' }, formula);
+  S('text', { x: 772, y: 124, 'font-size': 21, class: 'f-fg', text: '=' }, formula);
+  S('text', { x: 856, y: 104, 'text-anchor': 'middle', 'font-size': 20, class: 'f-fg', text: '0.25' }, formula);
+  S('line', { x1: 794, x2: 918, y1: 114, y2: 114, style: 'stroke:var(--fg)', 'stroke-width': 1.4 }, formula);
+  rich(formula, { x: 856, y: 138, 'text-anchor': 'middle', 'font-size': 20, class: 'f-fg' }, '0.25 + 0.75 {policy|b}');
+  const X0 = 618, W = 270, YB = 189;
+  const belief = S('g', { ref: 'belief' }, root);
+  S('text', { x: 573, y: YB + 6, 'text-anchor': 'middle', 'font-size': 17, class: 'f-belief', text: 'belief' }, belief);
+  S('rect', { x: X0, y: YB - 10, width: W, height: 20, style: 'fill:var(--bg-sunk);stroke:var(--fg-faint)', 'stroke-width': 1 }, belief);
+  const bar = S('rect', { x: X0, y: YB - 10, height: 20, class: 'f-belief', 'fill-opacity': .85 }, belief);
+  const belNum = S('text', { x: X0 + W + 12, y: YB + 6, 'font-size': 17, class: 'mono f-fg', text: '' }, belief);
+  const bRead = S('text', { x: 585, y: 232, 'text-anchor': 'middle', 'font-size': 18, class: 'f-policy', text: '', ref: 'b' }, root);
+  /* the value of a bluff against the best reply */
+  const AX = { x0: 594, x1: 918, y0: 297, y1: 447, lo: -.6, hi: .3 };
+  const px = b => AX.x0 + b * (AX.x1 - AX.x0), py = v => AX.y1 - (v - AX.lo) / (AX.hi - AX.lo) * (AX.y1 - AX.y0);
+  const plot = S('g', null, root);
+  const axes = S('path', { d: `M${AX.x0},${AX.y0} L${AX.x0},${AX.y1} M${AX.x0},${py(0)} L${AX.x1},${py(0)}`, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.5 }, plot);
+  S('text', { x: AX.x1, y: AX.y0 - 12, 'text-anchor': 'end', 'font-size': 16, class: 'f-value', text: 'value of a bluff', ref: 'qvalue' }, plot);
+  S('text', { x: AX.x1 + 10, y: py(0) + 6, 'font-size': 19, 'font-style': 'italic', class: 'f-policy', text: 'b', ref: 'b' }, plot);
+  const segL = S('line', { x1: px(0), x2: px(BLUFF.B_STAR), y1: py(.2), y2: py(.2), class: 's-policy', 'stroke-width': 4 }, root);
+  const segR = S('line', { x1: px(BLUFF.B_STAR), x2: px(1), y1: py(-.5), y2: py(-.5), class: 's-policy', 'stroke-width': 4 }, root);
+  const segLabs = S('g', null, root);
+  S('text', { x: px(0) + 10, y: py(.2) - 10, 'font-size': 14, class: 'f-soft', text: 'opponent retreats: +0.2' }, segLabs);
+  S('text', { x: (px(BLUFF.B_STAR) + px(1)) / 2, y: py(-.5) - 10, 'text-anchor': 'middle', 'font-size': 14, class: 'f-soft', text: 'opponent stands: −0.5' }, segLabs);
+  const dot = S('circle', { r: 6.5, class: 'f-policy', style: 'stroke:var(--bg)', 'stroke-width': 3, ref: 'b' }, root);
+  const vline = S('line', { x1: px(BLUFF.B_STAR), x2: px(BLUFF.B_STAR), y1: AX.y0, y2: AX.y1, class: 's-value', 'stroke-width': 2, 'stroke-dasharray': '5 5', ref: 'equilibrium' }, root);
+  const vLab = rich(root, { x: px(BLUFF.B_STAR), y: AX.y1 + 24, 'text-anchor': 'middle', 'font-size': 18, class: 'f-value' }, '{value|b}* ≈ 0.38');
+  const card = S('g', { ref: 'equilibrium' }, root);
+  S('text', { x: 753, y: 92, 'text-anchor': 'middle', 'font-size': 20, 'font-weight': 700, class: 'f-value', text: 'Equilibrium' }, card);
+  rich(card, { x: 753, y: 117, 'text-anchor': 'middle', 'font-size': 17, class: 'f-fg' }, 'the Scout bluffs with {policy|b}* ≈ 0.38');
+  rich(card, { x: 753, y: 140, 'text-anchor': 'middle', 'font-size': 17, class: 'f-fg' }, 'the opponent stands with {policyDim|s}* ≈ 0.29');
+  S('text', { x: 753, y: 162, 'text-anchor': 'middle', 'font-size': 15, class: 'f-soft', text: 'your value ≈ 0.107 · no player gains by a change alone' }, card);
+  const bAt = t => t < 10.4 ? .2 : t < 13 ? lerp(.2, .9, prog(t, 10.4, 13)) : t < 15.2 ? .9 : t < 18 ? lerp(.9, .1, prog(t, 15.2, 18)) : t < 18.3 ? .1 : lerp(.1, BLUFF.B_STAR, prog(t, 18.3, 19.7));
+  return t => {
+    hd(t);
+    const b = bAt(t);
+    op(chance, prog(t, .3, .9));
+    for (const el of [gen, sco, genLab, scoLab]) op(el, prog(t, .8, 2.0));
+    draw(eGen, prog(t, .8, 2.0)); draw(eSco, prog(t, .8, 2.0));
+    op(pGen, prog(t, 2.2, 2.9)); op(pSco, prog(t, 2.2, 2.9));
+    grow(aG, prog(t, 3.9, 4.9)); op(advG, prog(t, 4.2, 4.9)); op(lG, prog(t, 4.3, 4.9));
+    grow(aB, prog(t, 4.9, 6.2)); grow(aS, prog(t, 4.9, 6.2)); op(advS, prog(t, 5.3, 6.2)); op(stay, prog(t, 5.3, 6.2));
+    op(lB, prog(t, 6.2, 6.8)); op(lS, prog(t, 6.2, 6.8));
+    place(advS, ...M(-1.9, -.35), 1 + .08 * wave(t, 6.9, 7.6));
+    draw(info, prog(t, 7.7, 8.7)); op(infoLab, prog(t, 8.0, 8.7));
+    op(formula, prog(t, 8.7, 9.8) * (1 - prog(t, 20.5, 21.3)));
+    op(belief, prog(t, 9.9, 10.4)); op(bRead, prog(t, 9.9, 10.4));
+    bar.setAttribute('width', (W * BLUFF.belief(b)).toFixed(1));
+    setText(belNum, BLUFF.belief(b).toFixed(2));
+    setText(bRead, `b = ${b.toFixed(2)}`);
+    op(plot, prog(t, 13.1, 14.0));
+    draw(segL, prog(t, 14.0, 15.0)); draw(segR, prog(t, 14.0, 15.0)); op(segLabs, prog(t, 14.4, 15.2));
+    op(dot, prog(t, 14.6, 15.2)); dot.setAttribute('cx', px(b).toFixed(1)); dot.setAttribute('cy', py(bluffValue(b)).toFixed(1));
+    draw(vline, prog(t, 19.7, 20.5)); op(vLab, prog(t, 19.9, 20.5));
+    op(card, prog(t, 20.7, 21.6)); place(card, 0, 6 * (1 - prog(t, 20.7, 21.6)));
+  };
+}
+
+/* Figure 3.2: the paper's Figure 1, driven by a slow circle of (b, s) */
+function sceneWeb(root, svg) {
+  const DUR = 16;
+  rich(root, { x: 28, y: 42, 'font-size': 24, class: 'f-soft' }, 'Each value depends on how often the other decisions happen');
+  const heads = arrowHeads(svg, ['value', 'warn']);
+  S('text', { x: 170, y: 94, 'text-anchor': 'middle', class: 'mono f-faint', 'font-size': 12, 'letter-spacing': 1.5, text: 'YOUR DECISIONS' }, root);
+  S('text', { x: 450, y: 94, 'text-anchor': 'middle', class: 'mono f-faint', 'font-size': 12, 'letter-spacing': 1.5, text: 'OPPONENT’S DECISIONS' }, root);
+  const N = {
+    gen: { x: 170, y: 160, t: 'General advances', role: 'policy', ref: 'policy' },
+    bluff: { x: 170, y: 290, t: 'Scout advances', role: 'policy', ref: 'bluff' },
+    stay: { x: 170, y: 420, t: 'Scout stays', role: 'policy', ref: 'counterfactual' },
+    stand: { x: 450, y: 225, t: 'Stand', role: 'policyDim', ref: 's' },
+    retreat: { x: 450, y: 355, t: 'Retreat', role: 'policyDim', ref: 's' },
+  };
+  const edgeG = S('g', null, root);
+  const E = [['bluff', 'stand', 'value'], ['stand', 'bluff', 'warn'], ['stand', 'gen', 'value']].map(([a, c, role]) => {
+    const A = N[a], C = N[c];
+    const x1 = A.x + (C.x > A.x ? 104 : -104), x2 = C.x + (C.x > A.x ? -108 : 108);
+    const bend = a === 'stand' && c === 'gen' ? -30 : a === 'stand' ? 26 : -12;
+    const d = `M${x1},${A.y} C${(x1 + x2) / 2},${A.y + bend} ${(x1 + x2) / 2},${C.y + bend} ${x2},${C.y}`;
+    return S('path', { d, fill: 'none', class: `s-${role}`, 'stroke-dasharray': role === 'warn' ? '7 5' : null, 'marker-end': heads[role] }, edgeG);
+  });
+  for (const n of Object.values(N)) {
+    n.g = S('g', { ref: n.ref }, root);
+    n.box = S('rect', { x: n.x - 100, y: n.y - 36, width: 200, height: 72, rx: 9, style: 'fill:var(--bg-sunk)', 'stroke-width': 1.4 }, n.g);
+    S('text', { x: n.x, y: n.y - 10, 'text-anchor': 'middle', 'font-size': 17, class: 'f-fg', text: n.t }, n.g);
+    n.q = S('text', { x: n.x - 88, y: n.y + 22, 'font-size': 15, class: 'mono f-value', text: '', ref: 'qvalue' }, n.g);
+    S('rect', { x: n.x + 14, y: n.y + 12, width: 72, height: 10, rx: 3, style: 'fill:var(--bg)' }, n.g);
+    n.f = S('rect', { x: n.x + 14, y: n.y + 12, height: 10, rx: 3, class: `f-${n.role}` }, n.g);
+  }
+  S('text', { x: 70, y: 500, 'font-size': 13, class: 'f-faint', text: 'bar: how often the decision is made · green border: the best action now · arrow width: how strongly it pushes' }, root);
+  /* right: your guaranteed value against a best reply */
+  const P = { x0: 610, x1: 920, y0: 110, y1: 300, lo: -.35, hi: .3 };
+  const X = b => P.x0 + b * (P.x1 - P.x0), Y = v => P.y1 - (v - P.lo) / (P.hi - P.lo) * (P.y1 - P.y0);
+  S('path', { d: `M${P.x0},${P.y0} L${P.x0},${P.y1} L${P.x1},${P.y1} M${P.x0},${Y(0)} L${P.x1},${Y(0)}`, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.2 }, root);
+  S('text', { x: P.x0, y: P.y0 - 12, 'font-size': 15, class: 'f-value', text: 'your value against a best reply', ref: 'value' }, root);
+  rich(root, { x: (P.x0 + P.x1) / 2, y: P.y1 + 26, 'text-anchor': 'middle', 'font-size': 16, class: 'f-soft' }, 'your bluff rate {policy|b}');
+  let dG = '';
+  for (let i = 0; i <= 100; i++) dG += `${i ? 'L' : 'M'}${X(i / 100).toFixed(1)},${Y(BLUFF.guaranteed(i / 100)).toFixed(1)}`;
+  S('path', { d: dG, fill: 'none', class: 's-value', 'stroke-width': 2.6, ref: 'equilibrium' }, root);
+  const cur = S('path', { fill: 'none', class: 's-policyDim', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', ref: 's' }, root);
+  S('circle', { cx: X(BLUFF.B_STAR), cy: Y(BLUFF.V_STAR), r: 5.5, class: 'f-value', ref: 'equilibrium' }, root);
+  S('text', { x: X(BLUFF.B_STAR) + 9, y: Y(BLUFF.V_STAR) - 10, 'font-size': 14, class: 'f-value', text: 'equilibrium' }, root);
+  const mk = S('circle', { r: 6.5, class: 'f-policy', style: 'stroke:var(--bg)', 'stroke-width': 3, ref: 'b' }, root);
+  S('text', { x: P.x0, y: P.y1 + 54, 'font-size': 13, class: 'f-faint', text: 'solid: guaranteed value · dashed: against the current s' }, root);
+  const reads = ['belief', 'value', 'exploit'].map((ref, i) => S('text', { x: P.x0, y: 400 + i * 30, 'font-size': 17, class: `f-${OBJECTS[ref] ? ROLES[OBJECTS[ref].role] && OBJECTS[ref].role : 'fg'}`, ref }, root));
+  return t => {
+    const th = 2 * Math.PI * t / DUR;
+    const b = BLUFF.B_STAR + .32 * Math.cos(th), s = BLUFF.S_STAR + .26 * Math.sin(th);
+    const qy = BLUFF.qYou(s), qo = BLUFF.qOpp(b);
+    const val = { gen: [qy.general, 1], bluff: [qy.bluff, b], stay: [qy.stay, 1 - b], stand: [qo.stand, s], retreat: [qo.retreat, 1 - s] };
+    const bestYou = qy.bluff > qy.stay + 1e-9 ? 'bluff' : qy.bluff < qy.stay - 1e-9 ? 'stay' : null;
+    const bestOpp = qo.stand > qo.retreat + 1e-9 ? 'stand' : qo.stand < qo.retreat - 1e-9 ? 'retreat' : null;
+    for (const [k, n] of Object.entries(N)) {
+      const [q, f] = val[k], best = k === bestYou || k === bestOpp;
+      setText(n.q, `q = ${fmt(q, 2)}`);
+      n.f.setAttribute('width', Math.max(.5, 72 * f).toFixed(1));
+      n.box.setAttribute('style', `fill:var(--bg-sunk);stroke:${best ? 'var(--c-value)' : 'var(--fg-faint)'}`);
+      n.box.setAttribute('stroke-width', best ? 2.6 : 1.2);
+    }
+    const dStand = .28125 / Math.pow(.25 + .75 * b, 2);
+    [dStand, .7, .8].forEach((d, i) => E[i].setAttribute('stroke-width', (1.2 + 3.4 * Math.min(1, d / 1.5)).toFixed(2)));
+    let dU = '';
+    for (let i = 0; i <= 50; i++) dU += `${i ? 'L' : 'M'}${X(i / 50).toFixed(1)},${Y(BLUFF.payoff(i / 50, s)).toFixed(1)}`;
+    cur.setAttribute('d', dU);
+    mk.setAttribute('cx', X(b).toFixed(1)); mk.setAttribute('cy', Y(BLUFF.guaranteed(b)).toFixed(1));
+    setText(reads[0], `opponent’s belief P(General | advance) = ${BLUFF.belief(b).toFixed(2)}`);
+    setText(reads[1], `your expected payoff = ${fmt(BLUFF.payoff(b, s), 3)}`);
+    setText(reads[2], `your exploitability = ${(BLUFF.V_STAR - BLUFF.guaranteed(b)).toFixed(3)}`);
+  };
+}
+
+/* Figure 3.3: a belief about one enemy piece, updated by observations */
+const PIECE_TYPES = [['Marshal', 10, 1], ['General', 9, 1], ['Colonel', 8, 2], ['Major', 7, 3], ['Captain', 6, 4], ['Lieutenant', 5, 4], ['Sergeant', 4, 4], ['Miner', 3, 5], ['Scout', 2, 8], ['Spy', 1, 1], ['Bomb', null, 6], ['Flag', null, 1]];
+const LIKELIHOOD = {
+  moved: ([, r]) => r == null ? 0 : 1,
+  far: ([n]) => n === 'Scout' ? 1 : 0,
+  approach: ([, r], bl) => r == null ? 0 : r > 6 ? .8 : r === 6 ? .3 : bl,
+  spared: ([n, r]) => r == null ? 1 : n === 'Spy' ? .95 : r === 2 ? .8 : .3,
+};
+function posterior(obs, bl) {
+  const prior = PIECE_TYPES.map(t => t[2] / 40);
+  const p = PIECE_TYPES.map((t, i) => obs.reduce((acc, o) => acc * LIKELIHOOD[o](t, bl), prior[i]));
+  const Z = p.reduce((a, b) => a + b, 0);
+  return p.map(x => x / Z);
+}
+function sceneBeliefs(root) {
+  const hd = headlines(root, [[0, 2.2, 'Before any move: the prior from the 40 piece counts'], [2.2, 5.2, 'A rule is certain: Bombs and the Flag cannot move'],
+    [5.2, 12.6, 'Other moves count only through the opponent’s policy'], [12.6, 16.2, 'A missing attack is evidence too'],
+    [16.2, 24, 'Only a Scout moves more than one square: certain']]);
+  const CHIPS = [['moved', 'It moved at least once.', 'rule'], ['approach', 'It advanced next to your Captain (6).', 'policy'],
+    ['spared', 'It did not attack your Scout (2) beside it.', 'policy'], ['far', 'It moved 4 squares in one turn.', 'rule']];
+  const chips = CHIPS.map(([key, text, kind], i) => {
+    const g = S('g', { ref: 'public' }, root), y = 104 + i * 62;
+    const box = S('rect', { x: 28, y, width: 392, height: 44, rx: 10, 'stroke-width': 1.4 }, g);
+    const tx = S('text', { x: 46, y: y + 28, 'font-size': 16, text }, g);
+    S('text', { x: 408, y: y + 28, 'text-anchor': 'end', 'font-size': 12, class: kind === 'rule' ? 'mono f-context' : 'mono f-policy', text: kind === 'rule' ? 'RULE' : 'POLICY' }, g);
+    return { key, box, tx };
+  });
+  const blG = S('g', { ref: 'bluff' }, root);
+  S('text', { x: 28, y: 386, 'font-size': 16, class: 'f-param', text: 'opponent bluff rate' }, blG);
+  S('rect', { x: 28, y: 398, width: 300, height: 8, rx: 4, style: 'fill:var(--bg-sunk)' }, blG);
+  const blFill = S('rect', { x: 28, y: 398, height: 8, rx: 4, class: 'f-param' }, blG);
+  const blNum = S('text', { x: 340, y: 407, 'font-size': 16, class: 'mono f-param' }, blG);
+  S('text', { x: 28, y: 432, 'font-size': 13, class: 'f-faint', text: 'how often a weak piece advances like a strong one' }, blG);
+  const L = 560, Wb = 300, Y0 = 92, RH = 30;
+  const rows = PIECE_TYPES.map(([name, r], i) => {
+    const y = Y0 + i * RH;
+    S('text', { x: L - 10, y: y + 18, 'text-anchor': 'end', 'font-size': 15, class: 'f-soft', text: r ? `${name} (${r})` : name }, root);
+    S('rect', { x: L, y: y + 4, width: Wb, height: 20, style: 'fill:var(--bg-sunk)' }, root);
+    const prior = S('rect', { x: L, y: y + 4, height: 20, style: 'fill:var(--fg-faint)', 'fill-opacity': .35 }, root);
+    const post = S('rect', { x: L, y: y + 8, height: 12, class: 'f-belief', ref: 'belief' }, root);
+    const val = S('text', { x: L + Wb + 10, y: y + 19, 'font-size': 14, class: 'mono f-fg' }, root);
     return { prior, post, val };
   });
-  const like = {
-    moved: ([, r]) => r == null ? 0 : 1,
-    far: ([n]) => n === 'Scout' ? 1 : 0,
-    approach: ([, r], bl) => r == null ? 0 : r > 6 ? .8 : r === 6 ? .3 : bl,
-    retreat: ([, r], bl, sa) => r == null ? 0 : r < 7 ? .6 : r === 7 ? .3 : sa,
-    spared: ([n, r]) => r == null ? 1 : n === 'Spy' ? .95 : r === 2 ? .8 : .3,
-  };
-  const H2 = p => -p.reduce((s, x) => s + (x > 0 ? x * Math.log2(x) : 0), 0);
-  function render() {
-    const bl = +inBluff.value, sa = +inSand.value;
-    $('#bel-bluff-out').textContent = bl.toFixed(2);
-    $('#bel-sand-out').textContent = sa.toFixed(2);
-    const on = $$('#bel-obs input:checked').map(i => i.dataset.obs);
-    const prior = TYPES.map(t => t[2] / 40);
-    let post = TYPES.map((t, i) => on.reduce((p, o) => p * like[o](t, bl, sa), prior[i]));
-    const Z = post.reduce((a, b) => a + b, 0);
-    post = Z > 0 ? post.map(x => x / Z) : post.map(() => 0);
-    const maxP = Math.max(...prior, ...post);
+  const strong = S('text', { x: L - 150, y: Y0 + 12 * RH + 34, 'font-size': 17, class: 'f-belief', ref: 'belief' }, root);
+  S('text', { x: L + Wb + 60, y: Y0 - 12, 'text-anchor': 'end', 'font-size': 13, class: 'f-faint', text: 'grey: prior · yellow: belief now' }, root);
+  const PRIOR = posterior([], 0);
+  const blAt = t => t < 7 ? .15 : t < 8.6 ? lerp(.15, 0, prog(t, 7, 8.6)) : t < 10.6 ? lerp(0, .6, prog(t, 8.6, 10.6)) : lerp(.6, .15, prog(t, 10.6, 11.8));
+  const mix = (a, b, k) => a.map((x, i) => lerp(x, b[i], k));
+  function belief(t) {
+    const bl = blAt(t);
+    if (t < 2.4) return PRIOR.map(x => x * prog(t, .2, 1.8));
+    if (t < 5.4) return mix(PRIOR, posterior(['moved'], bl), prog(t, 2.4, 3.2));
+    if (t < 12.9) return mix(posterior(['moved'], bl), posterior(['moved', 'approach'], bl), prog(t, 5.4, 6.2));
+    if (t < 16.4) return mix(posterior(['moved', 'approach'], bl), posterior(['moved', 'approach', 'spared'], bl), prog(t, 12.9, 13.7));
+    if (t < 17.4) return mix(posterior(['moved', 'approach', 'spared'], bl), PRIOR, prog(t, 16.4, 17.0));
+    return mix(PRIOR, posterior(['moved', 'far'], bl), prog(t, 17.4, 18.2));
+  }
+  const ON = { moved: [2.2, 16.3], approach: [5.2, 16.3], spared: [12.7, 16.3], far: [17.2, 99] };
+  return t => {
+    hd(t);
+    const p = belief(t), bl = blAt(t);
+    chips.forEach(c => {
+      const [a, b] = ON[c.key], k = prog(t, a, a + .4) * (1 - prog(t, b, b + .3)) + (c.key === 'moved' ? prog(t, 17.2, 17.6) : 0);
+      c.box.setAttribute('style', `stroke:${k > .5 ? 'var(--c-public)' : 'var(--fg-faint)'};fill:var(--c-public);fill-opacity:${(.14 * k).toFixed(2)}`);
+      c.tx.setAttribute('class', k > .5 ? 'f-fg' : 'f-faint');
+    });
+    op(blG, .35 + .65 * inWin(t, 5.2, 12.6));
+    blFill.setAttribute('width', (300 * bl / .6).toFixed(1));
+    setText(blNum, bl.toFixed(2));
     rows.forEach((r, i) => {
-      r.prior.style.width = (prior[i] / maxP * 100) + '%';
-      r.post.style.width = (post[i] / maxP * 100) + '%';
-      r.val.textContent = Z > 0 ? (post[i] * 100).toFixed(1) + '%' : '—';
+      r.prior.setAttribute('width', (Wb * PRIOR[i] * prog(t, .2, 1.8)).toFixed(1));
+      r.post.setAttribute('width', Math.max(0, Wb * p[i]).toFixed(1));
+      setText(r.val, `${(p[i] * 100).toFixed(1)}%`);
     });
-    const top = post.map((p, i) => [p, TYPES[i][0]]).sort((a, b) => b[0] - a[0])[0];
-    const strong = post.reduce((s, p, i) => s + (TYPES[i][1] != null && TYPES[i][1] > 6 ? p : 0), 0);
-    $('#bel-stats').innerHTML = Z > 0
-      ? `<span>most likely <b>${top[1]} ${(top[0] * 100).toFixed(1)}%</b></span><span class="r" data-ref="belief">P(stronger than your Captain) <b>${(strong * 100).toFixed(1)}%</b></span><span>uncertainty <b>${H2(post).toFixed(2)} bits</b> (prior ${H2(prior).toFixed(2)})</span>`
-      : '<span>These observations cannot all be true. Clear one.</span>';
-    refresh($('#bel-stats'));
-  }
-  $$('#bel-obs input').forEach(i => i.addEventListener('change', () => {
-    if (i.dataset.obs === 'far' && i.checked) { const m = $('#bel-obs input[data-obs="moved"]'); m.checked = true; }
-    render();
-  }));
-  [inBluff, inSand].forEach(i => i.addEventListener('input', render));
-  refresh(bars);
-  render();
+    const st = p.reduce((s, x, i) => s + (PIECE_TYPES[i][1] != null && PIECE_TYPES[i][1] > 6 ? x : 0), 0);
+    setText(strong, `P(stronger than your Captain) = ${(st * 100).toFixed(1)}%`);
+  };
 }
 
-/* Figure 4.1: the dynamics lab */
-function mountDynamicsLab() {
-  const phase = $('#dyn-phase'), map = $('#dyn-map'), exl = $('#dyn-expl');
-  const inA = $('#dyn-alpha'), inE = $('#dyn-eta');
-  const T = 300;
-  let mode = 'const', anim = null;
-  /* stability map: computed once */
-  const MX0 = 54, MX1 = 388, MY0 = 12, MY1 = 282, NE = 34, NA = 26, LE0 = -.3, LE1 = 1.9;
-  const mx = le => MX0 + (le - LE0) / (LE1 - LE0) * (MX1 - MX0), my = a => MY1 - a * (MY1 - MY0);
-  const grid = [];
+/* ── Section 4: damped self-play, and the design pattern ─────────────── */
+function sceneDynamics(root) {
+  const hd = headlines(root, [[0, 2.4, 'Self-play: each policy moves toward better replies to the other'], [2.4, 8.4, 'Without damping, self-play goes in circles'],
+    [8.4, 13.8, 'A weak pull keeps circling'], [13.8, 19.2, 'A strong pull settles, but away from the equilibrium'],
+    [19.2, 30, 'Lower {param|α} and {param|η} together, and the path reaches the equilibrium']]);
+  const Q = { x0: 70, y0: 96, side: 370 };
+  const sx = b => Q.x0 + b * Q.side, sy = s => Q.y0 + (1 - s) * Q.side;
+  const square = S('g', null, root);
+  S('rect', { x: Q.x0, y: Q.y0, width: Q.side, height: Q.side, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.2 }, square);
+  for (const v of [.25, .5, .75]) {
+    S('line', { x1: sx(v), x2: sx(v), y1: Q.y0 + Q.side, y2: Q.y0 + Q.side - 7, style: 'stroke:var(--fg-faint)' }, square);
+    S('line', { x1: Q.x0, x2: Q.x0 + 7, y1: sy(v), y2: sy(v), style: 'stroke:var(--fg-faint)' }, square);
+  }
+  S('text', { x: Q.x0 - 8, y: Q.y0 + Q.side + 16, 'text-anchor': 'end', 'font-size': 13, class: 'f-faint', text: '0' }, square);
+  S('text', { x: sx(1), y: Q.y0 + Q.side + 18, 'text-anchor': 'middle', 'font-size': 13, class: 'f-faint', text: '1' }, square);
+  S('text', { x: Q.x0 - 8, y: Q.y0 + 5, 'text-anchor': 'end', 'font-size': 13, class: 'f-faint', text: '1' }, square);
+  rich(square, { x: sx(.5), y: Q.y0 + Q.side + 30, 'text-anchor': 'middle', 'font-size': 17, class: 'f-policy' }, '{policy|b}: you bluff');
+  rich(square, { x: Q.x0, y: Q.y0 - 10, 'font-size': 17, class: 'f-policyDim' }, '{policyDim|s}: opponent stands');
+  /* the best-reply field */
+  const field = S('g', null, root);
+  for (const bb of [.1, .3, .5, .7, .9]) for (const ss of [.1, .3, .5, .7, .9]) {
+    const db = bb * (1 - bb) * BLUFF.qYou(ss).bluff, ds = ss * (1 - ss) * (BLUFF.qOpp(bb).stand - BLUFF.qOpp(bb).retreat);
+    const n = Math.hypot(db * Q.side, ds * Q.side) || 1, ux = db * Q.side / n * 15, uy = -ds * Q.side / n * 15;
+    S('line', { x1: sx(bb) - ux, y1: sy(ss) - uy, x2: sx(bb) + ux, y2: sy(ss) + uy, class: 's-context', 'stroke-width': 2, 'stroke-linecap': 'round' }, field);
+    S('circle', { cx: sx(bb) + ux, cy: sy(ss) + uy, r: 2.8, class: 'f-context' }, field);
+  }
+  const star = S('path', { d: starPath(sx(BLUFF.B_STAR), sy(BLUFF.S_STAR), 10, 4.2), class: 'f-value', ref: 'equilibrium' }, root);
+  const starLab = S('text', { x: sx(BLUFF.B_STAR) + 12, y: sy(BLUFF.S_STAR) + 20, 'font-size': 14, class: 'f-value', text: 'equilibrium' }, root);
+  const magnet = S('g', { ref: 'magnet' }, root);
+  S('circle', { cx: sx(.5), cy: sy(.5), r: 6.5, class: 'f-param' }, magnet);
+  S('text', { x: sx(.5) + 9, y: sy(.5) - 8, 'font-size': 19, 'font-style': 'italic', class: 'f-param', text: 'ρ' }, magnet);
+  const RUNS = [
+    ['und', t => [1.2, 0], 170, 'warn', 2.6, '{param|η} = 1.2, {param|α} = 0: no damping, it cycles'],
+    ['weak', t => [1.2, .02], 220, 'warn', 2.2, '{param|η} = 1.2, {param|α} = 0.02: weak pull, it keeps circling'],
+    ['strong', t => [1.2, .15], 120, 'fg', 2.6, '{param|η} = 1.2, {param|α} = 0.15: it settles, but off target'],
+    ['co', SCHEDULES.coord, 300, 'value', 3.2, '{param|α} and {param|η} fall together: it reaches the equilibrium'],
+  ].map(([key, sched, T, role, width, text], i) => {
+    const { path, ex } = BLUFF.selfPlay(sched, 300);
+    const P = path.slice(0, T + 1).map(([b, s]) => [sx(b), sy(s)]);
+    const line = S('polyline', { fill: 'none', class: `s-${role === 'fg' ? 'fg' : role}`, 'stroke-width': width, 'stroke-linejoin': 'round', ref: key === 'co' ? 'reg' : 'selfplay' }, root);
+    const head = S('circle', { r: 5, class: `f-${role}` }, root);
+    const leg = rich(root, { x: 492, y: 92 + i * 25, 'font-size': 15, class: `f-${role}` }, text);
+    return { key, P, ex, line, head, leg, end: P[P.length - 1] };
+  });
+  const endDot = S('circle', { r: 5.5, class: 'f-fg' }, root);
+  const coDot = S('circle', { r: 6, class: 'f-value' }, root);
+  /* the stability map: final exploitability for each constant (η, α) */
+  const MP = { x0: 540, x1: 900, y0: 210, y1: 340, le0: -.3, le1: 1.9, a1: .6 };
+  const mx = eta => MP.x0 + (Math.log10(eta) - MP.le0) / (MP.le1 - MP.le0) * (MP.x1 - MP.x0), my = a => MP.y1 - a / MP.a1 * (MP.y1 - MP.y0);
+  const map = S('g', { ref: 'exploit' }, root);
+  const NE = 30, NA = 18, cw = (MP.x1 - MP.x0) / NE, ch = (MP.y1 - MP.y0) / NA;
   for (let i = 0; i < NE; i++) for (let j = 0; j < NA; j++) {
-    const le = LE0 + (i + .5) / NE * (LE1 - LE0), a = (j + .5) / NA;
-    const { ex } = BLUFF.selfPlay(() => [Math.pow(10, le), a], T);
-    grid.push([i, j, ex[ex.length - 1]]);
+    const eta = Math.pow(10, MP.le0 + (i + .5) / NE * (MP.le1 - MP.le0)), a = (j + .5) / NA * MP.a1;
+    const { ex } = BLUFF.selfPlay(() => [eta, a], 300);
+    const pct = Math.round(Math.pow(Math.min(1, ex[ex.length - 1] / .25), .6) * 100);
+    S('rect', { x: (MP.x0 + i * cw).toFixed(1), y: (MP.y1 - (j + 1) * ch).toFixed(1), width: (cw + .4).toFixed(1), height: (ch + .4).toFixed(1), style: `fill:color-mix(in srgb, var(--c-warn) ${pct}%, var(--bg-sunk))` }, map);
   }
-  function drawMap(schedPath, cur) {
-    map.textContent = '';
-    const cw = (MX1 - MX0) / NE, ch = (MY1 - MY0) / NA;
-    for (const [i, j, e] of grid) {
-      const pct = Math.round(Math.pow(Math.min(1, e / .25), .6) * 100);
-      const r = S('rect', { x: (MX0 + i * cw).toFixed(1), y: (MY1 - (j + 1) * ch).toFixed(1), width: (cw + .4).toFixed(1), height: (ch + .4).toFixed(1), style: `fill:color-mix(in srgb, var(--c-warn) ${pct}%, var(--bg-sunk))` }, map);
-      r.addEventListener('click', () => { mode = 'const'; inE.value = (LE0 + (i + .5) / NE * (LE1 - LE0)).toFixed(2); inA.value = ((j + .5) / NA).toFixed(2); run(); });
-      markTip(r, `η ≈ ${Math.pow(10, LE0 + (i + .5) / NE * (LE1 - LE0)).toFixed(1)}, α ≈ ${((j + .5) / NA).toFixed(2)}: exploitability ${e.toFixed(3)}`);
-    }
-    for (const v of [.5, 1, 2, 5, 10, 20, 50]) { const x = mx(Math.log10(v)); S('line', { x1: x, x2: x, y1: MY1, y2: MY1 + 4, class: 'fg-stroke' }, map); S('text', { x, y: MY1 + 16, 'text-anchor': 'middle', class: 'mono', 'font-size': 10.5, text: v }, map); }
-    for (const v of [0, .25, .5, .75, 1]) S('text', { x: MX0 - 6, y: my(v) + 4, 'text-anchor': 'end', class: 'mono', 'font-size': 10.5, text: v }, map);
-    S('text', { x: (MX0 + MX1) / 2, y: MY1 + 34, 'text-anchor': 'middle', class: 'f-param', 'font-size': 12.5, text: 'step size η (log scale)', ref: 'step' }, map);
-    S('text', { x: 14, y: (MY0 + MY1) / 2, transform: `rotate(-90 14 ${(MY0 + MY1) / 2})`, 'text-anchor': 'middle', class: 'f-param', 'font-size': 12.5, text: 'regularization α', ref: 'reg' }, map);
-    if (schedPath) {
-      const d = schedPath.map(([e, a], k) => `${k ? 'L' : 'M'}${mx(Math.log10(e)).toFixed(1)},${my(Math.min(1, a)).toFixed(1)}`).join('');
-      S('path', { d, style: 'fill:none;stroke:var(--fg)', 'stroke-width': 2.2, 'stroke-dasharray': '1 4', 'stroke-linecap': 'round' }, map);
-    }
-    if (cur) {
-      S('circle', { cx: mx(clamp(Math.log10(cur[0]), LE0, LE1)), cy: my(Math.min(1, cur[1])), r: 6.5, fill: 'none', style: 'stroke:var(--fg)', 'stroke-width': 2.2, id: 'dyn-marker' }, map);
-    }
-    /* colour legend under the axis title */
-    const LY = MY1 + 46, LX0 = 214, LW = 120;
-    S('text', { x: LX0 - 8, y: LY + 9, 'text-anchor': 'end', class: 'faint', 'font-size': 10.5, text: 'final exploitability 0' }, map);
-    for (let k = 0; k < 12; k++) {
-      const pct = Math.round(Math.pow(k / 11, .6) * 100);
-      S('rect', { x: (LX0 + k * LW / 12).toFixed(1), y: LY, width: (LW / 12 + .4).toFixed(1), height: 11, style: `fill:color-mix(in srgb, var(--c-warn) ${pct}%, var(--bg-sunk))` }, map);
-    }
-    S('text', { x: LX0 + LW + 6, y: LY + 9, class: 'faint', 'font-size': 10.5, text: '≥ 0.25' }, map);
-    refresh(map);
-  }
-  const PX0 = 46, PX1 = 386, PY0 = 12, PY1 = 352;
-  const px = b => PX0 + b * (PX1 - PX0), py = s => PY1 - s * (PY1 - PY0);
-  function drawPhaseFrame(alpha) {
-    phase.textContent = '';
-    for (const v of [0, .25, .5, .75, 1]) {
-      S('line', { x1: px(v), x2: px(v), y1: PY0, y2: PY1, class: v === 0 || v === 1 ? 'rule' : 'rule-soft' }, phase);
-      S('line', { x1: PX0, x2: PX1, y1: py(v), y2: py(v), class: v === 0 || v === 1 ? 'rule' : 'rule-soft' }, phase);
-      S('text', { x: px(v), y: PY1 + 15, 'text-anchor': 'middle', class: 'mono', 'font-size': 10.5, text: v }, phase);
-      S('text', { x: PX0 - 6, y: py(v) + 4, 'text-anchor': 'end', class: 'mono', 'font-size': 10.5, text: v }, phase);
-    }
-    S('text', { x: (PX0 + PX1) / 2, y: PY1 + 33, 'text-anchor': 'middle', class: 'f-policy', 'font-size': 12.5, text: 'your bluff rate b', ref: 'b' }, phase);
-    S('text', { x: 13, y: (PY0 + PY1) / 2, transform: `rotate(-90 13 ${(PY0 + PY1) / 2})`, 'text-anchor': 'middle', class: 'f-policyDim', 'font-size': 12.5, text: 'opponent stand rate s', ref: 's' }, phase);
-    S('rect', { x: px(BLUFF.B_STAR) - 6, y: py(BLUFF.S_STAR) - 6, width: 12, height: 12, rx: 2, class: 'f-value', ref: 'equilibrium' }, phase);
-    if (alpha > 0) { const [qb, qs] = BLUFF.qre(alpha); S('rect', { x: px(qb) - 5, y: py(qs) - 5, width: 10, height: 10, rx: 2, class: 'f-param', transform: `rotate(45 ${px(qb)} ${py(qs)})`, ref: 'qre' }, phase); }
-    const path = S('path', { fill: 'none', class: 's-policy', 'stroke-width': 1.8, 'stroke-linejoin': 'round', opacity: .9, ref: 'b' }, phase);
-    const head = S('circle', { r: 5, class: 'f-policy', ref: 'b' }, phase);
-    refresh(phase);
-    return { path, head };
-  }
-  function drawExpl(ex, upto) {
-    exl.textContent = '';
-    const x0 = 46, x1 = 388, y0 = 10, y1 = 132, ymax = .4;
-    const X = t => x0 + t / T * (x1 - x0), Y = v => y1 - Math.min(v, ymax) / ymax * (y1 - y0);
-    for (const v of [0, .1, .2, .3, .4]) { S('line', { x1: x0, x2: x1, y1: Y(v), y2: Y(v), class: v === 0 ? 'rule' : 'rule-soft' }, exl); S('text', { x: x0 - 6, y: Y(v) + 4, 'text-anchor': 'end', class: 'mono', 'font-size': 10.5, text: v }, exl); }
-    for (const v of [0, 100, 200, 300]) S('text', { x: X(v), y: y1 + 15, 'text-anchor': 'middle', class: 'mono', 'font-size': 10.5, text: v }, exl);
-    S('text', { x: (x0 + x1) / 2, y: y1 + 32, 'text-anchor': 'middle', class: 'faint', 'font-size': 11.5, text: 'update number' }, exl);
-    const n = Math.min(ex.length - 1, upto);
-    let d = '';
-    for (let t = 0; t <= n; t++) d += `${t ? 'L' : 'M'}${X(t).toFixed(1)},${Y(ex[t]).toFixed(1)}`;
-    S('path', { d, fill: 'none', class: 's-warn', 'stroke-width': 2, ref: 'exploit' }, exl);
-    S('text', { x: x1, y: y0 + 10, 'text-anchor': 'end', class: 'f-warn', 'font-size': 11.5, text: `exploitability ${ex[n].toFixed(3)}`, ref: 'exploit' }, exl);
-    refresh(exl);
-  }
-  function run() {
-    if (anim) cancelAnimationFrame(anim);
-    const alpha = +inA.value, eta = Math.pow(10, +inE.value);
-    $('#dyn-alpha-out').textContent = mode === 'const' ? alpha.toFixed(2) : 'scheduled';
-    $('#dyn-eta-out').textContent = mode === 'const' ? eta.toFixed(eta < 10 ? 2 : 1) : 'scheduled';
-    const schedule = mode === 'const' ? () => [eta, alpha] : SCHEDULES[mode];
-    const { path, ex } = BLUFF.selfPlay(schedule, T);
-    const schedPath = mode === 'const' ? null : Array.from({ length: T }, (_, t) => schedule(t));
-    const frame = drawPhaseFrame(mode === 'const' ? alpha : schedule(T - 1)[1]);
-    const tail = path.slice(-100).map(p => p[0]);
-    const swing = Math.max(...tail) - Math.min(...tail);
-    const end = path[path.length - 1];
-    $('#dyn-stats').innerHTML = `<span>end point <b>b = ${end[0].toFixed(3)}, s = ${end[1].toFixed(3)}</b></span><span class="r" data-ref="exploit">final exploitability <b>${ex[ex.length - 1].toFixed(3)}</b></span><span>swing of b over the last 100 updates <b>${swing.toFixed(3)}</b></span><span>${swing > .05 ? 'the path does not settle' : 'the path settles'}</span>`;
-    refresh($('#dyn-stats'));
-    const draw = k => {
-      const d = path.slice(0, k + 1).map(([b, s], i) => `${i ? 'L' : 'M'}${px(b).toFixed(1)},${py(s).toFixed(1)}`).join('');
-      frame.path.setAttribute('d', d);
-      frame.head.setAttribute('cx', px(path[k][0])); frame.head.setAttribute('cy', py(path[k][1]));
-      drawExpl(ex, k);
-    };
-    drawMap(schedPath, mode === 'const' ? [eta, alpha] : schedPath[0]);
-    if (REDUCED) { draw(T); if (schedPath) drawMap(schedPath, schedPath[T - 1]); return; }
-    const t0 = performance.now(), dur = 1600;
-    const tick = now => {
-      const k = Math.min(T, Math.round(smooth(Math.min(1, (now - t0) / dur)) * T));
-      draw(k);
-      if (schedPath) { const m = $('#dyn-marker'); const [e, a] = schedPath[Math.min(T - 1, k)]; if (m) { m.setAttribute('cx', mx(clamp(Math.log10(e), LE0, LE1))); m.setAttribute('cy', my(Math.min(1, a))); } }
-      if (k < T) anim = requestAnimationFrame(tick);
-    };
-    anim = requestAnimationFrame(tick);
-  }
-  [inA, inE].forEach(i => i.addEventListener('input', () => { mode = 'const'; run(); }));
-  $('#dyn-coord').addEventListener('click', () => { mode = 'coord'; run(); });
-  $('#dyn-fast').addEventListener('click', () => { mode = 'fast'; run(); });
-  $('#dyn-const').addEventListener('click', () => { mode = 'const'; run(); });
-  run();
-}
-
-/* Figure 5.1: the search labs */
-function mountSearchLabs() {
-  /* part A: strategy fusion */
-  const inSafe = $('#sf-safe'), peek = $('#sf-peek'), barsA = $('#sf-bars');
-  function renderA() {
-    const safe = +inSafe.value;
-    $('#sf-safe-out').textContent = safe.toFixed(2);
-    $('#sf-safe-out2').textContent = safe.toFixed(2);
-    const gamble = peek.checked ? 1 : .5;
-    barsA.textContent = '';
-    const x0 = 110, x1 = 360, W = x1 - x0;
-    const rows = [['safe move', safe, 'value'], ['gamble', gamble, peek.checked ? 'warn' : 'value']];
-    rows.forEach(([name, v, role], i) => {
-      const y = 22 + i * 52;
-      S('text', { x: x0 - 10, y: y + 17, 'text-anchor': 'end', class: 'ink', 'font-size': 13, text: name }, barsA);
-      S('rect', { x: x0, y, width: W, height: 26, rx: 3, class: 'f-sunk' }, barsA);
-      const r = S('rect', { x: x0, y, width: Math.max(2, W * v), height: 26, rx: 4, class: `f-${role}`, ref: role === 'warn' ? 'fusion' : 'qvalue' }, barsA);
-      S('text', { x: x0 + W * v + 6 > x1 - 30 ? x0 + W * v - 6 : x0 + W * v + 6, y: y + 18, 'text-anchor': x0 + W * v + 6 > x1 - 30 ? 'end' : 'start', class: 'mono', 'font-size': 12, style: x0 + W * v + 6 > x1 - 30 ? 'fill:var(--bg)' : '', text: v.toFixed(2) }, barsA);
-      markTip(r, `${name}: estimated value ${v.toFixed(2)}`);
+  for (const v of [.5, 1, 2, 5, 10, 20, 50]) S('text', { x: mx(v), y: MP.y1 + 15, 'text-anchor': 'middle', class: 'mono f-faint', 'font-size': 11, text: v }, map);
+  for (const v of [0, .3, .6]) S('text', { x: MP.x0 - 6, y: my(v) + 4, 'text-anchor': 'end', class: 'mono f-faint', 'font-size': 11, text: v }, map);
+  rich(map, { x: (MP.x0 + MP.x1) / 2, y: MP.y1 + 33, 'text-anchor': 'middle', 'font-size': 14, class: 'f-soft' }, 'step size {param|η} (log scale) · up: pull {param|α}');
+  S('text', { x: MP.x1, y: MP.y0 - 8, 'text-anchor': 'end', 'font-size': 13, class: 'f-soft', text: 'stability map: redder = higher final exploitability' }, map);
+  const ring = S('circle', { r: 7, class: 'f-none s-fg', 'stroke-width': 2.4 }, root);
+  const sched = []; for (let k = 0; k <= 300; k++) { const [e, a] = SCHEDULES.coord(k); sched.push([mx(e), my(a)]); }
+  const schedLine = S('polyline', { fill: 'none', class: 's-fg', 'stroke-width': 2, 'stroke-dasharray': '1 5', 'stroke-linecap': 'round' }, root);
+  /* exploitability over the updates */
+  const EX = { x0: 540, x1: 900, y0: 410, y1: 492, hi: .35 };
+  const ex = S('g', { ref: 'exploit' }, root);
+  S('path', { d: `M${EX.x0},${EX.y0} L${EX.x0},${EX.y1} L${EX.x1},${EX.y1}`, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.2 }, ex);
+  S('text', { x: EX.x0, y: EX.y0 - 8, 'font-size': 14, class: 'f-warn', text: 'exploitability' }, ex);
+  S('text', { x: EX.x1, y: EX.y1 + 16, 'text-anchor': 'end', 'font-size': 12, class: 'f-faint', text: 'updates' }, ex);
+  const curves = RUNS.map(r => ({ el: S('polyline', { fill: 'none', class: `s-${r.key === 'strong' ? 'fg' : r.key === 'co' ? 'value' : 'warn'}`, 'stroke-width': r.key === 'co' ? 2.4 : 1.6, opacity: 0 }, root),
+    P: r.ex.map((e, k) => [EX.x0 + k / 300 * (EX.x1 - EX.x0), EX.y1 - Math.min(EX.hi, e) / EX.hi * (EX.y1 - EX.y0)]) }));
+  const final = S('text', { x: EX.x1 + 6, y: EX.y1 - 2, 'font-size': 15, class: 'f-value', text: '→ 0.01' }, root);
+  const W = [[2.6, 7.6], [8.8, 12.8], [14.0, 16.4], [19.6, 24.0]];          /* when each path is drawn */
+  return t => {
+    hd(t);
+    op(square, prog(t, 0, .8)); op(star, prog(t, .8, 1.2)); op(starLab, prog(t, .8, 1.2));
+    op(field, prog(t, 1.0, 2.2) * (1 - prog(t, 2.4, 2.9)));
+    op(magnet, prog(t, 8.6, 9.2));
+    RUNS.forEach((r, i) => {
+      const [a, b] = W[i], k = prog(t, a, b, linear);
+      trail(r.line, r.P, k, r.head);
+      const fadeTo = i === 0 ? (t > 8.4 ? .18 : 1) : i === 1 ? (t > 13.8 ? .15 : 1) : i === 2 ? (t > 19.2 ? .35 : 1) : 1;
+      if (k > 0) op(r.line, fadeTo);
+      op(r.leg, prog(t, a, a + .5));
+      trail(curves[i].el, curves[i].P, k);
+      if (k > 0) op(curves[i].el, i === 0 ? .55 : 1);
     });
-    S('text', { x: x0, y: 140, class: 'faint', 'font-size': 11.5, text: 'estimated value from rollouts (1 = win, 0 = loss)' }, barsA);
-    refresh(barsA);
-    const pick = gamble > safe ? 'gamble' : 'safe move';
-    const correct = safe > .5 ? 'safe move' : 'gamble';
-    $('#sf-verdict').textContent = peek.checked
-      ? `The search picks the ${pick}. ${pick !== correct ? 'This is strategy fusion: each rollout “knew” where the Flag was, so the gamble looked like a sure win. Its true value is 0.50.' : 'Here the choice is right only by luck: the estimate of the gamble (1.00) is still wrong.'}`
-      : `The search picks the ${pick}. The rollout policy cannot see the Flag, so it guesses, and the gamble gets its true value, 0.50.`;
-  }
-  [inSafe, peek].forEach(i => i.addEventListener('input', renderA));
-  peek.addEventListener('change', renderA);
-  renderA();
+    endDot.setAttribute('cx', RUNS[2].end[0]); endDot.setAttribute('cy', RUNS[2].end[1]); op(endDot, prog(t, 16.4, 16.8));
+    coDot.setAttribute('cx', RUNS[3].end[0]); coDot.setAttribute('cy', RUNS[3].end[1]); op(coDot, prog(t, 24.0, 24.4));
+    star.setAttribute('transform', `translate(${sx(BLUFF.B_STAR)},${sy(BLUFF.S_STAR)}) scale(${1 + .6 * wave(t, 24.0, 25.0)}) translate(${-sx(BLUFF.B_STAR)},${-sy(BLUFF.S_STAR)})`);
+    op(map, prog(t, 2.6, 3.4)); op(ex, prog(t, 2.6, 3.4));
+    const target = t < 8.4 ? [mx(1.2), my(0)] : t < 13.8 ? [mx(1.2), my(.02)] : t < 19.2 ? [mx(1.2), my(.15)] : null;
+    if (target) { ring.setAttribute('cx', target[0]); ring.setAttribute('cy', target[1]); op(ring, prog(t, 2.6, 3.4)); op(schedLine, 0); }
+    else {
+      const k = prog(t, 19.6, 24.0, linear);
+      trail(schedLine, sched, k);
+      const p = sched[Math.round(k * 300)];
+      ring.setAttribute('cx', p[0]); ring.setAttribute('cy', p[1]); op(ring, 1);
+    }
+    op(final, prog(t, 24.4, 24.9));
+  };
+}
+function starPath(cx, cy, R, r) {
+  let d = '';
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R; d += `${i ? 'L' : 'M'}${(cx + rr * Math.cos(a)).toFixed(1)},${(cy + rr * Math.sin(a)).toFixed(1)}`; }
+  return d + 'Z';
+}
 
-  /* part B: one search update over four moves */
-  const MOVES = ['attack with Major', 'advance Scout', 'retreat Captain', 'probe with Sergeant'];
-  const TRUE_Q = [-.05, .18, -.12, .06], NET = [.40, .22, .23, .15], MAG = [.25, .25, .25, .25], ALPHA = .002, SD = .9;
-  const inN = $('#su-n'), inBeta = $('#su-beta'), barsB = $('#su-bars');
-  let seed = 3;
-  function renderB() {
-    const n = Math.round(Math.pow(10, +inN.value)), beta = Math.pow(10, +inBeta.value);
-    $('#su-n-out').textContent = n.toLocaleString('en-US');
-    $('#su-beta-out').textContent = beta < .01 ? beta.toFixed(4) : beta.toFixed(3);
-    const rnd = mulberry32(seed), per = Math.max(1, Math.round(n / 4));
-    const qhat = TRUE_Q.map(q => q + SD * gauss(rnd) / Math.sqrt(per));
-    const logits = qhat.map((q, i) => (q + ALPHA * Math.log(MAG[i]) + beta * Math.log(NET[i])) / (ALPHA + beta));
-    const mx = Math.max(...logits), w = logits.map(l => Math.exp(l - mx)), Z = w.reduce((a, b) => a + b, 0);
-    const post = w.map(x => x / Z);
-    const val = p => p.reduce((s, x, i) => s + x * TRUE_Q[i], 0);
-    barsB.textContent = '';
-    const x0 = 132, x1 = 368, W = x1 - x0;
-    MOVES.forEach((m, i) => {
-      const y = 12 + i * 44;
-      S('text', { x: x0 - 8, y: y + 13, 'text-anchor': 'end', class: 'ink', 'font-size': 12, text: m }, barsB);
-      S('text', { x: x0 - 8, y: y + 28, 'text-anchor': 'end', class: 'mono f-value', 'font-size': 10.5, text: `q̂ ${fmt(qhat[i], 2)} (true ${fmt(TRUE_Q[i], 2)})`, ref: 'qvalue' }, barsB);
-      S('rect', { x: x0, y, width: W, height: 30, rx: 3, class: 'f-sunk' }, barsB);
-      const r = S('rect', { x: x0, y: y + 7, width: Math.max(1.5, W * post[i]), height: 16, rx: 4, class: 'f-policy', ref: 'search' }, barsB);
-      S('rect', { x: x0, y: y + 2, width: Math.max(1.5, W * NET[i]), height: 26, rx: 4, fill: 'none', style: 'stroke:var(--fg-soft)', 'stroke-width': 1.2, 'stroke-dasharray': '3 2', ref: 'moveNet' }, barsB);
-      S('text', { x: x1 - 4, y: y + 20, 'text-anchor': 'end', class: 'mono ink', 'font-size': 11, text: `${(post[i] * 100).toFixed(0)}%` }, barsB);
-      markTip(r, `${m}: network ${(NET[i] * 100).toFixed(0)}% → after search ${(post[i] * 100).toFixed(1)}%`);
+/* Figure 4.2: the design pattern, with data moving through it */
+function scenePipeline(root, svg) {
+  const heads = arrowHeads(svg, ['soft']);
+  const lane = (y, h, title) => {
+    S('rect', { x: 6, y, width: 888, height: h, rx: 8, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-dasharray': '4 5' }, root);
+    S('text', { x: 18, y: y + 18, class: 'mono f-faint', 'font-size': 10.5, 'letter-spacing': '1.2', text: title }, root);
+  };
+  lane(8, 140, 'TRAINING · 16 H100 GPUs · 1 WEEK');
+  lane(158, 64, 'BELIEF TRAINING · 4 H100 · 4 DAYS');
+  lane(232, 140, 'PLAY · ONE H100 · ≈ 1.26 S PER MOVE');
+  const boxes = {};
+  const box = (key, x, y, w, h, title, sub, ref) => {
+    const g = S('g', { ref }, root);
+    const r = S('rect', { x, y, width: w, height: h, rx: 7, style: `fill:var(--bg-sunk);stroke:${roleVar(ref) || 'var(--fg-faint)'}`, 'stroke-width': 1.5 }, g);
+    S('text', { x: x + w / 2, y: y + (sub ? h / 2 - 3 : h / 2 + 5), 'text-anchor': 'middle', class: 'f-fg', 'font-size': 14, text: title }, g);
+    if (sub) S('text', { x: x + w / 2, y: y + h / 2 + 15, 'text-anchor': 'middle', class: 'f-faint', 'font-size': 11.5, text: sub }, g);
+    boxes[key] = { r, ref };
+  };
+  const paths = {};
+  const arrow = (key, d, label, lx, ly) => {
+    paths[key] = S('path', { d, fill: 'none', style: 'stroke:var(--fg-soft)', 'stroke-width': 1.4, 'marker-end': heads.soft }, root);
+    if (label) S('text', { x: lx, y: ly, 'text-anchor': 'middle', class: 'f-faint', 'font-size': 11, text: label }, root);
+  };
+  box('sim', 24, 40, 170, 56, 'GPU simulator', '≈ 10⁷ board updates / s', 'simulator');
+  box('setup', 250, 30, 180, 48, 'Set-up network', 'decoder · writes 40 pieces', 'setupNet');
+  box('move', 250, 88, 180, 48, 'Move network', 'encoder · policy + value', 'moveNet');
+  box('games', 488, 52, 170, 60, 'Self-play games', '163 million in total', 'selfplay');
+  box('update', 712, 40, 170, 84, 'Damped update', 'α and η fall together', 'reg');
+  box('belief', 300, 168, 270, 44, 'Belief network', 'learns hidden ranks from final self-play', 'beliefNet');
+  box('pos', 24, 262, 150, 56, 'Your position', 'public + own pieces', 'public');
+  box('samp', 206, 262, 150, 56, 'Sample armies', '≈ 1,000 / legal moves', 'beliefNet');
+  box('roll', 388, 262, 160, 56, 'Rollouts', '1,000 × 40 moves', 'rollout');
+  box('avg', 580, 262, 150, 56, 'Average q̂', 'per legal move', 'qvalue');
+  box('mmd', 762, 252, 120, 76, 'One MMD step', 'leash β to network', 'search');
+  arrow('sim-setup', 'M194,68 L246,54'); arrow('sim-move', 'M194,68 L246,112');
+  arrow('setup-games', 'M430,54 L484,74'); arrow('move-games', 'M430,112 L484,92');
+  arrow('games-update', 'M658,82 L708,82', 'results', 683, 74);
+  arrow('update-nets', 'M797,40 C797,16 340,16 340,26', 'new weights for both networks', 568, 12);
+  arrow('move-belief', 'M340,138 L340,164');
+  arrow('pos-samp', 'M174,290 L202,290'); arrow('samp-roll', 'M356,290 L384,290'); arrow('roll-avg', 'M548,290 L576,290'); arrow('avg-mmd', 'M730,290 L758,290');
+  arrow('belief-samp', 'M400,212 C400,236 281,236 281,258');
+  arrow('mmd-out', 'M822,328 L822,352');
+  S('text', { x: 822, y: 368, 'text-anchor': 'middle', class: 'f-policy', 'font-size': 13, text: 'move to play', ref: 'policy' }, root);
+  S('text', { x: 468, y: 347, 'text-anchor': 'middle', class: 'f-faint', 'font-size': 11.5, text: 'the move network plays both sides; each side sees only its own information' }, root);
+  /* the schedule of pulses: [path, start, end, role of the dot, box that lights on arrival] */
+  const SEQ = [];
+  for (const c of [0, 2.3]) SEQ.push(['sim-setup', c, c + .5, 'context', 'setup'], ['sim-move', c, c + .5, 'context', 'move'], ['setup-games', c + .5, c + 1, 'policy', 'games'],
+    ['move-games', c + .5, c + 1, 'policy', 'games'], ['games-update', c + 1.05, c + 1.4, 'value', 'update'], ['update-nets', c + 1.45, c + 2.2, 'param', 'setup']);
+  SEQ.push(['move-belief', 4.7, 5.2, 'policy', 'belief'], ['belief-samp', 5.5, 6.1, 'belief', 'samp'], ['pos-samp', 5.5, 6.1, 'public', 'samp'], ['samp-roll', 6.2, 6.7, 'hidden', 'roll'],
+    ['roll-avg', 6.8, 7.3, 'value', 'avg'], ['avg-mmd', 7.4, 7.9, 'value', 'mmd'], ['mmd-out', 8.0, 8.4, 'policy', null]);
+  const dots = SEQ.map(([, , , role]) => S('circle', { r: 5.5, class: `f-${role}`, opacity: 0 }, root));
+  return t => {
+    const lit = {};
+    SEQ.forEach(([key, a, b, , target], i) => {
+      const p = paths[key], k = (t - a) / (b - a);
+      if (k >= 0 && k <= 1) { const L = p.getTotalLength(), q = p.getPointAtLength(L * smooth(k)); dots[i].setAttribute('cx', q.x.toFixed(1)); dots[i].setAttribute('cy', q.y.toFixed(1)); op(dots[i], 1); }
+      else op(dots[i], 0);
+      if (target && t >= b && t < b + .7) lit[target] = Math.max(lit[target] || 0, 1 - (t - b) / .7);
+      if (key === 'update-nets' && t >= b && t < b + .7) lit.move = Math.max(lit.move || 0, 1 - (t - b) / .7);
     });
-    S('text', { x: 250, y: 196, 'text-anchor': 'middle', class: 'faint', 'font-size': 11, text: 'outline: network policy · fill: after search' }, barsB);
-    refresh(barsB);
-    const before = val(NET), after = val(post);
-    $('#su-stats').innerHTML = `<span class="r" data-ref="moveNet">true value of network policy <b>${fmt(before, 3)}</b></span><span class="r" data-ref="search">after one search update <b>${fmt(after, 3)}</b></span><span>${after >= before ? 'the update helped' : 'the update hurt: it trusted noise'}</span>`;
-    refresh($('#su-stats'));
-  }
-  [inN, inBeta].forEach(i => i.addEventListener('input', renderB));
-  $('#su-again').addEventListener('click', () => { seed++; renderB(); });
-  renderB();
+    for (const [k, bx] of Object.entries(boxes)) {
+      const v = lit[k] || 0;
+      bx.r.setAttribute('stroke-width', (1.5 + 2 * v).toFixed(2));
+      bx.r.setAttribute('style', `fill:${v ? `color-mix(in srgb, ${roleVar(bx.ref)} ${Math.round(22 * v)}%, var(--bg-sunk))` : 'var(--bg-sunk)'};stroke:${roleVar(bx.ref) || 'var(--fg-faint)'}`);
+    }
+  };
 }
 
-/* Figure 5.2: Elo of search settings (arXiv Table 28) */
-function mountEloBars() {
-  const host = $('#elo-bars');
-  const ROWS = [
-    ['β 0.02 · α 0.002 · depth 40 · 1,000 rollouts (match setting)', 2218, 2177, 2266, '≈ 1.26 s'],
-    ['β 0.02 · α 0.002 · depth 10 · 1,000 rollouts', 2189, 2165, 2215, '≈ 0.46 s'],
-    ['β 0.02 · α 0.002 · depth 40 · 200 rollouts', 2189, 2164, 2216, '≈ 0.50 s'],
-    ['β 0.02 · α 0.002 · depth 10 · 200 rollouts', 2169, 2153, 2186, '≈ 0.26 s'],
-    ['β 0.02 · no magnet (α 0) · depth 40 · 1,000', 2174, 2138, 2215, '≈ 1.26 s'],
-    ['β 0.05 (stronger leash) · depth 40 · 1,000', 2160, 2124, 2201, '≈ 1.26 s'],
-    ['move network alone (no search)', 2095, 2091, 2100, '≈ 0.004 s'],
-    ['no leash to the network (β 0)', 1733, 1701, 1761, '≈ 1.26 s'],
-  ];
-  const lo = 1600, hi = 2300;
-  for (const [name, elo, a, b, t] of ROWS) {
-    const row = H('div', { cls: 'hbar' }, host);
-    H('div', { text: name, style: 'font-size:.82rem;line-height:1.3' }, row);
-    const track = H('div', { cls: 'track' }, row);
-    const fill = H('div', { cls: `fill ${elo < 2000 ? 'b' : 'a'}`, style: `width:${((elo - lo) / (hi - lo) * 100).toFixed(1)}%`, ref: elo < 2000 ? 'netkl' : 'search' }, track);
-    const ep = (elo - lo) / (hi - lo) * 100;
-    H('span', { cls: 'num' + (ep > 70 ? ' inside' : ''), text: `${elo}`, style: `left:${ep.toFixed(1)}%;--inset:${(100 - ep).toFixed(1)}%` }, track);
-    markTip(fill, `${name}: Elo ${elo} (95% CI ${a}–${b}), ${t} per move on one H100`);
+/* ── Section 5: search ───────────────────────────────────────────────── */
+const SEARCH_TOY = {
+  moves: ['attack with Major', 'probe with Scout', 'retreat Captain', 'Marshal hits “?”'],
+  net: [.55, .30, .149, .001],          /* the move network's policy */
+  qhat: [.10, .08, .02, .16],           /* rollout averages; the last one is noise: its true value is far lower */
+  alpha: .002,
+  policy(beta) {
+    const logits = this.qhat.map((q, i) => (q + this.alpha * Math.log(.25) + beta * Math.log(this.net[i])) / (this.alpha + beta));
+    const m = Math.max(...logits), w = logits.map(l => Math.exp(l - m)), Z = w.reduce((a, b) => a + b, 0);
+    return w.map(x => x / Z);
+  },
+};
+function sceneSearch(root, svg) {
+  const heads = arrowHeads(svg, ['soft', 'belief']);
+  const hd = headlines(root, [[0, 7.3, 'In a match, a belief network samples the hidden set-ups'], [7.3, 14.4, 'Search: short games from each sample, averaged per move'],
+    [14.4, 21.4, 'One damped update, on a leash {param|β} to the network'], [21.4, 28, 'Without the leash, the search trusts noise']]);
+  const OBS = ['?', '?', '8', '?', '?', '?', 'B', '?', '?', '?', '?', '?'];
+  const top = S('g', null, root);
+  const obs = S('g', { ref: 'public' }, top);
+  OBS.forEach((l, i) => { const t = tileG(obs, 24, l, l === '?' ? 'hidden' : 'public', { font: 13 }); place(t, 70 + (i % 4) * 28, 122 + Math.floor(i / 4) * 28); });
+  S('text', { x: 112, y: 222, 'text-anchor': 'middle', 'font-size': 14, class: 'f-public', text: 'what you saw (public)' }, obs);
+  const a1 = arrowLine(top, [168, 150], [206, 150], 'soft', heads, { width: 2.4 });
+  const net = nodeG(top, 108, 58, 'belief network', 'belief', { font: 15, ref: 'beliefNet' }); place(net, 267, 150);
+  const rnd = mulberry32(5), PICK = ['2', '3', '4', '5', '6', 'B', '7', '9', 'S', 'F'];
+  const samples = [0, 1, 2].map(k => {
+    const g = S('g', { ref: 'hidden' }, top);
+    OBS.forEach((l, i) => { const lab = l === '?' ? PICK[Math.floor(rnd() * PICK.length)] : l; const t = tileG(g, 15.6, lab, l === '?' ? 'hidden' : 'public', { font: 9.5, fill: .18, stroke: 1.1 }); place(t, 400 + (i % 4) * 18, 90 + k * 66 + Math.floor(i / 4) * 18); });
+    return g;
+  });
+  const sLab = S('text', { x: 427, y: 76, 'text-anchor': 'middle', 'font-size': 14, class: 'f-hidden', text: 'sampled set-ups' }, top);
+  const a2 = [0, 1, 2].map(k => arrowLine(top, [324, 150], [384, 108 + k * 66], 'belief', heads, { width: 2 }));
+  const rnd2 = mulberry32(9), fans = [];
+  for (let k = 0; k < 3; k++) for (let j = 0; j < 7; j++) {
+    const x1 = 470, y1 = 108 + k * 66, x2 = 645, y2 = 150 + (j - 3) * 15.6 + gauss(rnd2) * 3, my = (y1 + y2) / 2 + gauss(rnd2) * 11;
+    fans.push(S('path', { d: `M${x1},${y1} Q${(x1 + x2) / 2},${my} ${x2},${y2}`, fill: 'none', class: 's-value', 'stroke-width': 1.1, 'stroke-opacity': .6, ref: 'rollout' }, top));
   }
-  H('p', { cls: 'small', text: 'The bars start at Elo 1600, not at zero, to show the differences. Hover over a bar for the 95% interval and the time per move.', style: 'margin:.5rem 0 0' }, host);
-  refresh(host);
+  const rollLab = S('text', { x: 578, y: 286, 'text-anchor': 'middle', 'font-size': 14, class: 'f-value', text: '1,000 rollouts, 40 moves deep', ref: 'rollout' }, top);
+  const qRows = SEARCH_TOY.moves.map((m, i) => {
+    const g = S('g', { ref: 'qvalue' }, root);
+    S('text', { x: 800, y: 112 + i * 27, 'text-anchor': 'end', 'font-size': 15, class: 'f-soft', text: m }, g);
+    mathLine(g, 812, 112 + i * 27, [['q̂', 'value'], [' = ' + (SEARCH_TOY.qhat[i] >= 0 ? '+' : '−') + Math.abs(SEARCH_TOY.qhat[i]).toFixed(2), 'value']], { size: 16 });
+    return g;
+  });
+  const br = brace(root, 664, 95, 197, 'value');
+  /* the update */
+  const formula = S('g', { ref: 'search' }, root);
+  mathLine(formula, 100, 316, [['π', 'value'], ['search', 'value', 'sub'], [' ∝ [ ', null], ['e', 'value'], ['q̂', 'value', 'sup'], [' ρ', 'param'], ['α', 'param', 'sup'], [' π', 'policy'], ['θ', 'policy', 'sub'], ['β', 'param', 'sup'], [' ]', null], ['1/(α+β)', 'param', 'sup']], { size: 25 });
+  const leash = rich(root, { x: 100, y: 352, 'font-size': 16, class: 'f-param' }, '{param|β}: a leash to the network’s policy');
+  const bRead = S('text', { x: 100, y: 390, 'font-size': 20, class: 'mono f-param', ref: 'netkl' }, root);
+  const X0 = 560, Wb = 264;
+  const bars = SEARCH_TOY.moves.map((m, i) => {
+    const y = 306 + i * 40, g = S('g', null, root);
+    S('text', { x: X0 - 10, y: y + 5, 'text-anchor': 'end', 'font-size': 15, class: 'f-soft', text: m }, g);
+    S('rect', { x: X0, y: y - 13, width: Wb, height: 26, style: 'fill:var(--bg-sunk)' }, g);
+    S('rect', { x: X0, y: y - 13, width: Math.max(2, Wb * SEARCH_TOY.net[i]), height: 26, class: 'f-none', style: 'stroke:var(--fg-soft)', 'stroke-width': 1.3, 'stroke-dasharray': '4 3', ref: 'moveNet' }, g);
+    const fill = S('rect', { x: X0, y: y - 7, height: 14, rx: 3, class: 'f-policy', ref: 'search' }, root);
+    const pct = S('text', { x: X0 + Wb + 12, y: y + 5, 'font-size': 14, class: 'mono f-fg' }, root);
+    return { g, fill, pct };
+  });
+  const key = S('text', { x: X0 + Wb / 2, y: 470, 'text-anchor': 'middle', 'font-size': 13, class: 'f-faint', text: 'dashed outline: network policy · fill: after search' }, root);
+  const elo = [['match setting', 2218, 'value'], ['network alone', 2095, 'policy'], ['no leash, β = 0', 1733, 'warn']].map(([name, v, role], i) => {
+    const g = S('g', { ref: role === 'warn' ? 'netkl' : 'search' }, root), y = 108 + i * 34;
+    S('text', { x: 230, y: y + 5, 'text-anchor': 'end', 'font-size': 15, class: role === 'warn' ? 'f-warn' : 'f-soft', text: name }, g);
+    S('rect', { x: 240, y: y - 10, width: (v - 1600) / 700 * 220, height: 20, rx: 3, class: `f-${role}`, 'fill-opacity': .9 }, g);
+    S('text', { x: 248 + (v - 1600) / 700 * 220, y: y + 5, 'font-size': 14, class: 'mono f-fg', text: `Elo ${v}` }, g);
+    return g;
+  });
+  const betaAt = t => t < 22.2 ? .02 : lerp(.02, 0, prog(t, 22.2, 24.0));
+  return t => {
+    hd(t);
+    op(top, 1 - prog(t, 21.5, 22.2));
+    op(obs, prog(t, .2, 1.2)); grow(a1, prog(t, 1.2, 2.0)); op(net, prog(t, 1.4, 2.2));
+    samples.forEach((g, k) => { const a = 2.2 + k * .7; grow(a2[k], prog(t, a, a + .6)); op(g, prog(t, a + .3, a + .9)); place(g, 6 * (1 - prog(t, a + .3, a + .9)), 0); });
+    op(sLab, prog(t, 2.4, 3.2));
+    fans.forEach((f, i) => draw(f, prog(t, 7.4 + i * .1, 8.2 + i * .1)));
+    op(rollLab, prog(t, 7.8, 8.6));
+    draw(br, prog(t, 10.0, 10.8));
+    qRows.forEach((g, i) => { op(g, prog(t, 10.2 + i * .3, 10.7 + i * .3)); place(g, 8 * (1 - prog(t, 10.2 + i * .3, 10.7 + i * .3)), 0); });
+    op(formula, prog(t, 14.5, 16.0)); place(formula, 10 * (1 - prog(t, 14.5, 16.0)), 0);
+    bars.forEach(b => op(b.g, prog(t, 16.0, 17.1)));
+    op(key, prog(t, 16.0, 17.1));
+    const beta = betaAt(t), post = SEARCH_TOY.policy(Math.max(beta, 1e-6));
+    bars.forEach((b, i) => {
+      b.fill.setAttribute('width', Math.max(1, Wb * post[i]).toFixed(1));
+      b.fill.setAttribute('class', i === 3 && post[3] > .5 ? 'f-warn' : 'f-policy');
+      op(b.fill, prog(t, 17.1, 17.7)); op(b.pct, prog(t, 17.1, 17.7));
+      setText(b.pct, `${(post[i] * 100).toFixed(0)}%`);
+    });
+    op(leash, prog(t, 17.7, 18.4));
+    op(bRead, prog(t, 21.5, 22.2)); setText(bRead, `β = ${beta.toFixed(3)}`);
+    elo.forEach((g, i) => { op(g, prog(t, 24.0 + i * .45, 24.5 + i * .45)); place(g, 10 * (1 - prog(t, 24.0 + i * .45, 24.5 + i * .45)), 0); });
+    if (t > 25.6) op(elo[2], .65 + .35 * Math.cos((t - 25.6) * 5));
+  };
 }
 
-/* Figures 6.1 and 6.2: results */
-function mountResults() {
-  const host = $('#res-main');
-  const SERIES = [
-    ['Pim Niemeijer', 'classic Stratego · with search · 20 games', 15, 4, 1],
-    ['World Championship visitors', 'classic · demo, Aug 2025 · 40 games', 38, 0, 2],
-    ['Axel Hangg (world no. 4)', 'Barrage · policy only · 50 games', 29, 4, 17],
-    ['Sébastien Crot (world no. 3)', 'Barrage · policy only · 50 games', 36, 2, 12],
-    ['Pim Niemeijer (world no. 1)', 'Barrage · policy only · 50 games', 26, 3, 21],
-    ['Pim Niemeijer (world no. 1)', 'Barrage · with search · 50 games', 31, 5, 14],
-  ];
-  for (const [who, what, w, d, l] of SERIES) {
-    const n = w + d + l, rate = (w + d / 2) / n;
-    const row = H('div', { cls: 'result-row' }, host);
-    const c = H('div', { cls: 'who', text: who }, row);
-    H('small', { text: what }, c);
-    const st = H('div', { cls: 'stack', role: 'img', 'aria-label': `${w} wins, ${d} draws, ${l} losses` }, row);
-    for (const [k, v, lab] of [['w', w, 'W'], ['d', d, 'D'], ['l', l, 'L']]) {
+/* Figure 5.2: strategy fusion, with peeking rollouts and with honest ones */
+function sceneFusion(root, svg) {
+  const heads = arrowHeads(svg, ['value', 'warn', 'soft']);
+  const hd = headlines(root, [[0, 9, 'Peeking rollouts (PIMC): each one sees its sampled world'], [9, 18, 'Honest rollouts: the player cannot see the world, so it must guess']]);
+  S('text', { x: 480, y: 76, 'text-anchor': 'middle', 'font-size': 16, class: 'f-soft', text: 'Gamble: later you must attack one of two hidden squares. The Flag is on the left or on the right.' }, root);
+  const worlds = [['left', 250], ['right', 710]].map(([side, cx], w) => {
+    const g = S('g', null, root);
+    S('rect', { x: cx - 200, y: 96, width: 400, height: 210, rx: 12, class: 'f-none', style: 'stroke:var(--fg-faint)', 'stroke-width': 1.2 }, g);
+    S('text', { x: cx, y: 122, 'text-anchor': 'middle', 'font-size': 16, class: 'f-hidden', text: `sampled world ${w + 1}: the Flag is on the ${side}` }, g);
+    const sq = ['left', 'right'].map((s, j) => {
+      const x = cx - 70 + j * 140;
+      const truth = tileG(g, 54, s === side ? 'F' : 'B', 'hidden', { font: 24 }); place(truth, x, 180);
+      const hidden = tileG(g, 54, '?', 'hidden', { font: 24, fill: .5 }); place(hidden, x, 180);
+      return { x, truth, hidden };
+    });
+    const you = tileG(g, 44, '5', 'faint', { fill: 0, labelClass: 'f-fg', font: 20 }); place(you, cx, 272);
+    const arrows = sq.map(s => arrowLine(g, [cx, 248], [s.x + (s.x < cx ? 18 : -18), 212], 'soft', heads, { width: 3 }));
+    const out = S('text', { x: cx, y: 340, 'text-anchor': 'middle', 'font-size': 18 }, g);
+    return { g, sq, arrows, out, side };
+  });
+  const B = { x0: 300, w: 480 };
+  const bar = (y, label, role) => {
+    const g = S('g', null, root);
+    S('text', { x: B.x0 - 12, y: y + 6, 'text-anchor': 'end', 'font-size': 17, class: 'f-soft', text: label }, g);
+    S('rect', { x: B.x0, y: y - 11, width: B.w, height: 22, style: 'fill:var(--bg-sunk)' }, g);
+    const f = S('rect', { x: B.x0, y: y - 11, height: 22, rx: 3, class: `f-${role}` }, g);
+    const v = S('text', { y: y + 6, 'font-size': 16, class: 'mono f-fg' }, g);
+    return { g, f, v };
+  };
+  const safe = bar(392, 'safe move', 'value'), gamble = bar(428, 'gamble (estimate)', 'warn');
+  safe.f.setAttribute('width', B.w * .65); safe.v.setAttribute('x', B.x0 + B.w * .65 + 10); setText(safe.v, '0.65');
+  const verdict = S('text', { x: 480, y: 486, 'text-anchor': 'middle', 'font-size': 19 }, root);
+  return t => {
+    hd(t);
+    const honest = t >= 9, t0 = honest ? 9 : 0, lt = t - t0;
+    worlds.forEach((w, i) => {
+      op(w.g, honest ? 1 : prog(t, .2, 1.2));
+      w.sq.forEach(s => { op(s.truth, honest ? .35 : 1); op(s.hidden, honest ? prog(lt, .2, .8) : 0); });
+      const a = 1.8 + i * 1.1;
+      const pick = honest ? 0 : (w.side === 'left' ? 0 : 1);
+      w.arrows.forEach((ar, j) => grow(ar, j === pick ? prog(lt, a, a + .7) : 0));
+      const win = pick === (w.side === 'left' ? 0 : 1);
+      w.out.setAttribute('class', win ? 'f-value' : 'f-warn');
+      setText(w.out, win ? 'the attack finds the Flag: win (1)' : 'the attack hits a Bomb: loss (0)');
+      op(w.out, prog(lt, a + .7, a + 1.1));
+    });
+    op(safe.g, prog(t, .4, 1.2)); op(gamble.g, prog(t, .4, 1.2));
+    const est = honest ? lerp(1, .5, prog(lt, 4.2, 5.2)) : prog(lt, 4.2, 5.2);
+    gamble.f.setAttribute('width', (B.w * est).toFixed(1));
+    gamble.f.setAttribute('class', honest ? 'f-value' : 'f-warn');
+    gamble.v.setAttribute('x', (B.x0 + B.w * est + 10).toFixed(1)); setText(gamble.v, est.toFixed(2));
+    verdict.setAttribute('class', honest ? 'f-value' : 'f-warn');
+    setText(verdict, honest ? 'The gamble is worth 0.50 < 0.65. The search picks the safe move.' : 'The gamble looks like a sure win (1.00). The search picks it: strategy fusion.');
+    op(verdict, prog(lt, 5.6, 6.2));
+  };
+}
+
+/* Figure 5.3: Elo of search settings (arXiv Table 28), grown once */
+function sceneElo(root) {
+  const ROWS = [['match setting: depth 40, 1,000 rollouts', 2218, 2177, 2266, '1.26 s', 'value'], ['depth 10, 1,000 rollouts', 2189, 2165, 2215, '0.46 s', 'value'],
+    ['depth 40, 200 rollouts', 2189, 2164, 2216, '0.50 s', 'value'], ['depth 10, 200 rollouts', 2169, 2153, 2186, '0.26 s', 'value'],
+    ['no magnet (α = 0)', 2174, 2138, 2215, '1.26 s', 'value'], ['stronger leash (β = 0.05)', 2160, 2124, 2201, '1.26 s', 'value'],
+    ['move network alone (no search)', 2095, 2091, 2100, '0.004 s', 'policy'], ['no leash to the network (β = 0)', 1733, 1701, 1761, '1.26 s', 'warn']];
+  const L = 360, Wb = 470, x = v => L + (v - 1600) / 700 * Wb;
+  S('text', { x: 28, y: 36, 'font-size': 22, class: 'f-soft', text: 'Search settings and strength (Elo)' }, root);
+  for (const v of [1600, 1800, 2000, 2200]) {
+    S('line', { x1: x(v), x2: x(v), y1: 56, y2: 56 + ROWS.length * 44, style: 'stroke:var(--rule-soft)' }, root);
+    S('text', { x: x(v), y: 72 + ROWS.length * 44, 'text-anchor': 'middle', class: 'mono f-faint', 'font-size': 12, text: v }, root);
+  }
+  const rows = ROWS.map(([name, v, a, b, sec, role], i) => {
+    const y = 80 + i * 44;
+    S('text', { x: L - 12, y: y + 5, 'text-anchor': 'end', 'font-size': 15, class: role === 'warn' ? 'f-warn' : 'f-soft', text: name }, root);
+    const r = S('rect', { x: L, y: y - 11, height: 22, rx: 3, class: `f-${role}`, 'fill-opacity': .9, ref: role === 'warn' ? 'netkl' : role === 'policy' ? 'moveNet' : 'search' }, root);
+    const ci = S('line', { x1: x(a), x2: x(b), y1: y, y2: y, style: 'stroke:var(--fg)', 'stroke-width': 1.6 }, root);
+    const lab = S('text', { x: x(b) + 10, y: y + 5, 'font-size': 14, class: 'mono f-fg', text: `${v}` }, root);
+    const t2 = S('text', { x: 920, y: y + 5, 'text-anchor': 'end', 'font-size': 12, class: 'mono f-faint', text: sec }, root);
+    markTip(r, `${name}: Elo ${v} (95% CI ${a}–${b}), ${sec} per move on one H100`);
+    return { r, ci, lab, t2, w: x(v) - L };
+  });
+  S('text', { x: 920, y: 60, 'text-anchor': 'end', 'font-size': 12, class: 'f-faint', text: 'time / move' }, root);
+  return t => rows.forEach((r, i) => {
+    const k = prog(t, .1 + i * .18, .8 + i * .18);
+    r.r.setAttribute('width', (r.w * k).toFixed(1));
+    op(r.ci, prog(t, .8 + i * .18, 1.1 + i * .18)); op(r.lab, prog(t, .8 + i * .18, 1.1 + i * .18)); op(r.t2, k);
+  });
+}
+
+/* ── Section 6: results ──────────────────────────────────────────────── */
+function sceneResults(root) {
+  S('text', { x: 480, y: 40, 'text-anchor': 'middle', 'font-size': 19, class: 'f-fg', text: 'Ataraxos vs Pim Niemeijer (world no. 1), classic Stratego, July 2025' }, root);
+  const tiles = [...Array(20)].map((_, i) => {
+    const role = i < 15 ? 'value' : i < 19 ? 'context' : 'warn';
+    const r = S('rect', { x: 110 + i * 35, y: 60, width: 30, height: 30, rx: 5, class: `f-${role}`, 'fill-opacity': .92 }, root);
+    markTip(r, `game ${i + 1}: ${role === 'value' ? 'win' : role === 'context' ? 'draw' : 'loss'} (grouped by result)`);
+    return r;
+  });
+  const tags = [[110 + 7 * 35 + 15, '15 wins', 'value'], [110 + 16.5 * 35 + 15, '4 draws', 'context'], [110 + 19 * 35 + 15, '1 loss', 'warn']].map(([x, s, role]) => S('text', { x, y: 112, 'text-anchor': 'middle', 'font-size': 15, class: `f-${role}`, text: s }, root));
+  const rate = S('text', { x: 820, y: 84, 'font-size': 26, class: 'f-value', text: '85%' }, root);
+  const SERIES = [['World Championship visitors', 'classic · demo, Aug 2025 · 40 games', 38, 0, 2], ['Axel Hangg (world no. 4)', 'Barrage · policy only · 50 games', 29, 4, 17],
+    ['Sébastien Crot (world no. 3)', 'Barrage · policy only · 50 games', 36, 2, 12], ['Pim Niemeijer (world no. 1)', 'Barrage · policy only · 50 games', 26, 3, 21],
+    ['Pim Niemeijer (world no. 1)', 'Barrage · with search · 50 games', 31, 5, 14]];
+  const X0 = 350, Wb = 470;
+  const rows = SERIES.map(([who, what, w, d, l], i) => {
+    const y = 160 + i * 56, n = w + d + l, g = S('g', null, root);
+    S('text', { x: 28, y: y + 2, 'font-size': 16, class: 'f-fg', text: who }, g);
+    S('text', { x: 28, y: y + 21, 'font-size': 13, class: 'f-faint', text: what }, g);
+    const segs = []; let x = X0;
+    for (const [v, role, lab] of [[w, 'value', 'W'], [d, 'context', 'D'], [l, 'warn', 'L']]) {
       if (!v) continue;
-      const sp = H('span', { cls: k, style: `flex:${v}`, text: v / n > .06 ? `${v} ${lab}` : '' }, st);
-      markTip(sp, `${who}: ${v} ${{ W: 'wins', D: 'draws', L: 'losses' }[lab]}`);
+      const wd = Wb * v / n;
+      const r = S('rect', { x: x + 1, y: y - 12, height: 26, class: `f-${role}`, 'fill-opacity': .9 }, g);
+      const tx = v / n > .06 ? S('text', { x: x + wd / 2, y: y + 6, 'text-anchor': 'middle', 'font-size': 13, class: 'mono', style: 'fill:var(--bg)', text: `${v} ${lab}` }, g) : null;
+      markTip(r, `${who}, ${what}: ${v} ${{ W: 'wins', D: 'draws', L: 'losses' }[lab]}`);
+      segs.push([r, wd - 2, tx]); x += wd;
     }
-    H('div', { cls: 'rate', text: `${(rate * 100).toFixed(0)}%` }, row);
+    S('text', { x: X0 + Wb + 14, y: y + 7, 'font-size': 18, class: 'f-value', text: `${Math.round((w + d / 2) / n * 100)}%` }, g);
+    return { g, segs };
+  });
+  S('text', { x: 28, y: 456, 'font-size': 13, class: 'f-faint', text: 'right column: effective win rate (a draw counts as half a win) · games grouped by result, not in order' }, root);
+  return t => {
+    tiles.forEach((r, i) => { const k = prog(t, .2 + i * .1, .45 + i * .1), cx = 125 + i * 35; op(r, k); r.setAttribute('transform', `translate(${cx},75) scale(${(.5 + .5 * k).toFixed(3)}) translate(${-cx},-75)`); });
+    tags.forEach((tx, i) => op(tx, prog(t, 2.3 + i * .25, 2.7 + i * .25)));
+    op(rate, prog(t, 2.8, 3.3));
+    rows.forEach((r, i) => {
+      op(r.g, prog(t, 3.0 + i * .25, 3.4 + i * .25));
+      const k = prog(t, 3.1 + i * .25, 3.9 + i * .25);
+      r.segs.forEach(([rect, w, tx]) => { rect.setAttribute('width', Math.max(0, w * k).toFixed(1)); if (tx) op(tx, prog(t, 3.8 + i * .25, 4.2 + i * .25)); });
+    });
+  };
+}
+function sceneCost(root) {
+  const ROWS = [['Compute cost (US$)', 3.75e6, 8e3, '$3.0–4.5 million (estimate)', '< $8,000', '≈ 1/500'], ['Self-play games', 5.5e9, 1.63e8, '≈ 5.5 billion', '≈ 163 million', '≈ 1/30'],
+    ['Training examples', 7.5e12, 5e10, '5–10 trillion', '≈ 50 billion', '≈ 1/100']];
+  const L = 210, Wb = 560, lo = 3, hi = 13.5, x = v => L + (Math.log10(v) - lo) / (hi - lo) * Wb;
+  for (let e = 3; e <= 13; e += 2) {
+    S('line', { x1: x(10 ** e), x2: x(10 ** e), y1: 30, y2: 350, style: 'stroke:var(--rule-soft)' }, root);
+    mathLine(root, x(10 ** e), 370, [['10'], [String(e), null, 'sup']], { size: 13, anchor: 'middle' });
   }
-  H('div', { cls: 'legend', html: '' }, host).innerHTML = '<span><i class="box" style="--lc:var(--c-value)"></i>W win</span><span><i class="box" style="--lc:var(--c-context)"></i>D draw</span><span><i class="box" style="--lc:var(--c-warn)"></i>L loss</span><span>right column: effective win rate (draw = ½)</span>';
-  const cost = $('#cost-bars');
-  const ROWS = [
-    ['Compute cost (US$)', 3.75e6, 8e3, '$3.0–4.5 million (estimate)', '< $8,000'],
-    ['Self-play games', 5.5e9, 1.63e8, '≈ 5.5 billion', '≈ 163 million'],
-    ['Training examples', 7.5e12, 5e10, '5–10 trillion', '≈ 50 billion'],
-  ];
-  const lmin = 3, lmax = 13.5;
-  const pct = v => ((Math.log10(v) - lmin) / (lmax - lmin) * 100).toFixed(1);
-  for (const [name, dn, at, dnl, atl] of ROWS) {
-    H('div', { text: name, style: 'font-family:var(--font-mono);font-size:.7rem;color:var(--fg-faint);letter-spacing:.08em;text-transform:uppercase;margin-top:.8rem' }, cost);
-    for (const [who, v, lab, cls] of [['DeepNash (2022)', dn, dnl, 'b'], ['Ataraxos (2025)', at, atl, 'a']]) {
-      const row = H('div', { cls: 'hbar' }, cost);
-      H('div', { text: who }, row);
-      const tr = H('div', { cls: 'track' }, row);
-      const f = H('div', { cls: `fill ${cls}`, style: `width:${pct(v)}%`, ref: cls === 'a' ? 'simulator' : null }, tr);
-      H('span', { cls: 'num' + (pct(v) > 62 ? ' inside' : ''), text: lab, style: `left:${pct(v)}%;--inset:${(100 - pct(v)).toFixed(1)}%` }, tr);
-      markTip(f, `${who}: ${lab}`);
-    }
-  }
-  H('p', { cls: 'small', text: 'Logarithmic scale from 10³ to 10¹³·⁵.', style: 'margin:.5rem 0 0' }, cost);
-  refresh(host); refresh(cost);
+  const bars = [];
+  ROWS.forEach(([name, dn, at, dnl, atl, ratio], i) => {
+    const y = 50 + i * 105;
+    S('text', { x: 28, y: y + 4, 'font-size': 13, class: 'mono f-faint', 'letter-spacing': 1, text: name.toUpperCase() }, root);
+    [['DeepNash (2022)', dn, dnl, 'context', 'simulator'], ['Ataraxos (2025)', at, atl, 'policy', 'simulator']].forEach(([who, v, lab, role, ref], j) => {
+      const yy = y + 26 + j * 32;
+      S('text', { x: L - 12, y: yy + 5, 'text-anchor': 'end', 'font-size': 15, class: 'f-soft', text: who }, root);
+      const r = S('rect', { x: L, y: yy - 11, height: 22, rx: 3, class: `f-${role}`, 'fill-opacity': .9, ref: j ? ref : null }, root);
+      const tx = S('text', { x: x(v) + 10, y: yy + 5, 'font-size': 14, class: 'mono f-fg', text: lab }, root);
+      markTip(r, `${who}: ${lab}`);
+      bars.push([r, x(v) - L, tx, i * .5 + j * .2]);
+    });
+    const rt = S('text', { x: 930, y: y + 46, 'text-anchor': 'end', 'font-size': 20, class: 'f-policy', text: ratio }, root);
+    bars.push([null, 0, rt, i * .5 + .6]);
+  });
+  return t => bars.forEach(([r, w, tx, d]) => { const k = prog(t, .2 + d, 1.0 + d); if (r) r.setAttribute('width', (w * k).toFixed(1)); op(tx, prog(t, .9 + d, 1.2 + d)); });
 }
 
-/* Bar labels: put a label inside its bar when it does not fit to the right of the bar */
-function fitBarLabels() {
-  for (const tr of $$('.hbar .track')) {
-    const num = tr.querySelector('.num');
-    if (!num) continue;
-    num.classList.remove('inside');
-    if (num.getBoundingClientRect().right > tr.getBoundingClientRect().right + .5) num.classList.add('inside');
+/* Where each scene lives on the page */
+function mountStages() {
+  const SCENES = {
+    'two-questions': { dur: 18, beats: [0, 4.3, 8.7], still: 15.5, label: 'Chess and Stratego boards move into a two-by-two table of perfect or imperfect and complete or incomplete information', build: sceneTwoQuestions },
+    taxonomy: { h: 440, dur: 15 * 3.4, still: 4 * 3.4 + 2, fade: false, label: 'Fifteen games sorted by perfect or imperfect and complete or incomplete information', build: sceneTaxonomy },
+    board: { dur: 19, beats: [2.6, 6.4, 10.2, 13.6], still: 17, label: 'A Stratego board from your side; moves and battles reveal information about enemy pieces', build: sceneBoard },
+    bluff: { dur: 26, beats: [3.8, 7.6, 13, 18.2], still: 23, label: 'The bluff game tree, the opponent’s belief, the value of a bluff, and the equilibrium', build: sceneBluff },
+    web: { dur: 16, still: 3, fade: false, label: 'Influence graph of the bluff game: the values of decisions change as the frequencies of other decisions change', build: sceneWeb },
+    beliefs: { dur: 24, beats: [2.2, 5.2, 12.6, 16.2], still: 14.5, label: 'Bars of the belief about one enemy piece, updated by a series of observations', build: sceneBeliefs },
+    dynamics: { dur: 30, beats: [2.4, 8.4, 13.8, 19.2], still: 27, label: 'Self-play paths in the bluff game without damping, with weak and strong damping, and with a coordinated schedule', build: sceneDynamics },
+    pipeline: { w: 900, h: 380, dur: 10, still: 6.3, fade: false, label: 'The Ataraxos design: training lane, belief training and playing lane, with data moving through them', build: scenePipeline },
+    search: { dur: 28, beats: [7.3, 14.4, 21.4], still: 25.5, label: 'Belief sampling, rollouts, one search update with a leash, and the result without the leash', build: sceneSearch },
+    fusion: { dur: 18, beats: [9], still: 16, label: 'Strategy fusion: peeking rollouts value a gamble at 1, honest rollouts at 0.5', build: sceneFusion },
+    elo: { h: 450, dur: 3, mode: 'once', label: 'Elo of Ataraxos with different search settings', build: sceneElo },
+    results: { h: 470, dur: 5.5, mode: 'once', label: 'Results against top players', build: sceneResults },
+    cost: { h: 385, dur: 2.8, mode: 'once', label: 'Training resources of DeepNash and Ataraxos on a logarithmic scale', build: sceneCost },
+  };
+  for (const host of $$('.stage[data-scene]')) {
+    const spec = SCENES[host.dataset.scene];
+    if (spec) makeStage(host, spec);
   }
+  window.__stages = STAGES;
 }
-
 /* Video 0.1: chapters from the rendered scene boundaries */
 function mountVideo() {
   const v = $('#ata-video'), host = $('#video-chapters');
@@ -2263,11 +2734,6 @@ function mountVideo() {
     const b = H('button', { type: 'button', cls: 'btn', text: `${i + 1} ${name}`, ref }, host);
     b.addEventListener('click', () => { v.currentTime = t + .02; const p = v.play(); if (p) p.catch(() => {}); });
   });
-  if (window.VTTCue && v.addTextTrack && window.__ATA_CUES) {
-    const track = v.addTextTrack('captions', 'English', 'en');
-    window.__ATA_CUES.forEach(([a, b, text]) => track.addCue(new VTTCue(a, b, text)));
-    track.mode = 'showing';
-  }
   const mark = () => { const k = CHAPTERS.reduce((acc, [t], i) => (v.currentTime >= t - .05 ? i : acc), 0); $$('button', host).forEach((b, i) => b.setAttribute('aria-current', String(i === k))); };
   v.addEventListener('timeupdate', mark); mark();
   /* data-seek="12.5" seeks to a time; data-seek="@3" seeks to the start of chapter 3 */
@@ -2434,22 +2900,7 @@ safely('chrome', initChrome);
 safely('toc', buildToc);
 safely('video', mountVideo);
 safely('concept map', mountConceptMap);
-safely('taxonomy', mountTaxonomy);
-safely('board', mountBoard);
-safely('bluff lab', mountBluffLab);
-safely('belief lab', mountBeliefLab);
-safely('dynamics lab', mountDynamicsLab);
-safely('pipeline', mountPipeline);
-safely('search labs', mountSearchLabs);
-safely('elo bars', mountEloBars);
-safely('results', mountResults);
-safely('bar labels', () => {
-  fitBarLabels();
-  let rt = 0;
-  addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(fitBarLabels, 120); });
-  document.addEventListener('toggle', fitBarLabels, true);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBarLabels);
-});
+safely('stages', mountStages);
 safely('socratic', mountSocratic);
 safely('ladder', ladder.mount);
 safely('equation walks', mountEquationWalks);

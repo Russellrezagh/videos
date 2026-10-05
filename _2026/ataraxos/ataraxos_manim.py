@@ -1,4 +1,4 @@
-"""Decisions in the dark: a narrated Manim companion to _2026/ataraxos/ataraxos_explorable.html.
+"""Decisions in the dark: a silent Manim companion to _2026/ataraxos/ataraxos_explorable.html.
 
 The scenes draw the same semantic objects as the page (public and hidden
 information, policy, belief, value, the knobs eta, alpha and beta) in the same
@@ -156,11 +156,11 @@ def polyline(points, color, width=3, opacity=1.0):
 
 
 class Beat(Scene):
-    """A scene made of narration segments. Each segment ends at its exact audio time,
-    so frame rounding inside a segment never accumulates across the video."""
+    """A scene made of timed beats. The video is silent: each beat carries one idea, named
+    by the headline at the top left. A beat ends at its exact planned time, so frame
+    rounding inside a beat never accumulates across the video (chapter times stay fixed)."""
 
-    def seg(self, text, dur):
-        self.add_subcaption(text, duration=dur)
+    def beat(self, dur):
         self.__dict__["_t_end"] = self.__dict__.get("_t_end", 0.0) + dur
 
     def go(self, *anims, rt, **kwargs):
@@ -178,7 +178,7 @@ class Scene1_Hidden(Beat):
         hdr = header("Chess: every piece is in view")
         chess = chess_board().move_to(P(-4.0, -.05))
         lab_c = Tex("perfect information", font_size=30, color=ROLE["public"]).next_to(chess, DOWN, buff=.3)
-        self.seg("In chess, both players see every piece. Nothing about the state of the game is hidden.", 5.592)
+        self.beat(5.592)  # In chess, both players see every piece. Nothing about the state of the game is hidden.
         self.go(FadeIn(hdr, shift=.1 * RIGHT), FadeIn(chess[0], lag_ratio=.01), rt=1.3)
         self.go(LaggedStart(*[FadeIn(p, scale=.6) for p in chess[1]], lag_ratio=.08), rt=1.6)
         self.go(FadeIn(lab_c, shift=.1 * UP), rt=.7)
@@ -186,7 +186,7 @@ class Scene1_Hidden(Beat):
 
         strat = stratego_board().move_to(P(3.9, -.05))
         lab_s = Tex("imperfect information", font_size=30, color=ROLE["hidden"]).next_to(strat, DOWN, buff=.3)
-        self.seg("In Stratego, you see where the enemy pieces stand, but not their ranks. Each player arranges forty hidden pieces.", 7.704)
+        self.beat(7.704)  # In Stratego, you see where the enemy pieces stand, but not their ranks. Each player arranges forty hidden pieces.
         self.go(Transform(hdr, header("Stratego: you see where the enemy pieces stand, not what they are")),
                 FadeIn(strat[0], lag_ratio=.004), rt=1.2)
         self.go(LaggedStart(*[FadeIn(t, shift=.06 * DOWN) for t in strat[1]], lag_ratio=.03), rt=1.8)
@@ -207,7 +207,7 @@ class Scene1_Hidden(Beat):
         hars = Tex(r"Harsanyi (1967): model the unknown rules or payoffs as hidden moves\\of chance. Then an incomplete game becomes an imperfect one.",
                    font_size=24, color=ROLE["context"]).move_to((ip + ii) / 2)
         hl = Rectangle(width=6.0, height=2.5, stroke_color=ROLE["hidden"], stroke_width=4).move_to(ci)
-        self.seg("Both players know the rules, so the information is complete. But the state is hidden, so the information is imperfect.", 7.704)
+        self.beat(7.704)  # Both players know the rules, so the information is complete. But the state is hidden, so the information is imperfect.
         self.go(FadeOut(lab_c), FadeOut(lab_s), Transform(hdr, header("Two different questions about information")), rt=.6)
         self.go(FadeIn(cells), FadeIn(VGroup(col_p, col_i, row_c, row_i)),
                 chess.animate.scale(.58).move_to(cp + LEFT * 1.3), strat.animate.scale(.55).move_to(ci + LEFT * 1.3), rt=1.6)
@@ -233,7 +233,7 @@ class Scene1_Hidden(Beat):
         brace = Brace(VGroup(rows, vdots), LEFT, color=ROLE["hidden"])
         brace_lab = Tex(r"set-ups that\\fit this view", font_size=26, color=ROLE["hidden"]).next_to(brace, LEFT, buff=.2)
         warn = Tex(r"too many to list,\\too many to search", font_size=30, color=ROLE["warn"]).move_to(P(5.9, -.9))
-        self.seg("One player can arrange the pieces in about ten to the thirty-three ways. You cannot list them, and you cannot search them all.", 7.56)
+        self.beat(7.56)  # One player can arrange the pieces in about ten to the thirty-three ways. You cannot list them, and you cannot search them all.
         self.go(FadeOut(VGroup(cells, col_p, col_i, row_c, row_i, names, hars, hl, chess, strat)),
                 Transform(hdr, header("Behind one view: a huge set of hidden states")), rt=.7)
         self.go(Write(formula), rt=1.5)
@@ -260,7 +260,7 @@ class Scene2_Bluff(Beat):
         e_sco = Line(chance.get_center(), sco.get_left(), color=ROLE["context"], stroke_width=2.5, buff=.12)
         p_gen = MathTex("0.25", font_size=28, color=ROLE["belief"]).next_to(e_gen.get_center(), UL, buff=.08)
         p_sco = MathTex("0.75", font_size=28, color=ROLE["belief"]).next_to(e_sco.get_center(), DL, buff=.08)
-        self.seg("Here is a small version of the problem. Your hidden piece is a General, with probability one quarter, or else a Scout.", 7.56)
+        self.beat(7.56)  # Here is a small version of the problem. Your hidden piece is a General, with probability one quarter, or else a Scout.
         self.go(FadeIn(hdr, shift=.1 * RIGHT), FadeIn(ctx), rt=.9)
         self.go(FadeIn(chance, scale=.5), FadeIn(chance_lab), rt=.5)
         self.go(Create(e_gen), Create(e_sco), FadeIn(gen), FadeIn(sco), FadeIn(gen_lab), FadeIn(sco_lab), rt=1.4)
@@ -276,8 +276,8 @@ class Scene2_Bluff(Beat):
         l_g = MathTex("1", font_size=28, color=ROLE["policy"]).next_to(a_g, UP, buff=.06)
         l_b = MathTex("b", font_size=32, color=ROLE["policy"]).next_to(a_b.get_center(), UL, buff=.06)
         l_s = MathTex("1-b", font_size=28, color=ROLE["policy"]).next_to(a_s.get_center(), DL, buff=.04)
-        self.seg("The General always advances. The Scout advances with probability b. That advance is a bluff.", 6.864)
-        self.go(GrowArrow(a_g), FadeIn(adv_g), FadeIn(l_g), rt=1.0)
+        self.beat(6.864)  # The General always advances. The Scout advances with probability b. That advance is a bluff.
+        self.go(Transform(hdr, header(r"The General always advances. The Scout may bluff, with probability $b$")), GrowArrow(a_g), FadeIn(adv_g), FadeIn(l_g), rt=1.0)
         self.go(GrowArrow(a_b), GrowArrow(a_s), FadeIn(adv_s), FadeIn(stay), rt=1.3)
         self.go(FadeIn(l_b, scale=1.4), FadeIn(l_s), rt=.7)
         self.go(Indicate(adv_s, color=ROLE["policy"], scale_factor=1.08), rt=.9)
@@ -301,8 +301,8 @@ class Scene2_Bluff(Beat):
         b_read = always_redraw(lambda: VGroup(MathTex("b=", font_size=30, color=ROLE["policy"]),
                                               DecimalNumber(b.get_value(), num_decimal_places=2, font_size=30, color=ROLE["policy"]))
                                .arrange(RIGHT, buff=.1).move_to(P(1.75, YB - .62)))
-        self.seg("The opponent sees an advance, but not the rank. By Bayes' rule, more bluffs make a General less likely.", 6.696)
-        self.go(Create(info), FadeIn(info_lab), rt=1.0)
+        self.beat(6.696)  # The opponent sees an advance, but not the rank. By Bayes' rule, more bluffs make a General less likely.
+        self.go(Transform(hdr, header("The opponent sees only an advance, and updates its belief")), Create(info), FadeIn(info_lab), rt=1.0)
         self.go(Write(formula), rt=1.2)
         self.go(FadeIn(bel_lab), FadeIn(track), FadeIn(bar), FadeIn(bel_num), FadeIn(b_read), rt=.6)
         self.go(b.animate.set_value(.9), rt=2.6, rate_func=smooth)
@@ -325,8 +325,8 @@ class Scene2_Bluff(Beat):
         x_lab = MathTex("b", font_size=30, color=ROLE["policy"]).next_to(ax.x_axis.get_right(), RIGHT, buff=.15)
         dot = always_redraw(lambda: Dot(ax.c2p(b.get_value(), bluff_value(b.get_value())), radius=.1, color=ROLE["policy"])
                             .set_stroke(BG, 3, background=True))
-        self.seg("So the value of a bluff depends on how often you bluff. A move has no fixed value of its own.", 6.312)
-        self.go(Create(ax), FadeIn(y_lab), FadeIn(x_lab), rt=.9)
+        self.beat(6.312)  # So the value of a bluff depends on how often you bluff. A move has no fixed value of its own.
+        self.go(Transform(hdr, header("The value of a bluff depends on how often you bluff")), Create(ax), FadeIn(y_lab), FadeIn(x_lab), rt=.9)
         self.go(Create(left), Create(right), FadeIn(l_left), FadeIn(l_right), FadeIn(dot), rt=1.2)
         self.go(b.animate.set_value(.1), rt=2.8, rate_func=smooth)
         self.hold()
@@ -339,8 +339,8 @@ class Scene2_Bluff(Beat):
             Tex(r"the opponent stands with $s^\ast\approx0.29$", font_size=26, color=FG),
             Tex(r"no player gains by a change alone", font_size=24, color=FG_SOFT),
         ).arrange(DOWN, buff=.12).move_to(P(4.55, 2.55))
-        self.seg("At equilibrium, the Scout bluffs about thirty-eight percent of the time, and the opponent stands about twenty-nine percent of the time.", 7.896)
-        self.go(b.animate.set_value(B_STAR), rt=1.4, rate_func=smooth)
+        self.beat(7.896)  # At equilibrium, the Scout bluffs about thirty-eight percent of the time, and the opponent stands about twenty-nine percent of the time.
+        self.go(Transform(hdr, header("Equilibrium: no player gains by a change alone")), b.animate.set_value(B_STAR), rt=1.4, rate_func=smooth)
         self.go(Create(vline), FadeIn(v_lab), rt=.8)
         self.go(FadeOut(formula, shift=.1 * UP), FadeIn(card, shift=.1 * UP), rt=1.2)
         self.hold()
@@ -349,7 +349,7 @@ class Scene2_Bluff(Beat):
 # ════════════════════════════════════════════════════════════════════════════
 class Scene3_Damping(Beat):
     def construct(self):
-        hdr = header("Learning by self-play")
+        hdr = header("Self-play: each policy moves toward better replies")
         ax = Axes(x_range=[0, 1, .25], y_range=[0, 1, .25], x_length=5.6, y_length=5.6, tips=False,
                   axis_config={"color": FG_FAINT, "stroke_width": 1.5}).move_to(P(-3.9, -.25))
         frame = Rectangle(width=5.6, height=5.6, stroke_color=FG_FAINT, stroke_width=1).move_to(ax.c2p(.5, .5))
@@ -376,7 +376,7 @@ class Scene3_Damping(Beat):
         txt_a = VGroup(Tex(r"Each update moves $b$ toward a better", font_size=28),
                        Tex(r"reply to $s$, and $s$ toward a better reply to $b$.", font_size=28)
                        ).arrange(DOWN, aligned_edge=LEFT, buff=.12).move_to(P(4.3, 2.55))
-        self.seg("Ataraxos learns by self-play. Each policy moves toward the actions that score well against the other.", 6.936)
+        self.beat(6.936)  # Ataraxos learns by self-play. Each policy moves toward the actions that score well against the other.
         self.go(FadeIn(hdr, shift=.1 * RIGHT), Create(ax), Create(frame), FadeIn(x_lab), FadeIn(y_lab), FadeIn(ticks), rt=1.4)
         self.go(FadeIn(star, scale=.4), FadeIn(star_lab), rt=.6)
         self.go(LaggedStart(*[GrowArrow(a) for a in arrows], lag_ratio=.05), rt=2.0)
@@ -391,9 +391,9 @@ class Scene3_Damping(Beat):
         head = Dot(radius=.08, color=ROLE["warn"]).move_to(und.get_start())
         head.add_updater(lambda m: m.move_to(und.get_end()))
         txt_b = Tex(r"No damping: the policies cycle.", font_size=28, color=ROLE["warn"]).next_to(txt_a, DOWN, buff=.4).align_to(txt_a, LEFT)
-        self.seg("Without control, the two policies chase each other in circles. They never settle.", 5.424)
+        self.beat(5.424)  # Without control, the two policies chase each other in circles. They never settle.
         self.add(head)
-        self.go(FadeOut(arrows), Create(und), rate_func=linear, rt=4.0)
+        self.go(Transform(hdr, header("Without damping, self-play goes in circles")), FadeOut(arrows), Create(und), rate_func=linear, rt=4.0)
         self.go(FadeIn(txt_b), rt=.6)
         self.hold()
 
@@ -404,8 +404,8 @@ class Scene3_Damping(Beat):
                        Tex(r"pull $\alpha$: how hard the magnet $\rho$ pulls", font_size=28, color=ROLE["param"]),
                        Tex(r"magnet $\rho$: random play, $b=s=\tfrac12$", font_size=24, color=FG_SOFT)
                        ).arrange(DOWN, aligned_edge=LEFT, buff=.14).move_to(P(4.3, 2.45))
-        self.seg("Ataraxos damps each update. A step size, eta, limits how far the policy moves. A pull, alpha, holds it near a random magnet.", 9.384)
-        self.go(und.animate.set_stroke(opacity=.18), FadeOut(head), FadeOut(txt_a), FadeOut(txt_b), rt=.8)
+        self.beat(9.384)  # Ataraxos damps each update. A step size, eta, limits how far the policy moves. A pull, alpha, holds it near a random magnet.
+        self.go(Transform(hdr, header(r"Damping: a step size $\eta$ and a pull $\alpha$ toward a magnet $\rho$")), und.animate.set_stroke(opacity=.18), FadeOut(head), FadeOut(txt_a), FadeOut(txt_b), rt=.8)
         self.go(FadeIn(knobs[0], shift=.1 * UP), rt=.8)
         self.go(FadeIn(knobs[1], shift=.1 * UP), rt=.8)
         self.go(FadeIn(magnet, scale=.4), FadeIn(magnet_lab), FadeIn(knobs[2]), rt=.9)
@@ -427,8 +427,8 @@ class Scene3_Damping(Beat):
                       Tex("action values", font_size=22, color=ROLE["value"]).move_to(P(eq[5].get_x() + .75, y0)))
         ticks_eq = VGroup(*[Line(eq[i].get_bottom() + DOWN * .06, lab.get_top() + UP * .04, color=FG_FAINT, stroke_width=1.2)
                             for i, lab in zip((3, 4, 5), labs)])
-        self.seg("The new policy is a weighted mix of the old policy, the magnet, and the exponential of the action values.", 7.056)
-        self.go(Write(eq), rt=1.8)
+        self.beat(7.056)  # The new policy is a weighted mix of the old policy, the magnet, and the exponential of the action values.
+        self.go(Transform(hdr, header("Magnetic mirror descent: one damped update")), Write(eq), rt=1.8)
         self.go(LaggedStart(*[AnimationGroup(Create(t), FadeIn(l)) for t, l in zip(ticks_eq, labs)], lag_ratio=.35), rt=1.8)
         self.go(Indicate(eq[7], color=ROLE["param"]), rt=1.0)
         self.hold()
@@ -442,8 +442,8 @@ class Scene3_Damping(Beat):
             Tex(r"$\eta=1.2,\ \alpha=0.02$: weak pull, it keeps circling", font_size=24, color=ROLE["warn"]),
             Tex(r"$\eta=1.2,\ \alpha=0.15$: it settles, but off target", font_size=24, color=FG),
         ).arrange(DOWN, aligned_edge=LEFT, buff=.14).move_to(P(4.3, 2.75))
-        self.seg("If the pull is too weak for the step, the path keeps circling. With a strong enough pull, it settles.", 6.096)
-        self.go(FadeOut(knobs), FadeOut(und), FadeIn(legend[0]), rt=.6)
+        self.beat(6.096)  # If the pull is too weak for the step, the path keeps circling. With a strong enough pull, it settles.
+        self.go(Transform(hdr, header("The pull must be strong enough for the step")), FadeOut(knobs), FadeOut(und), FadeIn(legend[0]), rt=.6)
         self.go(Create(weak), rate_func=linear, rt=2.4)
         self.go(FadeIn(legend[1]), Create(strong), rate_func=linear, rt=1.8)
         self.go(FadeIn(strong_end, scale=.5), rt=.4)
@@ -464,8 +464,8 @@ class Scene3_Damping(Beat):
 
         curves = VGroup(curve(und_ex, ROLE["warn"], 1.6).set_stroke(opacity=.55), curve(strong_ex, FG, 1.8), curve(co_ex, ROLE["value"], 2.6))
         final = MathTex(r"\to 0.01", font_size=26, color=ROLE["value"]).next_to(ex_ax.c2p(300, co_ex[-1]), RIGHT, buff=.1).shift(UP * .1)
-        self.seg("Ataraxos reduces the pull and the step together. Then the path walks to the equilibrium, and exploitability goes near zero.", 8.568)
-        self.go(weak.animate.set_stroke(opacity=.15), strong.animate.set_stroke(opacity=.35), FadeOut(eq), FadeOut(labs), FadeOut(ticks_eq),
+        self.beat(8.568)  # Ataraxos reduces the pull and the step together. Then the path walks to the equilibrium, and exploitability goes near zero.
+        self.go(Transform(hdr, header("Lower both together, and the path reaches the equilibrium")), weak.animate.set_stroke(opacity=.15), strong.animate.set_stroke(opacity=.35), FadeOut(eq), FadeOut(labs), FadeOut(ticks_eq),
                 FadeIn(leg3), rt=.8)
         self.go(Create(co), rate_func=linear, rt=3.0)
         self.go(FadeIn(co_end, scale=.4), Indicate(star, color=ROLE["value"], scale_factor=1.6), rt=1.0)
@@ -490,7 +490,7 @@ def search_policy(beta):
 
 class Scene4_Search(Beat):
     def construct(self):
-        hdr = header("Playing a match: beliefs, then search")
+        hdr = header("In a match, a belief network samples the hidden set-ups")
         side = .4
         obs_labels = ["?", "?", "8", "?", "?", "?", "B", "?", "?", "?", "?", "?"]
         obs = VGroup(*[tile(l, ROLE["public"] if l != "?" else ROLE["hidden"], side=side, font=20) for l in obs_labels])
@@ -509,7 +509,7 @@ class Scene4_Search(Beat):
         a1 = Arrow(obs.get_right(), net.get_left(), buff=.12, color=FG_FAINT, stroke_width=2.5, max_tip_length_to_length_ratio=.18)
         a2 = VGroup(*[Arrow(net.get_right(), g.get_left(), buff=.12, color=ROLE["belief"], stroke_width=2, max_tip_length_to_length_ratio=.12)
                       for g in samples])
-        self.seg("In a match, a belief network samples possible arrangements of the hidden pieces, given everything seen so far.", 7.32)
+        self.beat(7.32)  # In a match, a belief network samples possible arrangements of the hidden pieces, given everything seen so far.
         self.go(FadeIn(hdr, shift=.1 * RIGHT), FadeIn(obs, lag_ratio=.05), FadeIn(obs_lab), rt=1.2)
         self.go(GrowArrow(a1), FadeIn(net), rt=1.0)
         self.go(LaggedStart(*[AnimationGroup(GrowArrow(a), FadeIn(g, shift=.1 * RIGHT)) for a, g in zip(a2, samples)], lag_ratio=.4),
@@ -538,8 +538,8 @@ class Scene4_Search(Beat):
                          .set_points_smoothly([start, mid, end]))
         roll_lab = Tex(r"1,000 rollouts, 40 moves deep", font_size=22, color=ROLE["value"]).move_to(P(1.2, .62))
         brace = Brace(q_rows, LEFT, color=ROLE["value"], buff=.12)
-        self.seg("For each sample, the search plays a thousand short games with the policy, and averages the result of each move.", 7.128)
-        self.go(LaggedStart(*[Create(f) for f in fans], lag_ratio=.03), FadeIn(roll_lab), rt=2.6)
+        self.beat(7.128)  # For each sample, the search plays a thousand short games with the policy, and averages the result of each move.
+        self.go(Transform(hdr, header("Search: short games from each sample, averaged per move")), LaggedStart(*[Create(f) for f in fans], lag_ratio=.03), FadeIn(roll_lab), rt=2.6)
         self.go(GrowFromCenter(brace), LaggedStart(*[FadeIn(r, shift=.1 * LEFT) for r in q_rows], lag_ratio=.2), rt=1.6)
         self.hold()
 
@@ -574,8 +574,8 @@ class Scene4_Search(Beat):
 
         fills = always_redraw(fill_bars)
         key = Tex(r"outline: network $\pi_\theta$ \quad fill: after search", font_size=20, color=FG_FAINT).move_to(P(X0 + W / 2, -3.25))
-        self.seg("Then it makes one damped update of the network policy. A leash, beta, keeps the result near the network.", 6.96)
-        self.go(Write(formula), rt=1.5)
+        self.beat(6.96)  # Then it makes one damped update of the network policy. A leash, beta, keeps the result near the network.
+        self.go(Transform(hdr, header(r"One damped update, on a leash $\beta$ to the network")), Write(formula), rt=1.5)
         self.go(FadeIn(bars, lag_ratio=.1), FadeIn(key), rt=1.1)
         self.add(fills)
         self.go(FadeIn(fills), rt=.6)
@@ -591,8 +591,8 @@ class Scene4_Search(Beat):
             elo.add(VGroup(Tex(name, font_size=22, color=FG_SOFT).next_to(P(-2.3, y), LEFT, buff=0),
                            Rectangle(width=(val - 1600) / 700 * 3.2, height=.3, stroke_width=0).set_fill(col, .9).move_to(P(-2.15, y), aligned_edge=LEFT),
                            Tex(f"Elo {val}", font_size=22, color=FG).move_to(P(-2.15 + (val - 1600) / 700 * 3.2 + .6, y))))
-        self.seg("Without the leash, the search trusts noisy estimates, and the rating falls by almost five hundred Elo.", 6.72)
-        self.go(FadeOut(VGroup(obs, obs_lab, net, a1, a2, samples, s_lab, fans, roll_lab)), FadeIn(b_read), rt=.7)
+        self.beat(6.72)  # Without the leash, the search trusts noisy estimates, and the rating falls by almost five hundred Elo.
+        self.go(Transform(hdr, header("Without the leash, the search trusts noise")), FadeOut(VGroup(obs, obs_lab, net, a1, a2, samples, s_lab, fans, roll_lab)), FadeIn(b_read), rt=.7)
         self.go(beta.animate.set_value(0.0), rt=1.8, rate_func=smooth)
         self.go(LaggedStart(*[FadeIn(r, shift=.1 * RIGHT) for r in elo], lag_ratio=.3), rt=1.6)
         self.go(Indicate(elo[2], color=ROLE["warn"], scale_factor=1.05), rt=.9)
@@ -602,7 +602,7 @@ class Scene4_Search(Beat):
 # ════════════════════════════════════════════════════════════════════════════
 class Scene5_Results(Beat):
     def construct(self):
-        hdr = header("Results")
+        hdr = header(r"Against the world no.\ 1: 15 wins, 4 draws, 1 loss")
         games = VGroup()
         for i in range(20):
             col = ROLE["value"] if i < 15 else (ROLE["context"] if i < 19 else ROLE["warn"])
@@ -614,7 +614,7 @@ class Scene5_Results(Beat):
         who = Tex(r"Ataraxos vs Pim Niemeijer (world no.\ 1), classic Stratego, July 2025", font_size=26, color=FG).next_to(games, UP, buff=.25)
         rate = Tex(r"$85\%$", font_size=40, color=ROLE["value"]).next_to(games, RIGHT, buff=.35)
         rate_sub = Tex(r"draw $=\tfrac12$", font_size=20, color=FG_FAINT).next_to(rate, DOWN, buff=.08)
-        self.seg("In July 2025, Ataraxos played Pim Niemeijer, the world number one. It won fifteen games, drew four, and lost one.", 8.784)
+        self.beat(8.784)  # In July 2025, Ataraxos played Pim Niemeijer, the world number one. It won fifteen games, drew four, and lost one.
         self.go(FadeIn(hdr, shift=.1 * RIGHT), FadeIn(who), rt=1.0)
         self.go(LaggedStart(*[FadeIn(g, scale=.5) for g in games], lag_ratio=.12), rt=3.2)
         self.go(FadeIn(tags, lag_ratio=.3), rt=1.2)
@@ -637,8 +637,8 @@ class Scene5_Results(Beat):
         at_num = Tex(r"$<$ \$8{,}000", font_size=22, color=FG).next_to(at, RIGHT, buff=.15)
         ratio = Tex(r"about $\tfrac{1}{500}$ of the cost", font_size=30, color=ROLE["policy"]).move_to(P(4.6, -1.25))
         cost_title = Tex("training compute cost (log scale)", font_size=22, color=FG_FAINT).move_to(P(X0 + W / 2, .1))
-        self.seg("Training cost less than eight thousand dollars. That is about one five-hundredth of the cost of DeepNash.", 6.744)
-        self.go(FadeIn(cost_title), Create(cost_ax), FadeIn(cost_ticks), FadeIn(dn_lab), FadeIn(at_lab), rt=.9)
+        self.beat(6.744)  # Training cost less than eight thousand dollars. That is about one five-hundredth of the cost of DeepNash.
+        self.go(Transform(hdr, header(r"Training cost: about $\tfrac{1}{500}$ of DeepNash")), FadeIn(cost_title), Create(cost_ax), FadeIn(cost_ticks), FadeIn(dn_lab), FadeIn(at_lab), rt=.9)
         self.go(GrowFromEdge(dn, LEFT), GrowFromEdge(at, LEFT), rt=1.4)
         self.go(FadeIn(dn_num), FadeIn(at_num), rt=.6)
         self.go(FadeIn(ratio, shift=.1 * LEFT), rt=.8)
@@ -656,10 +656,10 @@ class Scene5_Results(Beat):
             card("Dou dizhu", [r"one landlord against", r"two peasants.", r"Beat PerfectDou and DouZero."], ROLE["belief"]),
         ).arrange(RIGHT, buff=.4).move_to(P(0, -.2))
         same = Tex("one method, other games with hidden information", font_size=28, color=FG_SOFT).next_to(cards, UP, buff=.4)
-        self.seg("The same method also beats top humans at Barrage Stratego, sets a new best score in Hanabi, and beats the best dou dizhu programs.", 8.664)
+        self.beat(8.664)  # The same method also beats top humans at Barrage Stratego, sets a new best score in Hanabi, and beats the best dou dizhu programs.
         self.go(FadeOut(VGroup(games, tags, who, rate, rate_sub, cost_ax, cost_ticks, dn, at, dn_lab, at_lab, dn_num, at_num, ratio, cost_title)),
                 rt=.7)
-        self.go(FadeIn(same), rt=.6)
+        self.go(Transform(hdr, header("Results in other games")), FadeIn(same), rt=.6)
         self.go(LaggedStart(*[FadeIn(c, shift=.15 * UP) for c in cards], lag_ratio=.55), rt=3.2)
         self.hold()
 
@@ -671,7 +671,7 @@ class Scene5_Results(Beat):
                     MathTex(r"\pi_{\mathrm{search}}\propto\Big[e^{\hat q}\,\rho^{\alpha}\,\pi_\theta^{\beta}\Big]^{\frac{1}{\alpha+\beta}}", font_size=36, color=FG)
                     ).arrange(DOWN, buff=.25).move_to(P(3.9, .25))
         foot = Tex(r"Read on: the interactive chapter has the labs, the sources and the proofs.", font_size=22, color=FG_FAINT).move_to(P(0, -2.1))
-        self.seg("The lesson: when information is hidden, control the learning dynamics, and treat search as one more careful update.", 7.488)
+        self.beat(7.488)  # The lesson: when information is hidden, control the learning dynamics, and treat search as one more careful update.
         self.go(FadeOut(cards), FadeOut(same), FadeOut(hdr), rt=.7)
         self.go(FadeIn(title, shift=.1 * DOWN), rt=.8)
         self.go(FadeIn(l1, shift=.1 * UP), rt=1.2)
