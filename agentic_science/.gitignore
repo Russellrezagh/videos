@@ -1,4 +1,3 @@
 node_modules/
 video/narration/clips/
-video/dist/narration.mp3
 video/dist/*.mp4

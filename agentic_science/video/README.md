@@ -5,9 +5,17 @@ plain JavaScript and SVG. It explains, from zero, how to do science with AI
 agents and how to know when the science is right, through one phylogenetics
 puzzle: four DNA sequences, three possible trees, and the long-branch trap.
 
-Open `dist/index.html`. It is one self-contained file. With `dist/narration.mp3`
-next to it, the narration plays as the clock of the video. Without it, the video
-plays with captions only.
+Open `dist/index.html` and press play. The narration (`dist/narration.mp3`, next
+to the page) is the clock of the video, so picture and voice cannot drift. For a
+host that serves one file only, `build.mjs --embed-audio` (or `--fragment`) puts
+the voice inside the page as base64; the player then needs no file host at all.
+
+The player tries its voice sources in order (embedded bytes as a `blob:` URL, the
+same bytes as a `data:` URI, then `narration.mp3`) and moves to the next one when
+a content policy refuses a source, a source cannot seek, or it does not start
+within 12 s. When no source can play, the status line says so and the video
+runs with captions. Keys: Space, ← →, J L, C captions, M mute, F full screen,
+1–7 chapters.
 
 ## Chapters
 
@@ -46,11 +54,13 @@ curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessa
 curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
 node video/tools/narrate.mjs --model en_US-lessac-medium.onnx
 node video/tools/build.mjs                   # now with narration
+node video/tools/build.mjs --fragment out.html  # one file, voice embedded (about 12 MB)
 
 node video/tools/render-mp4.mjs --workers 3  # dist/the-tree-and-the-agent.mp4
 ```
 
-`narration.mp3` and the MP4 are build products and are not committed.
+`dist/narration.mp3` is committed so that a clone plays with its voice. The MP4
+is a build product and is not committed.
 
 ## Checks done on this build
 
@@ -60,3 +70,7 @@ node video/tools/render-mp4.mjs --workers 3  # dist/the-tree-and-the-agent.mp4
 - Every narrated beat was rendered to a still and reviewed for overlaps.
 - Quotes from Schwartz were checked against the text of the source articles.
 - The mixer asserts that no narration line runs past the end of its beat.
+- Voice playback was tested in Chromium under five content policies (none,
+  `blob:` only, `data:` only, `'self'` only, no media at all), with play pressed
+  before any buffering, pause → chapter jump → play, mute, 1.25× speed, the end
+  of the video, and the local `file://` build.

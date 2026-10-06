@@ -61,6 +61,11 @@ h2 { font-family: var(--cm); font-weight: 400; font-size: 1.6rem; margin: 0 0 10
 #play.playing .i-pause { display: block; }
 #play.playing .i-play { display: none; }
 .ctl.on { color: var(--yellow); border-color: #5a5130; }
+#snd .i-off { display: none; }
+#snd.muted .i-off { display: block; }
+#snd.muted .i-on { display: none; }
+#snd.muted { color: var(--red); }
+.ctl:disabled { opacity: 0.4; cursor: default; }
 .time { font-size: 0.82rem; color: var(--text-2); min-width: 104px; text-align: center; font-variant-numeric: tabular-nums; }
 .scrub { position: relative; flex: 1 1 260px; height: 36px; cursor: pointer; min-width: 160px; touch-action: none; }
 .scrub .track { position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px; background: var(--ink-3); border-radius: 3px; overflow: hidden; }

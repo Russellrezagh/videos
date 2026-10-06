@@ -46,6 +46,10 @@
         <div class="hover" id="hover"></div>
       </div>
       <button type="button" id="cc" class="ctl on" aria-pressed="true" aria-label="Captions">CC</button>
+      <button type="button" id="snd" class="ctl" aria-pressed="false" aria-label="Mute the voice">
+        <svg viewBox="0 0 24 24" class="i-on"><path d="M4 9 h4 l5 -4 v14 l-5 -4 h-4 z"/><path d="M16 8.5 q2 3.5 0 7 M18.5 6 q4 6 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" class="i-off"><path d="M4 9 h4 l5 -4 v14 l-5 -4 h-4 z"/><path d="M16 9 l6 6 M22 9 l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
       <button type="button" id="speed" class="ctl" aria-label="Playback speed">1×</button>
       <button type="button" id="full" class="ctl" aria-label="Full screen">
         <svg viewBox="0 0 24 24"><path d="M4 9 V4 H9 M15 4 H20 V9 M20 15 V20 H15 M9 20 H4 V15" fill="none" stroke="currentColor" stroke-width="2"/></svg>
@@ -57,7 +61,7 @@
   <section class="chapters" aria-labelledby="ch-h">
     <h2 id="ch-h">Chapters</h2>
     <ol id="chapters"></ol>
-    <p class="keys mono">Space play/pause · ← → 5 s · J L 10 s · C captions · F full screen · 1–7 chapters</p>
+    <p class="keys mono">Space play/pause · ← → 5 s · J L 10 s · C captions · M mute · F full screen · 1–7 chapters</p>
   </section>
 
   <section class="transcript" aria-labelledby="tr-h">
@@ -78,6 +82,7 @@ window.MathJax = { svg: { fontCache: 'none' }, startup: { typeset: false }, opti
 </script>
 <script src="../../node_modules/mathjax/es5/tex-svg-full.js"></script>
 <script type="application/json" id="narration-data"></script>
+<script type="text/plain" id="narration-audio"></script>
 <script src="../../src/js/kernel.js"></script>
 <script src="../../src/js/lab.js"></script>
 <script src="js/engine.js"></script>

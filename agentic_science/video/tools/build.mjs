@@ -4,11 +4,15 @@
  *
  *   node video/tools/build.mjs                    -> video/dist/index.html
  *   node video/tools/build.mjs --fragment <path>  also write a body-only copy
+ *                                                 with the narration embedded
+ *   node video/tools/build.mjs --embed-audio      embed it in dist/index.html too
  *
  * Inlines: MathJax (SVG output), the KaTeX Computer Modern fonts, the QUARTET
  * science code, the engine, the script and the player. If narration exists
  * (narration/durations.json and dist/narration.mp3), the page uses the real
- * clip durations and plays the track as its clock.
+ * clip durations and plays the track as its clock. The track is either
+ * referenced (narration.mp3 next to the page) or embedded as base64, which
+ * needs no file host at all: the page then plays its voice anywhere.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -57,14 +61,24 @@ if (fs.existsSync(durFile) && fs.existsSync(mp3)) {
 }
 html = html.replace('<script type="application/json" id="narration-data"></script>', () => `<script type="application/json" id="narration-data">${narr ? JSON.stringify(narr) : ''}</script>`);
 if (/src="(\.\.\/|js\/)/.test(html)) throw new Error('a local script reference remains');
+const SLOT = '<script type="text/plain" id="narration-audio"></script>';
+if (!html.includes(SLOT)) throw new Error(`missing ${SLOT}`);
+const embedded = () => {
+  if (!narr) return html;
+  const b64 = fs.readFileSync(mp3).toString('base64');
+  return html.replace(SLOT, () => `<script type="text/plain" id="narration-audio">${b64}</script>`);
+};
+const mb = (s) => `${(s.length / 1048576).toFixed(2)} MB`;
 
+const embedDist = process.argv.includes('--embed-audio');
+const dist = embedDist ? embedded() : html;
 fs.mkdirSync(path.join(VIDEO, 'dist'), { recursive: true });
-fs.writeFileSync(path.join(VIDEO, 'dist/index.html'), html);
-console.log(`video/dist/index.html  ${(html.length / 1048576).toFixed(2)} MB  narration: ${narr ? `${Object.keys(narr.durations).length} lines` : 'none (captions only)'}`);
+fs.writeFileSync(path.join(VIDEO, 'dist/index.html'), dist);
+console.log(`video/dist/index.html  ${mb(dist)}  narration: ${narr ? `${Object.keys(narr.durations).length} lines, ${embedDist ? 'embedded' : 'dist/narration.mp3'}` : 'none (captions only)'}`);
 
 const i = process.argv.indexOf('--fragment');
 if (i > 0 && process.argv[i + 1]) {
-  const frag = html
+  const frag = embedded()
     .replace(/<!doctype html>\s*/i, '')
     .replace(/<html[^>]*>\s*/i, '')
     .replace(/<\/html>\s*$/i, '')
@@ -74,6 +88,7 @@ if (i > 0 && process.argv[i + 1]) {
     .replace(/<\/body>\s*/i, '')
     .replace(/<meta charset="utf-8">\s*/i, '')
     .replace(/<meta name="viewport"[^>]*>\s*/i, '');
+  if (frag.length > 16 * 1048576) throw new Error(`fragment is ${mb(frag)}; the artifact limit is 16 MB`);
   fs.writeFileSync(process.argv[i + 1], frag);
-  console.log(`fragment  ${process.argv[i + 1]}`);
+  console.log(`fragment  ${process.argv[i + 1]}  ${mb(frag)}  narration ${narr ? 'embedded' : 'none'}`);
 }

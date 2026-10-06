@@ -27,6 +27,202 @@
     }
   }
 
+  /*
+   * Narration track. While it plays it is the clock, so picture and voice
+   * cannot drift.
+   *
+   * Sources, tried in order until one plays:
+   *   1. the embedded MP3 bytes (#narration-audio) as a blob: URL
+   *   2. the same bytes as a data: URI
+   *   3. narration.mp3 next to the page
+   * Hosts differ in which of these their content policy admits, so a source
+   * that errors, is refused, or does not start within 12 s is replaced by the
+   * next one. When none is left the state is "failed" and the player runs on
+   * its own frame clock with captions.
+   *
+   * States: none | idle | loading | playing | blocked | failed
+   *   blocked = the browser refused to start sound without a fresh click.
+   */
+  function makeTrack(narr, on) {
+    const sources = [];
+    const emb = document.getElementById('narration-audio');
+    const b64 = emb ? emb.textContent.trim() : '';
+    if (b64) {
+      sources.push(() => {
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
+      });
+      sources.push(() => `data:audio/mpeg;base64,${b64}`);
+    }
+    if (narr && narr.src) sources.push(() => narr.src);
+
+    const api = { state: 'none' };
+    let el = null;
+    let k = -1;
+    let want = false; // the viewer asked for playback
+    let rate = 1;
+    let muted = false;
+    let pendingSeek = null;
+    let expectAt = null; // where the next 'playing' should start
+    let ownPauses = 0; // pause events we caused, still to arrive
+    let watchdog = 0;
+    const set = (s) => {
+      if (api.state === s) return;
+      api.state = s;
+      on.change(s);
+    };
+
+    function seekEl(t) {
+      if (!el) return;
+      expectAt = t;
+      if (el.readyState < 1) {
+        pendingSeek = t;
+        return;
+      }
+      try {
+        el.currentTime = t;
+        pendingSeek = null;
+      } catch (e) {
+        pendingSeek = t;
+      }
+    }
+
+    function attach() {
+      for (k += 1; k < sources.length; k++) {
+        let src;
+        try {
+          src = sources[k]();
+        } catch (e) {
+          continue;
+        }
+        const a = new Audio();
+        a.preload = 'auto';
+        a.muted = muted;
+        a.addEventListener('loadedmetadata', () => {
+          if (a === el && pendingSeek != null) seekEl(pendingSeek);
+        });
+        a.addEventListener('error', () => {
+          if (a === el) fail();
+        });
+        a.addEventListener('playing', () => {
+          if (a !== el) return;
+          clearTimeout(watchdog);
+          // A source that cannot seek (a server without range requests)
+          // restarts from 0. Replace it rather than let the picture jump.
+          if (expectAt != null && Math.abs(a.currentTime - expectAt) > 1.5) {
+            fail();
+            return;
+          }
+          expectAt = null;
+          set('playing');
+        });
+        a.addEventListener('waiting', () => {
+          if (a === el && want) set('loading');
+        });
+        a.addEventListener('pause', () => {
+          if (a !== el) return;
+          if (ownPauses > 0) {
+            ownPauses -= 1;
+            return;
+          }
+          // a pause the viewer did not ask for: a phone call, a headset unplugged
+          if (want && !a.ended) {
+            want = false;
+            set('idle');
+            on.interrupted();
+          }
+        });
+        a.addEventListener('ended', () => {
+          if (a !== el) return;
+          want = false;
+          set('idle');
+          on.ended();
+        });
+        a.src = src;
+        el = a;
+        return true;
+      }
+      el = null;
+      return false;
+    }
+
+    function fail() {
+      const at = api.time();
+      const old = el;
+      clearTimeout(watchdog);
+      if (old) {
+        old.pause();
+        old.removeAttribute('src');
+      }
+      ownPauses = 0;
+      if (!attach()) {
+        want = false;
+        set('failed');
+        return;
+      }
+      seekEl(at);
+      if (want) api.play(at, rate);
+    }
+
+    api.drives = () => !!el && api.state !== 'failed' && api.state !== 'blocked';
+    // Until the voice actually plays from a requested position, report that
+    // position, so the picture never jumps to where a failing source landed.
+    api.time = () => (!el ? 0 : pendingSeek != null ? pendingSeek : expectAt != null ? expectAt : el.currentTime);
+    api.seek = (t) => seekEl(t);
+    api.setRate = (r) => {
+      rate = r;
+      if (el) el.playbackRate = r;
+    };
+    api.setMuted = (m) => {
+      muted = m;
+      if (el) el.muted = m;
+    };
+    api.play = (t, r) => {
+      if (!el) return;
+      want = true;
+      rate = r;
+      seekEl(t);
+      el.playbackRate = r;
+      if (api.state !== 'playing') set('loading');
+      const a = el;
+      let p;
+      try {
+        p = a.play();
+      } catch (e) {
+        p = Promise.reject(e);
+      }
+      clearTimeout(watchdog);
+      watchdog = setTimeout(() => {
+        if (a === el && want && api.state !== 'playing') fail();
+      }, 12000);
+      if (p && p.catch) {
+        p.catch((e) => {
+          if (a !== el || !want) return;
+          if (e && e.name === 'NotAllowedError') {
+            want = false;
+            clearTimeout(watchdog);
+            set('blocked');
+          } else if (!(e && e.name === 'AbortError')) fail();
+        });
+      }
+    };
+    api.pause = () => {
+      want = false;
+      clearTimeout(watchdog);
+      if (el && !el.paused) {
+        ownPauses += 1;
+        el.pause();
+      }
+      if (api.state === 'playing' || api.state === 'loading') set('idle');
+    };
+
+    if (sources.length && attach()) set('idle');
+    else on.change('none');
+    return api;
+  }
+
   function storage(key, value) {
     try {
       if (value === undefined) return localStorage.getItem(key);
@@ -97,47 +293,51 @@
     let t = 0;
     let playing = false;
     let rate = 1;
-    let audio = null;
-    let audioOk = false;
-    if (narr && narr.src) {
-      audio = new Audio();
-      audio.preload = 'auto';
-      audio.src = narr.src;
-      audio.addEventListener('canplay', () => {
-        audioOk = true;
-        status.textContent = 'Narration ready.';
-        $('#bigplay-label').textContent = `Play · ${fmt(video.duration)}`;
-      }, { once: true });
-      audio.addEventListener('error', () => {
-        audioOk = false;
-        audio = null;
-        status.textContent = 'Narration file not found. Playing silently with captions.';
-        $('#bigplay-label').textContent = `Play · ${fmt(video.duration)} · captions only`;
-      });
-    } else {
-      status.textContent = 'No narration track in this build. Playing with captions.';
-    }
-    $('#bigplay-label').textContent = `Play · ${fmt(video.duration)}`;
-
     const playBtn = $('#play');
+    const sndBtn = $('#snd');
+    const label = $('#bigplay-label');
+    const TRACK_TEXT = {
+      idle: 'Narrated. Press play to start the voice.',
+      loading: 'Loading the narration…',
+      playing: 'Narration playing.',
+      blocked: 'The browser held the sound back. Press play again to start the voice.',
+      failed: 'The narration could not play in this viewer. The video runs with captions.',
+      none: 'This build has no narration track. The video runs with captions.',
+    };
+    const track = makeTrack(narr, {
+      change(state) {
+        status.textContent = TRACK_TEXT[state] || '';
+        const silent = state === 'failed' || state === 'none';
+        label.textContent = `Play · ${fmt(video.duration)}${silent ? ' · captions only' : ' · with narration'}`;
+        sndBtn.disabled = silent;
+        if (state === 'blocked') setPlaying(false);
+      },
+      interrupted() {
+        if (playing) setPlaying(false);
+      },
+      ended() {
+        t = video.duration - 0.02;
+        setPlaying(false);
+        draw();
+      },
+    });
+
+    window.__track = track; // for tests: state of the narration track
+
     function setPlaying(on) {
       playing = on;
       playBtn.classList.toggle('playing', on);
       playBtn.setAttribute('aria-label', on ? 'Pause' : 'Play');
       $('#bigplay').hidden = on || t > 0.05;
-      if (audio && audioOk) {
-        if (on) {
-          audio.currentTime = t;
-          audio.playbackRate = rate;
-          const pr = audio.play();
-          if (pr && pr.catch) pr.catch(() => { audioOk = false; status.textContent = 'Audio was blocked. Playing silently with captions.'; });
-        } else audio.pause();
-      }
+      // Called inside the click handler, so the browser counts it as the
+      // user's own request to start sound.
+      if (on) track.play(t, rate);
+      else track.pause();
       last = performance.now();
     }
     function seek(nt) {
       t = Math.max(0, Math.min(video.duration - 0.01, nt));
-      if (audio && audioOk) audio.currentTime = t;
+      track.seek(t);
       draw();
     }
     function toggle() {
@@ -240,7 +440,15 @@
     $('#speed').addEventListener('click', () => {
       rate = speeds[(speeds.indexOf(rate) + 1) % speeds.length];
       $('#speed').textContent = `${rate}×`;
-      if (audio) audio.playbackRate = rate;
+      track.setRate(rate);
+    });
+    let muted = false;
+    sndBtn.addEventListener('click', () => {
+      muted = !muted;
+      track.setMuted(muted);
+      sndBtn.classList.toggle('muted', muted);
+      sndBtn.setAttribute('aria-pressed', String(muted));
+      sndBtn.setAttribute('aria-label', muted ? 'Turn the voice on' : 'Mute the voice');
     });
     $('#full').addEventListener('click', () => {
       const s = $('#screen');
@@ -256,6 +464,7 @@
       else if (k === 'l') seek(t + 10);
       else if (k === 'j') seek(t - 10);
       else if (k === 'c') ccBtn.click();
+      else if (k === 'm') sndBtn.click();
       else if (k === 'f') $('#full').click();
       else if (/^[1-9]$/.test(k) && video.chapters[Number(k) - 1]) seek(video.chapters[Number(k) - 1].start + 0.01);
     });
@@ -272,7 +481,8 @@
     }
     function frame(now) {
       if (playing) {
-        if (audio && audioOk && !audio.paused) t = audio.currentTime;
+        // While the voice buffers, the picture waits for it.
+        if (track.drives()) t = track.time();
         else t += ((now - last) / 1000) * rate;
         if (t >= video.duration - 0.02) {
           t = video.duration - 0.02;
