@@ -21,6 +21,11 @@ Video checks:            136 narrated beats, 20:03. Every beat rendered to a sti
                          reviewed for overlaps. Narration transcribed back with Whisper
                          (base.en), WER 6.2 % (mostly number formatting). Player tested:
                          audio clock, seek, chapters, keyboard, 390 px layout.
+                         Voice playback tested under five content policies; the
+                         published page embeds the voice. MP4: 1920x1080, 30 fps,
+                         H.264 + AAC voice track, 38 MB; voice level -18.2 dB mean;
+                         spot transcription at 7:22 and 16:00 lands within 0.35 s of
+                         the schedule.
 What has NOT been tested: Firefox and Safari rendering (MathML and canvas fonts);
                          screen-reader navigation of the SVG plates; very old browsers;
                          video playback outside Chromium.
