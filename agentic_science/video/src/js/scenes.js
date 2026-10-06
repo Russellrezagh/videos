@@ -181,7 +181,8 @@ window.buildVideo = function buildVideo(root, durations) {
       const d = `M ${-w / 2} ${-h / 2} H ${w / 2 - 24} L ${w / 2} ${-h / 2 + 24} V ${h / 2} H ${-w / 2} Z`;
       const g = new Group(path(d, { stroke: color, width: 3, fill: '#1a1c22' }));
       for (let i = 0; i < 4; i++) g.add(new Line(-w / 2 + 14, -h / 2 + 34 + i * 18, w / 2 - 14, -h / 2 + 34 + i * 18, { stroke: mix(color, C.BG, 0.5), width: 2 }));
-      if (label) g.add(new Text(label, { size, color }).at(0, h / 2 + 26));
+      // the file name sits above the sheet, clear of the desk it lies on
+      if (label) g.add(new Text(label, { size, color }).at(0, -h / 2 - Math.max(size, 30) * 0.85));
       return H(g);
     };
     k.quote = (str, who, { size = 38, y = 0, width = 1400 } = {}) => {
@@ -440,10 +441,10 @@ window.buildVideo = function buildVideo(root, durations) {
     const eq = S.add(S.tex('P_{\\text{same}}(t) \\;=\\; \\class{f-quarter}{\\tfrac14} \\;+\\; \\class{f-amp}{\\tfrac34}\\, e^{-\\class{f-rate}{\\frac{4}{3}}\\,\\class{f-t}{t}}', { size: 92 }).at(0, -300));
     S.beat('From that model, you can work out the chance that a site shows the same letter at both ends of a branch of length t.',
       par(A.FadeOut(center), others.map((o) => A.FadeOut(o)), arrows.map((a) => A.FadeOut(a)), probs.map((p) => A.FadeOut(p)), A.FadeOut(mdl), A.FadeOut(h)), A.Write(eq, 2.2));
-    const ax = S.add(S.axes({ x0: 0, x1: 3, y0: 0, y1: 1, w: 1200, h: 440, xticks: [0, 1, 2, 3], yticks: [0, 0.25, 1], yfmt: (v) => (v === 0.25 ? '1/4' : String(v)), xlabel: 'branch length t', ylabel: 'chance the letter is the same' }).at(40, 140));
+    const ax = S.add(S.axes({ x0: 0, x1: 3, y0: 0, y1: 1, w: 1200, h: 420, xticks: [0, 1, 2, 3], yticks: [0, 0.25, 1], yfmt: (v) => (v === 0.25 ? '1/4' : String(v)), xlabel: 'branch length t', ylabel: 'chance the letter is the same' }).at(40, 100));
     const curve = ax.plot((t) => M0.p(t).same, { color: C.BLUE, width: 7 });
     const asym = ax.plot(() => 0.25, { color: C.GREY, width: 3, dash: '10 10' });
-    const d0 = S.add(S.dot(14, C.YELLOW).at(40 + ax.fx(0), 140 + ax.fy(1)));
+    const d0 = S.add(S.dot(14, C.YELLOW).at(40 + ax.fx(0), 100 + ax.fy(1)));
     S.beat('At t equals zero, no time has passed, so the chance is one. The letter is certainly the same.',
       A.FadeIn(ax), A.FadeIn(d0, { from: 3 }), A.Focus(eq, 't', { color: C.YELLOW }));
     S.beat('As t grows, the chance falls toward one quarter. After many mutations, the letter is basically random, and a random letter matches by chance one time in four.',
@@ -451,7 +452,7 @@ window.buildVideo = function buildVideo(root, durations) {
     S.beat('And this four thirds is not decoration. It is exactly what makes t mean expected changes per site. Hold on to that number.',
       A.Focus(eq, 'rate', { color: C.GOLD }), S.zoomTo(eq, 'rate', 2.6, 1.6), wait(1.2), S.pullBack(1.2), { cap: 'And this 4/3 is not decoration. It is exactly what makes t mean expected changes per site. Hold on to that number.' });
     // three trees with likelihoods
-    const trees = [0, 1, 2].map((tp) => S.add(S.quartet({ topo: tp, long: [0, 2], scale: 0.48, longLen: 260, short: 110, mid: 70 }).at(-600 + tp * 600, -40)));
+    const trees = [0, 1, 2].map((tp) => S.add(S.quartet({ topo: tp, long: [0, 2], scale: 0.48, longLen: 260, short: 110, mid: 70, labelSize: 64 }).at(-600 + tp * 600, -40)));
     const lls = [0, 1, 2].map((tp) => S.add(S.txt(`${TOPO[tp]}   ${infA.ml.logL[tp].toFixed(4)}`, { size: 40, font: 'mono', color: tp === 0 ? C.GREEN : C.GREY_B }).at(-600 + tp * 600, 190)));
     const llT = S.add(S.txt('best log-likelihood per site (higher is better)', { size: 36, color: C.GREY_B }).at(0, 300));
     const best = S.add(S.check(60, C.GREEN).at(-600, 270));
@@ -590,7 +591,7 @@ window.buildVideo = function buildVideo(root, durations) {
       lag(0.25, scribbles.map((l) => A.Create(l, 0.4))), A.Indicate(page, { color: C.RED, scale: 1.2 }), A.FadeIn(boom, { from: 1.4 }), A.Mood(a1, -0.6), A.Mood(a2, -0.6));
     const tag1 = S.add(S.box('branch: pruning', { w: 290, h: 64, color: C.TEAL, size: 32 }).at(-210, -260));
     const tag2 = S.add(S.box('branch: brute', { w: 270, h: 64, color: C.BLUE, size: 32 }).at(210, -260));
-    const same = S.add(S.txt('still the same desk', { size: 40, color: C.RED }).at(0, 270));
+    const same = S.add(S.txt('still the same desk', { size: 40, color: C.RED }).at(0, 312));
     S.beat('A common first idea is to give each agent its own Git branch. But a branch is only a name for a line of saved versions. Both agents would still be writing on the same desk.',
       A.FadeOut(boom), A.FadeIn(tag1, { dy: -20 }), A.FadeIn(tag2, { dy: -20 }), A.FadeIn(same));
     S.silent(par([page, desk, a1, a2, tag1, tag2, same, ...scribbles].map((m) => A.FadeOut(m))));
@@ -602,8 +603,8 @@ window.buildVideo = function buildVideo(root, durations) {
     const p2 = S.add(S.page('kernel.js', { color: C.BLUE }).at(460, 40));
     const b1 = S.add(S.creature({ color: C.TEAL, kind: 'agent', size: 0.65 }).at(-760, 70));
     const b2 = S.add(S.creature({ color: C.BLUE, kind: 'agent', size: 0.65 }).at(760, 70).with({ lx: -1 }));
-    const l1 = S.add(S.line(-460, -40, -120, -185, { stroke: C.GREY, width: 3 }).with({ draw: 0 }));
-    const l2 = S.add(S.line(460, -40, 120, -185, { stroke: C.GREY, width: 3 }).with({ draw: 0 }));
+    const l1 = S.add(S.line(-460, -80, -120, -185, { stroke: C.GREY, width: 3 }).with({ draw: 0 }));
+    const l2 = S.add(S.line(460, -80, 120, -185, { stroke: C.GREY, width: 3 }).with({ draw: 0 }));
     S.beat('What they need is a worktree. A worktree is a second desk, connected to the same archive. Each desk has its own files, and its own staging area.',
       A.FadeOut(h), A.FadeIn(arch), A.FadeIn(archL), par(A.Create(l1), A.Create(l2)), par(A.FadeIn(d1), A.FadeIn(d2)), par(A.FadeIn(p1, { dy: -20 }), A.FadeIn(p2, { dy: -20 })), par(A.FadeIn(b1), A.FadeIn(b2)));
     const fly = S.add(S.page('', { color: C.TEAL, w: 60, h: 76 }).at(-460, 40));
@@ -639,33 +640,34 @@ window.buildVideo = function buildVideo(root, durations) {
     S.beat('Now the third place, agent context. It is the trickiest one. Think of everything on disk as a library. The agent’s context is a small desk under a lamp. Only what is on the desk, right now, is visible to the agent.',
       A.Write(h, 1.4), S.toTitle(h), A.FadeIn(shelf, { dx: -30 }), A.FadeIn(lamp, { dx: 30 }));
     // the context bar
-    const barW = 1400;
+    const barW = 1500;
     const frame = S.add(S.rect(barW + 12, 92, { stroke: C.WHITE, width: 3, rx: 6 }).at(0, 230));
     const limit = S.add(S.line(barW / 2 - 140, 182, barW / 2 - 140, 278, { stroke: C.RED, width: 3, dash: '8 8' }));
     const limitL = S.add(S.txt('full', { size: 30, color: C.RED }).at(barW / 2 - 140, 160));
     const chipsSpec = [
-      ['instructions', 120, C.BLUE],
-      ['branch length = changes per site', 300, C.GREEN],
-      ['conversation', 180, C.GREY],
-      ['kernel.js', 140, C.GOLD],
-      ['study.log', 220, C.GOLD],
-      ['paper', 160, C.GOLD],
+      ['instructions', 210, C.BLUE],
+      ['convention', 190, C.GREEN],
+      ['conversation', 220, C.GREY],
+      ['kernel.js', 175, C.GOLD],
+      ['study.log', 175, C.GOLD],
+      ['paper', 130, C.GOLD],
     ];
     let x0 = -barW / 2;
     const chips = chipsSpec.map(([name, w, col]) => {
-      const g = S.group(rect(w - 8, 72, { stroke: col, width: 2, fill: mix(C.BG, col, 0.35), rx: 5 }), new Text(name, { size: w > 200 ? 26 : 24, color: C.WHITE })).at(x0 + w / 2, 230);
+      const g = S.group(rect(w - 10, 72, { stroke: col, width: 2, fill: mix(C.BG, col, 0.35), rx: 5 }), new Text(name, { size: 30, color: C.WHITE })).at(x0 + w / 2, 230);
+      if (name === 'convention') g.add(new Text('branch length = changes per site', { size: 32, color: C.GREEN }).at(0, -76));
       x0 += w;
       return S.add(g);
     });
     S.beat('As a session goes on, the desk fills up: instructions, conversation, and every file the agent reads. Somewhere in that conversation, the scientist said: branch length means expected changes per site.',
       par(A.FadeOut(shelf), A.FadeOut(lamp)), A.FadeIn(frame), A.FadeIn(limit), A.FadeIn(limitL), lag(0.5, chips.map((c) => A.FadeIn(c, { dx: -40 }))), A.Indicate(chips[1], { color: C.GREEN, scale: 1.08, dur: 1 }));
-    const summary = S.add(S.group(rect(292, 72, { stroke: C.WHITE, width: 2, fill: '#2b2e36', rx: 5 }), new Text('summary', { size: 28 })).at(-barW / 2 + 120 + 150, 230));
-    const lost = S.add(S.txt('lost at compaction', { size: 34, color: C.RED }).at(-barW / 2 + 270, 20));
+    const summary = S.add(S.group(rect(292, 72, { stroke: C.WHITE, width: 2, fill: '#2b2e36', rx: 5 }), new Text('summary', { size: 30 })).at(-barW / 2 + 210 + 150, 230));
+    const lost = S.add(S.txt('lost at compaction', { size: 34, color: C.RED }).at(-barW / 2 + 305, -70));
     S.beat('When the desk is full, the system compacts it. Old conversation is replaced by a short summary. And a detail that was only said in conversation can simply vanish.',
-      par(A.MoveTo(chips[2], -barW / 2 + 270, 230), A.MoveTo(chips[3], -barW / 2 + 270, 230), A.MoveTo(chips[4], -barW / 2 + 270, 230), A.MoveTo(chips[5], -barW / 2 + 270, 230), A.FadeOut(chips[2]), A.FadeOut(chips[3]), A.FadeOut(chips[4]), A.FadeOut(chips[5])),
+      par(A.MoveTo(chips[2], -barW / 2 + 360, 230), A.MoveTo(chips[3], -barW / 2 + 360, 230), A.MoveTo(chips[4], -barW / 2 + 360, 230), A.MoveTo(chips[5], -barW / 2 + 360, 230), A.FadeOut(chips[2]), A.FadeOut(chips[3]), A.FadeOut(chips[4]), A.FadeOut(chips[5])),
       A.FadeIn(summary, { from: 0.6 }), par(A.Shift(chips[1], 0, -150, 1), A.Set(chips[1], { o: 0.35 }, 1)), A.FadeIn(lost));
-    const pinned = S.add(S.group(rect(560, 72, { stroke: C.BLUE, width: 3, fill: mix(C.BG, C.BLUE, 0.3), rx: 5 }), new Text('CLAUDE.md: branch length = changes per site', { size: 26 })).at(100, 230));
-    const reload = S.add(S.txt('read again from disk after compaction', { size: 32, color: C.BLUE }).at(140, 80));
+    const pinned = S.add(S.group(rect(760, 72, { stroke: C.BLUE, width: 3, fill: mix(C.BG, C.BLUE, 0.3), rx: 5 }), new Text('CLAUDE.md: branch length = changes per site', { size: 30 })).at(250, 230));
+    const reload = S.add(S.txt('read again from disk after compaction', { size: 34, color: C.BLUE }).at(250, 120));
     S.beat('Instruction files are different. A file like CLAUDE dot M D lives on disk, and it is read again after every compaction. So write down what must survive.',
       par(A.FadeOut(chips[1]), A.FadeOut(lost)), A.FadeIn(pinned, { dy: -40 }), A.FadeIn(reload), A.Indicate(pinned, { color: C.BLUE, scale: 1.06 }), { cap: 'Instruction files are different. A file like CLAUDE.md lives on disk, and it is read again after every compaction. So write down what must survive.' });
     const q = S.add(S.quote('I had Claude periodically organize its files and consolidate them, so it always had access to the latest version of the plan.', 'Matthew Schwartz, Claude-shaped science, 2026', { size: 42, y: -140 }));
@@ -692,9 +694,9 @@ window.buildVideo = function buildVideo(root, durations) {
     ).at(0, -20));
     S.beat('Write all four into a small record, called a manifest, right next to the output. Then anyone can run it again, and check.',
       par([machine, ...ins, ...inA, out, outL, eq].map((m) => A.FadeOut(m))), A.FadeIn(card, { from: 0.85 }));
-    const trays = [1, 2, 3].map((i) => S.add(S.box(`results/run-${i}/   seed ${i}   + manifest`, { w: 900, h: 80, color: C.GREEN, size: 34 }).at(0, -150 + i * 100)));
+    const trays = [1, 2, 3].map((i) => S.add(S.box(`results/run-${i}/   seed ${i}   + manifest`, { w: 760, h: 80, color: C.GREEN, size: 34 }).at(140, -150 + i * 100)));
     S.beat('One version of the code can produce many runs. Give every run its own folder and its own manifest, and never overwrite an old one.',
-      A.MoveTo(card, -560, -40), A.ScaleTo(card, 0.6), lag(0.4, trays.map((t) => A.FadeIn(t, { dx: 40 }))), par(trays.map((t) => A.Shift(t, 300, 0))));
+      A.MoveTo(card, -470, -20), lag(0.4, trays.map((t) => A.FadeIn(t, { dx: 40 }))), par(trays.map((t) => A.Shift(t, 300, 0))));
   });
 
   video.scene('roles', 'Who does what', (S) => {
@@ -771,7 +773,7 @@ window.buildVideo = function buildVideo(root, durations) {
     const s1 = S.add(S.txt('slope 1', { size: 16, color: C.BLUE, anchor: 'start' }).at(30 + ax.fx(0.1) + 8, 20 + ax.fy(0.08)));
     const s3 = S.add(S.txt('slope 3', { size: 16, color: C.RED, anchor: 'end' }).at(30 + ax.fx(0.03) - 6, 20 + ax.fy(0.12)));
     S.beat('The only difference is how fast they start. Let us zoom in near zero. With the right formula, a short branch of length t carries about t changes per site. With the wrong one, three times as many.',
-      par(checks.map((c) => A.FadeOut(c))), S.cam(30 + ax.fx(0.06), 20 + ax.fy(0.08), 4.2, 2), par(A.Create(t1), A.Create(t3)), par(A.FadeIn(s1), A.FadeIn(s3)), wait(1.5));
+      par(checks.map((c) => A.FadeOut(c))), S.cam(30 + ax.fx(0.06), 20 + ax.fy(0.08) + 24, 4.2, 2), par(A.Create(t1), A.Create(t3)), par(A.FadeIn(s1), A.FadeIn(s3)), wait(1.5));
     S.beat('Same shape. Wrong unit. Every number computed downstream is now off by a factor of three, and nothing crashes.',
       S.pullBack(1.6), A.Indicate(lm, { color: C.RED, scale: 1.15 }));
   });

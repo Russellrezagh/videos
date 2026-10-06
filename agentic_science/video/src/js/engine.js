@@ -27,6 +27,27 @@ const MV = (() => {
   const FONT_CM = "KaTeX_Main, 'Latin Modern Roman', 'CMU Serif', Georgia, serif";
   const FONT_MONO = "'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace";
 
+  /*
+   * Design tokens, in 1080p units. The web player shows the 1920-wide frame
+   * at roughly 1/2 (desktop) to 1/5 (phone) scale, so a 2 px line or a 22 px
+   * label simply disappears. Every stroke and every text size passes through
+   * these rules; tools/lint-layout.mjs measures the rendered frames against
+   * the same numbers.
+   *   stroke: fine structure (axes, frames, connectors) 4-5, marks people
+   *           should follow (curves, branches, arrows) 6-7.
+   *   type:   nothing below 30; labels 34, body 40, scene titles 54.
+   *   safe:   60 px side margin; pictures end above the caption band.
+   */
+  const STYLE = Object.freeze({
+    stroke: Object.freeze({ min: 4, fine: 4.5, line: 5.5, mark: 6.5 }),
+    type: Object.freeze({ min: 30, label: 34, body: 40, title: 54, head: 76 }),
+    space: Object.freeze({ s: 24, m: 48, l: 96 }),
+    safe: Object.freeze({ x: 900, y: 500, captionTop: 385 }),
+  });
+  // the stroke scale: 2 -> 4, 3 -> 4.6, 4 -> 5.4, 5 -> 6.2, 6 -> 7
+  const strokeOf = (w) => (w > 0 ? Math.max(STYLE.stroke.min, Math.round((2.2 + 0.8 * w) * 10) / 10) : w);
+  const typeOf = (s) => Math.max(STYLE.type.min, s);
+
   /* ---------- small math ---------- */
   const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
   const lerp = (a, b, t) => a + (b - a) * t;
@@ -207,7 +228,7 @@ const MV = (() => {
       this.t = el('text', {
         'text-anchor': anchor,
         'dominant-baseline': 'central',
-        'font-size': size,
+        'font-size': typeOf(size),
         'font-family': font === 'mono' ? FONT_MONO : FONT_CM,
         'font-weight': weight,
         'font-style': italic ? 'italic' : 'normal',
@@ -216,7 +237,7 @@ const MV = (() => {
         'paint-order': 'stroke',
       });
       this.el.appendChild(this.t);
-      this.size = size;
+      this.size = typeOf(size);
       Object.assign(this.init, { write: 1, color, str });
     }
     build(str) {
@@ -267,7 +288,7 @@ const MV = (() => {
       this.s = el(tag, Object.assign({ 'pathLength': 1, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke' }, attrs));
       this.el.appendChild(this.s);
       this.dash = dash;
-      Object.assign(this.init, { draw: 1, stroke, sw: width, fill, fo: fill === 'none' ? 0 : fillOpacity });
+      Object.assign(this.init, { draw: 1, stroke, sw: strokeOf(width), fill, fo: fill === 'none' ? 0 : fillOpacity });
     }
     draw(p) {
       const key = `${p.draw}|${p.stroke}|${p.sw}|${p.fill}|${p.fo}`;
@@ -308,7 +329,7 @@ const MV = (() => {
       this.head = el('polygon', { fill: color });
       this.add(this.line);
       this.el.appendChild(this.head);
-      this.hs = head;
+      this.hs = Math.max(head, strokeOf(width) * 3.6);
       Object.assign(this.init, { draw: 1, x1, y1, x2, y2, color });
     }
     draw(p) {
@@ -350,11 +371,11 @@ const MV = (() => {
     constructor({ color = C.TEAL, kind = 'agent', size = 1 } = {}) {
       super();
       const dark = mix(color, '#000000', 0.45);
-      this.body = el('path', { d: 'M -62 70 C -78 0 -62 -78 0 -80 C 62 -78 78 0 62 70 Q 0 84 -62 70 Z', fill: color, stroke: dark, 'stroke-width': 4 });
+      this.body = el('path', { d: 'M -62 70 C -78 0 -62 -78 0 -80 C 62 -78 78 0 62 70 Q 0 84 -62 70 Z', fill: color, stroke: dark, 'stroke-width': 6.2 });
       this.el.appendChild(this.body);
       if (kind === 'agent') {
-        this.el.appendChild(el('line', { x1: 0, y1: -80, x2: 0, y2: -108, stroke: dark, 'stroke-width': 5, 'stroke-linecap': 'round' }));
-        this.el.appendChild(el('circle', { cx: 0, cy: -114, r: 9, fill: C.YELLOW, stroke: dark, 'stroke-width': 3 }));
+        this.el.appendChild(el('line', { x1: 0, y1: -80, x2: 0, y2: -108, stroke: dark, 'stroke-width': 6, 'stroke-linecap': 'round' }));
+        this.el.appendChild(el('circle', { cx: 0, cy: -114, r: 9, fill: C.YELLOW, stroke: dark, 'stroke-width': 4.5 }));
       }
       this.eyes = [-24, 24].map((ex) => {
         const g = el('g', { transform: `translate(${ex},-26)` });
@@ -365,13 +386,13 @@ const MV = (() => {
         return { g, pupil, ex };
       });
       if (kind === 'scientist') {
-        const gl = el('g', { fill: 'none', stroke: '#16181d', 'stroke-width': 4 });
+        const gl = el('g', { fill: 'none', stroke: '#16181d', 'stroke-width': 6.2 });
         gl.appendChild(el('circle', { cx: -24, cy: -26, r: 22 }));
         gl.appendChild(el('circle', { cx: 24, cy: -26, r: 22 }));
         gl.appendChild(el('line', { x1: -2, y1: -28, x2: 2, y2: -28 }));
         this.el.appendChild(gl);
       }
-      this.mouth = el('path', { fill: 'none', stroke: '#16181d', 'stroke-width': 4.5, 'stroke-linecap': 'round' });
+      this.mouth = el('path', { fill: 'none', stroke: '#16181d', 'stroke-width': 6.6, 'stroke-linecap': 'round' });
       this.el.appendChild(this.mouth);
       Object.assign(this.init, { s: size, lx: 0, ly: 0, blink: 0, mood: 0.5 });
     }
@@ -393,7 +414,7 @@ const MV = (() => {
   class Bubble extends Mob {
     constructor(text, { size = 34, color = C.WHITE, side = 'left', width = null } = {}) {
       super();
-      this.box = el('path', { fill: '#1b1d23', stroke: C.GREY_B, 'stroke-width': 3 });
+      this.box = el('path', { fill: '#1b1d23', stroke: C.GREY_B, 'stroke-width': STYLE.stroke.fine });
       this.el.appendChild(this.box);
       this.text = new Text(text, { size, color });
       this.add(this.text);
@@ -715,7 +736,7 @@ const MV = (() => {
   }
 
   return {
-    C, BASE_COLORS, FONT_CM, NS, el, mix, lerp, clamp01, smooth, RATES,
+    C, BASE_COLORS, FONT_CM, NS, el, mix, lerp, clamp01, smooth, RATES, STYLE, strokeOf, typeOf,
     Mob, Group, Tex, Text, Shape, Line, Arrow, Creature, Bubble,
     circle, rect, path, dot, polyPath,
     anim, seq, par, lag, wait, A, durOf,
@@ -723,3 +744,4 @@ const MV = (() => {
   };
 })();
 if (typeof module === 'object' && module.exports) module.exports = MV;
+if (typeof window === 'object') window.MV = MV;

@@ -42,6 +42,24 @@ def speakable(text: str) -> str:
     return re.sub(r'\s+', ' ', t).strip()
 
 
+LETTER = '⟨A⟩'
+
+
+def mark_letters(text: str) -> str:
+    """Mark each capital A that names a species or a base: one that does not
+    start a sentence ("species A and C", "pairs A with B", "A, C, G, and T").
+    A sentence-initial A is the article ("A tool computes..."). Phonemizers
+    read both as the article, so the mark makes the letter explicit; it is
+    also part of the cache key, so only lines with a letter are re-spoken."""
+    out, last = [], 0
+    for m in re.finditer(r'\bA\b', text):
+        before = text[:m.start()].rstrip()
+        if before and before[-1] not in '.!?':
+            out.append(text[last:m.start()] + LETTER)
+            last = m.end()
+    return ''.join(out) + text[last:]
+
+
 def file_fingerprint(path: str) -> str:
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -61,7 +79,15 @@ class Kokoro:
         self.sig = f'kokoro|{self.voice}|{self.speed}|{self.lang}|{file_fingerprint(args.model)}|{file_fingerprint(args.voices)}'
 
     def speak(self, text):
-        x, sr = self.k.create(text, voice=self.voice, speed=self.speed, lang=self.lang)
+        if LETTER in text:
+            # phonemize around each letter and insert the letter's own sound
+            parts = [self.k.tokenizer.phonemize(p, self.lang).strip() for p in text.split(LETTER)]
+            ph = parts[0]
+            for p in parts[1:]:
+                ph += ' ˈeɪ' + (p if p[:1] in ',.;:!?' else ' ' + p)
+            x, sr = self.k.create(ph.strip(), voice=self.voice, speed=self.speed, lang=self.lang, is_phonemes=True)
+        else:
+            x, sr = self.k.create(text, voice=self.voice, speed=self.speed, lang=self.lang)
         assert sr == self.rate, sr
         return np.asarray(x, dtype=np.float32).reshape(-1)
 
@@ -77,7 +103,7 @@ class Piper:
 
     def speak(self, text):
         parts = []
-        for chunk in self.v.synthesize(text, syn_config=self.cfg):
+        for chunk in self.v.synthesize(text.replace(LETTER, 'A'), syn_config=self.cfg):
             if parts:
                 parts.append(self.gap)
             parts.append(np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16).astype(np.float32) / 32768)
@@ -120,7 +146,7 @@ def main():
     durations = {}
     made = 0
     for b in beats:
-        text = speakable(b['say'])
+        text = mark_letters(speakable(b['say']))
         key = hashlib.sha256(f'{engine.sig}|{text}'.encode()).hexdigest()[:16]
         path = os.path.join(args.clips, f"{b['id']}.{key}.wav")
         if not os.path.exists(path):

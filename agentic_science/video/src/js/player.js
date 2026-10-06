@@ -258,14 +258,63 @@
     const cap = $('#caption');
     const capText = $('#caption-text');
     const toast = $('#toast');
-    let lastBeat = null;
     let lastChapter = null;
+    // Subtitles never grow past two lines: a long narration line is shown in
+    // chunks (sentences, then clauses), each timed in proportion to its share
+    // of the characters within the spoken clip (which starts 0.15 s into the
+    // beat; see tools/mix.py). The picture keeps the space above the band.
+    const CHUNK = 100;
+    const chunked = new Map();
+    function chunksOf(text) {
+      if (chunked.has(text)) return chunked.get(text);
+      const pack = (pieces, sep) => {
+        const out = [];
+        for (const p of pieces) {
+          const last = out[out.length - 1];
+          if (last !== undefined && last.length + sep.length + p.length <= CHUNK) out[out.length - 1] = last + sep + p;
+          else out.push(p);
+        }
+        return out;
+      };
+      const splitLong = (s) => {
+        if (s.length <= CHUNK) return [s];
+        const clauses = s.split(/(?<=[,;:])\s+/);
+        if (clauses.length > 1) return pack(clauses, ' ').flatMap((c) => (c.length > CHUNK ? splitLong2(c) : [c]));
+        return splitLong2(s);
+      };
+      const splitLong2 = (s) => {
+        const words = s.split(' ');
+        const half = Math.ceil(words.length / 2);
+        return [words.slice(0, half).join(' '), words.slice(half).join(' ')];
+      };
+      const sentences = text.split(/(?<=[.!?])\s+/).flatMap(splitLong);
+      const parts = pack(sentences, ' ');
+      const total = parts.reduce((s, p) => s + p.length, 0) || 1;
+      let acc = 0;
+      const res = parts.map((p) => {
+        const r = { text: p, from: acc / total };
+        acc += p.length;
+        return r;
+      });
+      chunked.set(text, res);
+      return res;
+    }
+    function captionText(b, t) {
+      const full = b ? b.cap || b.say : '';
+      if (!full || full.length <= CHUNK) return full;
+      const parts = chunksOf(full);
+      const frac = b.speech > 0 ? (t - b.start - 0.15) / b.speech : 0;
+      let k = 0;
+      while (k + 1 < parts.length && frac >= parts[k + 1].from) k++;
+      return parts[k].text;
+    }
+    let lastCap = null;
     function caption(t) {
       const b = video.beatAt(t);
-      const txt = b ? b.cap || b.say : '';
-      if (b !== lastBeat) {
+      const txt = captionText(b, t);
+      if (txt !== lastCap) {
         capText.textContent = txt;
-        lastBeat = b;
+        lastCap = txt;
       }
       const ch = video.chapterAt(t);
       if (ch !== lastChapter) {
