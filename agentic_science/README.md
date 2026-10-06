@@ -4,7 +4,11 @@ A self-testing interactive course on how to do science with AI agents.
 One computational-biology project, **Project QUARTET**, carries every idea:
 worktrees, context, runs, tools, skills, hooks, harnesses, checks and claims.
 
-**Open [`dist/index.html`](dist/index.html) in a browser.** It is one
+**New to the topic? Start with the video.** [`video/`](video/) holds *The Tree
+and the Agent*, a narrated, 3Blue1Brown-style animated explainer (about 20
+minutes) that builds the same ideas from zero, one at a time.
+
+**Open [`dist/index.html`](dist/index.html) in a browser** for the interactive course. It is one
 self-contained file (about 300 KB) with no runtime dependencies. Google Fonts
 load if the network allows; otherwise system fonts are used.
 

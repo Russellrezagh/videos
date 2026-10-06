@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Tree and the Agent</title>
+<meta name="description" content="A narrated, 3Blue1Brown-style explainer: how to do science with AI agents, and how to know when the science is right, told through one phylogenetics puzzle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/player.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <p class="kicker">An animated explainer · about 20 minutes · narrated</p>
+    <h1>The Tree and the Agent</h1>
+    <p class="sub">How to do science with AI agents, and how to know when the science is right. One puzzle from biology, built from zero.</p>
+  </header>
+
+  <section class="player" id="player" aria-label="Video player">
+    <div class="screen" id="screen">
+      <svg id="stage" viewBox="-960 -540 1920 1080" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Animation">
+        <rect x="-960" y="-540" width="1920" height="1080" fill="#0E0F12"/>
+        <g id="world"></g>
+        <g id="hud"></g>
+      </svg>
+      <div class="caption" id="caption" aria-live="off"><span id="caption-text"></span></div>
+      <button class="bigplay" id="bigplay" type="button" aria-label="Play">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48"/><path d="M40 30 L72 50 L40 70 Z"/></svg>
+        <span id="bigplay-label">Play · loading…</span>
+      </button>
+      <div class="toast" id="toast" aria-live="polite"></div>
+    </div>
+    <div class="controls" id="controls">
+      <button type="button" id="play" class="ctl" aria-label="Play">
+        <svg viewBox="0 0 24 24" class="i-play"><path d="M7 5 L19 12 L7 19 Z"/></svg>
+        <svg viewBox="0 0 24 24" class="i-pause"><path d="M6 5 h4 v14 h-4 z M14 5 h4 v14 h-4 z"/></svg>
+      </button>
+      <button type="button" id="back" class="ctl" aria-label="Back 10 seconds">−10</button>
+      <button type="button" id="fwd" class="ctl" aria-label="Forward 10 seconds">+10</button>
+      <span class="time mono" id="time">0:00 / 0:00</span>
+      <div class="scrub" id="scrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="track"><div class="fill" id="fill"></div><div class="ticks" id="ticks"></div></div>
+        <div class="knob" id="knob"></div>
+        <div class="hover" id="hover"></div>
+      </div>
+      <button type="button" id="cc" class="ctl on" aria-pressed="true" aria-label="Captions">CC</button>
+      <button type="button" id="speed" class="ctl" aria-label="Playback speed">1×</button>
+      <button type="button" id="full" class="ctl" aria-label="Full screen">
+        <svg viewBox="0 0 24 24"><path d="M4 9 V4 H9 M15 4 H20 V9 M20 15 V20 H15 M9 20 H4 V15" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </div>
+    <p class="status mono" id="status"></p>
+  </section>
+
+  <section class="chapters" aria-labelledby="ch-h">
+    <h2 id="ch-h">Chapters</h2>
+    <ol id="chapters"></ol>
+    <p class="keys mono">Space play/pause · ← → 5 s · J L 10 s · C captions · F full screen · 1–7 chapters</p>
+  </section>
+
+  <section class="transcript" aria-labelledby="tr-h">
+    <h2 id="tr-h">Transcript</h2>
+    <details>
+      <summary>Show the full narration</summary>
+      <div id="transcript"></div>
+    </details>
+  </section>
+
+  <footer class="foot">
+    <p>Every number in the video is computed live by the tested science code of Project QUARTET (Jukes–Cantor quartet likelihoods, a seeded simulator and the check suite), running in this page. Quotes from M. D. Schwartz (<a href="https://www.anthropic.com/research/vibe-physics">Vibe physics</a>, <a href="https://www.anthropic.com/research/claude-shaped-science">Claude-shaped science</a>) are exact. Narration: Piper neural text-to-speech (voice “lessac”). Animation engine, script and science code written for this video.</p>
+  </footer>
+</main>
+
+<script>
+window.MathJax = { svg: { fontCache: 'none' }, startup: { typeset: false }, options: { enableMenu: false } };
+</script>
+<script src="../../node_modules/mathjax/es5/tex-svg-full.js"></script>
+<script type="application/json" id="narration-data"></script>
+<script src="../../src/js/kernel.js"></script>
+<script src="../../src/js/lab.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/player.js"></script>
+</body>
+</html>

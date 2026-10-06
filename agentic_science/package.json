@@ -5,9 +5,12 @@
   "scripts": {
     "verify": "node tests/verify.js",
     "build": "node tools/build.mjs",
-    "check": "node tests/verify.js && node tools/build.mjs"
+    "check": "node tests/verify.js && node tools/build.mjs",
+    "video:build": "node video/tools/build.mjs",
+    "video:narrate": "node video/tools/narrate.mjs"
   },
   "devDependencies": {
-    "katex": "0.16.22"
+    "katex": "0.16.22",
+    "mathjax": "3.2.2"
   }
 }
