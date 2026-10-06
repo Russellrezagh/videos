@@ -110,9 +110,15 @@
     const btn = $('#theme-toggle');
     const order = ['system', 'light', 'dark'];
     let mode = storageGet('quartet-theme', 'system');
+    let ours = false; // only remove a data-theme attribute that this page set
     const apply = () => {
-      if (mode === 'system') document.documentElement.removeAttribute('data-theme');
-      else document.documentElement.setAttribute('data-theme', mode);
+      if (mode === 'system') {
+        if (ours) document.documentElement.removeAttribute('data-theme');
+        ours = false;
+      } else {
+        document.documentElement.setAttribute('data-theme', mode);
+        ours = true;
+      }
       if (btn) btn.textContent = `Theme: ${mode}`;
       document.dispatchEvent(new CustomEvent('themechange'));
     };
