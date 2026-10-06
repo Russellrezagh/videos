@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agentic Science, Worked</title>
+<meta name="description" content="A worked course in agentic science. One computational-biology project carries worktrees, context, runs, tools, checks and claims. Every number is computed by tested code in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+
+<nav class="rail" id="rail" aria-label="Contents">
+  <p class="rail-title">Contents</p>
+  <ol>
+    <li><a href="#prologue">Three reports</a></li>
+    <li><a href="#ch-model">1 · Domain model</a></li>
+    <li><a href="#ch-science">2 · The science</a></li>
+    <li><a href="#ch-state">3 · Six kinds of state</a></li>
+    <li><a href="#ch-worktrees">4 · Worktrees</a></li>
+    <li><a href="#ch-choose">5 · Choose a mechanism</a></li>
+    <li><a href="#ch-context">6 · Context</a></li>
+    <li><a href="#ch-runs">7 · Runs</a></li>
+    <li><a href="#ch-roles">8 · Tools to scientist</a></li>
+    <li><a href="#ch-ladder">9 · The ladder</a></li>
+    <li><a href="#ch-result">10 · The result</a></li>
+    <li><a href="#ch-model-wrong">11 · Wrong model</a></li>
+    <li><a href="#ch-week">12 · The week</a></li>
+    <li><a href="#ch-claims">13 · Claims</a></li>
+    <li><a href="#ch-card">14 · Field card</a></li>
+    <li><a href="#sources">Sources</a></li>
+    <li><a href="#colophon">Colophon</a></li>
+  </ol>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch colour theme">Theme: system</button>
+</nav>
+
+<main id="main">
+
+<!-- ===================================================== HERO -->
+<header class="hero grid" id="top">
+  <p class="eyebrow">A worked course · Agentic science · Computational biology</p>
+  <h1>Agentic Science, Worked</h1>
+  <p class="dek">Isolation protects work. Evidence supports claims. This page teaches the difference with one computational-biology project. Every number on it comes from tested code that runs in your browser.</p>
+
+  <figure class="plate wide hero-plate" id="plate-1">
+    <div class="trees-row">
+      <svg class="tree-svg" viewBox="0 0 290 232" role="img" aria-label="Tree T1, AB|CD, the true tree. A and C are on long branches and are not joined.">
+      <rect class="tree-frame" x="0" y="0" width="290" height="230" rx="2"/>
+      <text class="tree-id" x="14" y="24">T1</text>
+      <text class="tree-split" x="44" y="24">AB | CD</text>
+      <text class="tree-role truth" x="276" y="24" text-anchor="end">TRUE TREE</text>
+      <line class="br long" x1="120" y1="130" x2="34" y2="58"/>
+      <line class="br" x1="120" y1="130" x2="100" y2="160"/>
+      <line class="br internal" x1="120" y1="130" x2="170" y2="130"/>
+      <line class="br long" x1="170" y1="130" x2="256" y2="58"/>
+      <line class="br" x1="170" y1="130" x2="190" y2="160"/>
+      <circle class="node" cx="120" cy="130" r="3"/><circle class="node" cx="170" cy="130" r="3"/>
+      <text class="leaf long" x="26" y="50" text-anchor="end">A</text>
+      <text class="leaf" x="94" y="178" text-anchor="middle">B</text>
+      <text class="leaf long" x="264" y="50">C</text>
+      <text class="leaf" x="196" y="178" text-anchor="middle">D</text>
+      <text class="tree-note" x="145" y="212" text-anchor="middle">A and C are not relatives</text>
+      </svg>
+      <svg class="tree-svg" viewBox="0 0 290 232" role="img" aria-label="Tree T2, AC|BD, the trap. The two long branches A and C are joined.">
+      <rect class="tree-frame trap" x="0" y="0" width="290" height="230" rx="2"/>
+      <text class="tree-id" x="14" y="24">T2</text>
+      <text class="tree-split" x="44" y="24">AC | BD</text>
+      <text class="tree-role trap" x="276" y="24" text-anchor="end">THE TRAP</text>
+      <line class="br long" x1="125" y1="125" x2="30" y2="60"/>
+      <line class="br long" x1="125" y1="125" x2="30" y2="190"/>
+      <line class="br internal" x1="125" y1="125" x2="175" y2="125"/>
+      <line class="br" x1="175" y1="125" x2="200" y2="98"/>
+      <line class="br" x1="175" y1="125" x2="200" y2="152"/>
+      <circle class="node" cx="125" cy="125" r="3"/><circle class="node" cx="175" cy="125" r="3"/>
+      <path class="attract" d="M40 72 Q 70 125 40 178"/>
+      <text class="leaf long" x="22" y="56" text-anchor="end">A</text>
+      <text class="leaf long" x="22" y="204" text-anchor="end">C</text>
+      <text class="leaf" x="208" y="96">B</text>
+      <text class="leaf" x="208" y="160">D</text>
+      <text class="tree-note" x="145" y="212" text-anchor="middle">long branches attract</text>
+      </svg>
+      <svg class="tree-svg" viewBox="0 0 290 232" role="img" aria-label="Tree T3, AD|BC, the third option.">
+      <rect class="tree-frame" x="0" y="0" width="290" height="230" rx="2"/>
+      <text class="tree-id" x="14" y="24">T3</text>
+      <text class="tree-split" x="44" y="24">AD | BC</text>
+      <text class="tree-role" x="276" y="24" text-anchor="end">THIRD OPTION</text>
+      <line class="br long" x1="120" y1="130" x2="34" y2="58"/>
+      <line class="br" x1="120" y1="130" x2="100" y2="160"/>
+      <line class="br internal" x1="120" y1="130" x2="170" y2="130"/>
+      <line class="br" x1="170" y1="130" x2="190" y2="100"/>
+      <line class="br long" x1="170" y1="130" x2="256" y2="200"/>
+      <circle class="node" cx="120" cy="130" r="3"/><circle class="node" cx="170" cy="130" r="3"/>
+      <text class="leaf long" x="26" y="50" text-anchor="end">A</text>
+      <text class="leaf" x="94" y="178" text-anchor="middle">D</text>
+      <text class="leaf" x="196" y="96">B</text>
+      <text class="leaf long" x="264" y="214">C</text>
+      <text class="tree-note" x="145" y="212" text-anchor="middle">rarely chosen</text>
+      </svg>
+    </div>
+    <div class="tree-legend"><span><i class="lg-long"></i>long branch (fast lineage)</span><span><i class="lg-short"></i>short branch</span></div>
+    <div class="verdict" id="hero-verdict" aria-live="polite">
+      <div class="verdict-row"><span class="verdict-k">Parsimony, infinite data</span><span class="verdict-v" data-v="pars">computing…</span></div>
+      <div class="verdict-row"><span class="verdict-k">Maximum likelihood, infinite data</span><span class="verdict-v" data-v="ml">computing…</span></div>
+      <div class="verdict-row"><span class="verdict-k">Parameters</span><span class="verdict-v mono">A, C = 1.0; B, D, internal = 0.05 substitutions/site</span></div>
+    </div>
+    <figcaption><span class="plate-no">Plate 1</span> Four taxa have three possible unrooted trees. Taxa A and C evolve fast, so their branches are long. Two methods look at the same data and disagree. Chapter 10 shows which one is right, and why the wrong one becomes more confident with more data. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <div class="identity wide" id="identity" aria-live="polite">
+    <div class="id-cell">
+      <span class="id-k">Source identity</span>
+      <span class="id-v mono" id="id-live">hashing…</span>
+      <span class="id-s" id="id-status"></span>
+    </div>
+    <div class="id-cell">
+      <span class="id-k">Recorded verification run</span>
+      <span class="id-v mono" id="id-run">loading…</span>
+      <span class="id-s" id="id-groups"></span>
+    </div>
+    <div class="id-cell">
+      <span class="id-k">What the hash covers</span>
+      <span class="id-v">The science code: the kernel and the lab harness. The page hashes their source text again, now, in your browser.</span>
+    </div>
+  </div>
+
+  <section class="howto" aria-labelledby="howto-h">
+    <h2 class="h-small" id="howto-h">How to read this page</h2>
+    <ul class="key">
+      <li><span class="prov reported">Reported</span> A cited source states it. Quotes are exact.</li>
+      <li><span class="prov proposed">Proposed</span> Our teaching adaptation. Nobody in the sources did exactly this.</li>
+      <li><span class="prov computed">Computed</span> Code on this page, or the recorded run, produced it.</li>
+    </ul>
+    <p><strong>Short path, about 20 minutes:</strong> chapters 2, 3, 9 and 14. <strong>Full path:</strong> everything, with the seven labs. The labs run on your device. Nothing leaves it.</p>
+    <p class="small">The prose follows ASD-STE100 Simplified Technical English about half of the time. Rules, procedures and warnings follow it strictly. Explanations follow it loosely. The <a href="#colophon">colophon</a> lists the rules.</p>
+  </section>
+</header>
+
+<!-- ===================================================== PROLOGUE -->
+<section class="chapter grid" id="prologue" aria-labelledby="prologue-h">
+  <p class="ch-no">Prologue</p>
+  <h2 id="prologue-h">Three reports from the field</h2>
+  <p class="lede">In 2026, two researchers published three detailed accounts of scientific work with Claude agents. Their lessons are the raw material of this page. We quote them exactly and mark them <span class="prov reported">Reported</span>.</p>
+
+  <div class="cases wide">
+    <article class="case">
+      <p class="case-meta">Matthew D. Schwartz · Anthropic · 23 March 2026</p>
+      <h3><a href="https://www.anthropic.com/research/vibe-physics">Vibe physics: The AI grad student</a></h3>
+      <p>A Harvard physicist supervised Claude Code through a real calculation in quantum chromodynamics: the resummation of the C-parameter Sudakov shoulder. The work became a paper (<a href="https://arxiv.org/abs/2601.02484">arXiv:2601.02484</a>).</p>
+      <ul class="facts">
+        <li>“There were 102 separate tasks across seven stages.”</li>
+        <li>“Claude maintained a tree of markdown files—one summary per stage, one detailed file per task.”</li>
+        <li>“…there was a serious error at the very beginning: the factorization formula was wrong.”</li>
+        <li>“When conventions are non-standard, it constantly reverts to textbook defaults even if you force it to write the conventions down and stick with them.”</li>
+        <li>“Claude had been <em>adjusting parameters to make plots match</em> rather than finding actual errors.”</li>
+        <li>“It says ‘verified’ when it hasn’t actually checked.”</li>
+      </ul>
+      <p class="case-rule"><span class="label">His CLAUDE.md rule</span> “NEVER use phrases like ‘this becomes’ or ‘for consistency’ to skip steps. Either show the calculation or say ‘I don’t know.’”</p>
+      <p class="case-lesson"><span class="label">Lesson for us</span> Task structure and durable notes help. A polished result and a self-reported check prove nothing.</p>
+    </article>
+    <article class="case">
+      <p class="case-meta">Matthew D. Schwartz · Anthropic · 1 October 2026</p>
+      <h3><a href="https://www.anthropic.com/research/claude-shaped-science">Claude-shaped science</a></h3>
+      <p>BootLoops is an open-source harness of reusable computational tools. Two of its results are in biology: evidence for gene conversion in “5.7 billion pairs of nearby mutations” from the 1000 Genomes Project, and tree-species turnover on Barro Colorado Island “4.5 times faster than neutral theory allows.”</p>
+      <ul class="facts">
+        <li>“I insisted that Claude both use old tools and build new ones, so that the harness would grow.”</li>
+        <li>Separate sessions for each project, “plus a master session that coordinates the others, allocates compute, and validates results,” and sessions for “checking and rechecking results as an adversarial referee.”</li>
+        <li>“I had Claude periodically organize its files and consolidate them, so it always had access to the latest version of the plan.”</li>
+        <li>“I always ask to see plots. Even with all the monitors I set up, I’ve found the automated checks still can’t be trusted.”</li>
+      </ul>
+      <p class="case-lesson"><span class="label">Lesson for us</span> Build tools, not grinds. Keep the plan in files that survive compaction. Review in a separate session. The scientist supplies the taste.</p>
+    </article>
+    <article class="case">
+      <p class="case-meta">Siddharth Mishra-Sharma · Anthropic · 23 March 2026</p>
+      <h3><a href="https://www.anthropic.com/research/long-running-Claude">Long-running Claude for scientific computing</a></h3>
+      <p>An agent built a differentiable cosmological Boltzmann solver in JAX over several days. The target was “0.1% against CLASS”, an established reference code.</p>
+      <ul class="facts">
+        <li>A progress file held “current status, completed tasks, failed approaches and why they didn’t work.”</li>
+        <li>The reference code served as a test oracle. The agent committed after each unit of work: “Run <code>pytest tests/ -x -q</code> before every commit.”</li>
+        <li>A gap: “for a while it was only testing the code at a single (fiducial) parameter point.”</li>
+      </ul>
+      <p class="case-lesson"><span class="label">Lesson for us</span> An oracle makes progress measurable. Test coverage must span the parameter space, not one point.</p>
+    </article>
+  </div>
+
+  <h3>What this page adds</h3>
+  <p><span class="prov proposed">Proposed</span> The three accounts come from physics. We move their lessons to computational biology, and we make each lesson executable. One small, real problem carries every idea: <em>which tree do four DNA sequences support?</em></p>
+  <p>The project name is QUARTET. Its week of work, its file layout and its agents are our construction. The code, the checks and the numbers are real. You can run all of them on this page.</p>
+</section>
+
+<!-- ===================================================== CH 1 -->
+<section class="chapter grid" id="ch-model" aria-labelledby="ch-model-h">
+  <p class="ch-no">Chapter 1</p>
+  <h2 id="ch-model-h">Name the things before you build them</h2>
+  <p class="lede">Before you write code, write down the nouns. A shared vocabulary is the first convention of a project. It also shows where each thing lives, and so how each thing can be lost.</p>
+  <p>Fifteen entities carry the whole method. They form a loop: a question becomes tasks, tasks become code and runs, runs become evidence, and evidence supports or rejects claims that answer the question. The scientist sits in the centre. Select an entity to see its definition, an example from QUARTET, and the kind of state that holds it.</p>
+
+  <figure class="plate wide" id="plate-2">
+    <div class="model-layout">
+      <div class="model-svg scroll-x" id="model-svg"></div>
+      <aside class="model-detail" id="model-detail" aria-live="polite"></aside>
+    </div>
+    <figcaption><span class="plate-no">Plate 2</span> The domain model of agentic science. Arrows read as sentences: “the scientist sets the question”, “a run writes a manifest”. The colour of each node names the kind of state where it lives (chapter 3). <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <div class="rulebox">
+    <p class="rb-label">Rule · One word, one meaning</p>
+    <p>Use one term for one concept. Use it in code, in files and in prompts. If two words name one thing, an agent can treat them as two things. If one word names two things, an agent can mix them.</p>
+  </div>
+  <p>ASD-STE100 applies this rule to its vocabulary. A convention file applies it to symbols and units. In QUARTET the most important instance is one phrase: <em>branch length means expected substitutions per site.</em> Chapter 9 shows what happens when it drifts.</p>
+</section>
+
+<!-- ===================================================== CH 2 -->
+<section class="chapter grid" id="ch-science" aria-labelledby="ch-science-h">
+  <p class="ch-no">Chapter 2</p>
+  <h2 id="ch-science-h">The science: Project QUARTET</h2>
+  <p class="lede">Four DNA sequences come from four species, A, B, C and D. Their shared history is a tree. For four taxa there are only three unrooted trees. The project asks which one the data support, and how sure we can be.</p>
+
+  <h3>The trap</h3>
+  <p>In QUARTET, species A and C evolve fast. Their branches are long. Long branches collect many changes, and some of those changes match by chance. A method that counts shared changes can then join A and C, although they are not relatives. Joseph Felsenstein described this failure in 1978. It is now called <em>long-branch attraction</em>.</p>
+  <aside class="note">
+    <p class="note-label">History <span class="prov reported">Reported</span></p>
+    <p>Microsporidia are fast-evolving parasites. Early trees from ribosomal RNA placed them near the base of the eukaryotes. Later analyses placed them with the fungi, and long-branch attraction is the usual explanation for the early result (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3586952/">Capella-Gutiérrez et al., 2012</a>). QUARTET does not analyse microsporidia. It reproduces the mechanism with simulated data.</p>
+  </aside>
+
+  <h3>The data</h3>
+  <p>The page simulates an alignment on the true tree, AB|CD. Below are the first 72 sites. Each column is one site. Colours mark the four bases.</p>
+  <figure class="wide alignment-fig">
+    <div class="alignment" id="alignment" aria-label="Simulated alignment of four sequences"></div>
+    <figcaption>Simulated with the event model of the unit (chapter 9), seed 20261006. Long branches A and C differ from the others at many sites. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <h3>The model of change</h3>
+  <p>The Jukes–Cantor model (JC69) is the simplest model of DNA change. Substitution events occur at random along each branch. Each event replaces the base with one of the other three bases, with equal probability. For a branch of length <span class="tex">t</span>, the chance that a site shows the same base at both ends is</p>
+  <div class="tex-block">P_{\text{same}}(t) = \tfrac14 + \tfrac34\, e^{-\mu t}, \qquad P_{\text{diff}}(t) = \tfrac14 - \tfrac14\, e^{-\mu t}\ \text{for each other base.}</div>
+  <div class="rulebox convention">
+    <p class="rb-label">Convention C-1 · Branch length</p>
+    <p>Branch length <span class="tex">t</span> is the expected number of substitutions per site. This convention sets <span class="tex">\mu = 4/3</span>. Other textbooks use other time units and other constants. Do not copy a formula without its unit.</p>
+  </div>
+
+  <h3>Two methods</h3>
+  <div class="two-col wide">
+    <div>
+      <h4>Parsimony</h4>
+      <p>Choose the tree that needs the fewest changes. Fitch’s algorithm counts the minimum number of changes per site on each tree. It is fast and it needs no model. That is its strength and, here, its weakness.</p>
+    </div>
+    <div>
+      <h4>Maximum likelihood (ML)</h4>
+      <p>Choose the tree and branch lengths that make the data most probable under the model. Felsenstein’s pruning algorithm computes each site likelihood. For a quartet with cherries <span class="tex">(a,b)</span> and <span class="tex">(c,d)</span> joined by an internal branch <span class="tex">e</span>:</p>
+    </div>
+  </div>
+  <div class="tex-block">L_{\text{site}} = \sum_{x}\pi_x\, P_{x s_a}(t_a)\,P_{x s_b}(t_b) \sum_{y} P_{xy}(t_e)\, P_{y s_c}(t_c)\,P_{y s_d}(t_d)</div>
+  <p>Here <span class="tex">x</span> and <span class="tex">y</span> are the unknown bases at the two internal nodes, and <span class="tex">s_a \ldots s_d</span> are the observed bases. The log-likelihood of the whole alignment adds the sites:</p>
+  <div class="tex-block">\ell(T,\mathbf t) = \sum_{c=1}^{15} n_c \ln L_c</div>
+
+  <h3>Why only fifteen numbers</h3>
+  <p>JC69 treats the four bases alike. So the likelihood of a site depends only on which taxa share a base. The 256 possible site patterns fall into 15 classes, the set partitions of four taxa. An alignment of any length reduces to 15 counts.</p>
+  <div class="wide classes" id="class-table"></div>
+  <aside class="note">
+    <p class="note-label">Engineering note</p>
+    <p>For one branch, each class likelihood is a straight line in <span class="tex">z = e^{-\mu t}</span>. A sum of logarithms of straight lines is concave. So a one-dimensional search finds the best branch length exactly. The kernel uses this structure, and test group G12 checks that the result is a true maximum.</p>
+  </aside>
+  <div class="inproject">
+    <p class="ip-label">In the repository</p>
+    <p>The science lives in two files. <code>src/js/kernel.js</code> holds the model, both likelihood routes, parsimony and the fit. <code>src/js/lab.js</code> holds the simulator, the checks, the studies and the run records. Both are pure: no page, no clock, no hidden randomness.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CH 3 -->
+<section class="chapter grid" id="ch-state" aria-labelledby="ch-state-h">
+  <p class="ch-no">Chapter 3</p>
+  <h2 id="ch-state-h">Six kinds of state</h2>
+  <p class="lede">Agentic work changes six kinds of state. Each kind lives in a different place, and each needs a different mechanism to protect it. Most confusion comes from using a mechanism for one kind of state to protect another.</p>
+
+  <div class="table-wrap wide">
+    <table class="states" id="states-table">
+      <thead><tr><th>Kind of state</th><th>Where it lives</th><th>Example in QUARTET</th><th>What keeps it</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <p>A new conversation changes context. A new branch changes a reference. A new worktree gives another checkout. None of these, alone, proves that a scientific claim is correct.</p>
+
+  <figure class="plate wide" id="plate-3">
+    <p class="plate-instr">Select a mechanism to see what it does to each kind of state. Select a column heading to see every mechanism that acts on that kind of state.</p>
+    <div class="table-wrap">
+      <table class="matrix" id="matrix"></table>
+    </div>
+    <div class="matrix-detail" id="matrix-detail" aria-live="polite"></div>
+    <ul class="matrix-key">
+      <li><span class="cell-chip sep">separate</span> gives its own copy</li>
+      <li><span class="cell-chip rec">records</span> makes it durable or identifiable</li>
+      <li><span class="cell-chip shr">shared</span> stays shared: plan for it</li>
+      <li><span class="cell-chip lim">limits</span> restricts access</li>
+    </ul>
+    <figcaption><span class="plate-no">Plate 3</span> What each mechanism does to each kind of state. The burgundy cells are the hazards: state that people often think is isolated, but is not. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <div class="rulebox">
+    <p class="rb-label">Rule · Isolate what changes</p>
+    <p>Name the kind of state that changes. Isolate that kind of state. Use the smallest mechanism that does it.</p>
+  </div>
+  <div class="rulebox warning">
+    <p class="rb-label">Warning</p>
+    <p>Do not treat the word “workspace” as a promise. Applications use it for different boundaries. Find out what it isolates: files, processes, network access or credentials.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CH 4 -->
+<section class="chapter grid" id="ch-worktrees" aria-labelledby="ch-worktrees-h">
+  <p class="ch-no">Chapter 4</p>
+  <h2 id="ch-worktrees-h">Worktrees: two places to work</h2>
+  <p class="lede">A repository stores history. A checkout holds files that you can edit. A worktree is one more checkout of the same repository, with its own HEAD, its own staging index and its own working files.</p>
+  <p>On day 1 of QUARTET, two subagents write the two likelihood routes at the same time. The stepper below follows their work through the repository. <span class="prov proposed">Proposed</span></p>
+
+  <figure class="plate wide" id="plate-4">
+    <div class="stepper">
+      <div class="stepper-svg scroll-x" id="wt-svg"></div>
+      <div class="stepper-side">
+        <p class="step-count mono" id="wt-count"></p>
+        <h4 id="wt-title"></h4>
+        <pre class="cmd" id="wt-cmd"></pre>
+        <p id="wt-text"></p>
+        <div class="step-controls">
+          <button type="button" id="wt-prev">Back</button>
+          <button type="button" id="wt-next" class="primary">Next step</button>
+        </div>
+      </div>
+    </div>
+    <figcaption><span class="plate-no">Plate 4</span> Same repository, separate checkouts. Hatching marks shared state. Commits are visible to every worktree at once. Files change only in the checkout where someone edits them. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <div class="table-wrap wide">
+    <table class="compare">
+      <thead><tr><th>Concept</th><th>What it is</th><th>Use it when</th><th>It does not guarantee</th></tr></thead>
+      <tbody>
+        <tr><th>Repository</th><td>The version database and its references</td><td>You need the project’s history</td><td>Installed packages, loaded context, a valid result</td></tr>
+        <tr><th>Branch</th><td>A movable name that points to a commit</td><td>You need a line of development</td><td>A second directory for parallel editing</td></tr>
+        <tr><th>Worktree</th><td>A checkout with its own HEAD, index and files</td><td>Two tasks edit source at the same time</td><td>Isolation of processes, caches, ports, services or credentials</td></tr>
+        <tr><th>Clone</th><td>A separate logical repository</td><td>Another machine or an independent lifecycle</td><td>Ignored files, data, packages or local services</td></tr>
+        <tr><th>Commit</th><td>A recorded tree, its parents and metadata</td><td>You need a reviewable checkpoint</td><td>Untracked files, data, runtime state, scientific truth</td></tr>
+        <tr><th>Stash</th><td>Temporary storage for work in progress</td><td>A short interruption in one checkout</td><td>A durable record or an isolated task area</td></tr>
+        <tr><th>HEAD</th><td>The commit a checkout is on, often through a branch</td><td>You must know what is checked out</td><td>That the files match that commit</td></tr>
+        <tr><th>Index</th><td>The staging area for the next commit</td><td>You choose what a commit records</td><td>Isolation from another writer in the same checkout</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Mechanics that people forget</h3>
+  <ul class="tight">
+    <li>Linked worktrees share commit objects and most references. Each has its own HEAD, index and working files.</li>
+    <li>A commit in one worktree is visible to all of them at once. The files in the other worktrees do not change.</li>
+    <li>Git normally refuses to check out one branch in two worktrees at the same time.</li>
+    <li>A worktree can have a detached HEAD. Some harnesses start worktrees that way.</li>
+    <li>All worktrees share one stash list. Untracked files need an explicit option. Ignored files are not stashed.</li>
+    <li>A fresh worktree has no ignored files. A <code>.env</code> file or a local data cache does not follow you.</li>
+  </ul>
+
+  <div class="rulebox procedure">
+    <p class="rb-label">Procedure · Set up two parallel kernel tasks</p>
+    <ol class="proc">
+      <li>Make sure that the main checkout is clean.<code>git status --short</code></li>
+      <li>Create one worktree for the pruning task.<code>git worktree add -b kernel/pruning ../q-pruning HEAD</code></li>
+      <li>Create one worktree for the brute-force task.<code>git worktree add -b kernel/brute ../q-brute HEAD</code></li>
+      <li>Give each agent a task contract. List the paths that it owns.</li>
+      <li>Tell each agent to write outputs only to <code>results/&lt;run-id&gt;/</code>.</li>
+      <li>Review the diff and commit in each worktree.<code>git -C ../q-pruning diff</code></li>
+      <li>Merge the pruning branch in the main checkout.<code>git merge kernel/pruning</code></li>
+      <li>Merge the brute-force branch in the main checkout.<code>git merge kernel/brute</code></li>
+      <li>Run the full verification after the merge.<code>node tests/verify.js</code></li>
+      <li>Remove each worktree after its branch is merged.<code>git worktree remove ../q-pruning</code></li>
+    </ol>
+  </div>
+  <div class="rulebox caution">
+    <p class="rb-label">Caution</p>
+    <p>Do not assume that removing a worktree deletes its branch. It does not. Do not assume that deleting a branch removes its worktree. Do the two operations separately, and keep every commit and run record that you need.</p>
+  </div>
+
+  <aside class="note">
+    <p class="note-label">In Claude Code <span class="prov reported">Reported</span></p>
+    <p><code>claude --worktree feature-auth</code> creates a worktree under <code>.claude/worktrees/</code> on a new branch. Subagents can take <code>isolation: worktree</code> in their definition. A <code>.worktreeinclude</code> file copies gitignored files such as <code>.env</code> into new worktrees. The documentation states the scope plainly: worktrees “isolate file edits” (<a href="https://code.claude.com/docs/en/worktrees">Claude Code docs</a>). Other harnesses, such as Codex, offer similar modes.</p>
+  </aside>
+</section>
+
+<!-- ===================================================== CH 5 -->
+<section class="chapter grid" id="ch-choose" aria-labelledby="ch-choose-h">
+  <p class="ch-no">Chapter 5</p>
+  <h2 id="ch-choose-h">Choose the smallest adequate mechanism</h2>
+  <p class="lede">The same rule decides every case: isolate the state that actually changes. Try nine situations from QUARTET. Each has one best answer and a reason.</p>
+  <div class="wide scenarios" id="scenarios"></div>
+  <p class="score mono" id="scenario-score" aria-live="polite"></p>
+</section>
+
+<!-- ===================================================== CH 6 -->
+<section class="chapter grid" id="ch-context" aria-labelledby="ch-context-h">
+  <p class="ch-no">Chapter 6</p>
+  <h2 id="ch-context-h">Context is what the agent can see now</h2>
+  <p class="lede">Context is a desk, not a library. The files on disk are the library. Nothing on the shelf is in context until a tool reads it, an instruction file imports it, or a person pastes it.</p>
+
+  <figure class="plate wide" id="plate-5">
+    <div class="scroll-x">
+    <svg viewBox="0 0 960 330" role="img" aria-labelledby="p5t p5d" class="desk">
+      <title id="p5t">The desk model of context</title>
+      <desc id="p5d">A shelf of files on disk, a lit desk area for active context, a closed notebook for conversation history, a card box for saved memory, and an envelope for a handoff to a new session.</desc>
+      <!-- shelf -->
+      <g transform="translate(20,30)">
+        <text class="p-label" x="0" y="0">ON DISK · durable</text>
+        <rect class="durable" x="0" y="12" width="250" height="250"/>
+        <rect class="durable-inner" x="4" y="16" width="242" height="242"/>
+        <g class="spines">
+          <rect x="16" y="40" width="26" height="200"/><text transform="translate(33,230) rotate(-90)">CLAUDE.md</text>
+          <rect x="46" y="60" width="26" height="180"/><text transform="translate(63,230) rotate(-90)">CONVENTIONS.md</text>
+          <rect x="76" y="50" width="26" height="190"/><text transform="translate(93,230) rotate(-90)">TASKS.md</text>
+          <rect x="106" y="70" width="26" height="170"/><text transform="translate(123,230) rotate(-90)">STATUS.md</text>
+          <rect x="136" y="44" width="26" height="196"/><text transform="translate(153,230) rotate(-90)">src/js/kernel.js</text>
+          <rect x="166" y="80" width="26" height="160"/><text transform="translate(183,230) rotate(-90)">results/</text>
+          <rect x="196" y="56" width="34" height="184" class="thick"/><text transform="translate(217,230) rotate(-90)">study.log (large)</text>
+        </g>
+      </g>
+      <!-- arrow shelf to desk -->
+      <g class="flow">
+        <path d="M282 150 C 320 150, 330 150, 360 150" class="arrow"/>
+        <text x="321" y="138" text-anchor="middle">read</text>
+        <text x="321" y="172" text-anchor="middle">import</text>
+      </g>
+      <!-- lamp and desk -->
+      <g transform="translate(370,20)">
+        <text class="p-label" x="0" y="10">ACTIVE CONTEXT · transient</text>
+        <path class="lamp-light" d="M120 56 L 20 270 L 250 270 Z"/>
+        <path class="lamp" d="M104 42 h32 l8 14 h-48 z"/>
+        <line class="lamp" x1="120" y1="42" x2="120" y2="24"/>
+        <rect class="transient" x="20" y="270" width="230" height="10"/>
+        <g class="cards">
+          <rect x="44" y="140" width="86" height="34"/><text x="87" y="161" text-anchor="middle">system + tools</text>
+          <rect x="140" y="140" width="86" height="34" class="pinned"/><text x="183" y="161" text-anchor="middle">CLAUDE.md</text>
+          <rect x="44" y="182" width="86" height="34"/><text x="87" y="203" text-anchor="middle">task contract</text>
+          <rect x="140" y="182" width="86" height="34" class="pinned"/><text x="183" y="203" text-anchor="middle">conventions</text>
+          <rect x="44" y="224" width="182" height="34"/><text x="135" y="245" text-anchor="middle">recent turns · last check result</text>
+        </g>
+        <text class="p-note" x="135" y="302" text-anchor="middle">Pinned cards reload from disk after compaction.</text>
+      </g>
+      <!-- notebook -->
+      <g transform="translate(680,30)">
+        <text class="p-label" x="0" y="0">CONVERSATION HISTORY</text>
+        <rect class="notebook" x="0" y="14" width="120" height="96"/>
+        <line class="notebook-band" x1="16" y1="14" x2="16" y2="110"/>
+        <text class="p-note" x="132" y="38">stored record</text>
+        <text class="p-note" x="132" y="56">not all in context</text>
+        <text class="p-note" x="132" y="74">compaction keeps</text>
+        <text class="p-note" x="132" y="92">only a summary</text>
+      </g>
+      <!-- memory -->
+      <g transform="translate(680,160)">
+        <text class="p-label" x="0" y="0">SAVED MEMORY</text>
+        <rect class="cardbox" x="0" y="14" width="120" height="60"/>
+        <line class="cardbox" x1="0" y1="34" x2="120" y2="34"/>
+        <text class="p-note" x="132" y="38">helpful recall</text>
+        <text class="p-note" x="132" y="56">not evidence</text>
+      </g>
+      <!-- handoff -->
+      <g transform="translate(680,262)">
+        <text class="p-label" x="0" y="0">HANDOFF → NEW SESSION</text>
+        <rect class="envelope" x="0" y="12" width="120" height="44"/>
+        <path class="envelope" d="M0 12 L60 40 L120 12"/>
+        <text class="p-note" x="132" y="38">goal · revision · evidence</text>
+        <text class="p-note" x="132" y="54">open issue · next action</text>
+      </g>
+      <g class="flow">
+        <path d="M630 110 C 650 100, 660 80, 675 78" class="arrow"/>
+        <text x="634" y="84" text-anchor="end">compaction</text>
+        <path d="M630 260 C 650 270, 660 285, 675 290" class="arrow"/>
+        <text x="642" y="298">write</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption><span class="plate-no">Plate 5</span> A conversation is not a file system. Files on disk are not automatically in the model’s context. Conversation history and saved memory are different things: the first is a record of the session, the second is helpful recall across sessions. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <div class="table-wrap wide">
+    <table class="compare">
+      <thead><tr><th>Object</th><th>Purpose</th><th>In QUARTET</th></tr></thead>
+      <tbody>
+        <tr><th>Session</th><td>Continuity of one task</td><td>The day-3 debugging session</td></tr>
+        <tr><th>Active context</th><td>What the current model call sees</td><td>The convention, the failing check, the next step</td></tr>
+        <tr><th>Conversation history</th><td>The stored record of the session</td><td>Everything said since day 3 began</td></tr>
+        <tr><th>New session</th><td>A clean context for a bounded task</td><td>The day-4 reviewer, who reads only the handoff</td></tr>
+        <tr><th>Fork</th><td>Reuse history from a branch point</td><td>Try the +I model without losing the JC thread</td></tr>
+        <tr><th>Compaction</th><td>Replace old turns with a summary</td><td>The day-3 event that dropped the rate convention</td></tr>
+        <tr><th>Saved memory</th><td>Recall of preferences and habits</td><td>“The scientist wants plots with intervals”</td></tr>
+        <tr><th>Handoff</th><td>An explicit restart contract</td><td>STATUS.md at the end of each day</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Lab 0 · Watch a convention disappear</h3>
+  <p>This small simulation follows one session on day 3. The context window has a fixed budget. Turns and file reads fill it. When it is full, the harness compacts it. Choose where the rate convention lives, then step through the session.</p>
+  <figure class="plate wide lab" id="ctx-lab">
+    <div class="lab-controls">
+      <fieldset class="seg">
+        <legend>The rate convention lives in</legend>
+        <label><input type="radio" name="ctx-mode" id="ctx-mode-chat" value="chat" checked> the conversation only</label>
+        <label><input type="radio" name="ctx-mode" id="ctx-mode-file" value="file"> CONVENTIONS.md, imported by CLAUDE.md</label>
+      </fieldset>
+      <div class="btn-row">
+        <button type="button" id="ctx-step" class="primary">Next event</button>
+        <button type="button" id="ctx-play">Play to the end</button>
+        <button type="button" id="ctx-reset">Reset</button>
+      </div>
+    </div>
+    <div class="ctx-window" id="ctx-window" aria-label="Context window"></div>
+    <div class="ctx-grid">
+      <ol class="ctx-log" id="ctx-log" aria-live="polite"></ol>
+      <div class="ctx-outcome" id="ctx-outcome" aria-live="polite"></div>
+    </div>
+    <figcaption>A schematic model, not a measurement. Sizes are illustrative units, not token counts. Real summaries keep more than this one does, but a detail that lives only in the conversation is always at risk. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <aside class="note">
+    <p class="note-label">In Claude Code <span class="prov reported">Reported</span></p>
+    <p>“Project-root CLAUDE.md survives compaction: after <code>/compact</code>, Claude re-reads it from disk and re-injects it into the session.” The same page lists the first cause of a lost instruction: “it was given only in conversation” (<a href="https://code.claude.com/docs/en/memory">Claude Code docs</a>). Schwartz reached the same practice by hand: he had Claude consolidate its files so that the latest plan was always on disk.</p>
+  </aside>
+
+  <h3>Ask, enforce, verify</h3>
+  <p>Three mechanisms look alike and do different jobs. Confusing them is a common source of false confidence.</p>
+  <div class="aev wide">
+    <div class="aev-col"><p class="aev-k">Ask</p><h4>Instruction file</h4><p>CLAUDE.md or AGENTS.md. The agent reads it every session. It can still ignore it.</p><p class="small">“Claude treats them as context, not enforced configuration.” <span class="prov reported">Reported</span></p></div>
+    <div class="aev-col"><p class="aev-k">Enforce</p><h4>Hook or permission</h4><p>The harness runs a command at an event and can block the action, whatever the agent decides.</p><p class="small">Example: block a commit while <code>tests/verify.js</code> fails.</p></div>
+    <div class="aev-col"><p class="aev-k">Verify</p><h4>Check</h4><p>A test of the result itself. It does not care what anyone intended. It reports what the code does.</p><p class="small">Example: C9, the unit anchor.</p></div>
+  </div>
+
+  <h3>The handoff</h3>
+  <p>A handoff is the contract between this session and the next. It points to evidence. It does not replace evidence. Here is the QUARTET handoff at the end of day 3.</p>
+  <div class="handoff wide">
+    <div class="handoff-head"><span class="mono">STATUS.md</span><button type="button" class="copy" data-copy="handoff-text">Copy template</button></div>
+    <pre id="handoff-text"># Handoff / current state                       (QUARTET, end of day 3)
+
+Goal:                    Decide AB|CD vs AC|BD vs AD|BC for scenario A.
+Task ID, allowed paths:  T06 · src/js/kernel.js, tests/, results/
+Source identity:         commit 3f9c2e1 + no dirty diff (hash in manifest)
+Working directory:       main checkout, branch main
+Conventions:             CONVENTIONS.md rev 2 (C-1: t = expected subs/site, mu = 4/3)
+Commands executed:       node tests/verify.js
+Run directory:           results/20261006T053633Z_5a33e906/
+Observed checks:         C1-C11 pass on M0; M1 rejected by C9, C10, C11
+What has NOT been tested: real sequences; rate variation across sites
+Open issue:              parsimony says AC|BD with 100% support. Suspect LBA.
+Smallest counterexample: infinite-data frequencies, scenario A (see G09)
+Next action:             ML study at n = 100..10000; stop when 3 lengths agree.</pre>
+  </div>
+  <div class="rulebox warning">
+    <p class="rb-label">Warning</p>
+    <p>Do not cite saved memory or a summary as evidence. Memory is helpful recall. A summary can omit the detail that matters. Cite the run record.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CH 7 -->
+<section class="chapter grid" id="ch-runs" aria-labelledby="ch-runs-h">
+  <p class="ch-no">Chapter 7</p>
+  <h2 id="ch-runs-h">One revision can produce many runs</h2>
+  <p class="lede">A run is a function. Its output depends on the revision, the environment, the inputs and the seed. Record all four, and anyone can run it again. Miss one, and you can only hope.</p>
+  <div class="tex-block">\text{output} = f(\text{revision},\ \text{environment},\ \text{inputs},\ \text{seed})</div>
+
+  <figure class="plate wide" id="plate-6">
+    <div class="scroll-x">
+    <svg viewBox="0 0 960 250" role="img" aria-labelledby="p6t p6d" class="runs">
+      <title id="p6t">One revision, many runs</title>
+      <desc id="p6d">A fixed source revision and one environment feed three runs. Each run has its own directory and manifest.</desc>
+      <g transform="translate(20,30)">
+        <text class="p-label" x="0" y="0">REVISION</text>
+        <rect class="durable" x="0" y="14" width="170" height="150"/>
+        <rect class="durable-inner" x="4" y="18" width="162" height="142"/>
+        <text class="p-big mono" x="85" y="80" text-anchor="middle" id="p6-hash">5722de84</text>
+        <text class="p-note" x="85" y="104" text-anchor="middle">source hash</text>
+        <text class="p-note" x="85" y="140" text-anchor="middle">kernel.js · lab.js</text>
+      </g>
+      <g transform="translate(230,30)">
+        <text class="p-label" x="0" y="0">ENVIRONMENT</text>
+        <rect class="env" x="0" y="14" width="170" height="150"/>
+        <line class="env" x1="0" y1="64" x2="170" y2="64"/><line class="env" x1="0" y1="114" x2="170" y2="114"/>
+        <text class="p-note" x="85" y="44" text-anchor="middle" id="p6-env">runtime</text>
+        <text class="p-note" x="85" y="94" text-anchor="middle">no network access</text>
+        <text class="p-note" x="85" y="144" text-anchor="middle">lockfile: none needed</text>
+      </g>
+      <g class="flow">
+        <path d="M410 105 C 450 105, 460 60, 500 60" class="arrow"/>
+        <path d="M410 105 L 500 105" class="arrow"/>
+        <path d="M410 105 C 450 105, 460 150, 500 150" class="arrow"/>
+      </g>
+      <g transform="translate(510,30)" class="trays">
+        <text class="p-label" x="0" y="0">RUNS · results/&lt;run-id&gt;/</text>
+        <g transform="translate(0,14)"><rect class="tray" width="430" height="40"/><text class="mono" x="12" y="25">run …_a1 · seed 1 · n = 1000</text><rect class="tag" x="330" y="8" width="90" height="24"/><text x="375" y="25" text-anchor="middle">manifest</text></g>
+        <g transform="translate(0,62)"><rect class="tray" width="430" height="40"/><text class="mono" x="12" y="25">run …_b2 · seed 2 · n = 1000</text><rect class="tag" x="330" y="8" width="90" height="24"/><text x="375" y="25" text-anchor="middle">manifest</text></g>
+        <g transform="translate(0,110)"><rect class="tray" width="430" height="40"/><text class="mono" x="12" y="25">run …_c3 · seed 3 · n = 1000</text><rect class="tag" x="330" y="8" width="90" height="24"/><text x="375" y="25" text-anchor="middle">manifest</text></g>
+        <text class="p-note" x="0" y="186">Same source. Different seeds. Separate directories. Nothing overwrites anything.</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption><span class="plate-no">Plate 6</span> A worktree separates working files. An environment defines packages and runtime. A run directory separates outputs and records the execution. These solve three different problems. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <h3>Anatomy of a manifest</h3>
+  <p>This is the head of the real manifest that the verification run wrote. The page reads it from the embedded file. <span class="prov computed">Computed</span></p>
+  <div class="manifest wide" id="manifest-view"></div>
+
+  <div class="table-wrap wide">
+    <table class="compare">
+      <thead><tr><th>Choice</th><th>Primary effect</th><th>Consequence for research</th></tr></thead>
+      <tbody>
+        <tr><th>Local checkout</th><td>Work in the selected directory</td><td>Coordinate with your editor and every other writer</td></tr>
+        <tr><th>Worktree</th><td>Separate Git checkout on the same host</td><td>Separate files; still plan the shared runtime</td></tr>
+        <tr><th>Cloud runtime</th><td>A separately provisioned remote machine</td><td>Recreate packages, inputs, access and compute</td></tr>
+        <tr><th>Subagent</th><td>A delegated task with its own context</td><td>Give it a contract; files are isolated only if you assign a worktree</td></tr>
+        <tr><th>Lockfile + environment</th><td>Separate language packages</td><td>Compare two dependency sets fairly</td></tr>
+        <tr><th>Container</th><td>Packaged userspace and runtime limits</td><td>System libraries and portability</td></tr>
+        <tr><th>Sandbox</th><td>File, network and action permissions</td><td>Define what a tool may touch</td></tr>
+        <tr><th>Job scheduler</th><td>Resources, queues and job identity</td><td>Sweeps and long runs on shared hardware</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rulebox warning">
+    <p class="rb-label">Warning</p>
+    <p>Do not let two runs share an output path. Two worktrees can still collide on a port, a database, a cache, a GPU or an absolute path such as <code>/tmp/study.csv</code>. Give each run its own directory and its own resource budget.</p>
+  </div>
+  <div class="rulebox procedure">
+    <p class="rb-label">Procedure · Make a run that someone can repeat</p>
+    <ol class="proc">
+      <li>Commit the source, or record the exact diff.</li>
+      <li>Record the runtime and package versions.</li>
+      <li>Fix the seed, and write it down.</li>
+      <li>Create a new directory for the run. Use a unique run ID.</li>
+      <li>Write the manifest before the results.</li>
+      <li>Keep raw outputs separate from figures.</li>
+      <li>Never overwrite a previous run.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===================================================== CH 8 -->
+<section class="chapter grid" id="ch-roles" aria-labelledby="ch-roles-h">
+  <p class="ch-no">Chapter 8</p>
+  <h2 id="ch-roles-h">Tool, skill, agent, hook, harness, scientist</h2>
+  <p class="lede">These six words name six responsibilities. A tool computes. A skill describes a procedure. An agent chooses actions. A hook enforces a rule. A harness runs and records. A scientist judges.</p>
+
+  <figure class="plate wide" id="plate-7">
+    <div class="scroll-x">
+    <svg viewBox="0 0 960 300" role="img" aria-labelledby="p7t p7d" class="roles-svg">
+      <title id="p7t">Nested responsibilities</title>
+      <desc id="p7d">The scientist frames everything. Inside is the harness, with hooks on its boundary. Inside the harness, an agent uses skills and tools.</desc>
+      <rect class="frame-sci" x="10" y="10" width="940" height="280"/>
+      <text class="p-label" x="26" y="34">SCIENTIST · question, conventions, taste, judgment of claims</text>
+      <rect class="frame-harness" x="40" y="50" width="700" height="220"/>
+      <text class="p-label" x="56" y="74">HARNESS · runs, records, retries, routes to review</text>
+      <g class="hooks">
+        <rect x="726" y="96" width="28" height="28"/><text x="766" y="115">hook: block commit if checks fail</text>
+        <rect x="726" y="186" width="28" height="28"/><text x="766" y="205">permission: no network in runs</text>
+      </g>
+      <rect class="frame-agent" x="70" y="92" width="380" height="156"/>
+      <text class="p-label" x="86" y="116">AGENT · chooses actions inside a task contract</text>
+      <text class="p-note" x="86" y="140">“Find why parsimony and ML disagree.”</text>
+      <g transform="translate(86,160)">
+        <rect class="skill" width="160" height="70"/>
+        <text class="p-label" x="12" y="22">SKILL</text>
+        <text class="p-note" x="12" y="42">consistency-study</text>
+        <text class="p-note" x="12" y="58">a written procedure</text>
+      </g>
+      <g transform="translate(262,160)">
+        <rect class="tool" width="170" height="70"/>
+        <text class="p-label" x="12" y="22">TOOLS</text>
+        <text class="p-note mono" x="12" y="42">fit(counts, topo)</text>
+        <text class="p-note mono" x="12" y="58">simulateQuartet(…)</text>
+      </g>
+      <g transform="translate(480,92)">
+        <rect class="records" width="230" height="156"/>
+        <text class="p-label" x="14" y="24">RECORDS</text>
+        <text class="p-note mono" x="14" y="50">results/&lt;run-id&gt;/</text>
+        <text class="p-note mono" x="14" y="72">manifest.json</text>
+        <text class="p-note mono" x="14" y="94">verification.json</text>
+        <text class="p-note" x="14" y="130">→ review queue</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption><span class="plate-no">Plate 7</span> Responsibilities nest. A callable tool, a written procedure and a coordinating system are different things. Hooks sit on the harness boundary because they act whatever the agent decides. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+
+  <div class="roles wide" id="roles"></div>
+
+  <h3>A skill, written down</h3>
+  <p>A skill is a procedure that loads into context when a task needs it. Here is the one that QUARTET would use for its studies. <span class="prov proposed">Proposed</span></p>
+  <pre class="code wide">---
+name: consistency-study
+description: Run and report a phylogenetic consistency study. Use when a
+  claim says that a method converges to a tree as data grow.
+---
+1. Fix the revision. Record the source hash. Refuse to run on a dirty tree.
+2. Fix the scenario: branch lengths, pInv, true topology. Copy them into the manifest.
+3. Use at least 5 sequence lengths, spaced by about x3, and at least 40 replicates each.
+4. Derive one seed per replicate from the base seed. Never reuse a seed across lengths.
+5. Run every method on the SAME simulated alignment.
+6. Report the fraction that picks the true tree, with a 95% Wilson interval.
+7. Also report the infinite-data answer from exact pattern frequencies.
+8. If the finite-data trend and the infinite-data answer disagree, stop and report.
+9. Never write "converges" for fewer than 3 lengths that agree.</pre>
+
+  <aside class="note">
+    <p class="note-label">The BootLoops lesson <span class="prov reported">Reported</span></p>
+    <p>“Claude’s default approach seemed to be to try to grind through a long, multiday calculation rather than build a new tool that would make that same calculation take mere minutes.” QUARTET applies the lesson at small scale: the 15-class reduction and the concave branch search turn a slow fit into a tool that runs a full study in a second.</p>
+  </aside>
+</section>
+
+<!-- ===================================================== CH 9 -->
+<section class="chapter grid" id="ch-ladder" aria-labelledby="ch-ladder-h">
+  <p class="ch-no">Chapter 9</p>
+  <h2 id="ch-ladder-h">The ladder of independence</h2>
+  <p class="lede">A check is useful only if it can fail. It can fail only on errors that it does not share. We call this property independence. It comes in rungs, and each rung catches errors that the rungs below it cannot see.</p>
+
+  <figure class="plate wide" id="plate-8">
+    <div class="ladder scroll-x" id="ladder"></div>
+    <figcaption><span class="plate-no">Plate 8</span> The ladder, drawn from the mutation matrix below. Each mutant hangs at the lowest rung that rejects it. The top rung judges the model, not the code. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <h3>Lab 1 · Two curves that agree almost everywhere</h3>
+  <p>Mutant M1 is the day-3 bug. After compaction, the agent wrote the rate constant as <span class="tex">\mu = 4</span>, a value from a textbook that measures time in other units. Schwartz reports exactly this habit: Claude “constantly reverts to textbook defaults even if you force it to write the conventions down.” <span class="prov reported">Reported</span> So a written convention is not enough. A check must verify it. Compare the two curves. Move the slider.</p>
+  <figure class="plate wide lab" id="pt-lab">
+    <div class="pt-layout">
+      <div class="pt-chart scroll-x" id="pt-chart"></div>
+      <div class="pt-side">
+        <label class="slider-label" for="pt-t">Branch length <span class="tex">t</span> = <span class="mono" id="pt-t-val">0.30</span></label>
+        <input type="range" id="pt-t" min="0" max="2" step="0.01" value="0.3">
+        <table class="readout" id="pt-readout"></table>
+        <p class="small">Both curves start at 0 and end at 3/4. Both give rows that sum to one. Both obey Chapman–Kolmogorov. Only the slope at zero, the definition of the unit, tells them apart.</p>
+      </div>
+    </div>
+    <figcaption>Probability that a site differs across a branch, <span class="tex">p(t) = 3 P_{\text{diff}}(t)</span>. The dotted line has slope 1: a short branch of length <span class="tex">t</span> must carry about <span class="tex">t</span> substitutions per site. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <h3>Lab 2 · Mutation testing</h3>
+  <p>Mutation testing breaks the code on purpose. A good check suite notices. QUARTET keeps four mutants, each with one change. The table shows the recorded result. Run the suite again in your browser to compare.</p>
+  <figure class="plate wide lab" id="mm-lab">
+    <div class="lab-controls">
+      <div class="btn-row">
+        <button type="button" id="mm-run" class="primary">Run 11 checks × 5 kernels in this browser</button>
+      </div>
+      <p class="mono small" id="mm-status" aria-live="polite">Showing the recorded run.</p>
+    </div>
+    <div class="table-wrap"><table class="mm" id="mm-table"></table></div>
+    <div class="mm-detail" id="mm-detail" aria-live="polite"><p class="small">Select a cell to see the measured numbers.</p></div>
+    <figcaption>Rows are kernel variants. Columns are checks, grouped by rung. A cross means the check rejects that kernel. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <div class="mutants wide">
+    <div><p class="mut-id">M1 · Rate-convention drift</p><p>Both routes share the constant, so they agree with each other. Rung 1 and rung 2 pass. Only the unit anchor, the published distance formula and the generative round trip reject it.</p></div>
+    <div><p class="mut-id">M2 · Dropped root prior</p><p>The pruning route forgets the factor 1/4 at the root. Pattern probabilities sum to 4. A cheap normalization check catches it.</p></div>
+    <div><p class="mut-id">M3 · Swapped same and different</p><p>A gross error. It fails the zero-length limit at once. Gross errors are common, and cheap checks catch them.</p></div>
+    <div><p class="mut-id">M4 · Skipped internal branch</p><p>The fast route ignores the internal branch. The result is still a valid probability model, so every rung-1 check passes. Only the brute-force route disagrees.</p></div>
+  </div>
+
+  <h3>Acceptance needs a stated tolerance</h3>
+  <div class="tex-block">|f_i - g_i| \le a + r\,|g_i|</div>
+  <p>The absolute floor <span class="tex">a</span> handles values near zero. The relative term <span class="tex">r</span> handles scale. QUARTET uses <span class="tex">a = 10^{-15}</span> and <span class="tex">r = 10^{-10}</span> for exact comparisons, and four standard errors for statistical ones. A tolerance is part of the claim. Write it down before you look at the result.</p>
+  <div class="rulebox">
+    <p class="rb-label">Rule · Agreement is not independence</p>
+    <p>Do not accept a result because two agents, two routes or two runs agree. Find out what they share. Add a check that does not share it.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CH 10 -->
+<section class="chapter grid" id="ch-result" aria-labelledby="ch-result-h">
+  <p class="ch-no">Chapter 10</p>
+  <h2 id="ch-result-h">The result: more data, more confidence, wrong tree</h2>
+  <p class="lede">Now we answer the question. Exact pattern frequencies give the answer for infinite data. Seeded simulations give the answer for real sequence lengths. Both come from the checked kernel.</p>
+
+  <h3>Lab 3 · The Felsenstein zone</h3>
+  <p>Each cell of the map is one true tree: long branches for A and C on the horizontal axis, short branches on the vertical axis. The colour shows the tree that parsimony picks with infinite data. Select a cell to load it into the study below.</p>
+  <figure class="plate wide lab" id="zone-lab">
+    <div class="zone-layout">
+      <div class="zone-canvas-wrap scroll-x">
+        <canvas id="zone-canvas" width="640" height="420" aria-label="Map of the tree that parsimony picks"></canvas>
+      </div>
+      <div class="zone-side">
+        <ul class="zone-key">
+          <li><span class="sw t1"></span> picks AB|CD, the true tree</li>
+          <li><span class="sw t2"></span> picks AC|BD, long-branch attraction</li>
+          <li><span class="sw t3"></span> picks AD|BC</li>
+        </ul>
+        <label class="slider-label" for="zone-pinv">Invariant sites in the data, pInv = <span class="mono" id="zone-pinv-val">0.00</span></label>
+        <input type="range" id="zone-pinv" min="0" max="0.6" step="0.05" value="0">
+        <div class="btn-row"><button type="button" id="zone-ml">Overlay ML under JC69</button></div>
+        <p class="mono small" id="zone-status" aria-live="polite"></p>
+        <p class="small" id="zone-pick">Selected: tLong = 1.00, tShort = 0.05.</p>
+      </div>
+    </div>
+    <figcaption>Parsimony with infinite data, computed from exact pattern frequencies. The overlay marks cells where ML under JC69 also picks a wrong tree. With pInv = 0 that never happens, because the model matches the data. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <h3>Lab 4 · The harness: a consistency study</h3>
+  <p>This is a small harness. It simulates alignments at five lengths, fits every method on the same data, and records each study with a run ID, a manifest and the live source hash. Use a preset, or set your own values.</p>
+  <figure class="plate wide lab" id="study-lab">
+    <div class="lab-controls study-controls">
+      <fieldset class="seg">
+        <legend>Preset</legend>
+        <label><input type="radio" name="study-preset" value="A" checked> A · long branches, right model</label>
+        <label><input type="radio" name="study-preset" value="B"> B · long branches, invariant sites</label>
+        <label><input type="radio" name="study-preset" value="C"> C · easy tree</label>
+      </fieldset>
+      <div class="param-grid">
+        <label for="st-long">tLong <input type="number" id="st-long" min="0.01" max="3" step="0.05" value="1"></label>
+        <label for="st-short">tShort <input type="number" id="st-short" min="0.005" max="1" step="0.01" value="0.05"></label>
+        <label for="st-pinv">pInv <input type="number" id="st-pinv" min="0" max="0.8" step="0.05" value="0"></label>
+        <label for="st-reps">replicates <input type="number" id="st-reps" min="5" max="200" step="5" value="40"></label>
+        <label for="st-seed">seed <input type="number" id="st-seed" min="1" max="4294967295" step="1" value="20261006"></label>
+        <label class="check"><input type="checkbox" id="st-mli" checked> also fit JC69+I</label>
+      </div>
+      <div class="btn-row">
+        <button type="button" id="st-run" class="primary">Run study</button>
+        <button type="button" id="st-repro-a">Reproduce recorded study A</button>
+        <button type="button" id="st-repro-b">Reproduce recorded study B</button>
+      </div>
+      <div class="progress" id="st-progress" hidden><div class="bar" id="st-bar"></div></div>
+    </div>
+    <div class="study-out">
+      <div class="study-chart scroll-x" id="study-chart"></div>
+      <div class="study-summary" id="study-summary" aria-live="polite"></div>
+    </div>
+    <figcaption>Fraction of replicates that pick the true tree AB|CD, with 95% Wilson intervals. Each method sees the same simulated alignment. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <div class="ledger wide">
+    <div class="ledger-head"><h4>Run ledger</h4><p class="small">Stored only in this browser. Newest first.</p></div>
+    <div class="table-wrap"><table class="ledger-table" id="ledger"></table></div>
+    <pre class="manifest-json" id="ledger-json" hidden></pre>
+  </div>
+
+  <div class="rulebox">
+    <p class="rb-label">Rule · Consistency beats confidence</p>
+    <p>Do not read a high replicate fraction as proof. Replicates measure sampling noise. They do not measure bias. Ask what the method does with infinite data.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CH 11 -->
+<section class="chapter grid" id="ch-model-wrong" aria-labelledby="ch-model-wrong-h">
+  <p class="ch-no">Chapter 11</p>
+  <h2 id="ch-model-wrong-h">Correct code, wrong science</h2>
+  <p class="lede">Every check in chapter 9 passes on the reference kernel. The code is right. Now give it data in which a fraction of sites never change, as in real genes. JC69 has no term for that. The model is wrong, and the code computes the wrong answer correctly.</p>
+  <p>In scenario B, 30% of sites are invariant, and the long branches are 0.75 substitutions per site. With infinite data, ML under JC69 picks AC|BD. ML under JC69+I picks AB|CD and recovers <span class="tex">p_{\text{inv}} = 0.3</span> exactly. Study B in the harness shows the same at finite lengths.</p>
+
+  <h3>Lab 5 · Ask the data whether the model fits</h3>
+  <p>A goodness-of-fit test compares the 15 observed class counts with the counts that the fitted model expects. It is the first, automatic step of rung 4. It cannot choose the right model. It can tell you that the current one is wrong.</p>
+  <figure class="plate wide lab" id="fit-lab">
+    <div class="lab-controls">
+      <div class="param-grid">
+        <label for="gf-pinv">pInv in the data <input type="number" id="gf-pinv" min="0" max="0.8" step="0.05" value="0.3"></label>
+        <label for="gf-n">sites <input type="number" id="gf-n" min="500" max="100000" step="500" value="5000"></label>
+        <label for="gf-seed">seed <input type="number" id="gf-seed" min="1" step="1" value="11"></label>
+      </div>
+      <div class="btn-row"><button type="button" id="gf-run" class="primary">Simulate and test</button></div>
+    </div>
+    <div class="table-wrap"><table class="gof" id="gof-table"></table></div>
+    <figcaption>G-test of the best ML fit. Degrees of freedom: 15 classes − 1 − free parameters. A small p-value rejects the model. <span class="prov computed">Computed</span></figcaption>
+  </figure>
+
+  <div class="rulebox">
+    <p class="rb-label">Rule · Test the model, not only the code</p>
+    <p>Check that the model can produce data like yours. Report the fit. Try a richer model. Ask an expert which processes the model leaves out.</p>
+  </div>
+  <p>Real analyses use richer models, such as GTR with gamma-distributed rates, or site mixtures, and choose among them with criteria such as AIC or BIC. Each step reduces one kind of misspecification. None removes the need for judgment.</p>
+</section>
+
+<!-- ===================================================== CH 12 -->
+<section class="chapter grid" id="ch-week" aria-labelledby="ch-week-h">
+  <p class="ch-no">Chapter 12</p>
+  <h2 id="ch-week-h">The research week</h2>
+  <p class="lede">Here is QUARTET as one week of agentic work. Each day names the mechanism it used, and why. <span class="prov proposed">Proposed</span> The week is a constructed teaching story. The code and numbers in it are real.</p>
+  <div class="week wide" id="week"></div>
+
+  <h3>Lab 6 · The task graph goes stale</h3>
+  <p>Tasks depend on each other. When an upstream definition changes, every result downstream is stale until it runs again. Git cannot see this: a change to a convention can merge without a single conflict.</p>
+  <figure class="plate wide lab" id="dag-lab">
+    <div class="lab-controls">
+      <div class="btn-row">
+        <button type="button" id="dag-conv">Change T02: the rate convention</button>
+        <button type="button" id="dag-sim">Change T07: the simulator</button>
+        <button type="button" id="dag-rerun" class="primary">Run stale tasks again</button>
+      </div>
+      <p class="mono small" id="dag-status" aria-live="polite">All tasks are current.</p>
+    </div>
+    <div class="dag-layout">
+      <div class="table-wrap dag-wrap"><div id="dag-svg"></div></div>
+      <aside class="dag-detail" id="dag-detail" aria-live="polite"></aside>
+    </div>
+    <figcaption><span class="plate-no">Plate 9</span> The QUARTET task graph. Select a task to read its contract. Stale tasks carry hatching. <span class="prov proposed">Proposed</span></figcaption>
+  </figure>
+  <div class="rulebox">
+    <p class="rb-label">Rule · Stale by default</p>
+    <p>When a definition changes, mark every downstream result stale. Run each one again before you cite it. A conflict-free merge does not repair a changed scientific definition.</p>
+  </div>
+</section>
+
+<!-- ===================================================== CH 13 -->
+<section class="chapter grid" id="ch-claims" aria-labelledby="ch-claims-h">
+  <p class="ch-no">Chapter 13</p>
+  <h2 id="ch-claims-h">Claims, with evidence and limits</h2>
+  <p class="lede">A claim without limits is an advertisement. The ledger below lists what QUARTET claims, what it rejects, and what it does not test. Each line links to the evidence on this page.</p>
+  <div class="table-wrap wide"><table class="claims" id="claims"></table></div>
+
+  <h3>Four questions, four kinds of answer</h3>
+  <ol class="four">
+    <li><strong>Does the program implement its formula?</strong> Checks, rungs 1 to 3. Chapter 9.</li>
+    <li><strong>Is the formula justified for these data?</strong> Model adequacy and expert review, rung 4. Chapter 11.</li>
+    <li><strong>Are numerical and statistical errors controlled?</strong> Tolerances, replicates, intervals. Chapters 9 and 10.</li>
+    <li><strong>What did we leave out, and does it matter?</strong> Limits in the ledger. The scientist decides.</li>
+  </ol>
+
+  <div class="table-wrap wide">
+    <table class="compare">
+      <thead><tr><th>Failure</th><th>Response that catches it</th></tr></thead>
+      <tbody>
+        <tr><th>Convention drift (M1)</th><td>A unit anchor and a published formula that do not import the convention</td></tr>
+        <tr><th>Algorithm bug (M4)</th><td>An independent algorithm for the same quantity</td></tr>
+        <tr><th>Normalization error (M2)</th><td>Exact sums and limits</td></tr>
+        <tr><th>Wrong model for the data</th><td>Goodness of fit, a richer model, expert review</td></tr>
+        <tr><th>Biased method (parsimony in the zone)</th><td>Infinite-data analysis; a consistency study</td></tr>
+        <tr><th>“All checks passed” with no record</th><td>The manifest: source hash, command, seed, environment</td></tr>
+        <tr><th>Stale output after an upstream change</th><td>Dependency tracking; invalidation; a new run</td></tr>
+        <tr><th>Lost context or skipped tasks</th><td>A task graph and an evidence-linked handoff</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================================================== CH 14 -->
+<section class="chapter grid" id="ch-card" aria-labelledby="ch-card-h">
+  <p class="ch-no">Chapter 14</p>
+  <h2 id="ch-card-h">Field card</h2>
+  <p class="lede">Twelve mental models. Each one is a rule you can apply on the next project, with or without this page.</p>
+  <ol class="models wide" id="models"></ol>
+
+  <h3>Exercises</h3>
+  <div class="exercises" id="exercises"></div>
+
+  <h3>Glossary</h3>
+  <dl class="glossary wide" id="glossary"></dl>
+</section>
+
+<!-- ===================================================== SOURCES -->
+<section class="chapter grid back" id="sources" aria-labelledby="sources-h">
+  <h2 id="sources-h">Sources</h2>
+  <ol class="sources">
+    <li>Schwartz, M. D. “Vibe physics: The AI grad student.” Anthropic, 23 March 2026. <a href="https://www.anthropic.com/research/vibe-physics">anthropic.com/research/vibe-physics</a></li>
+    <li>Schwartz, M. D. “Resummation of the C-Parameter Sudakov Shoulder Using Effective Field Theory.” arXiv:2601.02484, 2026. <a href="https://arxiv.org/abs/2601.02484">arxiv.org/abs/2601.02484</a></li>
+    <li>Schwartz, M. D. “Claude-shaped science.” Anthropic, 1 October 2026. <a href="https://www.anthropic.com/research/claude-shaped-science">anthropic.com/research/claude-shaped-science</a></li>
+    <li>Mishra-Sharma, S. “Long-running Claude for scientific computing.” Anthropic, 23 March 2026. <a href="https://www.anthropic.com/research/long-running-Claude">anthropic.com/research/long-running-Claude</a></li>
+    <li>Felsenstein, J. “Cases in which parsimony or compatibility methods will be positively misleading.” <em>Systematic Zoology</em> 27: 401–410, 1978.</li>
+    <li>Felsenstein, J. “Evolutionary trees from DNA sequences: a maximum likelihood approach.” <em>Journal of Molecular Evolution</em> 17: 368–376, 1981.</li>
+    <li>Jukes, T. H. and Cantor, C. R. “Evolution of protein molecules.” In <em>Mammalian Protein Metabolism</em>, 21–132. Academic Press, 1969.</li>
+    <li>Fitch, W. M. “Toward defining the course of evolution: minimum change for a specific tree topology.” <em>Systematic Zoology</em> 20: 406–416, 1971.</li>
+    <li>Capella-Gutiérrez, S., Marcet-Houben, M. and Gabaldón, T. “Phylogenomics supports microsporidia as the earliest diverging clade of sequenced fungi.” <em>BMC Biology</em> 10: 47, 2012. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3586952/">PMC3586952</a></li>
+    <li>Git documentation: <a href="https://git-scm.com/docs/git-worktree">git-worktree</a>, <a href="https://git-scm.com/docs/git-stash">git-stash</a>.</li>
+    <li>Claude Code documentation: <a href="https://code.claude.com/docs/en/worktrees">Worktrees</a>, <a href="https://code.claude.com/docs/en/memory">Memory (CLAUDE.md, AGENTS.md)</a>, <a href="https://code.claude.com/docs/en/common-workflows">Common workflows</a>. Consulted October 2026; products change, so check the current pages.</li>
+    <li>ASD-STE100 Simplified Technical English, Issue 9. <a href="https://www.asd-ste100.org/">asd-ste100.org</a></li>
+  </ol>
+</section>
+
+<!-- ===================================================== COLOPHON -->
+<section class="chapter grid back" id="colophon" aria-labelledby="colophon-h">
+  <h2 id="colophon-h">Colophon: how this page was built</h2>
+  <p>An agent built this page in one session, on one Git branch, with the method that the page teaches. These are facts about this page, not a teaching story.</p>
+  <ol class="build-steps">
+    <li><strong>Sources first.</strong> The agent read the three Anthropic reports, the Claude Code documentation and the phylogenetics literature. Every quote on the page was copied, not paraphrased.</li>
+    <li><strong>Domain model before code.</strong> The entities, the six kinds of state and the mechanism matrix were written as data in <code>src/js/course.js</code>. A test checks their integrity.</li>
+    <li><strong>Kernel with two routes.</strong> The pruning route and the brute-force route share only the convention. Four mutants keep the check suite honest.</li>
+    <li><strong>A real bug, caught.</strong> The first JC69+I fit reported branch lengths in variable-site units, 1.0714 instead of 0.75. An infinite-data anchor exposed it. Test group G11 now guards the fix.</li>
+    <li><strong>A recorded run.</strong> <code>node tests/verify.js</code> ran 16 check groups and wrote <code>results/verification.json</code> with the source hash. The page embeds that manifest and hashes the science code again when it loads.</li>
+    <li><strong>Interface last.</strong> The page renders from the model and the kernel. The build step inlines the files and renders the equations to MathML, so the page has no runtime dependencies.</li>
+  </ol>
+
+  <div class="table-wrap wide">
+    <table class="compare files">
+      <thead><tr><th>File</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><th><code>src/js/kernel.js</code></th><td>JC69 quartet model, two likelihood routes, mutants, parsimony, ML fit</td></tr>
+        <tr><th><code>src/js/lab.js</code></th><td>Simulator, checks C1–C11, mutation matrix, studies, G-test, SHA-256, manifests</td></tr>
+        <tr><th><code>src/js/course.js</code></th><td>The domain model of the course, as data</td></tr>
+        <tr><th><code>src/js/ui.js</code></th><td>The page: plates, labs and interaction</td></tr>
+        <tr><th><code>tests/verify.js</code></th><td>The verification run; writes the manifest</td></tr>
+        <tr><th><code>tools/build.mjs</code></th><td>Inlines everything into one file; renders equations</td></tr>
+        <tr><th><code>CONVENTIONS.md</code>, <code>STATUS.md</code></th><td>The project’s own convention file and handoff</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Writing rules used on this page</h3>
+  <ul class="tight">
+    <li>Procedural sentences have 20 words or fewer. Descriptive sentences have 25 words or fewer.</li>
+    <li>One instruction in each procedural sentence. Imperative verb first.</li>
+    <li>Active voice, and simple present, past or future tense.</li>
+    <li>One word for one meaning. The glossary lists the terms.</li>
+    <li>Warnings and cautions start with the command, then give the reason.</li>
+    <li>Paragraphs have six sentences or fewer, and one topic.</li>
+  </ul>
+  <p class="small">Type: Newsreader, IBM Plex Sans and IBM Plex Mono. Equations: KaTeX, rendered to MathML at build time. No tracking, no network calls from the labs.</p>
+  <p class="small mono" id="colophon-run"></p>
+</section>
+
+</main>
+
+<script type="application/json" id="recorded-run" data-src="../results/verification.json"></script>
+<script src="js/kernel.js"></script>
+<script src="js/lab.js"></script>
+<script src="js/course.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

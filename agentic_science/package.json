@@ -1,0 +1,13 @@
+{
+  "name": "agentic-science-worked",
+  "private": true,
+  "description": "Agentic Science, Worked: a self-testing interactive course built around Project QUARTET.",
+  "scripts": {
+    "verify": "node tests/verify.js",
+    "build": "node tools/build.mjs",
+    "check": "node tests/verify.js && node tools/build.mjs"
+  },
+  "devDependencies": {
+    "katex": "0.16.22"
+  }
+}
