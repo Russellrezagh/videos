@@ -26,6 +26,9 @@ Video checks:            136 narrated beats, 20:03. Every beat rendered to a sti
                          H.264 + AAC voice track, 38 MB; voice level -18.2 dB mean;
                          spot transcription at 7:22 and 16:00 lands within 0.35 s of
                          the schedule.
+Video design pass:       STYLE tokens (strokes >= 4 px, type >= 30 px, caption band);
+                         lint-layout.mjs: 318 frames, 0 issues. Kokoro-82M voice (af_heart);
+                         a non-initial capital A is spoken as the letter. MP4 20:36.
 What has NOT been tested: Firefox and Safari rendering (MathML and canvas fonts);
                          screen-reader navigation of the SVG plates; very old browsers;
                          video playback outside Chromium.

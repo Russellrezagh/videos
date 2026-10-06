@@ -1,0 +1,273 @@
+<title>The Polymerase Chain Reaction</title>
+<meta name="description" content="An explorable textbook page on PCR: the mechanism, the counting, the thermal program, exponential growth, real-time quantification, primer design, variants and failure modes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<!--STYLE-->
+
+<main class="page">
+
+<header class="hero" id="top">
+  <p class="kicker">An explorable textbook page · molecular biology · about 45 minutes</p>
+  <h1>The Polymerase Chain Reaction</h1>
+  <p class="lede">How a tube that only ever gets hot, cooler and warm again turns one chosen stretch of DNA into a billion copies, how to count them, and how to make the counting tell you how much DNA you started with.</p>
+  <div class="meta"><span>Prose, equations, figures, a narrated animation and five experiments, all drawn from one model of the reaction.</span></div>
+  <figure class="hero-fig" aria-labelledby="cap-hero">
+    <div id="fig-hero"></div>
+    <figcaption id="cap-hero"><span class="fig">Fig. 0</span>Thirty cycles of the thermal program. The temperature (violet) is the only thing the machine controls; the copies (orange) are what you get. Under ideal doubling, cycle 30 holds 2<sup>30</sup> ≈ 1.07 billion copies of every starting molecule.</figcaption>
+  </figure>
+</header>
+
+<section class="sec" id="orient" aria-labelledby="h-orient">
+  <p class="eyebrow"><span>§ 1 · Orientation</span><span class="medium">prose</span></p>
+  <h2 id="h-orient">One sentence, then four ideas you need</h2>
+  <p><b>PCR copies one chosen stretch of DNA again and again, and every copy made so far becomes a template for the next round.</b> Because the number of templates doubles each round, thirty rounds turn one molecule into about a billion.</p>
+  <p>That is why PCR sits underneath so much of biology and medicine: testing a swab for a virus, matching a trace of blood at a crime scene, checking an embryo for a disease variant, cloning a gene, or preparing DNA for sequencing. Each needs more copies of one stretch of DNA than nature provides.</p>
+  <p>You need four ideas first. Each one returns many times below.</p>
+  <ol class="tight">
+    <li><b>DNA is two strands that run in opposite directions.</b> Each strand has a 5′ end and a 3′ end, and the two are paired base by base: A with T, G with C.</li>
+    <li><b>Heat separates the strands; cooling lets matching sequences pair again.</b> The temperature at which half of a pair has come apart is its melting temperature, T<sub>m</sub>.</li>
+    <li><b>A <span class="o" data-obj="polymerase">polymerase</span> can only extend a strand that already exists.</b> It needs a short paired stretch with a free 3′ end to start from, which is what a <span class="o" data-obj="primer">primer</span> is.</li>
+    <li><b>Repeated doubling is exponential.</b> Ten doublings make about a thousand, twenty about a million, thirty about a billion.</li>
+  </ol>
+  <p class="note"><b>Mental model.</b> Separate, bind, copy, repeat. The primers decide <i>what</i> is copied. The cycle count decides <i>how many times</i>. The efficiency decides <i>how fast</i> the copies pile up.</p>
+</section>
+
+<section class="sec" id="map" aria-labelledby="h-map">
+  <p class="eyebrow"><span>§ 2 · How this page explains PCR</span><span class="medium">diagram + table</span></p>
+  <h2 id="h-map">One model, several views</h2>
+  <p>The page is built from a single model of the reaction: its objects (template, primers, polymerase, new strands, temperature, cycle, efficiency, threshold), their relations, and the formulas that connect them. Every paragraph, equation, figure and experiment below is a view of that model. Hover any coloured term to see the same object light up in the figures; the colours never change meaning:</p>
+  <p class="legend" id="legend"></p>
+  <figure class="wide panel" aria-labelledby="cap-map">
+    <div id="fig-map"></div>
+    <figcaption id="cap-map"><span class="fig">Fig. 1</span>Concept map. Arrows read “makes possible”. The page follows the arrows from base pairing to quantification. Click a box to jump to its section.</figcaption>
+  </figure>
+  <p>Each idea gets the medium that suits it, and only that one:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Idea</th><th>What makes it hard</th><th>Medium on this page</th></tr></thead>
+    <tbody>
+      <tr><td>What is in the tube</td><td>Many named parts</td><td>Labelled figure, linked to the text (§ 3)</td></tr>
+      <tr><td>What happens in one cycle</td><td>A process in space and time</td><td>Narrated step-by-step animation (§ 4)</td></tr>
+      <tr><td>Why the exact copy appears late</td><td>Counting by type, not by total</td><td>Prediction, then derivation, then a counter you drive (§ 5)</td></tr>
+      <tr><td>Choosing the temperatures</td><td>A trade-off between yield and specificity</td><td>Interactive thermal cycler (§ 6)</td></tr>
+      <tr><td>Exponential growth and efficiency</td><td>Algebra with logarithms</td><td>Equation steps and a worked example (§ 7)</td></tr>
+      <tr><td>Measuring how much you started with</td><td>An inverse, logarithmic relation</td><td>Real-time curves you set a threshold on (§ 8)</td></tr>
+      <tr><td>Designing primers</td><td>Rules applied to sequences</td><td>A live checker and the code it runs (§ 9)</td></tr>
+      <tr><td>Wrong intuitions</td><td>They feel right</td><td>Contrast cards: looks like / actually / because (§ 12)</td></tr>
+    </tbody>
+  </table></div>
+  <ol class="toc" id="toc"></ol>
+</section>
+
+<section class="sec" id="ingredients" aria-labelledby="h-ingredients">
+  <p class="eyebrow"><span>§ 3 · Ingredients</span><span class="medium">labelled figure</span></p>
+  <h2 id="h-ingredients">Six things in a tube, one machine around it</h2>
+  <p>A PCR tube holds a few tens of microlitres. In it are the <span class="o" data-obj="template">template DNA</span>, two <span class="o" data-obj="primer">primers</span>, a heat-stable <span class="o" data-obj="polymerase">DNA polymerase</span>, the four <span class="o" data-obj="dntp">dNTPs</span>, <span class="o" data-obj="mg">Mg²⁺</span> ions and a buffer. Around it, a thermal cycler changes the <span class="o" data-obj="temperature">temperature</span> on a fixed program. Nothing else is added once the run starts.</p>
+  <figure class="wide panel" aria-labelledby="cap-tube">
+    <div id="fig-tube"></div>
+    <figcaption id="cap-tube"><span class="fig">Fig. 2</span>The reaction. Hover or tap a part for its job. Only the primers are specific to your experiment; everything else is the same for every PCR.</figcaption>
+  </figure>
+  <p>Two of these deserve a second look. The primers are the only part you design: their sequences decide which stretch of the template is copied, and nothing outside the two primer sites ever is. The polymerase must survive near-boiling temperatures thirty times over. The enzyme used most often, <i>Taq</i>, comes from <i>Thermus aquaticus</i>, a bacterium isolated from a hot spring in Yellowstone in 1969 <span class="tag fact">fact</span>.</p>
+  <p class="note"><b>Before <i>Taq</i>.</b> The first PCR experiments used a polymerase from <i>E. coli</i>, which heat destroys. Fresh enzyme had to be added by hand after every heating step. A heat-stable enzyme made PCR something a machine could do alone.</p>
+</section>
+
+<section class="sec" id="mechanism" aria-labelledby="h-mechanism">
+  <p class="eyebrow"><span>§ 4 · Mechanism</span><span class="medium">narrated animation</span></p>
+  <h2 id="h-mechanism">One cycle, and then three</h2>
+  <p>A cycle has three steps, each at its own temperature: <b>denature</b> (about 95 °C), <b>anneal</b> (about 55–65 °C) and <b>extend</b> (72 °C). Watch one template go through them. The animation is narrated; press play, or step through it at your own pace.</p>
+  <div class="wide">
+    <div class="stage" id="anim-stage"></div>
+    <div class="anim-bar" id="anim-bar"></div>
+    <p class="anim-cap" id="anim-cap" aria-live="polite"></p>
+  </div>
+  <div class="ask" id="ask-cycle3" data-answer="3">
+    <p class="q">After cycle 1 there are two double strands, but the new strands are too long. In which cycle does the first double strand with <i>exactly</i> the target length appear?</p>
+    <div class="opts"><button type="button" data-v="1">Cycle 1</button><button type="button" data-v="2">Cycle 2</button><button type="button" data-v="3">Cycle 3</button><button type="button" data-v="4">Cycle 4</button></div>
+    <div class="a" hidden>Cycle 3. In cycle 2 the first strands with the exact length are made, but each is still paired with a longer template strand. Only in cycle 3 does an exact strand get an exact partner. <button type="button" data-goto="7">Watch it happen</button></div>
+  </div>
+  <p>Notice what never happens: nothing outside the two primer sites is ever copied on purpose, and the original template is never consumed. It stays in the tube, making one more long copy every cycle.</p>
+</section>
+
+<section class="sec" id="counting" aria-labelledby="h-counting">
+  <p class="eyebrow"><span>§ 5 · Counting the strands</span><span class="medium">derivation + interactive</span></p>
+  <h2 id="h-counting">Why the exact copies win</h2>
+  <p>Give the three kinds of strand names. <b class="c-source">O</b> is an original strand, longer than the target on both sides. <b class="c-product-l">L</b> is a long new strand: it starts at a primer but runs past the far primer site. <b class="c-product">S</b> is a short new strand, exactly primer to primer. With perfect copying, every strand serves as a template once per cycle, and the kind of copy depends only on the kind of template:</p>
+  <div class="eq tex-d">\text{O} \;\to\; \text{L}, \qquad \text{L} \;\to\; \text{S}, \qquad \text{S} \;\to\; \text{S}</div>
+  <p>That is all the biology. The rest is counting. Starting from one double-stranded template, write O<sub>n</sub>, L<sub>n</sub> and S<sub>n</sub> for the number of strands of each kind after cycle <span class="o" data-obj="cycle">n</span>. Step through the derivation:</p>
+  <ol class="eq-steps" id="steps-count">
+    <li><span class="tex">O_n = 2</span><span class="why">The two original strands are never used up.</span></li>
+    <li><span class="tex">L_n = L_{n-1} + O_{n-1} = 2n</span><span class="why">Each cycle, each original makes one more long strand: two per cycle.</span></li>
+    <li><span class="tex">S_n = 2\,S_{n-1} + L_{n-1}</span><span class="why">Every short strand is copied (doubling them), and every long strand yields one short copy.</span></li>
+    <li><span class="tex">S_n = 2^{n+1} - 2n - 2</span><span class="why">Check it: 2(2ⁿ − 2(n−1) − 2) + 2(n−1) = 2ⁿ⁺¹ − 2n − 2.</span></li>
+    <li><span class="tex">\text{amplicons after cycle } n \;=\; S_{n-1} \;=\; 2^{n} - 2n</span><span class="why">An exact double strand is a short template paired with its short copy.</span></li>
+  </ol>
+  <p class="escalate"><button type="button" id="steps-next">Next step</button><button type="button" id="steps-all">Show all</button><span>Stuck? <button type="button" data-goto="6">See it in the animation</button></span></p>
+  <p>The long strands grow by two per cycle, a straight line. The <span class="o" data-obj="amplicon">amplicons</span> double. Linear growth cannot keep up with doubling, so after a handful of cycles almost every molecule in the tube is an exact copy. Drive it yourself:</p>
+  <div class="lab wide" id="lab-census"></div>
+  <p>The code that produced these numbers is the code that runs this page. It is short, because the biology above is short:</p>
+  <pre class="code" id="code-census"></pre>
+  <p class="code-out" id="code-census-out"></p>
+</section>
+
+<section class="sec" id="program" aria-labelledby="h-program">
+  <p class="eyebrow"><span>§ 6 · The thermal program</span><span class="medium">interactive</span></p>
+  <h2 id="h-program">Choosing the three temperatures</h2>
+  <p><b>Denaturation</b> at 94–98 °C separates the strands; the first one of a run is held longer (2–5 minutes) so that even long genomic DNA comes fully apart. <b>Extension</b> at 72 °C is close to the temperature where <i>Taq</i> works fastest; protocols allow about one minute per thousand bases of target <span class="tag rule">rule of thumb</span>. The step that needs judgement is <b>annealing</b>.</p>
+  <p>At the annealing temperature T<sub>a</sub> the primers must find their sites. Too hot, and they do not stay bound long enough to be extended: the yield collapses. Too cold, and they also stick to sites that match only partly: you copy the wrong things, and primers stick to each other (<span class="o" data-obj="dimer">primer-dimers</span>). The usual starting point is a few degrees below the primers’ melting temperature <span class="tag rule">rule of thumb</span>.</p>
+  <div class="lab wide" id="lab-cycler"></div>
+  <p class="note"><b>A teaching model.</b> The binding curves treat each primer site as a two-state switch with a sigmoid melting curve, and model off-target sites as many weaker matches with a lower T<sub>m</sub>. Real tubes add salt, magnesium and sequence effects; the shape of the trade-off is the point, not the exact numbers.</p>
+</section>
+
+<section class="sec" id="growth" aria-labelledby="h-growth">
+  <p class="eyebrow"><span>§ 7 · Exponential growth</span><span class="medium">equations + worked example</span></p>
+  <h2 id="h-growth">Efficiency, and why growth stops</h2>
+  <p>Real reactions do not double perfectly. Call the fraction of templates copied in one cycle the <span class="o" data-obj="efficiency">efficiency E</span>: one cycle multiplies the number of copies by 1 + E. After n cycles, starting from N<sub>0</sub> copies:</p>
+  <div class="eq tex-d">N_n \;=\; N_0\,(1+\htmlData{obj=efficiency}{E})^{\htmlData{obj=cycle}{n}}</div>
+  <p>Taking logarithms turns the question “how many cycles?” into a division:</p>
+  <div class="eq tex-d">n \;=\; \frac{\log\left(N/N_0\right)}{\log(1+E)}</div>
+  <h3>Worked example</h3>
+  <p>A swab holds about 100 copies of a viral target, and the assay runs at E = 0.9. How many cycles until there are 10<sup>10</sup> copies, enough to see?</p>
+  <ol class="eq-steps">
+    <li><span class="tex">\tfrac{N}{N_0} = \tfrac{10^{10}}{10^{2}} = 10^{8}</span><span class="why">Only the ratio matters.</span></li>
+    <li><span class="tex">\log_{10}(10^8) = 8, \quad \log_{10}(1.9) \approx 0.2788</span><span class="why">Any base works, as long as both logs use it.</span></li>
+    <li><span class="tex">n = 8 / 0.2788 \approx 28.7 \text{ cycles}</span><span class="why">At perfect doubling it would be 8 / 0.301 ≈ 26.6: ten percent less efficiency costs two cycles.</span></li>
+  </ol>
+  <div class="ask" data-answer="b">
+    <p class="q">Two samples run side by side. Sample B started with ten times less DNA. At E = 1, how much later does it reach the same amount?</p>
+    <div class="opts"><button type="button" data-v="a">10 cycles</button><button type="button" data-v="b">About 3.3 cycles</button><button type="button" data-v="c">1 cycle</button><button type="button" data-v="d">It never catches up</button></div>
+    <div class="a" hidden>About 3.3 cycles: it needs log(10) / log(2) ≈ 3.32 extra doublings to make up a factor of ten. This number is the heart of real-time PCR in § 8.</div>
+  </div>
+  <p><b>Why growth stops.</b> Exponential growth cannot last. After 25–35 cycles the reaction reaches a <i>plateau</i>: primers and dNTPs run low, the polymerase becomes the bottleneck, and the abundant product strands re-pair with each other instead of with primers. Once on the plateau, tubes that started with very different amounts end with similar amounts <span class="tag fact">fact</span>. That is why the brightness of a band at the end of a run says little about how much DNA you started with.</p>
+  <p class="note"><b>The plateau model used on this page</b> is a discrete logistic: each cycle multiplies by 1 + E(1 − N/K), where K is the most the tube can hold. It reproduces the shape, not the chemistry.</p>
+</section>
+
+<section class="sec" id="qpcr" aria-labelledby="h-qpcr">
+  <p class="eyebrow"><span>§ 8 · Real-time PCR</span><span class="medium">interactive + worked example</span></p>
+  <h2 id="h-qpcr">Turning cycles into amounts</h2>
+  <p>Real-time (quantitative) PCR measures the product after every cycle. A dye such as SYBR Green glows when it binds double-stranded DNA, or a sequence-specific probe (TaqMan) releases a fluorescent reporter when the polymerase degrades it. Either way, the fluorescence follows the number of copies.</p>
+  <p>Set a <span class="o" data-obj="threshold">threshold</span> above the background noise. The fractional cycle at which a sample crosses it is its <span class="o" data-obj="ct">threshold cycle, Ct</span>. Because every sample is measured at the same amount, the threshold N<sub>T</sub>, the growth law gives:</p>
+  <div class="eq tex-d">\htmlData{obj=ct}{C_t} \;=\; \frac{\log N_T - \log N_0}{\log(1+E)}</div>
+  <p>Solve for the starting amount:</p>
+  <div class="eq tex-d">\log_{10} N_0 \;=\; \log_{10} N_T \;-\; \htmlData{obj=ct}{C_t}\,\log_{10}(1+E)</div>
+  <p>Read it left to right: <b>Ct is a straight-line function of the logarithm of the starting amount, with a negative slope.</b> More template, earlier Ct. Ten times more template, about 3.32 cycles earlier at perfect efficiency. Plot Ct against log<sub>10</sub>N<sub>0</sub> for samples of known concentration and you get a <i>standard curve</i>; its slope m gives the efficiency:</p>
+  <div class="eq tex-d">m = -\frac{1}{\log_{10}(1+E)} \qquad\Longleftrightarrow\qquad E = 10^{-1/m} - 1</div>
+  <div class="lab wide" id="lab-qpcr"></div>
+  <h3>Worked example: an unknown sample</h3>
+  <p>Four standards, 10<sup>6</sup> down to 10<sup>3</sup> copies, give Ct values of 15.1, 18.4, 21.8 and 25.1. The unknown crosses at Ct = 20.0.</p>
+  <ol class="eq-steps" id="steps-std"></ol>
+  <p>Most assays are accepted when the slope lies between about −3.6 and −3.1 (E from 90 to 110 %) and the points fit a line closely (R² above about 0.98) <span class="tag rule">common acceptance range</span>. An apparent efficiency above 100 % usually signals a problem, such as inhibitors in the concentrated standards or primer-dimers adding signal.</p>
+  <details class="deeper"><summary>Relative quantification: ΔΔCt</summary>
+    <p>Often you do not need copy numbers, only “how much more is this gene expressed after treatment?” Compare the target with a reference gene in both conditions. With both assays near E = 1, the fold change is</p>
+    <div class="eq tex-d">\text{fold change} = 2^{-\Delta\Delta C_t}, \qquad \Delta\Delta C_t = (C_t^{\text{target}} - C_t^{\text{ref}})_{\text{treated}} - (C_t^{\text{target}} - C_t^{\text{ref}})_{\text{control}}</div>
+    <p>If the efficiencies are not close to 1, replace 2 with 1 + E; the method assumes both assays have the same efficiency.</p>
+  </details>
+</section>
+
+<section class="sec" id="primers" aria-labelledby="h-primers">
+  <p class="eyebrow"><span>§ 9 · Primer design</span><span class="medium">interactive + code</span></p>
+  <h2 id="h-primers">Two short strands decide everything</h2>
+  <p>A primer pair defines the product: the forward primer has the sequence of the top strand at the left end of the target, and the reverse primer has the reverse complement of the top strand at the right end. Good pairs follow a short list of rules of thumb <span class="tag rule">rules of thumb</span>: 18–25 bases, 40–60 % G + C, a melting temperature around 52–65 °C, the two T<sub>m</sub> within about 5 °C of each other, one or two G or C bases at the 3′ end, and no complementarity between 3′ ends.</p>
+  <p>The 3′ end matters most, because the polymerase extends from it. A mismatch there blocks extension; a mismatch, or even a whole extra tail, at the 5′ end usually does not. Labs use that freedom to add restriction sites and adapters to the ends of products.</p>
+  <div class="lab wide" id="lab-primers"></div>
+  <p>The page estimates T<sub>m</sub> three ways. The Wallace rule (2 °C per A·T, 4 °C per G·C) is quick and rough. The GC formula adds length. The nearest-neighbour method sums the stacking energies of each neighbouring pair of bases (SantaLucia’s unified parameters) and is the one modern design tools use <span class="tag fact">fact</span>. Here is that function, as it runs on this page:</p>
+  <pre class="code" id="code-tm"></pre>
+</section>
+
+<section class="sec" id="readout" aria-labelledby="h-readout">
+  <p class="eyebrow"><span>§ 10 · Reading the result</span><span class="medium">static figure</span></p>
+  <h2 id="h-readout">Did it work? The gel</h2>
+  <p>For end-point PCR the usual check is agarose gel electrophoresis. DNA is negatively charged, so in an electric field it moves through the gel toward the positive electrode, and shorter fragments move faster. A ladder of fragments of known sizes runs beside the samples. A clean PCR shows one sharp band at the expected length, and nothing in the no-template control.</p>
+  <figure class="panel" aria-labelledby="cap-gel">
+    <div id="fig-gel"></div>
+    <figcaption id="cap-gel"><span class="fig">Fig. 3</span>A 500 bp product. Lane 1: ladder. Lane 2: a clean reaction. Lane 3: annealing too cold, with extra bands and primer-dimer at the bottom. Lane 4: the no-template control, empty as it must be. Lane 5: a contaminated control, the most serious result on the gel.</figcaption>
+  </figure>
+  <p>Real-time PCR with a DNA dye adds a second check after the run: heat the products slowly and watch the fluorescence drop as they melt. A single product melts at one temperature and gives one peak; primer-dimers melt lower and show up as a second, earlier peak.</p>
+</section>
+
+<section class="sec" id="variants" aria-labelledby="h-variants">
+  <p class="eyebrow"><span>§ 11 · Variants</span><span class="medium">table + calculator</span></p>
+  <h2 id="h-variants">The same idea, adapted</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Variant</th><th>What changes</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td>RT-PCR</td><td>A reverse transcriptase first copies RNA into DNA (cDNA)</td><td>RNA viruses, gene expression</td></tr>
+      <tr><td>Real-time (qPCR)</td><td>Fluorescence read every cycle</td><td>Quantification (§ 8)</td></tr>
+      <tr><td>Digital PCR</td><td>The sample is split into thousands of tiny partitions, each read as yes or no</td><td>Absolute counts without a standard curve</td></tr>
+      <tr><td>Multiplex</td><td>Several primer pairs in one tube</td><td>Panels: many targets at once</td></tr>
+      <tr><td>Nested</td><td>A second round with primers inside the first product</td><td>Higher specificity from little template</td></tr>
+      <tr><td>Touchdown</td><td>Annealing starts hot and steps down</td><td>Favours the best-matching site early</td></tr>
+      <tr><td>Hot-start</td><td>The polymerase is blocked until the first heating</td><td>Fewer primer-dimers formed during set-up</td></tr>
+      <tr><td>High-fidelity</td><td>A polymerase that proofreads (3′→5′ exonuclease)</td><td>Cloning and sequencing, where errors matter</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Digital PCR: counting with Poisson</h3>
+  <p>Split a sample into many partitions and run PCR in all of them. A partition lights up if it received at least one copy. Copies land at random, so the number per partition follows a Poisson distribution with mean λ, and the fraction of empty partitions is e<sup>−λ</sup>. Count the positive fraction p and invert:</p>
+  <div class="eq tex-d">p = 1 - e^{-\lambda} \qquad\Longrightarrow\qquad \lambda = -\ln(1 - p)</div>
+  <div class="lab" id="lab-dpcr"></div>
+</section>
+
+<section class="sec" id="misconceptions" aria-labelledby="h-mis">
+  <p class="eyebrow"><span>§ 12 · Misconceptions</span><span class="medium">contrast cards</span></p>
+  <h2 id="h-mis">What it looks like, and what it is</h2>
+  <div class="mis wide" id="mis"></div>
+</section>
+
+<section class="sec" id="failures" aria-labelledby="h-fail">
+  <p class="eyebrow"><span>§ 13 · Edge cases and failure modes</span><span class="medium">prose + numbers</span></p>
+  <h2 id="h-fail">Where exponential copying bites back</h2>
+  <p><b><span class="o" data-obj="contamination">Contamination</span>.</b> The property that makes PCR sensitive makes it fragile. One stray molecule from an earlier product, copied at E = 0.95 for 35 cycles, becomes 1.95<sup>35</sup> ≈ <span id="contam" class="num">1.4 × 10¹⁰</span> copies. Labs separate set-up from analysis physically, use filter tips, and run a no-template control in every batch.</p>
+  <p><b>Very little template.</b> At a few copies per tube, chance decides what goes into each tube. If a sample holds on average λ copies per reaction volume, a reaction receives none with probability e<sup>−λ</sup>: with λ = 3, about <span id="poisson3" class="num">5 %</span> of reactions get none and come out negative though the sample is positive. Replicates and digital PCR deal with this.</p>
+  <p><b>Inhibitors.</b> Substances carried over from the sample (heme from blood, humic acids from soil, heparin, leftover ethanol) slow the polymerase. Efficiency drops, Ct shifts later, and quantities come out too low. A diluted sample that gives an <i>earlier</i> Ct than expected is a sign of inhibition.</p>
+  <p><b>Difficult templates.</b> GC-rich stretches hold their strands together and fold into hairpins; additives such as DMSO or betaine help. Long targets (beyond a few kilobases) need longer extension and enzyme blends.</p>
+  <p><b>Copying errors.</b> <i>Taq</i> has no proofreading, so it occasionally inserts a wrong base, and an early error is copied into every descendant. For cloning or sequencing, use a proofreading polymerase.</p>
+  <p><b>The plateau hides differences.</b> End-point brightness is not a measure of starting amount (§ 7). Quantify in the exponential phase, which is what Ct does.</p>
+</section>
+
+<section class="sec" id="history" aria-labelledby="h-history">
+  <p class="eyebrow"><span>§ 14 · History and connections</span><span class="medium">timeline</span></p>
+  <h2 id="h-history">From a hot spring to every hospital</h2>
+  <figure class="wide panel" aria-labelledby="cap-time">
+    <div id="fig-time"></div>
+    <figcaption id="cap-time"><span class="fig">Fig. 4</span>Milestones. Sources are listed at the end of the page.</figcaption>
+  </figure>
+  <p><b>Connections.</b> Cells copy DNA with the same chemistry: a polymerase extending a primer from its 3′ end. The cell separates strands with an enzyme (helicase) where PCR uses heat, and it makes short RNA primers where PCR adds DNA ones. Sanger sequencing is a single primer extension with chain-terminating nucleotides. Sequencing libraries are amplified by PCR. Isothermal methods such as LAMP amplify at one temperature and power many rapid tests, and CRISPR-based diagnostics often amplify first and detect with a Cas enzyme after.</p>
+</section>
+
+<section class="sec" id="synthesis" aria-labelledby="h-syn">
+  <p class="eyebrow"><span>§ 15 · Synthesis</span><span class="medium">summary card</span></p>
+  <h2 id="h-syn">What you now know</h2>
+  <div class="summary-card">
+    <p><b>The idea.</b> PCR repeats a three-temperature cycle. Primers choose the stretch, the polymerase copies from each primer, and every copy becomes a template. Exact copies appear in cycle 3 and then double, while the long by-products only grow by two per cycle.</p>
+    <p><b>The equations.</b> N<sub>n</sub> = N<sub>0</sub>(1 + E)<sup>n</sup> while growth is exponential. In real-time PCR, Ct falls on a straight line against log N<sub>0</sub> with slope −1/log<sub>10</sub>(1 + E): about −3.32 per factor of ten when E = 1.</p>
+    <p><b>The picture to keep.</b> A doubling population of exact copies overtaking a straight line of long ones, and a family of S-shaped curves, evenly spaced, one per tenfold dilution.</p>
+  </div>
+  <div class="ask" data-answer="b">
+    <p class="q">Transfer: a positive control with 10⁴ copies crosses the threshold at Ct 25. A patient sample crosses at Ct 30, in the same run, E = 0.95. Roughly how many copies did the sample have?</p>
+    <div class="opts"><button type="button" data-v="a">About 2,000</button><button type="button" data-v="b">About 350</button><button type="button" data-v="c">About 30</button><button type="button" data-v="d">About 10⁹</button></div>
+    <div class="a" hidden>Five cycles later means 1.95⁵ ≈ 28 times less template: 10⁴ / 28 ≈ <span id="transfer" class="num">355</span> copies.</div>
+  </div>
+  <h3>Exercises</h3>
+  <ol id="exercises"></ol>
+  <p><b>Next concepts.</b> Reverse transcription and RT-qPCR; Sanger and next-generation sequencing; isothermal amplification (LAMP, RPA); CRISPR diagnostics.</p>
+</section>
+
+<section class="sec" id="sources" aria-labelledby="h-src">
+  <p class="eyebrow"><span>§ 16 · Sources</span></p>
+  <h2 id="h-src">Sources</h2>
+  <ol class="sources">
+    <li>T. D. Brock, H. Freeze. <i>Thermus aquaticus</i> gen. n. and sp. n., a nonsporulating extreme thermophile. J. Bacteriol. 98, 289–297 (1969).</li>
+    <li>R. K. Saiki et al. Enzymatic amplification of β-globin genomic sequences and restriction site analysis for diagnosis of sickle cell anemia. Science 230, 1350–1354 (1985).</li>
+    <li>K. Mullis et al. Specific enzymatic amplification of DNA in vitro: the polymerase chain reaction. Cold Spring Harb. Symp. Quant. Biol. 51, 263–273 (1986).</li>
+    <li>R. K. Saiki et al. Primer-directed enzymatic amplification of DNA with a thermostable DNA polymerase. Science 239, 487–491 (1988).</li>
+    <li>R. Higuchi et al. Simultaneous amplification and detection of specific DNA sequences. Bio/Technology 10, 413–417 (1992).</li>
+    <li>The Nobel Prize in Chemistry 1993: Kary B. Mullis “for his invention of the polymerase chain reaction (PCR) method”, shared with Michael Smith.</li>
+    <li>J. SantaLucia Jr. A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. PNAS 95, 1460–1465 (1998).</li>
+    <li>K. J. Livak, T. D. Schmittgen. Analysis of relative gene expression data using real-time quantitative PCR and the 2<sup>−ΔΔCt</sup> method. Methods 25, 402–408 (2001).</li>
+    <li>S. A. Bustin et al. The MIQE guidelines: minimum information for publication of quantitative real-time PCR experiments. Clin. Chem. 55, 611–622 (2009).</li>
+  </ol>
+  <footer class="end">Every number on this page is computed in your browser by one small model of the reaction (strand bookkeeping, growth with efficiency and a plateau, threshold cycles, standard curves, melting temperatures, Poisson counting), which is checked by its own tests. Tags mark what kind of statement you are reading: <span class="tag fact">fact</span> <span class="tag rule">rule of thumb</span> <span class="tag model">teaching model</span>.</footer>
+</section>
+
+</main>
+<!--NARRATION-->
+<!--SCRIPTS-->

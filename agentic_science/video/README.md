@@ -60,10 +60,33 @@ node video/tools/build.mjs --fragment out.html  # one file, voice embedded (abou
 
 node video/tools/render-mp4.mjs --workers 3  # dist/the-tree-and-the-agent.mp4
 node video/tools/check-av.mjs                # voice plays, in step with the picture
+node video/tools/lint-layout.mjs             # every beat against the design rules
 ```
 
 `dist/narration.mp3` is committed so that a clone plays with its voice. The MP4
 is a build product and is not committed.
+
+## Design rules
+
+All sizes are in 1080p units and live in one object, `STYLE` in `src/js/engine.js`.
+The web player shows the frame at about 1/2 (desktop) to 1/5 (phone) of that
+size, so the rules set floors, not just defaults:
+
+| Token | Value | Why |
+|---|---|---|
+| strokes | floor 4 px; fine structure 4–5 px, marks to follow 6–7 px | a 2–3 px line vanishes at 1/3 scale |
+| type | floor 30 px; labels 34, body 40, titles 54 | 22 px labels were unreadable in the player |
+| safe area | 60 px side margin; pictures end above y = 385 | the caption band below is reserved |
+| subtitles | at most two lines, in chunks timed by their share of the clip; under the picture on phones | three-line captions covered the plots |
+
+`tools/lint-layout.mjs` checks the rendered frames against the same numbers:
+every narrated beat at its middle and its end, for content off the safe area,
+content under the caption, overlapping text, small text and thin lines. The
+design pass took it from 723 thin lines, 136 small texts, 55 caption
+collisions and 5 overlaps to none. The rules follow the review method of the
+making-explainer-videos skill (Neel Nanda, `dont-go-quiet-on-me`): contact
+sheets at each beat's middle and end, full-resolution crops of text, and the
+right edge checked on every frame.
 
 ## The voice
 
