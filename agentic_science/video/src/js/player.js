@@ -167,6 +167,7 @@
     }
 
     api.drives = () => !!el && api.state !== 'failed' && api.state !== 'blocked';
+    api.element = () => el; // for tests: tools/check-av.mjs records what it plays
     // Until the voice actually plays from a requested position, report that
     // position, so the picture never jumps to where a failing source landed.
     api.time = () => (!el ? 0 : pendingSeek != null ? pendingSeek : expectAt != null ? expectAt : el.currentTime);
@@ -323,6 +324,8 @@
     });
 
     window.__track = track; // for tests: state of the narration track
+    window.__now = () => t; // for tests: the picture's clock
+    window.__seekTo = (x) => seek(x); // for tests: jump without a click
 
     function setPlaying(on) {
       playing = on;
