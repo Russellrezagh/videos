@@ -80,7 +80,7 @@ const list = path.join(tmp, 'list.txt');
 fs.writeFileSync(list, segs.map((s) => `file '${s}'`).join('\n'));
 const audio = path.join(VIDEO, 'dist/narration.mp3');
 const args = ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', list];
-if (fs.existsSync(audio) && t0 === 0) args.push('-i', audio, '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '96k', '-shortest');
+if (fs.existsSync(audio) && t0 === 0) args.push('-i', audio, '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '48k', '-shortest');
 args.push('-c:v', 'copy', '-movflags', '+faststart', out);
 execFileSync('ffmpeg', args, { stdio: 'inherit' });
 console.log(`wrote ${out}  ${(fs.statSync(out).size / 1048576).toFixed(1)} MB in ${((Date.now() - started) / 60000).toFixed(1)} min`);
