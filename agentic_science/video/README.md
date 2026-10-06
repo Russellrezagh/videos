@@ -38,7 +38,8 @@ runs with captions. Keys: Space, ← →, J L, C captions, M mute, F full screen
 | `src/js/scenes.js` | The script: each beat is one narration line plus its animations. On-screen numbers come from the QUARTET science code (`../src/js/kernel.js`, `../src/js/lab.js`). |
 | `src/js/player.js` | Player: the narration track is the clock; scrubber, chapters, captions, transcript, keyboard. `?export` turns it into a frame server for rendering. |
 | `tools/build.mjs` | Inlines MathJax (SVG paths, so equations can be written stroke by stroke), the Computer Modern fonts and all code into `dist/index.html`. |
-| `tools/narrate.mjs` | Exports the script, synthesizes each line with Piper TTS (`tts.py`), re-times every beat to the real clip lengths, mixes one track (`mix.py`), encodes `dist/narration.mp3`. |
+| `tools/narrate.mjs` | Exports the script, speaks each line (`tts.py`: Kokoro-82M by default, Piper as a fast fallback), re-times every beat to the real clip lengths, mixes one track (`mix.py`), encodes `dist/narration.mp3`. |
+| `tools/check-av.mjs`, `tools/check_av.py` | End-to-end check of the real page: presses Play, records what the narration element outputs, transcribes it with Whisper and checks every spoken word against the line on screen at that moment, plus picture–voice clock drift. |
 | `tools/render-mp4.mjs` | Frame-exact MP4 render: parallel headless Chromium workers seek, screenshot and pipe into x264; then the narration is muxed in. |
 | `narration/*.json` | The exported script, the measured clip durations and the resulting schedule. |
 
@@ -49,24 +50,53 @@ cd agentic_science
 npm install                                  # KaTeX fonts + MathJax
 node video/tools/build.mjs                   # dist/index.html (captions only)
 
-# narration (needs: pip install piper-tts numpy; playwright; ffmpeg)
-curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx
-curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
-node video/tools/narrate.mjs --model en_US-lessac-medium.onnx
+# narration (needs: pip install kokoro-onnx numpy; playwright; ffmpeg)
+R=https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0
+curl -LO $R/kokoro-v1.0.onnx -LO $R/voices-v1.0.bin
+node video/tools/narrate.mjs --model kokoro-v1.0.onnx --voices voices-v1.0.bin --voice af_heart --speed 0.95
+#   (fast fallback: --engine piper --model en_US-lessac-medium.onnx)
 node video/tools/build.mjs                   # now with narration
 node video/tools/build.mjs --fragment out.html  # one file, voice embedded (about 12 MB)
 
 node video/tools/render-mp4.mjs --workers 3  # dist/the-tree-and-the-agent.mp4
+node video/tools/check-av.mjs                # voice plays, in step with the picture
 ```
 
 `dist/narration.mp3` is committed so that a clone plays with its voice. The MP4
 is a build product and is not committed.
 
+## The voice
+
+The narration is spoken by [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
+(Apache-2.0), voice `af_heart`, at 0.95× speed (about 156 words a minute), run
+locally on a CPU through [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx).
+The track is levelled to −17 LUFS.
+
+Why Kokoro: it is the open model most often ranked first for natural speech per
+unit of compute, it needs no GPU, and its licence allows any use. The choice and
+the method (one clip per line, so every line's start time is exact, and a cache
+keyed by the model's fingerprint) follow the
+[anything2explainer](https://github.com/FavorPan/anything2explainer) Claude Code
+skill, which uses Kokoro for English narration. No code is copied from it (its
+licence is noncommercial); `tools/tts.py` is written for this project.
+
+Voices were auditioned on the ten hardest lines (names, terms, numbers), each
+transcribed back with Whisper small.en. All six Kokoro voices tried were as
+intelligible as Piper (2.8–5.6 % word errors with number formatting ignored,
+Piper 5.2 %); `af_heart` was chosen because Kokoro grades it highest for
+naturalness. Swap it with `--voice am_michael` (or any Kokoro voice) and run
+`narrate.mjs` again: every beat re-times itself to the new clips.
+
 ## Checks done on this build
 
-- All 136 narration lines were transcribed back with Whisper (base.en). Word
-  error rate 6.2%, most of it number formatting (“2026” against “twenty
-  twenty-six”). Lines that came out unclear were rewritten in plainer words.
+- All 136 narration lines were transcribed back with Whisper (small.en): see
+  `STATUS.md` for the word error rate. (The earlier Piper build: 6.2 % with
+  base.en, mostly number formatting.)
+- `tools/check-av.mjs` on the real page: the voice plays, every spoken word in
+  three windows (opening, chapter 3, recap) matches the line on screen (99–100 %),
+  and picture and voice stay within 17 ms. The same check passes on the
+  single-file page with the voice embedded, served the way the artifact host
+  serves it, including when the host refuses `blob:` media.
 - Every narrated beat was rendered to a still and reviewed for overlaps.
 - Quotes from Schwartz were checked against the text of the source articles.
 - The mixer asserts that no narration line runs past the end of its beat.

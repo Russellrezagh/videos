@@ -5,7 +5,7 @@
  *   2. a TTS engine speaks each line     (tools/tts.py; Kokoro-82M by default)
  *   3. the page re-times every beat with the real clip durations
  *   4. the clips are mixed into one track at those times (tools/mix.py)
- *   5. ffmpeg encodes video/dist/narration.mp3
+ *   5. ffmpeg levels it to -17 LUFS (speech for screens) and encodes video/dist/narration.mp3
  *
  * usage: node video/tools/narrate.mjs --model kokoro-v1.0.onnx --voices voices-v1.0.bin
  *          [--voice af_heart] [--speed 0.95]
@@ -62,5 +62,5 @@ console.log(`3. schedule: ${(schedule.duration / 60).toFixed(2)} min`);
 const wav = path.join(clips, 'narration.wav');
 execFileSync('python3', [path.join(VIDEO, 'tools/mix.py'), N('schedule.json'), path.join(clips, 'index.json'), wav], { stdio: 'inherit' });
 fs.mkdirSync(path.join(VIDEO, 'dist'), { recursive: true });
-execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', wav, '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '56k', path.join(VIDEO, 'dist/narration.mp3')], { stdio: 'inherit' });
+execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', wav, '-af', 'loudnorm=I=-17:TP=-1.5:LRA=11', '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '56k', path.join(VIDEO, 'dist/narration.mp3')], { stdio: 'inherit' });
 console.log(`5. dist/narration.mp3  ${(fs.statSync(path.join(VIDEO, 'dist/narration.mp3')).size / 1048576).toFixed(2)} MB`);

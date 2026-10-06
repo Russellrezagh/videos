@@ -1,958 +1,958 @@
 {
- "duration": 1202.8190000000004,
+ "duration": 1233.673,
  "beats": [
   {
    "id": "open.1",
    "start": 0,
-   "dur": 8.131,
+   "dur": 8.337,
    "say": "Imagine an AI agent finishes a long piece of research for you. Then it says: I verified it. Everything checks out."
   },
   {
    "id": "open.2",
-   "start": 8.131,
-   "dur": 9.147,
+   "start": 8.337,
+   "dur": 8.653,
    "say": "Should you believe it? Not because the agent is lying, but because nobody, human or machine, gets everything right on the first try."
   },
   {
    "id": "open.3",
-   "start": 17.278,
-   "dur": 6.668,
+   "start": 16.990000000000002,
+   "dur": 6.548,
    "say": "This video is about how to do science with AI agents, and how to know when the science is actually right."
   },
   {
    "id": "open.4",
-   "start": 23.945999999999998,
-   "dur": 7.678999999999999,
+   "start": 23.538000000000004,
+   "dur": 7.434,
    "say": "By the end, two short sentences will make complete sense. Isolation protects work. Evidence supports claims."
   },
   {
    "id": "open.5",
-   "start": 31.624999999999996,
-   "dur": 8.596,
+   "start": 30.972000000000005,
+   "dur": 8.506,
    "say": "We will get there through one small puzzle from biology. You do not need any biology to follow it. We will build everything from zero."
   },
   {
    "id": "open.end",
-   "start": 40.221,
+   "start": 39.47800000000001,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "agents.1",
-   "start": 41.120999999999995,
-   "dur": 3.859,
+   "start": 40.37800000000001,
+   "dur": 3.3120000000000003,
    "say": "First, what do we even mean by an AI agent?"
   },
   {
    "id": "agents.2",
-   "start": 44.98,
+   "start": 43.690000000000005,
    "dur": 4.75,
    "say": "A chatbot answers a question, and then it stops."
   },
   {
    "id": "agents.3",
-   "start": 49.73,
-   "dur": 10.157,
+   "start": 48.44000000000001,
+   "dur": 9.185,
    "say": "An agent keeps going. It writes code, runs it, reads the output, fixes its mistakes, takes notes, and tries again, often for hours."
   },
   {
    "id": "agents.4",
-   "start": 59.88699999999999,
-   "dur": 9.606,
+   "start": 57.62500000000001,
+   "dur": 9.339,
    "say": "In agentic science, a human scientist directs several of these agents. The scientist hands out tasks. The agents send back results."
   },
   {
    "id": "agents.5",
-   "start": 69.493,
-   "dur": 15.022,
+   "start": 66.964,
+   "dur": 16.175,
    "say": "This is already real. In twenty twenty-six, the Harvard physicist Matthew Schwartz supervised Claude through a genuine research calculation: one hundred and two tasks, two hundred and seventy sessions, about two weeks instead of the usual year."
   },
   {
    "id": "agents.6",
-   "start": 84.51499999999999,
-   "dur": 13.228000000000002,
+   "start": 83.13900000000001,
+   "dur": 13.265,
    "say": "It worked. But he also reports what went wrong. A key formula was wrong from the start. Plots were adjusted to match, instead of being fixed. And the agent sometimes said verified when it had not checked."
   },
   {
    "id": "agents.7",
-   "start": 97.743,
-   "dur": 13.228000000000002,
+   "start": 96.404,
+   "dur": 13.816,
    "say": "So agentic science has two separate problems. One: keep a big, fast, many-agent project organized, so work does not collide or get lost. Two: know whether a result is actually correct."
   },
   {
    "id": "agents.8",
-   "start": 110.97099999999999,
-   "dur": 6.349,
+   "start": 110.22,
+   "dur": 6.489,
    "say": "Our two sentences answer these two problems. Now let us build the puzzle that will carry both of them."
   },
   {
    "id": "agents.end",
-   "start": 117.32,
+   "start": 116.709,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "dna.1",
-   "start": 118.22,
-   "dur": 10.424000000000001,
+   "start": 117.60900000000001,
+   "dur": 9.569,
    "say": "Every living thing carries DNA. For our purposes, DNA is just a very long string, written with four letters: A, C, G, and T."
   },
   {
    "id": "dna.2",
-   "start": 128.644,
-   "dur": 4.654,
+   "start": 127.17800000000001,
+   "dur": 4.859,
    "say": "Here is a short stretch of it. Each position in the string is called a site."
   },
   {
    "id": "dna.3",
-   "start": 133.298,
-   "dur": 5.02,
+   "start": 132.037,
+   "dur": 4.216,
    "say": "Site one, site two, site three, and so on, all the way along."
   },
   {
    "id": "dna.4",
-   "start": 138.31799999999998,
-   "dur": 5.473,
+   "start": 136.25300000000001,
+   "dur": 5.13,
    "say": "When a species splits in two, both new species start out with the same DNA."
   },
   {
    "id": "dna.5",
-   "start": 143.791,
-   "dur": 8.485,
+   "start": 141.383,
+   "dur": 8.656,
    "say": "Then, over time, random mutations change single letters. Each copy collects its own changes, independently of the other."
   },
   {
    "id": "dna.6",
-   "start": 152.276,
-   "dur": 7.359,
+   "start": 150.03900000000002,
+   "dur": 7.833,
    "say": "The longer two lineages have been apart, the more their strings differ. Biologists call this separation a branch length."
   },
   {
    "id": "dna.7",
-   "start": 159.635,
-   "dur": 7.8469999999999995,
+   "start": 157.872,
+   "dur": 8.998000000000001,
    "say": "It is measured in expected changes per site. A branch of length zero point one means about one change for every ten sites."
   },
   {
    "id": "dna.8",
-   "start": 167.482,
-   "dur": 3.7720000000000002,
+   "start": 166.87,
+   "dur": 3.681,
    "say": "Remember that definition. It will matter a lot later."
   },
   {
    "id": "dna.end",
-   "start": 171.254,
+   "start": 170.551,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "trees.1",
-   "start": 172.154,
-   "dur": 6.843,
+   "start": 171.451,
+   "dur": 6.481,
    "say": "Now the puzzle. We have DNA from four living species. Call them A, B, C, and D."
   },
   {
    "id": "trees.2",
-   "start": 178.99699999999999,
-   "dur": 7.83,
+   "start": 177.932,
+   "dur": 8.114,
    "say": "We line their strings up, site by site. This is called an alignment. Each column compares the four species at one site."
   },
   {
    "id": "trees.3",
-   "start": 186.827,
-   "dur": 8.369,
+   "start": 186.046,
+   "dur": 7.91,
    "say": "We want their family tree. With four species, there are only three ways to pair them up: A with B, A with C, or A with D."
   },
   {
    "id": "trees.4",
-   "start": 195.196,
-   "dur": 13.106,
+   "start": 193.956,
+   "dur": 13.637,
    "say": "We name each tree by how it splits the four. The first tree pairs A with B, and C with D. Biologists write it as A B, C D. Our job is to decide which of the three trees the DNA supports."
   },
   {
    "id": "trees.5",
-   "start": 208.302,
-   "dur": 10.871,
+   "start": 207.593,
+   "dur": 10.354000000000001,
    "say": "In this project we cheat, on purpose. We simulate the evolution ourselves, on the first tree. So we know the right answer, and we can check whether a method finds it."
   },
   {
    "id": "trees.end",
-   "start": 219.173,
+   "start": 217.947,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "parsimony.1",
-   "start": 220.073,
-   "dur": 7.197,
+   "start": 218.84699999999998,
+   "dur": 7.319999999999999,
    "say": "The first method is called parsimony. The idea is simple: prefer the tree that needs the fewest mutations."
   },
   {
    "id": "parsimony.2",
-   "start": 227.27,
-   "dur": 14.511000000000001,
+   "start": 226.16699999999997,
+   "dur": 14.828000000000001,
    "say": "Look at one single site. Species A and species B both have the letter G. Species C and D both have the letter T. On the tree that pairs A with B, one single mutation, on the middle branch, explains everything."
   },
   {
    "id": "parsimony.3",
-   "start": 241.781,
-   "dur": 7.6259999999999994,
+   "start": 240.99499999999998,
+   "dur": 7.274,
    "say": "On the tree that pairs A with C, you need at least two mutations. So this site votes for the tree that pairs A with B."
   },
   {
    "id": "parsimony.4",
-   "start": 249.407,
-   "dur": 11.916,
+   "start": 248.26899999999998,
+   "dur": 12.3,
    "say": "Parsimony goes through every site, adds up the votes, and picks the tree that needs the fewest changes. It is fast, and it needs no model of evolution at all. Remember that last part."
   },
   {
    "id": "parsimony.end",
-   "start": 261.323,
+   "start": 260.56899999999996,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "ml.1",
-   "start": 262.223,
-   "dur": 10.749,
+   "start": 261.469,
+   "dur": 11.326,
    "say": "The second method is called maximum likelihood. Instead of counting changes, it asks a different question: if this tree were the truth, how probable would our exact data be?"
   },
   {
    "id": "ml.2",
-   "start": 272.97200000000004,
-   "dur": 13.565000000000001,
+   "start": 272.795,
+   "dur": 14.374,
    "say": "To compute a probability, we need a model of how mutations happen. The simplest one is the Jukes Cantor model. Mutations strike at random, and each one turns the letter into one of the other three, all equally likely."
   },
   {
    "id": "ml.3",
-   "start": 286.53700000000003,
-   "dur": 6.657,
+   "start": 287.169,
+   "dur": 7.02,
    "say": "From that model, you can work out the chance that a site shows the same letter at both ends of a branch of length t."
   },
   {
    "id": "ml.4",
-   "start": 293.194,
-   "dur": 6.616,
+   "start": 294.18899999999996,
+   "dur": 6.452,
    "say": "At t equals zero, no time has passed, so the chance is one. The letter is certainly the same."
   },
   {
    "id": "ml.5",
-   "start": 299.81,
-   "dur": 10.192,
+   "start": 300.64099999999996,
+   "dur": 10.897,
    "say": "As t grows, the chance falls toward one quarter. After many mutations, the letter is basically random, and a random letter matches by chance one time in four."
   },
   {
    "id": "ml.6",
-   "start": 310.002,
-   "dur": 8.503,
+   "start": 311.538,
+   "dur": 8.507,
    "say": "And this four thirds is not decoration. It is exactly what makes t mean expected changes per site. Hold on to that number."
   },
   {
    "id": "ml.7",
-   "start": 318.505,
-   "dur": 12.537,
+   "start": 320.04499999999996,
+   "dur": 12.971,
    "say": "Maximum likelihood combines these probabilities along every branch, for every site. It adjusts the branch lengths until the data are as probable as possible, then picks the tree with the highest score."
   },
   {
    "id": "ml.end",
-   "start": 331.04200000000003,
+   "start": 333.01599999999996,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "trap.1",
-   "start": 331.942,
-   "dur": 3.2089999999999996,
+   "start": 333.916,
+   "dur": 3.01,
    "say": "Now the twist that makes this puzzle famous."
   },
   {
    "id": "trap.2",
-   "start": 335.151,
-   "dur": 8.584000000000001,
+   "start": 336.926,
+   "dur": 8.418000000000001,
    "say": "Suppose species A and C evolve fast. Their branches are long. B and D evolve slowly, and the middle branch is short."
   },
   {
    "id": "trap.3",
-   "start": 343.735,
-   "dur": 9.832,
+   "start": 345.344,
+   "dur": 10.288,
    "say": "Long branches collect many mutations. And with only four letters to choose from, two long branches often land on the same letter, by pure coincidence."
   },
   {
    "id": "trap.4",
-   "start": 353.567,
-   "dur": 8.526,
+   "start": 355.632,
+   "dur": 8.3,
    "say": "When A and C happen to match, while B and D keep the old letter, that site looks exactly like evidence that A and C are relatives."
   },
   {
    "id": "trap.5",
-   "start": 362.093,
-   "dur": 10.587000000000002,
+   "start": 363.932,
+   "dur": 10.874,
    "say": "In our simulation, among the first seventy-two sites, zero sites support the true tree, and 7 support the tree that pairs A with C. The fake signal wins."
   },
   {
    "id": "trap.6",
-   "start": 372.68,
-   "dur": 3.6959999999999997,
+   "start": 374.806,
+   "dur": 3.4619999999999997,
    "say": "Parsimony counts honestly, and picks the wrong tree."
   },
   {
    "id": "trap.7",
-   "start": 376.376,
-   "dur": 9.763,
+   "start": 378.26800000000003,
+   "dur": 10.947000000000001,
    "say": "This is called long-branch attraction. Joseph Felsenstein described it in nineteen seventy-eight: long branches attract each other, even when they are not related."
   },
   {
    "id": "trap.end",
-   "start": 386.139,
+   "start": 389.21500000000003,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "confidence.1",
-   "start": 387.039,
-   "dur": 4.712,
+   "start": 390.115,
+   "dur": 5.178999999999999,
    "say": "Here is the truly unsettling part. What happens if we collect more data?"
   },
   {
    "id": "confidence.2",
-   "start": 391.751,
-   "dur": 12.23,
+   "start": 395.294,
+   "dur": 13.847000000000001,
    "say": "We ran the experiment forty times at each data size, from one hundred to ten thousand sites. Parsimony found the true tree zero percent of the time. Every run wrong, and more certain with every extra site."
   },
   {
    "id": "confidence.3",
-   "start": 403.981,
-   "dur": 6.1579999999999995,
+   "start": 409.141,
+   "dur": 6.585999999999999,
    "say": "Maximum likelihood, with the right model, started at about sixty percent, and climbed to one hundred."
   },
   {
    "id": "confidence.4",
-   "start": 410.139,
-   "dur": 8.747,
+   "start": 415.72700000000003,
+   "dur": 8.379,
    "say": "A method can be consistently, confidently wrong. More data shrinks random noise. It does nothing about a built-in bias."
   },
   {
    "id": "confidence.5",
-   "start": 418.88599999999997,
-   "dur": 15.405000000000001,
+   "start": 424.106,
+   "dur": 17.158,
    "say": "This is not just a toy. Fast-evolving parasites called microsporidia were once placed near the root of the tree of complex life. Later work, with more data and better models, placed them with the fungi. Long-branch attraction is the usual explanation."
   },
   {
    "id": "confidence.6",
-   "start": 434.291,
-   "dur": 7.202999999999999,
+   "start": 441.264,
+   "dur": 7.476999999999999,
    "say": "So that is our puzzle. Now imagine solving it with a team of AI agents. What can go wrong in the work itself?"
   },
   {
    "id": "confidence.end",
-   "start": 441.49399999999997,
+   "start": 448.741,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "state.1",
-   "start": 442.394,
-   "dur": 8.619000000000002,
+   "start": 449.641,
+   "dur": 9.190000000000001,
    "say": "Here is the first big idea. When agents work on a project, they change things. And the things they change live in six different places."
   },
   {
    "id": "state.2",
-   "start": 451.01300000000003,
-   "dur": 7.0809999999999995,
+   "start": 458.831,
+   "dur": 6.614,
    "say": "One: source history. The saved versions of the code, kept by Git, like an archive of snapshots."
   },
   {
    "id": "state.3",
-   "start": 458.094,
-   "dur": 7.069,
+   "start": 465.44500000000005,
+   "dur": 6.225,
    "say": "Two: working files. The files being edited right now, like papers spread on a workbench."
   },
   {
    "id": "state.4",
-   "start": 465.163,
-   "dur": 5.641,
+   "start": 471.67,
+   "dur": 5.274,
    "say": "Three: agent context. Whatever the agent can see in its head at this moment."
   },
   {
    "id": "state.5",
-   "start": 470.80400000000003,
-   "dur": 7.092,
+   "start": 476.944,
+   "dur": 6.677,
    "say": "Four: execution state. The running programs, installed tools, and temporary files on the machine."
   },
   {
    "id": "state.6",
-   "start": 477.896,
-   "dur": 6.093999999999999,
+   "start": 483.62100000000004,
+   "dur": 5.223,
    "say": "Five: artifacts. The outputs, like result files, tables, and figures."
   },
   {
    "id": "state.7",
-   "start": 483.99,
-   "dur": 4.734999999999999,
+   "start": 488.84400000000005,
+   "dur": 3.9640000000000004,
    "say": "And six: evidence. Which claims are backed by which checks."
   },
   {
    "id": "state.8",
-   "start": 488.725,
-   "dur": 11.458,
+   "start": 492.808,
+   "dur": 12.488000000000001,
    "say": "Almost every mess in agentic work comes from protecting one of these places with a tool built for another. So the rule is: name the place that is changing, and protect exactly that place."
   },
   {
    "id": "state.end",
-   "start": 500.183,
+   "start": 505.29600000000005,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "worktrees.1",
-   "start": 501.083,
-   "dur": 7.023,
+   "start": 506.196,
+   "dur": 7.216,
    "say": "Let us watch this happen. On day one, two agents write two versions of the likelihood code, at the same time."
   },
   {
    "id": "worktrees.2",
-   "start": 508.10600000000005,
-   "dur": 10.07,
+   "start": 513.412,
+   "dur": 10.811,
    "say": "If they share one folder, they edit the same files. One agent silently overwrites the other one’s work. It is like two people writing on the same sheet of paper."
   },
   {
    "id": "worktrees.3",
-   "start": 518.176,
-   "dur": 10.453000000000001,
+   "start": 524.2230000000001,
+   "dur": 11.985000000000001,
    "say": "A common first idea is to give each agent its own Git branch. But a branch is only a name for a line of saved versions. Both agents would still be writing on the same desk."
   },
   {
    "id": "worktrees.4",
-   "start": 528.629,
+   "start": 536.2080000000001,
    "dur": 0.7,
    "say": ""
   },
   {
    "id": "worktrees.5",
-   "start": 529.3290000000001,
-   "dur": 10.268,
+   "start": 536.908,
+   "dur": 9.927000000000001,
    "say": "What they need is a worktree. A worktree is a second desk, connected to the same archive. Each desk has its own files, and its own staging area."
   },
   {
    "id": "worktrees.6",
-   "start": 539.597,
-   "dur": 9.513,
+   "start": 546.835,
+   "dur": 10.647,
    "say": "When agent one saves a version, it goes into the shared archive, where everyone can see it. But the papers on agent two’s desk do not change. Nothing collides."
   },
   {
    "id": "worktrees.7",
-   "start": 549.11,
-   "dur": 11.278,
+   "start": 557.482,
+   "dur": 12.068000000000001,
    "say": "But notice what a worktree does not separate. Both desks sit on the same machine. If both agents write their results to the same temporary file, the second run destroys the first."
   },
   {
    "id": "worktrees.8",
-   "start": 560.388,
-   "dur": 8.689,
+   "start": 569.5500000000001,
+   "dur": 8.972000000000001,
    "say": "The fix lives in a different place: give every run its own output folder. Worktrees separate files. They do not separate the machine."
   },
   {
    "id": "worktrees.end",
-   "start": 569.077,
+   "start": 578.522,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "context.1",
-   "start": 569.9770000000001,
-   "dur": 14.993,
+   "start": 579.422,
+   "dur": 15.214,
    "say": "Now the third place, agent context. It is the trickiest one. Think of everything on disk as a library. The agent’s context is a small desk under a lamp. Only what is on the desk, right now, is visible to the agent."
   },
   {
    "id": "context.2",
-   "start": 584.9700000000001,
-   "dur": 13.443000000000001,
+   "start": 594.6360000000001,
+   "dur": 14.109,
    "say": "As a session goes on, the desk fills up: instructions, conversation, and every file the agent reads. Somewhere in that conversation, the scientist said: branch length means expected changes per site."
   },
   {
    "id": "context.3",
-   "start": 598.4130000000001,
-   "dur": 10.07,
+   "start": 608.745,
+   "dur": 11.431000000000001,
    "say": "When the desk is full, the system compacts it. Old conversation is replaced by a short summary. And a detail that was only said in conversation can simply vanish."
   },
   {
    "id": "context.4",
-   "start": 608.4830000000001,
-   "dur": 10.302000000000001,
+   "start": 620.176,
+   "dur": 10.833,
    "say": "Instruction files are different. A file like CLAUDE dot M D lives on disk, and it is read again after every compaction. So write down what must survive."
   },
   {
    "id": "context.5",
-   "start": 618.7850000000001,
-   "dur": 8.636000000000001,
+   "start": 631.009,
+   "dur": 8.753,
    "say": "Schwartz found the same thing. He had Claude regularly consolidate its notes into files, so that it always had the latest version of the plan."
   },
   {
    "id": "context.end",
-   "start": 627.421,
+   "start": 639.7620000000001,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "runs.1",
-   "start": 628.3210000000001,
-   "dur": 4.19,
+   "start": 640.662,
+   "dur": 3.9619999999999997,
    "say": "Results come from runs. And every run is like a function."
   },
   {
    "id": "runs.2",
-   "start": 632.5110000000002,
-   "dur": 8.445,
+   "start": 644.624,
+   "dur": 8.785,
    "say": "Its output depends on four things: which version of the code ran, in which environment, on which inputs, and with which random seed."
   },
   {
    "id": "runs.3",
-   "start": 640.9560000000001,
-   "dur": 6.564,
+   "start": 653.409,
+   "dur": 5.9959999999999996,
    "say": "Written as a formula: output equals f of version, environment, inputs, and seed."
   },
   {
    "id": "runs.4",
-   "start": 647.5200000000001,
-   "dur": 7.708,
+   "start": 659.4050000000001,
+   "dur": 8.144,
    "say": "Write all four into a small record, called a manifest, right next to the output. Then anyone can run it again, and check."
   },
   {
    "id": "runs.5",
-   "start": 655.2280000000002,
-   "dur": 8.358,
+   "start": 667.549,
+   "dur": 8.734,
    "say": "One version of the code can produce many runs. Give every run its own folder and its own manifest, and never overwrite an old one."
   },
   {
    "id": "runs.end",
-   "start": 663.5860000000001,
+   "start": 676.283,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "roles.1",
-   "start": 664.4860000000001,
-   "dur": 5.531,
+   "start": 677.183,
+   "dur": 5.261,
    "say": "One more piece of vocabulary, because these six words get mixed up all the time."
   },
   {
    "id": "roles.2",
-   "start": 670.017,
-   "dur": 6.657,
+   "start": 682.444,
+   "dur": 6.971,
    "say": "A tool computes a defined result from explicit inputs, like a function that fits branch lengths to data."
   },
   {
    "id": "roles.3",
-   "start": 676.6740000000001,
-   "dur": 4.788,
+   "start": 689.415,
+   "dur": 5.093999999999999,
    "say": "A skill is a written procedure, like a recipe for running a study correctly."
   },
   {
    "id": "roles.4",
-   "start": 681.4620000000001,
-   "dur": 4.694999999999999,
+   "start": 694.509,
+   "dur": 4.678999999999999,
    "say": "Agents choose which actions to take, inside the task they were given."
   },
   {
    "id": "roles.5",
-   "start": 686.1570000000002,
-   "dur": 6.895,
+   "start": 699.188,
+   "dur": 6.9159999999999995,
    "say": "A hook enforces a rule automatically. For example: refuse to save new code while the tests fail."
   },
   {
    "id": "roles.6",
-   "start": 693.0520000000001,
-   "dur": 4.834,
+   "start": 706.104,
+   "dur": 4.9879999999999995,
    "say": "A harness runs everything, keeps the records, and routes results to review."
   },
   {
    "id": "roles.7",
-   "start": 697.8860000000001,
-   "dur": 4.7299999999999995,
+   "start": 711.092,
+   "dur": 4.769,
    "say": "And the scientist sets the question, and judges whether the answers matter."
   },
   {
    "id": "roles.8",
-   "start": 702.6160000000001,
-   "dur": 10.117,
+   "start": 715.861,
+   "dur": 9.09,
    "say": "Notice three different verbs. Instructions ask. Hooks enforce. Checks verify. An instruction, by itself, guarantees nothing."
   },
   {
    "id": "roles.end",
-   "start": 712.7330000000001,
+   "start": 724.951,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "drift.1",
-   "start": 713.6330000000002,
-   "dur": 13.524000000000001,
+   "start": 725.851,
+   "dur": 13.632000000000001,
    "say": "Now the second big idea, told as a story. On day three, a long session compacts. The rule, branch length means expected changes per site, was only said in conversation. It vanishes."
   },
   {
    "id": "drift.2",
-   "start": 727.1570000000002,
-   "dur": 11.864,
+   "start": 739.483,
+   "dur": 12.251000000000001,
    "say": "Later, the agent rewrites the formula from memory. It copies a textbook version that measures time in different units: e to the minus four t, instead of e to the minus four thirds t."
   },
   {
    "id": "drift.3",
-   "start": 739.0210000000002,
-   "dur": 12.555000000000001,
+   "start": 751.734,
+   "dur": 13.199,
    "say": "This is not hypothetical. Schwartz reports exactly this habit. When conventions are non-standard, Claude constantly reverts to textbook defaults, even if you force it to write the conventions down."
   },
   {
    "id": "drift.4",
-   "start": 751.5760000000001,
-   "dur": 13.82,
+   "start": 764.933,
+   "dur": 15.404,
    "say": "Unit mix-ups are a classic. In nineteen ninety-nine, NASA lost the Mars Climate Orbiter because one program reported thrust in pound-force seconds, while another expected newton seconds. The spacecraft flew far too low."
   },
   {
    "id": "drift.end",
-   "start": 765.3960000000002,
+   "start": 780.337,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "curves.1",
-   "start": 766.2960000000002,
-   "dur": 8.218,
+   "start": 781.237,
+   "dur": 8.458,
    "say": "Let us compare the right formula with the wrong one, as curves. This is the chance that a site differs, across a branch of length t."
   },
   {
    "id": "curves.2",
-   "start": 774.5140000000001,
-   "dur": 4.085,
+   "start": 789.6949999999999,
+   "dur": 3.8970000000000002,
    "say": "Both curves start at zero. No time, no difference."
   },
   {
    "id": "curves.3",
-   "start": 778.5990000000002,
-   "dur": 5.397,
+   "start": 793.592,
+   "dur": 5.802,
    "say": "Both level off at three quarters. After enough mutations, the letters are random."
   },
   {
    "id": "curves.4",
-   "start": 783.9960000000002,
-   "dur": 11.968,
+   "start": 799.394,
+   "dur": 12.189,
    "say": "And both are perfectly valid probability models. Every probability is between zero and one, they add up correctly, and two short branches combine exactly like one long branch."
   },
   {
    "id": "curves.5",
-   "start": 795.9640000000002,
-   "dur": 12.270000000000001,
+   "start": 811.583,
+   "dur": 13.152000000000001,
    "say": "The only difference is how fast they start. Let us zoom in near zero. With the right formula, a short branch of length t carries about t changes per site. With the wrong one, three times as many."
   },
   {
    "id": "curves.6",
-   "start": 808.2340000000002,
-   "dur": 7.725,
+   "start": 824.735,
+   "dur": 8.095,
    "say": "Same shape. Wrong unit. Every number computed downstream is now off by a factor of three, and nothing crashes."
   },
   {
    "id": "curves.end",
-   "start": 815.9590000000002,
+   "start": 832.8299999999999,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "agree.1",
-   "start": 816.8590000000002,
-   "dur": 2.4770000000000003,
+   "start": 833.73,
+   "dur": 2.499,
    "say": "Here is the part that fools people."
   },
   {
    "id": "agree.2",
-   "start": 819.3360000000001,
-   "dur": 11.794,
+   "start": 836.229,
+   "dur": 12.419,
    "say": "Our project computes each likelihood in two independent ways: a fast, clever algorithm, and a slow brute-force sum over every possibility. If they agree, surely the code is right?"
   },
   {
    "id": "agree.3",
-   "start": 831.1300000000001,
-   "dur": 9.908000000000001,
+   "start": 848.648,
+   "dur": 10.362,
    "say": "But both of them read the same constant, from the same place. The bug lives in what they share. So they agree perfectly, to fifteen digits, and both are wrong."
   },
   {
    "id": "agree.4",
-   "start": 841.0380000000001,
-   "dur": 8.068,
+   "start": 859.01,
+   "dur": 9.117,
    "say": "Agreement is not independence. Two agents with the same prompt, the same helper code, or the same convention can share one mistake."
   },
   {
    "id": "agree.end",
-   "start": 849.1060000000001,
+   "start": 868.1270000000001,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "ladder.1",
-   "start": 850.0060000000002,
-   "dur": 3.76,
+   "start": 869.027,
+   "dur": 3.511,
    "say": "So how do you catch a bug like this? You climb a ladder."
   },
   {
    "id": "ladder.2",
-   "start": 853.7660000000002,
-   "dur": 7.133,
+   "start": 872.538,
+   "dur": 6.963,
    "say": "Rung zero: run it again. Same code, same assumptions. It can only find random flakiness."
   },
   {
    "id": "ladder.3",
-   "start": 860.8990000000002,
-   "dur": 10.192,
+   "start": 879.5010000000001,
+   "dur": 9.302000000000001,
    "say": "Rung one: self-consistency. Do the probabilities add up to one? Does zero time mean no change? Cheap checks, and they catch gross errors."
   },
   {
    "id": "ladder.4",
-   "start": 871.0910000000002,
-   "dur": 7.6499999999999995,
+   "start": 888.803,
+   "dur": 7.857,
    "say": "Rung two: an independent algorithm that computes the same number another way. It catches mistakes in the clever code."
   },
   {
    "id": "ladder.5",
-   "start": 878.7410000000002,
-   "dur": 13.054,
+   "start": 896.6600000000001,
+   "dur": 13.736,
    "say": "Rung three: an external anchor, something tied to the definition itself, from outside your code. A formula from the published literature. Or a simulation built directly from the meaning of one change per site."
   },
   {
    "id": "ladder.6",
-   "start": 891.7950000000002,
-   "dur": 7.655,
+   "start": 910.3960000000001,
+   "dur": 6.47,
    "say": "Rung four: does the model even fit reality? And does the answer matter? Up here, people decide."
   },
   {
    "id": "ladder.7",
-   "start": 899.4500000000002,
-   "dur": 9.954,
+   "start": 916.866,
+   "dur": 9.987,
    "say": "To test the ladder, we broke our own code on purpose, four different ways. This is called mutation testing. A good test suite should notice every break."
   },
   {
    "id": "ladder.8",
-   "start": 909.4040000000002,
-   "dur": 10.163,
+   "start": 926.8530000000001,
+   "dur": 11.558,
    "say": "Swapping same and different fails the simplest check at once. Forgetting a factor of one quarter makes probabilities add up to four instead of one. Both are caught on rung one."
   },
   {
    "id": "ladder.9",
-   "start": 919.5670000000002,
-   "dur": 10.732000000000001,
+   "start": 938.4110000000001,
+   "dur": 10.683,
    "say": "Skipping the middle branch still gives a valid probability model, so every rung one check passes. Only the independent algorithm disagrees. Caught on rung two."
   },
   {
    "id": "ladder.10",
-   "start": 930.2990000000002,
-   "dur": 12.648000000000001,
+   "start": 949.094,
+   "dur": 13.495000000000001,
    "say": "And the unit bug passes rungs one and two completely. Only the external anchors catch it. The published distance formula gives back three times the true length: zero point nine instead of zero point three."
   },
   {
    "id": "ladder.11",
-   "start": 942.9470000000002,
-   "dur": 10.726,
+   "start": 962.589,
+   "dur": 11.237,
    "say": "Every rung catches errors that the rungs below it cannot see. A good test suite is not a long list of checks. It is checks at different heights. And the top rung is next."
   },
   {
    "id": "ladder.end",
-   "start": 953.6730000000002,
+   "start": 973.826,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "invariant.1",
-   "start": 954.5730000000002,
-   "dur": 5.7219999999999995,
+   "start": 974.7260000000001,
+   "dur": 5.5489999999999995,
    "say": "Now suppose the code passes every check, all the way up to rung three. Are we done?"
   },
   {
    "id": "invariant.2",
-   "start": 960.2950000000002,
-   "dur": 9.797,
+   "start": 980.2750000000001,
+   "dur": 10.192,
    "say": "Real genes contain sites that almost never change, because changing them would break the organism. Our simple model does not know that such sites exist."
   },
   {
    "id": "invariant.3",
-   "start": 970.0920000000002,
-   "dur": 12.915000000000001,
+   "start": 990.4670000000001,
+   "dur": 13.474,
    "say": "Now give maximum likelihood data in which thirty percent of the sites never change, and keep the simple model. It falls into the same trap as parsimony. It pairs A with C, and more data makes it more sure."
   },
   {
    "id": "invariant.4",
-   "start": 983.0070000000002,
-   "dur": 8.3,
+   "start": 1003.9410000000001,
+   "dur": 8.335,
    "say": "Every code check still passes. The code computes the wrong answer, correctly. The problem is not the code. It is the model."
   },
   {
    "id": "invariant.end",
-   "start": 991.3070000000002,
+   "start": 1012.2760000000001,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "fit.1",
-   "start": 992.2070000000002,
-   "dur": 4.323,
+   "start": 1013.1760000000002,
+   "dur": 4.631,
    "say": "So we climb to the top rung, number four, and ask the data itself."
   },
   {
    "id": "fit.2",
-   "start": 996.5300000000002,
-   "dur": 6.39,
+   "start": 1017.8070000000001,
+   "dur": 6.901,
    "say": "Compare how often each pattern of letters actually appears in the data, with how often the model expects it."
   },
   {
    "id": "fit.3",
-   "start": 1002.9200000000002,
-   "dur": 8.009,
+   "start": 1024.708,
+   "dur": 8.614,
    "say": "The biggest gap is in sites where all four species share the same letter. The data have far more of them than the simple model can explain."
   },
   {
    "id": "fit.4",
-   "start": 1010.9290000000002,
-   "dur": 11.034,
+   "start": 1033.3220000000001,
+   "dur": 11.643,
    "say": "A goodness-of-fit test turns that gap into one number: the chance of a gap this large, if the model were right. Here it is about ten to the minus ninety-nine. The model is rejected."
   },
   {
    "id": "fit.5",
-   "start": 1021.9630000000002,
-   "dur": 9.716000000000001,
+   "start": 1044.9650000000001,
+   "dur": 9.545,
    "say": "Add a single parameter, the fraction of sites that never change, and the model fits. It estimates about thirty percent, and it picks the true tree again."
   },
   {
    "id": "fit.6",
-   "start": 1031.6790000000003,
-   "dur": 8.985000000000001,
+   "start": 1054.5100000000002,
+   "dur": 9.184000000000001,
    "say": "So test the model, not only the code. Real phylogenetics uses much richer models than these, and it still needs an expert to judge them."
   },
   {
    "id": "fit.end",
-   "start": 1040.6640000000002,
+   "start": 1063.6940000000002,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "week.1",
-   "start": 1041.5640000000003,
-   "dur": 5.624,
+   "start": 1064.594,
+   "dur": 5.960999999999999,
    "say": "Let us replay the whole project as one week of work, and watch both big ideas in action."
   },
   {
    "id": "week.2",
-   "start": 1047.1880000000003,
-   "dur": 9.722000000000001,
+   "start": 1070.555,
+   "dur": 10.044,
    "say": "Day zero. The scientist writes the question. An agent drafts a conventions file. The scientist approves it. Conventions come before code."
   },
   {
    "id": "week.3",
-   "start": 1056.9100000000003,
-   "dur": 10.163,
+   "start": 1080.5990000000002,
+   "dur": 9.83,
    "say": "Day one. Two agents write the two algorithms, in two worktrees. A third session writes checks from the published literature, without ever looking at our code."
   },
   {
    "id": "week.4",
-   "start": 1067.0730000000003,
-   "dur": 12.137,
+   "start": 1090.429,
+   "dur": 12.784,
    "say": "Day two. The harness runs parsimony. Every run gets its own folder and manifest. Parsimony pairs A with C, with total confidence. That is a reason to check, not to celebrate."
   },
   {
    "id": "week.5",
-   "start": 1079.2100000000003,
-   "dur": 12.857000000000001,
+   "start": 1103.213,
+   "dur": 12.121,
    "say": "Day three. Compaction drops the convention, and the unit bug slips in. Rungs one and two pass. The external anchors fail. The fix moves the convention into the instruction file."
   },
   {
    "id": "week.6",
-   "start": 1092.0670000000002,
-   "dur": 10.471,
+   "start": 1115.334,
+   "dur": 11.162,
    "say": "Day four. A fresh reviewer session reads only the handoff notes and the evidence. It names long-branch attraction. The scientist asks about sites that never change."
   },
   {
    "id": "week.7",
-   "start": 1102.5380000000002,
-   "dur": 6.1049999999999995,
+   "start": 1126.496,
+   "dur": 6.061999999999999,
    "say": "Day five. The scientist writes down the claims, each one with its evidence and its limits."
   },
   {
    "id": "week.end",
-   "start": 1108.6430000000003,
+   "start": 1132.558,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "stale.1",
-   "start": 1109.5430000000003,
-   "dur": 6.14,
+   "start": 1133.458,
+   "dur": 6.8709999999999996,
    "say": "One more mechanism ties it all together. Tasks depend on each other, like the steps of a recipe."
   },
   {
    "id": "stale.2",
-   "start": 1115.6830000000004,
-   "dur": 10.535,
+   "start": 1140.3290000000002,
+   "dur": 11.452,
    "say": "When an upstream definition changes, like the unit convention, every result downstream becomes stale. Git cannot see this. The change merges without a single conflict."
   },
   {
    "id": "stale.3",
-   "start": 1126.2180000000003,
-   "dur": 5.6,
+   "start": 1151.7810000000002,
+   "dur": 5.816,
    "say": "So mark everything downstream as stale, and run it again in order, before anyone cites it."
   },
   {
    "id": "stale.end",
-   "start": 1131.8180000000004,
+   "start": 1157.597,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "claims.1",
-   "start": 1132.7180000000003,
-   "dur": 6.476999999999999,
+   "start": 1158.497,
+   "dur": 6.8309999999999995,
    "say": "At the end, results become claims. And a claim without evidence and limits is just an advertisement."
   },
   {
    "id": "claims.2",
-   "start": 1139.1950000000004,
-   "dur": 10.987,
+   "start": 1165.328,
+   "dur": 11.792000000000002,
    "say": "Some claims are supported, with evidence you can rerun. Some are rejected, like: two agents agreeing proves a result. And some are simply not tested, and we say so out loud."
   },
   {
    "id": "claims.end",
-   "start": 1150.1820000000002,
+   "start": 1177.1200000000001,
    "dur": 0.9,
    "say": ""
   },
   {
    "id": "recap.1",
-   "start": 1151.0820000000003,
-   "dur": 2.7910000000000004,
+   "start": 1178.02,
+   "dur": 2.75,
    "say": "Let us come back to the two sentences."
   },
   {
    "id": "recap.2",
-   "start": 1153.8730000000003,
-   "dur": 13.431000000000001,
+   "start": 1180.77,
+   "dur": 14.775,
    "say": "Isolation protects work. Worktrees keep agents from overwriting each other’s files. Run folders and manifests keep results apart, and repeatable. And files on disk keep important rules alive through compaction."
   },
   {
    "id": "recap.3",
-   "start": 1167.3040000000003,
-   "dur": 2.9299999999999997,
+   "start": 1195.545,
+   "dur": 3.0650000000000004,
    "say": "But none of that makes a single result true."
   },
   {
    "id": "recap.4",
-   "start": 1170.2340000000004,
-   "dur": 14.180000000000001,
+   "start": 1198.61,
+   "dur": 15.709000000000001,
    "say": "Evidence supports claims. Climb the ladder of independent checks. Remember that agreement is not independence. Remember that more data can make a biased method more confident, but not more correct. And test the model, not only the code."
   },
   {
    "id": "recap.5",
-   "start": 1184.4140000000004,
-   "dur": 11.847000000000001,
+   "start": 1214.319,
+   "dur": 12.664000000000001,
    "say": "And at the top of the ladder, there is still a person. Agents can find thousands of problems that they can solve. Deciding which answers matter, what Schwartz calls taste, is still the scientist’s job."
   },
   {
    "id": "recap.6",
-   "start": 1196.2610000000004,
-   "dur": 6.558,
+   "start": 1226.983,
+   "dur": 6.6899999999999995,
    "say": "Every number in this video came from real, tested code, running in your browser. Thanks for watching."
   }
  ]
