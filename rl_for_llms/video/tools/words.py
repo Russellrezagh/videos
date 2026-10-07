@@ -31,7 +31,7 @@ def main():
     out = {}
     done = 0
     for c in clips:
-        key = os.path.basename(c['clip'])
+        key = 'v2:' + os.path.basename(c['clip'])  # v2: padded, see below
         if key not in cache:
             if stt is None:
                 from faster_whisper import WhisperModel
@@ -42,8 +42,15 @@ def main():
             if rate != 16000:
                 n = int(len(x) * 16000 / rate)
                 x = np.interp(np.linspace(0, len(x) - 1, n), np.arange(len(x)), x).astype(np.float32)
-            segs, _ = stt.transcribe(x, language='en', word_timestamps=True, beam_size=5)
-            cache[key] = [[w.word.strip(), round(w.start, 3), round(w.end, 3)] for s in segs for w in s.words]
+            # A clip ends abruptly; Whisper then tends to invent a repeated tail.
+            # A second of silence after the speech, and no carry-over between
+            # windows, stop that. Any word that still starts past the speech is dropped.
+            end = len(x) / 16000
+            x = np.concatenate([x, np.zeros(16000, np.float32)])
+            segs, _ = stt.transcribe(x, language='en', word_timestamps=True, beam_size=5,
+                                     condition_on_previous_text=False)
+            cache[key] = [[w.word.strip(), round(w.start, 3), round(min(w.end, end), 3)]
+                          for s in segs for w in s.words if w.start < end - 0.02]
             done += 1
         out[c['id']] = cache[key]
     json.dump(cache, open(cache_file, 'w'))

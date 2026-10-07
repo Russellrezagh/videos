@@ -4,6 +4,7 @@
  *
  *   node video/tools/build.mjs                    -> video/dist/index.html
  *   node video/tools/build.mjs --fragment <path>  also write a body-only copy
+ *   node video/tools/build.mjs --fragment <path> --embed-kbps 40  with a lighter voice copy
  *                                                 with the narration embedded
  *   node video/tools/build.mjs --embed-audio      embed it in dist/index.html too
  *
@@ -16,6 +17,8 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const VIDEO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -69,9 +72,20 @@ html = html.replace('<script type="application/json" id="narration-data"></scrip
 if (/src="(\.\.\/|js\/)/.test(html)) throw new Error('a local script reference remains');
 const SLOT = '<script type="text/plain" id="narration-audio"></script>';
 if (!html.includes(SLOT)) throw new Error(`missing ${SLOT}`);
+// --embed-kbps N re-encodes the embedded copy (constant bitrate, mono) so a
+// long film still fits the 16 MB artifact limit; dist/narration.mp3 is untouched.
+const kbps = process.argv.includes('--embed-kbps') ? +process.argv[process.argv.indexOf('--embed-kbps') + 1] : 0;
+const voiceBytes = () => {
+  if (!kbps) return fs.readFileSync(mp3);
+  const tmp = path.join(os.tmpdir(), `narration-${kbps}k-${process.pid}.mp3`);
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', mp3, '-ac', '1', '-ar', '24000', '-b:a', `${kbps}k`, tmp]);
+  const buf = fs.readFileSync(tmp);
+  fs.rmSync(tmp);
+  return buf;
+};
 const embedded = () => {
   if (!narr) return html;
-  const b64 = fs.readFileSync(mp3).toString('base64');
+  const b64 = voiceBytes().toString('base64');
   return html.replace(SLOT, () => `<script type="text/plain" id="narration-audio">${b64}</script>`);
 };
 const mb = (s) => `${(s.length / 1048576).toFixed(2)} MB`;

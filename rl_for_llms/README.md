@@ -1,6 +1,6 @@
 # The Gradient of Reward
 
-A narrated film (about 35 minutes) on the mathematics of reinforcement learning
+A narrated film (29 minutes) on the mathematics of reinforcement learning
 for language models, built from first principles, drawn in a 3Blue1Brown-like
 style with a Manim-style engine written in JavaScript and SVG.
 
@@ -80,7 +80,7 @@ node video/tools/build.mjs                    # video/dist/index.html
 
 # narration (needs: pip install kokoro-onnx numpy faster-whisper; playwright; ffmpeg)
 node video/tools/narrate.mjs --model kokoro-v1.0.onnx --voices voices-v1.0.bin --voice af_heart --speed 0.95
-node video/tools/build.mjs --fragment out.html   # one file, voice embedded
+node video/tools/build.mjs --fragment out.html --embed-kbps 40   # one file, voice embedded (fits 16 MB)
 node video/tools/render-mp4.mjs --workers 4      # video/dist/the-gradient-of-reward.mp4
 node video/tools/check-av.mjs                    # the voice plays in step with the picture
 node video/tools/lint-layout.mjs                 # every beat against the design rules

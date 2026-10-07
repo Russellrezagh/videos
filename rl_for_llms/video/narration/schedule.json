@@ -1,0 +1,1103 @@
+{
+ "duration": 1746.156,
+ "beats": [
+  {
+   "id": "open.1",
+   "start": 0,
+   "dur": 8.913,
+   "say": "Here is a language model answering a question. What is seventeen times three? It says fifty-one. Ask again, and it might say forty-one."
+  },
+  {
+   "id": "open.2",
+   "start": 8.913,
+   "dur": 8.545,
+   "say": "Both answers came out of the same probabilities. Training will change those probabilities, so that the good answer becomes more likely."
+  },
+  {
+   "id": "open.3",
+   "start": 17.458,
+   "dur": 13.005,
+   "say": "That sounds like ordinary machine learning. But there is a catch. The thing we want to increase, the reward, is not a smooth function of the model’s weights. It is a judge looking at a sampled piece of text."
+  },
+  {
+   "id": "open.4",
+   "start": 30.463,
+   "dur": 9.370000000000001,
+   "say": "So how do you take the gradient of something you can only sample? That one question is the whole subject of reinforcement learning for language models."
+  },
+  {
+   "id": "open.5",
+   "start": 39.833,
+   "dur": 14.726,
+   "say": "This is The Gradient of Reward. We will build it from first principles: from one softmax, all the way to P P O, D P O, and G R P O, the methods used to train today’s assistants and reasoning models."
+  },
+  {
+   "id": "open.end",
+   "start": 54.559,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card1.1",
+   "start": 55.458999999999996,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card1.end",
+   "start": 58.458999999999996,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "tokens.1",
+   "start": 59.358999999999995,
+   "dur": 8.725000000000001,
+   "say": "First, what does a language model actually compute? It reads text as tokens: words, pieces of words, numbers, punctuation."
+  },
+  {
+   "id": "tokens.2",
+   "start": 68.084,
+   "dur": 10.734,
+   "say": "Given the tokens so far, it outputs one number for every token in its vocabulary, often more than a hundred thousand of them. These numbers are called logits."
+  },
+  {
+   "id": "tokens.3",
+   "start": 78.818,
+   "dur": 11.482000000000001,
+   "say": "The softmax turns logits into probabilities: exponentiate each one, then divide by the total. Big logits get most of the mass, and everything adds up to one."
+  },
+  {
+   "id": "tokens.4",
+   "start": 90.3,
+   "dur": 10.982000000000001,
+   "say": "Here is the distribution for the next token after the words, the answer is. Fifty-one gets about half the mass. Forty-one, fifty-four, and the rest share the remainder."
+  },
+  {
+   "id": "tokens.end",
+   "start": 101.282,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "sequence.1",
+   "start": 102.18199999999999,
+   "dur": 12.902000000000001,
+   "say": "To write a whole answer, the model samples one token, appends it, and repeats. So the probability of a complete answer is a product: the probability of each token, given everything before it."
+  },
+  {
+   "id": "sequence.2",
+   "start": 115.08399999999999,
+   "dur": 14.531,
+   "say": "Products of many small numbers are awkward, so we take logarithms. The log-probability of an answer is the sum of the log-probabilities of its tokens. Remember this sum. It is where every gradient in this film will flow."
+  },
+  {
+   "id": "sequence.end",
+   "start": 129.61499999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "mdp.1",
+   "start": 130.515,
+   "dur": 9.196000000000002,
+   "say": "Now some vocabulary from reinforcement learning. An agent observes a state, chooses an action, and the world responds with a new state."
+  },
+  {
+   "id": "mdp.2",
+   "start": 139.71099999999998,
+   "dur": 10.97,
+   "say": "For a language model, the state is the prompt plus the text written so far. The action is the next token. And the world is very simple: it just appends that token."
+  },
+  {
+   "id": "mdp.3",
+   "start": 150.68099999999998,
+   "dur": 11.387,
+   "say": "The model’s probabilities, as a rule for picking actions, are called a policy, written pi theta, where theta stands for all the weights. One finished answer is an episode."
+  },
+  {
+   "id": "mdp.4",
+   "start": 162.06799999999998,
+   "dur": 12.731,
+   "say": "At the end of the episode, a judge hands out a reward: one number saying how good the answer was. It might come from a person, from a learned reward model, or from a program that checks the answer."
+  },
+  {
+   "id": "mdp.end",
+   "start": 174.79899999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "objective.1",
+   "start": 175.69899999999998,
+   "dur": 10.257000000000001,
+   "say": "Our goal is to choose the weights that make the expected reward as large as possible: the average reward over prompts, and over answers sampled from the model."
+  },
+  {
+   "id": "objective.2",
+   "start": 185.956,
+   "dur": 15.059999999999999,
+   "say": "Read it from the inside out. R of x and y is the judge’s score. The answer y is drawn from the model itself, so changing theta changes which answers we see. And the prompt x is drawn from a set of prompts."
+  },
+  {
+   "id": "objective.end",
+   "start": 201.016,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card2.1",
+   "start": 201.916,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card2.end",
+   "start": 204.916,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "sft.1",
+   "start": 205.816,
+   "dur": 12.15,
+   "say": "Before reinforcement learning, a language model is trained by imitation. Pre-training imitates text from the internet. Supervised fine-tuning imitates answers written by people."
+  },
+  {
+   "id": "sft.2",
+   "start": 217.966,
+   "dur": 10.201,
+   "say": "Imitation has a simple loss: the negative log-probability of the demonstrated answer. Its gradient pushes up every token of the demonstration."
+  },
+  {
+   "id": "sft.3",
+   "start": 228.167,
+   "dur": 13.393,
+   "say": "This works, and it is how assistants learn the shape of a good answer. But it has limits. It needs someone to write the right answer. It never sees its own mistakes. And it can, at best, match its teachers."
+  },
+  {
+   "id": "sft.end",
+   "start": 241.56,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "judge.1",
+   "start": 242.46,
+   "dur": 14.395000000000001,
+   "say": "Often it is far easier to judge an answer than to write one. A program can check that fifty-one is right. A person can say which of two essays is better. Reinforcement learning learns from exactly that kind of signal."
+  },
+  {
+   "id": "judge.2",
+   "start": 256.855,
+   "dur": 10.15,
+   "say": "So here is the plan. The model samples its own answers. A judge scores them. And we change the weights so that high-scoring answers become more likely."
+  },
+  {
+   "id": "judge.end",
+   "start": 267.005,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "obstacle.1",
+   "start": 267.90500000000003,
+   "dur": 18.044,
+   "say": "Now the catch. To use gradient descent, we need the gradient of the expected reward with respect to theta. But the reward depends on theta only through a random choice of discrete tokens. There is no smooth path from the weights to the score that we can back-propagate through."
+  },
+  {
+   "id": "obstacle.2",
+   "start": 285.949,
+   "dur": 8.703000000000001,
+   "say": "The way around it is a single line of calculus, called the log-derivative trick. Let us derive it on the smallest possible example."
+  },
+  {
+   "id": "obstacle.end",
+   "start": 294.65200000000004,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card3.1",
+   "start": 295.552,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card3.end",
+   "start": 298.552,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "bandit.1",
+   "start": 299.452,
+   "dur": 13.767000000000001,
+   "say": "Strip everything away. One prompt, and just three possible answers: fifty-one, which is right; about fifty, which is close; and forty-one, which is wrong. Give them rewards one, zero point three, and zero."
+  },
+  {
+   "id": "bandit.2",
+   "start": 313.219,
+   "dur": 9.603000000000002,
+   "say": "The model is now just three logits and a softmax. This setting, one choice and one reward, is called a bandit, after a row of slot machines."
+  },
+  {
+   "id": "bandit.3",
+   "start": 322.822,
+   "dur": 9.462000000000002,
+   "say": "The expected reward is a weighted average of the three rewards, weighted by the probabilities. Right now it is about zero point 58."
+  },
+  {
+   "id": "bandit.4",
+   "start": 332.284,
+   "dur": 10.14,
+   "say": "Changing a logit changes the weights of that average. Here is the gradient, computed exactly: raise the logit of fifty-one, and lower the other two."
+  },
+  {
+   "id": "bandit.5",
+   "start": 342.424,
+   "dur": 13.339,
+   "say": "But with a real model we cannot sum over every possible answer. There are more possible answers than atoms in the universe. We can only sample a few. So we need to write the gradient as an average over samples."
+  },
+  {
+   "id": "bandit.end",
+   "start": 355.76300000000003,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "trick.1",
+   "start": 356.663,
+   "dur": 7.43,
+   "say": "Here is the trick. Start from the gradient of the sum: the rewards, times the gradient of each probability."
+  },
+  {
+   "id": "trick.2",
+   "start": 364.093,
+   "dur": 12.199,
+   "say": "Now multiply and divide by the probability itself. The gradient of pi, divided by pi, is the gradient of log pi. That is just the chain rule for the logarithm."
+  },
+  {
+   "id": "trick.3",
+   "start": 376.29200000000003,
+   "dur": 14.971,
+   "say": "Substitute, and the probabilities reappear as weights. A sum weighted by probabilities is an expectation. So the gradient of the expected reward is the expected value of reward, times the gradient of log pi."
+  },
+  {
+   "id": "trick.4",
+   "start": 391.26300000000003,
+   "dur": 11.07,
+   "say": "That is the policy gradient. And we can estimate it with samples: draw an answer from the model, score it, and multiply the score by the gradient of its log-probability."
+  },
+  {
+   "id": "trick.5",
+   "start": 402.333,
+   "dur": 13.311,
+   "say": "Notice what is gone. The gradient never passes through the judge. We only need the reward as a plain number, and the gradient of the model’s own log-probability, which back-propagation computes as usual."
+  },
+  {
+   "id": "trick.end",
+   "start": 415.644,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "meaning.1",
+   "start": 416.544,
+   "dur": 13.08,
+   "say": "Read what it says. The gradient of log pi of an answer is the direction that makes that answer more likely. Each sample pushes its own probability up, by an amount proportional to its reward."
+  },
+  {
+   "id": "meaning.2",
+   "start": 429.62399999999997,
+   "dur": 18.015,
+   "say": "For a softmax, that direction is beautifully simple. The gradient of log pi of a, with respect to the logits, is one for the chosen answer, minus the probability vector. Push up the chosen logit, and push every other logit down in proportion to how likely it was."
+  },
+  {
+   "id": "meaning.end",
+   "start": 447.639,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "mc.1",
+   "start": 448.539,
+   "dur": 10.290000000000001,
+   "say": "Does it work? Here are samples, one at a time. Each single estimate points somewhere different. But their running average closes in on the exact gradient."
+  },
+  {
+   "id": "mc.2",
+   "start": 458.829,
+   "dur": 13.482000000000001,
+   "say": "This estimator is called REINFORCE. Ronald Williams described it in nineteen ninety-two. It needs nothing from the judge except a number. The judge can be a person, a program, or a black box."
+  },
+  {
+   "id": "mc.end",
+   "start": 472.311,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "reinforce.1",
+   "start": 473.211,
+   "dur": 15.778,
+   "say": "For a language model, the answer is a sequence, and its log-probability is a sum over tokens. So the gradient of the log-probability is a sum too: every token in a sampled answer gets the same push, scaled by the answer’s reward."
+  },
+  {
+   "id": "reinforce.2",
+   "start": 488.98900000000003,
+   "dur": 13.239,
+   "say": "That is REINFORCE for language models: sample a response, score it, and nudge up every token in it, in proportion to the score. Everything else in this film is about making this simple idea work well."
+  },
+  {
+   "id": "reinforce.end",
+   "start": 502.228,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card4.1",
+   "start": 503.12800000000004,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card4.end",
+   "start": 506.12800000000004,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "offset.1",
+   "start": 507.028,
+   "dur": 14.161000000000001,
+   "say": "Simple, but noisy. Suppose the judge is generous: rewards of eleven, ten point three, and ten, instead of one, zero point three, and zero. Same ranking. Same differences. Only an offset of ten."
+  },
+  {
+   "id": "offset.2",
+   "start": 521.1890000000001,
+   "dur": 15.904,
+   "say": "The exact gradient does not change at all, because adding the same constant to every reward cannot change which answer is better. But now every sample pushes its own answer up, hard. Even the wrong answer, forty-one, gets a big push up."
+  },
+  {
+   "id": "offset.3",
+   "start": 537.0930000000001,
+   "dur": 13.295,
+   "say": "The pushes only cancel out on average. One sample at a time, the estimate swings wildly. Its total variance, computed exactly, goes from about zero point one six to about 68."
+  },
+  {
+   "id": "offset.end",
+   "start": 550.388,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "baseline.1",
+   "start": 551.288,
+   "dur": 9.625,
+   "say": "The fix is to subtract a baseline: a number b that does not depend on which answer was sampled. Use reward minus b in place of reward."
+  },
+  {
+   "id": "baseline.2",
+   "start": 560.913,
+   "dur": 19.519000000000002,
+   "say": "Why is that allowed? Because the gradient of log pi averages to zero. Its expectation is a sum of pi times gradient log pi, which is the sum of the gradients of the probabilities, which is the gradient of their total. And the total is always one. The gradient of one is zero."
+  },
+  {
+   "id": "baseline.3",
+   "start": 580.432,
+   "dur": 11.405000000000001,
+   "say": "So subtracting b, times something whose average is zero, changes nothing on average. The estimate stays unbiased, for any b. But the noise can shrink enormously."
+  },
+  {
+   "id": "baseline.end",
+   "start": 591.837,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "variance.1",
+   "start": 592.737,
+   "dur": 15.47,
+   "say": "Here is the variance of the estimate as a function of b. It is smallest near the average reward. The exact minimum is close by, and there the variance is below zero point one, down from about 68 with no baseline at all."
+  },
+  {
+   "id": "variance.end",
+   "start": 608.207,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "advantage.1",
+   "start": 609.107,
+   "dur": 12.286000000000001,
+   "say": "Reward minus baseline has a name: the advantage. It asks, was this answer better or worse than expected? Better than expected: push it up. Worse than expected: push it down."
+  },
+  {
+   "id": "advantage.end",
+   "start": 621.393,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "training.1",
+   "start": 622.293,
+   "dur": 13.457,
+   "say": "Here is training on a slightly bigger problem: five answers, generous rewards, four samples per step, averaged over twenty runs. With a baseline, the policy finds the best answer much faster."
+  },
+  {
+   "id": "training.end",
+   "start": 635.75,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "baselines.1",
+   "start": 636.65,
+   "dur": 21.129,
+   "say": "For language models, three baselines are popular. Train a second network, a critic, to predict the expected reward. Or sample several answers to the same prompt, and use the average reward of the others. Or normalize the rewards within that group. These are the choices behind P P O, R L O O, and G R P O."
+  },
+  {
+   "id": "baselines.2",
+   "start": 657.779,
+   "dur": 22.075,
+   "say": "The leave-one-out version is neat. For each answer, the baseline is the mean reward of the other answers to the same prompt. It never uses the answer’s own reward, so it stays unbiased. Kool and colleagues proposed it in twenty nineteen, and in twenty twenty-four Ahmadian and colleagues found it outperformed P P O for learning from human feedback."
+  },
+  {
+   "id": "baselines.end",
+   "start": 679.8539999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card5.1",
+   "start": 680.754,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card5.end",
+   "start": 683.754,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "credit.1",
+   "start": 684.654,
+   "dur": 10.747,
+   "say": "So far, every token in an answer gets the same push. That is crude. A long solution might go wrong in a single line, and yet every token is blamed equally."
+  },
+  {
+   "id": "credit.2",
+   "start": 695.401,
+   "dur": 17.644000000000002,
+   "say": "One easy improvement: a token can only affect what comes after it. So judge each token by the rewards that follow it, not the ones before. This is the reward to go. With a single reward at the very end, though, every token still sees the same number."
+  },
+  {
+   "id": "credit.3",
+   "start": 713.045,
+   "dur": 12.012,
+   "say": "To do better, ask at each point: from here, how much reward do we expect? That is the value function, V of the state. A critic network learns to predict it, from the text so far."
+  },
+  {
+   "id": "credit.4",
+   "start": 725.057,
+   "dur": 15.514000000000001,
+   "say": "Now compare the critic’s prediction before and after each token. If the value jumps up after a token, that token was a good move. Reward, plus the next value, minus the current value: this is the temporal-difference error, delta."
+  },
+  {
+   "id": "credit.end",
+   "start": 740.571,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "gae.1",
+   "start": 741.471,
+   "dur": 19.056,
+   "say": "Delta uses one step, and trusts the critic for everything after. That is low in noise, but biased if the critic is wrong. The full return trusts nothing, but it is noisy. Generalized advantage estimation blends them: a sum of future deltas, discounted by gamma times lambda."
+  },
+  {
+   "id": "gae.2",
+   "start": 760.527,
+   "dur": 15.026000000000002,
+   "say": "Lambda equal to zero gives the one-step delta. Lambda equal to one gives the full return minus the value. In between, you choose your trade-off between bias and noise. For language models, gamma is usually one."
+  },
+  {
+   "id": "gae.3",
+   "start": 775.553,
+   "dur": 10.807,
+   "say": "There is a catch: the critic is usually another network as large as the policy. That doubles the memory. Keep it in mind. Later methods will find ways to drop it."
+  },
+  {
+   "id": "gae.4",
+   "start": 786.36,
+   "dur": 19.365000000000002,
+   "say": "Another route to finer credit is to have the judge grade each step, not just the final answer. In Let’s Verify Step by Step, Open A I collected eight hundred thousand step-level labels, and a process reward model picked correct solutions more often than one that judged outcomes alone."
+  },
+  {
+   "id": "gae.end",
+   "start": 805.725,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card6.1",
+   "start": 806.625,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card6.end",
+   "start": 809.625,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "steps.1",
+   "start": 810.525,
+   "dur": 18.177,
+   "say": "Now we can estimate a direction. But how far should we step? A gradient describes the policy only nearby. Step too far, and the policy can collapse: probability piles onto a few strange answers, and the samples that guided the step no longer describe the new policy."
+  },
+  {
+   "id": "steps.2",
+   "start": 828.702,
+   "dur": 10.786000000000001,
+   "say": "Sampling is also expensive. We would like to reuse each batch of answers for several updates. But after the first update, those samples come from an older policy."
+  },
+  {
+   "id": "steps.end",
+   "start": 839.4879999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "ratio.1",
+   "start": 840.3879999999999,
+   "dur": 12.846,
+   "say": "Importance sampling fixes the bookkeeping. To average something under the new policy, using samples from the old one, weight each sample by the ratio of the two probabilities: new over old."
+  },
+  {
+   "id": "ratio.2",
+   "start": 853.2339999999999,
+   "dur": 13.999,
+   "say": "The surrogate objective, ratio times advantage, has exactly the policy gradient as its gradient at the start, where the ratio is one. But the further the ratio drifts, the less we should trust the old samples."
+  },
+  {
+   "id": "ratio.3",
+   "start": 867.233,
+   "dur": 14.225000000000001,
+   "say": "Trust region policy optimization, T R P O, adds a constraint: maximize the surrogate, but keep the average K L divergence between the old and new policies below a small number, delta."
+  },
+  {
+   "id": "ratio.end",
+   "start": 881.458,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "clip.1",
+   "start": 882.358,
+   "dur": 19.921,
+   "say": "Proximal policy optimization, P P O, gets a similar effect with a simpler trick. Clip the ratio to a band around one, from one minus epsilon to one plus epsilon, and take the smaller of the clipped and unclipped objectives. The paper suggests epsilon equal to zero point two."
+  },
+  {
+   "id": "clip.2",
+   "start": 902.279,
+   "dur": 16.415,
+   "say": "Look at it as a function of the ratio. When the advantage is positive, the objective rises with the ratio until one plus epsilon. Then it goes flat. There is nothing to gain from making a good answer more than twenty percent more likely in one round."
+  },
+  {
+   "id": "clip.3",
+   "start": 918.694,
+   "dur": 12.347000000000001,
+   "say": "When the advantage is negative, it is the mirror image: flat below one minus epsilon. And where the objective is flat, its gradient is zero. Those samples simply stop pulling."
+  },
+  {
+   "id": "clip.4",
+   "start": 931.0409999999999,
+   "dur": 10.193000000000001,
+   "say": "The minimum also keeps the pessimistic side. If a bad answer has become more likely, the unclipped term is the smaller one, and the full penalty stays."
+  },
+  {
+   "id": "clip.end",
+   "start": 941.2339999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "ppoloop.1",
+   "start": 942.1339999999999,
+   "dur": 10.231,
+   "say": "For a language model, all of this happens per token. Each token gets its own ratio and its own advantage, and the losses are averaged over tokens."
+  },
+  {
+   "id": "ppoloop.2",
+   "start": 952.3649999999999,
+   "dur": 15.135000000000002,
+   "say": "Put it together and you have the classic P P O loop for language models. Sample answers. Score them. Compute advantages with the critic and G A E. Then run a few epochs of clipped updates on minibatches, and repeat."
+  },
+  {
+   "id": "ppoloop.end",
+   "start": 967.4999999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card7.1",
+   "start": 968.3999999999999,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card7.end",
+   "start": 971.3999999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "bt.1",
+   "start": 972.2999999999998,
+   "dur": 10.856,
+   "say": "Where does the reward come from? For open-ended tasks, like writing a helpful answer, there is no checker. But people can compare. Given two answers, which one is better?"
+  },
+  {
+   "id": "bt.2",
+   "start": 983.1559999999998,
+   "dur": 15.278,
+   "say": "To turn comparisons into numbers, we use a model from nineteen fifty-two, the Bradley-Terry model. Give each answer a hidden score, r. The chance that answer w beats answer l is the sigmoid of the difference of their scores."
+  },
+  {
+   "id": "bt.3",
+   "start": 998.4339999999999,
+   "dur": 11.035,
+   "say": "Only differences matter. Add the same constant to every score, and nothing changes. Equal scores give a coin flip. A difference of two gives about eighty-eight percent."
+  },
+  {
+   "id": "bt.4",
+   "start": 1009.4689999999998,
+   "dur": 14.882000000000001,
+   "say": "A reward model is a language model with a small head that outputs this score. It is trained on human comparisons by making the observed winners likely: the loss is minus log sigma, of the winner’s score minus the loser’s."
+  },
+  {
+   "id": "bt.end",
+   "start": 1024.3509999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "rmfit.1",
+   "start": 1025.2509999999997,
+   "dur": 16.401,
+   "say": "Here is that loss at work, on a toy problem. Five answers with hidden true scores. We simulate twenty thousand noisy comparisons, and fit five numbers. The fitted scores land on the true ones, up to the shift that comparisons can never see."
+  },
+  {
+   "id": "rmfit.end",
+   "start": 1041.6519999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "instruct.1",
+   "start": 1042.5519999999997,
+   "dur": 23.419,
+   "say": "This is the recipe that turned G P T 3 into InstructGPT, published in twenty twenty-two. Step one: supervised fine-tuning on demonstrations. Step two: a reward model, trained on rankings of the model’s own answers. Step three: P P O against that reward model, with a K L penalty that keeps it close to the supervised model."
+  },
+  {
+   "id": "instruct.2",
+   "start": 1065.9709999999998,
+   "dur": 14.067,
+   "say": "Labelers preferred the answers of the one point three billion parameter InstructGPT model to those of the one hundred seventy-five billion parameter G P T 3, a model more than a hundred times larger."
+  },
+  {
+   "id": "instruct.end",
+   "start": 1080.0379999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "hacking.1",
+   "start": 1080.9379999999996,
+   "dur": 16.621000000000002,
+   "say": "But a reward model is only a model. Push hard enough on any proxy, and you find its mistakes. The policy learns answers the reward model loves and people do not: too long, too flattering, confidently wrong. This is called reward hacking."
+  },
+  {
+   "id": "hacking.2",
+   "start": 1097.5589999999997,
+   "dur": 18.405,
+   "say": "Gao, Schulman and Hilton measured this with a stand-in for people: a large gold reward model, and smaller proxy reward models trained on its labels. As the policy moves away from where it started, the proxy reward keeps climbing. The gold reward rises, peaks, and then falls."
+  },
+  {
+   "id": "hacking.3",
+   "start": 1115.9639999999997,
+   "dur": 7.374,
+   "say": "So we need a leash: something that keeps the policy close to where it started, where the reward model can still be trusted."
+  },
+  {
+   "id": "hacking.end",
+   "start": 1123.3379999999997,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card8.1",
+   "start": 1124.2379999999996,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card8.end",
+   "start": 1127.2379999999996,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "kl.1",
+   "start": 1128.1379999999997,
+   "dur": 11.558,
+   "say": "The standard leash is the Kullback-Leibler divergence. It measures how different one distribution is from another: the average, under pi, of the log of pi over pi ref."
+  },
+  {
+   "id": "kl.2",
+   "start": 1139.6959999999997,
+   "dur": 7.968,
+   "say": "It is zero only when the two distributions are equal, and it grows as pi moves its mass to where the reference puts little."
+  },
+  {
+   "id": "kl.3",
+   "start": 1147.6639999999998,
+   "dur": 13.217,
+   "say": "The objective for language models subtracts it. Maximize the expected reward, minus beta times the K L divergence from a reference model, which is usually the supervised model we started from."
+  },
+  {
+   "id": "kl.4",
+   "start": 1160.8809999999996,
+   "dur": 20.25,
+   "say": "For a sequence, the log ratio is a sum over tokens, so the penalty can be paid token by token: each token’s reward includes minus beta times the log ratio of the new probability to the reference probability. InstructGPT used this, with beta equal to zero point zero two."
+  },
+  {
+   "id": "kl.end",
+   "start": 1181.1309999999996,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "tilt.1",
+   "start": 1182.0309999999997,
+   "dur": 13.995000000000001,
+   "say": "Here is the beautiful part. This objective has an exact solution. Among all distributions, the best one is the reference distribution, tilted by the exponential of reward over beta, and renormalized."
+  },
+  {
+   "id": "tilt.2",
+   "start": 1196.0259999999996,
+   "dur": 18.381,
+   "say": "Why? Rewrite the objective. It equals minus beta, times the K L divergence from pi to that tilted distribution, plus beta log Z, which does not depend on pi. And a K L divergence is smallest, zero, exactly when the two distributions are equal."
+  },
+  {
+   "id": "tilt.end",
+   "start": 1214.4069999999997,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "beta.1",
+   "start": 1215.3069999999998,
+   "dur": 17.806,
+   "say": "Watch beta. With a large beta, the leash is tight, and the policy stays at the reference. As beta shrinks, mass flows toward high-reward answers. Near zero, everything piles onto the single answer the reward model rates highest. Here, that is the flattering one."
+  },
+  {
+   "id": "beta.2",
+   "start": 1233.1129999999998,
+   "dur": 11.17,
+   "say": "Each beta buys some reward at some K L cost. Trace them all, and you get a frontier: the most reward any policy can get, for a given distance from the reference."
+  },
+  {
+   "id": "beta.3",
+   "start": 1244.283,
+   "dur": 18.186,
+   "say": "There is a second way to read the solution. The reference model is a prior. The exponentiated reward is a likelihood. And the optimal policy is the posterior. Korbak, Perez and Buckley argued that R L with K L penalties is best viewed as Bayesian inference."
+  },
+  {
+   "id": "beta.4",
+   "start": 1262.4689999999998,
+   "dur": 9.413,
+   "say": "We cannot compute this posterior directly, because Z sums over every possible answer. That is why we train with P P O. Or is it?"
+  },
+  {
+   "id": "beta.end",
+   "start": 1271.8819999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card9.1",
+   "start": 1272.7819999999997,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card9.end",
+   "start": 1275.7819999999997,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "dpo.1",
+   "start": 1276.6819999999998,
+   "dur": 13.862,
+   "say": "In twenty twenty-three, Rafailov and colleagues at Stanford noticed something. If the optimal policy is determined by the reward, then the reward is determined by the optimal policy. Just solve for r."
+  },
+  {
+   "id": "dpo.2",
+   "start": 1290.5439999999999,
+   "dur": 13.027000000000001,
+   "say": "Now put that into the Bradley-Terry model. Bradley-Terry only looks at differences of rewards, and the awkward term, beta log Z, is the same for both answers to the same prompt. It cancels."
+  },
+  {
+   "id": "dpo.3",
+   "start": 1303.5709999999997,
+   "dur": 13.763,
+   "say": "So we can train the policy directly on preference pairs, with the same loss as the reward model, but with the policy’s own log ratios as the scores. This is Direct Preference Optimization, D P O."
+  },
+  {
+   "id": "dpo.4",
+   "start": 1317.3339999999998,
+   "dur": 9.504000000000001,
+   "say": "Beta times the log ratio acts as an implicit reward. In the words of the paper’s title: your language model is secretly a reward model."
+  },
+  {
+   "id": "dpo.end",
+   "start": 1326.8379999999997,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "dpograd.1",
+   "start": 1327.7379999999998,
+   "dur": 14.075000000000001,
+   "say": "Its gradient is easy to read. Push up the winner’s log-probability, push down the loser’s, weighted by how wrong the implicit reward currently is: the sigmoid of the loser’s implicit reward minus the winner’s."
+  },
+  {
+   "id": "dpograd.end",
+   "start": 1341.8129999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "dpoconv.1",
+   "start": 1342.7129999999997,
+   "dur": 15.938,
+   "say": "Does it really land in the same place as R L H F? On our toy problem, yes. Train D P O on every pair, with unlimited comparisons drawn from the true rewards, and the policy converges to the exact tilted distribution."
+  },
+  {
+   "id": "dpoconv.2",
+   "start": 1358.6509999999998,
+   "dur": 8.780000000000001,
+   "say": "No reward model, no sampling, no critic. Just a classification loss on pairs. That is why D P O spread so quickly."
+  },
+  {
+   "id": "dpoconv.3",
+   "start": 1367.4309999999998,
+   "dur": 21.342000000000002,
+   "say": "But the equivalence assumes a lot: unlimited data, a model that can represent the optimum, and comparisons that cover the answers the policy will actually produce. In practice, D P O learns from a fixed set of pairs, and it can even lower the probability of the preferred answer, as long as the rejected one falls faster."
+  },
+  {
+   "id": "dpoconv.end",
+   "start": 1388.7729999999997,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card10.1",
+   "start": 1389.6729999999998,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card10.end",
+   "start": 1392.6729999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "rlvr.1",
+   "start": 1393.5729999999999,
+   "dur": 13.928,
+   "say": "For math and code, there is a better judge than any reward model: check the answer. Does the final number match? Do the unit tests pass? The Tooloo three team called this reinforcement learning with verifiable rewards."
+  },
+  {
+   "id": "rlvr.2",
+   "start": 1407.501,
+   "dur": 7.491,
+   "say": "A verifier cannot be flattered. The only thing left to exploit is the check itself, so it must be written carefully."
+  },
+  {
+   "id": "rlvr.end",
+   "start": 1414.992,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "grpo.1",
+   "start": 1415.8919999999998,
+   "dur": 15.808,
+   "say": "The method most associated with verifiable rewards is G R P O, group relative policy optimization, introduced with DeepSeekMath in twenty twenty-four. For each question, sample a group of answers. Here, eight."
+  },
+  {
+   "id": "grpo.2",
+   "start": 1431.6999999999998,
+   "dur": 10.951,
+   "say": "Score each one: one for correct, zero for wrong. Each answer’s advantage is its reward minus the group mean, divided by the group’s standard deviation."
+  },
+  {
+   "id": "grpo.3",
+   "start": 1442.6509999999998,
+   "dur": 14.011000000000001,
+   "say": "Correct answers get a positive advantage, wrong ones a negative advantage, and the group’s own average plays the role of the baseline. No critic network. Every token in an answer shares that answer’s advantage."
+  },
+  {
+   "id": "grpo.4",
+   "start": 1456.6619999999998,
+   "dur": 10.337000000000002,
+   "say": "The update is P P O’s: per-token clipped ratios, times these advantages, plus a K L penalty to the reference model, added straight to the loss."
+  },
+  {
+   "id": "grpo.5",
+   "start": 1466.9989999999998,
+   "dur": 23.115000000000002,
+   "say": "That K L term is estimated per token with a formula from John Schulman: the ratio, minus the log of the ratio, minus one. On average it equals the K L divergence. Unlike the plain log ratio, it is never negative, and when the two policies are close it is far less noisy. In a small example, its spread is 24 times smaller."
+  },
+  {
+   "id": "grpo.end",
+   "start": 1490.1139999999998,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "dead.1",
+   "start": 1491.014,
+   "dur": 21.233,
+   "say": "Now a subtle problem. If all eight answers are correct, or all eight are wrong, every advantage is zero, and the question teaches nothing. For a question the model solves half the time, that happens in only two groups out of two hundred fifty-six. But for questions that are very easy or very hard, it is almost every group."
+  },
+  {
+   "id": "dead.2",
+   "start": 1512.2469999999998,
+   "dur": 22.429000000000002,
+   "say": "DAPO, from ByteDance Seed and Chinghwa University, filters those groups out and samples more, which they call dynamic sampling. It also raises the upper clip limit, from zero point two to zero point two eight, so that rare but good tokens can grow faster. And it averages the loss over all tokens in the batch, rather than answer by answer."
+  },
+  {
+   "id": "dead.3",
+   "start": 1534.676,
+   "dur": 23.265,
+   "say": "That last change matters. G R P O divides each answer’s loss by its length. A long wrong answer is then penalized less per token than a short wrong one, which quietly rewards rambling when wrong. The Dr. G R P O paper calls this a response-level length bias, and removes both the length division and the standard deviation scaling."
+  },
+  {
+   "id": "dead.4",
+   "start": 1557.9409999999998,
+   "dur": 14.319,
+   "say": "Other variants change the ratio itself. Kwen’s G S P O uses one ratio for the whole answer, the geometric mean of its token ratios, which proved steadier for large mixture-of-experts models."
+  },
+  {
+   "id": "dead.end",
+   "start": 1572.26,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "r1.1",
+   "start": 1573.1599999999999,
+   "dur": 19.089000000000002,
+   "say": "Applied straight to a base model, with no supervised step, and rewards only for correctness and format, this recipe produced DeepSeek R1 Zero. On the Aim twenty twenty-four math competition, its pass at one rose from fifteen point six percent to seventy-seven point nine percent."
+  },
+  {
+   "id": "r1.2",
+   "start": 1592.2489999999998,
+   "dur": 17.911,
+   "say": "Its answers grew longer as training went on, and it began to re-check its own work. The authors showed one such moment, which the model itself called an aha moment. Later analysis found that base models already show some of this behavior; reinforcement learning made it frequent."
+  },
+  {
+   "id": "r1.end",
+   "start": 1610.1599999999999,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "card11.1",
+   "start": 1611.06,
+   "dur": 3,
+   "say": ""
+  },
+  {
+   "id": "card11.end",
+   "start": 1614.06,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "passk.1",
+   "start": 1614.96,
+   "dur": 14.863000000000001,
+   "say": "What does this training actually change? Measure pass at k: the chance that at least one of k samples is correct. From n samples with c correct, the unbiased estimate is one minus a ratio of binomial coefficients."
+  },
+  {
+   "id": "passk.2",
+   "start": 1629.823,
+   "dur": 17.548000000000002,
+   "say": "Reinforcement learning raises pass at one, a lot: the model puts more mass on answers it could already find. But Yue and colleagues found that with enough samples, base models often solve as many problems, or more. Much of the gain is sharpening, not new ability."
+  },
+  {
+   "id": "passk.3",
+   "start": 1647.371,
+   "dur": 9.754000000000001,
+   "say": "Sharpening has a cost: entropy falls, and with it, exploration. If the model never samples a correct answer, no gradient can reward it."
+  },
+  {
+   "id": "passk.end",
+   "start": 1657.125,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "unify.1",
+   "start": 1658.025,
+   "dur": 11.402000000000001,
+   "say": "Step back. Every method in this film has the same shape: an average, over some answers, of a weight times the gradient of their log-probability. Only the weight changes."
+  },
+  {
+   "id": "unify.2",
+   "start": 1669.4270000000001,
+   "dur": 22.314,
+   "say": "For supervised fine-tuning, the weight is one, on the demonstrations. For REINFORCE, it is the reward. With a baseline, the advantage. For P P O, the advantage, switched off by the clip. For D P O, plus or minus beta, times a sigmoid of how wrong the implicit reward is. For G R P O, the group-normalized reward."
+  },
+  {
+   "id": "unify.3",
+   "start": 1691.741,
+   "dur": 8.781,
+   "say": "The art is all in the weight: making it low in noise, honest enough, and hard to game, while keeping the policy close to what it already knows."
+  },
+  {
+   "id": "unify.end",
+   "start": 1700.5220000000002,
+   "dur": 0.9,
+   "say": ""
+  },
+  {
+   "id": "recap.1",
+   "start": 1701.422,
+   "dur": 16.480999999999998,
+   "say": "Let us retrace the path. A language model is a policy over tokens. The log-derivative trick turns a reward we can only sample into a gradient we can estimate. Baselines and critics tame its noise. P P O keeps each step small."
+  },
+  {
+   "id": "recap.2",
+   "start": 1717.903,
+   "dur": 17.275000000000002,
+   "say": "Preferences become rewards through Bradley-Terry. The K L leash keeps the policy near where it began, and its exact solution reveals D P O. And with verifiable rewards and group baselines, G R P O trains reasoning models without a critic."
+  },
+  {
+   "id": "recap.3",
+   "start": 1735.178,
+   "dur": 10.978000000000002,
+   "say": "All of it rests on one line: the gradient of an expectation is the expectation of the reward, times the gradient of the log-probability. Thanks for watching."
+  }
+ ]
+}
