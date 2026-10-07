@@ -34,7 +34,8 @@
    * Sources, tried in order until one plays:
    *   1. the embedded MP3 bytes (#narration-audio) as a blob: URL
    *   2. the same bytes as a data: URI
-   *   3. narration.mp3 next to the page
+   *   3. the files next to the page (narration.srcs, best first: Opus, then
+ *      MP3), or narration.mp3
    * Hosts differ in which of these their content policy admits, so a source
    * that errors, is refused, or does not start within 12 s is replaced by the
    * next one. When none is left the state is "failed" and the player runs on
@@ -56,7 +57,11 @@
       });
       sources.push(() => `data:audio/mpeg;base64,${b64}`);
     }
-    if (narr && narr.src) sources.push(() => narr.src);
+    // files next to the page, best first; a type the browser cannot play is skipped
+    if (narr && narr.srcs) {
+      const probe = new Audio();
+      for (const f of narr.srcs) if (!f.type || probe.canPlayType(f.type)) sources.push(() => f.src);
+    } else if (narr && narr.src) sources.push(() => narr.src);
 
     const api = { state: 'none' };
     let el = null;

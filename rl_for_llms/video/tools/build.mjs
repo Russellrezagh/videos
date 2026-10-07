@@ -96,6 +96,32 @@ fs.mkdirSync(path.dirname(outFile), { recursive: true });
 fs.writeFileSync(outFile, dist);
 console.log(`${path.relative(ROOT, outFile)}  ${mb(dist)}  narration: ${narr ? `${Object.keys(narr.durations).length} lines, ${embedDist ? 'embedded' : 'dist/narration.mp3'}` : 'none (captions only)'}`);
 
+/*
+ * --publish DIR: the page as a fragment (DIR/index.html) with the narration as
+ * files beside it, for a long film whose voice is too big to embed: Opus in
+ * WebM (--opus-kbps, default 20) and a low-bitrate MP3 fallback (--mp3-kbps,
+ * default 24). Each stays under the host's 15 MB per-file limit.
+ */
+const pi = process.argv.indexOf('--publish');
+if (pi > 0 && process.argv[pi + 1]) {
+  if (!narr) throw new Error('--publish needs narration (narration/durations.json and dist/narration.mp3)');
+  const dir = path.resolve(process.argv[pi + 1]);
+  fs.mkdirSync(dir, { recursive: true });
+  const opt = (k, d) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : d);
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', mp3, '-ac', '1', '-c:a', 'libopus', '-b:a', `${opt('--opus-kbps', 20)}k`, '-application', 'voip', path.join(dir, 'narration.webm')]);
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', mp3, '-ac', '1', '-ar', '22050', '-b:a', `${opt('--mp3-kbps', 24)}k`, path.join(dir, 'narration-lo.mp3')]);
+  const pub = Object.assign({}, narr, { srcs: [{ src: 'narration.webm', type: 'audio/webm; codecs="opus"' }, { src: 'narration-lo.mp3', type: 'audio/mpeg' }] });
+  const page = html.replace(/<script type="application\/json" id="narration-data">[\s\S]*?<\/script>/, () => `<script type="application/json" id="narration-data">${JSON.stringify(pub)}</script>`)
+    .replace(/<!doctype html>\s*/i, '').replace(/<html[^>]*>\s*/i, '').replace(/<\/html>\s*$/i, '').replace(/<head>\s*/i, '')
+    .replace(/<\/head>\s*/i, '').replace(/<body>\s*/i, '').replace(/<\/body>\s*/i, '').replace(/<meta charset="utf-8">\s*/i, '')
+    .replace(/<meta name="viewport"[^>]*>\s*/i, '');
+  fs.writeFileSync(path.join(dir, 'index.html'), page);
+  for (const f of ['index.html', 'narration.webm', 'narration-lo.mp3']) {
+    const n = fs.statSync(path.join(dir, f)).size;
+    console.log(`publish  ${f}  ${(n / 1048576).toFixed(2)} MB${n > 15 * 1048576 ? '  OVER the 15 MB file limit' : ''}`);
+  }
+}
+
 const i = process.argv.indexOf('--fragment');
 if (i > 0 && process.argv[i + 1]) {
   const frag = embedded()
