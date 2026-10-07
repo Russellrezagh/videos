@@ -1,0 +1,35 @@
+{
+ "duration": 76.13333333333252,
+ "cues": [
+  {
+   "id": "clip.1",
+   "start": 0.15,
+   "end": 18.205,
+   "cap": "The second landscape is the objective of PPO. After one batch of samples, PPO takes several gradient steps, so it needs a rule for how far the new policy may move. Two numbers matter for each token: the ratio of its new probability to its old one, and its advantage."
+  },
+  {
+   "id": "clip.2",
+   "start": 18.883333333333322,
+   "end": 31.26333333333332,
+   "cap": "With no rule, the objective is the ratio times the advantage. Over this floor, that is a twisted sheet. Where the advantage is positive, it keeps rising as the ratio grows, without limit."
+  },
+  {
+   "id": "clip.3",
+   "start": 31.983333333333974,
+   "end": 48.16133333333397,
+   "cap": "PPO takes the smaller of that and a clipped copy, whose ratio is held between 0.8 and 1.2. Where the advantage is positive, the surface turns flat beyond 1.2. Where it is negative, it turns flat below 0.8."
+  },
+  {
+   "id": "clip.4",
+   "start": 48.850000000000094,
+   "end": 63.319000000000095,
+   "cap": "Flat means zero slope. A token that has already gained enough gets no further push, so one batch cannot drag the policy far. And the clipped surface never rises above the sheet. It is a pessimistic estimate of the gain."
+  },
+  {
+   "id": "clip.5",
+   "start": 64.01666666666632,
+   "end": 73.94066666666632,
+   "cap": "The flat part is on one side only. If a step went the wrong way, and made a good token rarer, the surface there is still the steep sheet, and the gradient pulls it back."
+  }
+ ]
+}

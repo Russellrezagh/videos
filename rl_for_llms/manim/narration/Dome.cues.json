@@ -1,0 +1,41 @@
+{
+ "duration": 82.83333333333226,
+ "cues": [
+  {
+   "id": "dome.1",
+   "start": 0.15,
+   "end": 14.537,
+   "cap": "The last landscape is the KL leash. Take a prompt with three kinds of answer: vague, helpful, and flattering. Every policy over them is a point of this triangle. The corners are certainty. The middle is an even split."
+  },
+  {
+   "id": "dome.2",
+   "start": 15.216666666666653,
+   "end": 24.246666666666652,
+   "cap": "The reference model sits here: vague 60% of the time, helpful 30%, flattering 10%. The reward model, though, pays most for flattery."
+  },
+  {
+   "id": "dome.3",
+   "start": 24.9166666666668,
+   "end": 37.1786666666668,
+   "cap": "Expected reward over the triangle is a tilted plane, highest at the flattering corner. The KL divergence from the reference is a bowl: zero at the reference, rising toward the edges."
+  },
+  {
+   "id": "dome.4",
+   "start": 37.850000000000335,
+   "end": 53.22300000000033,
+   "cap": "The objective is the plane, minus beta times the bowl. Together they make a dome. Its peak has a closed form: the reference, reweighted by e to the reward over beta, then normalized. The height of the peak is beta times log Z."
+  },
+  {
+   "id": "dome.5",
+   "start": 53.91666666666655,
+   "end": 67.91766666666655,
+   "cap": "Now turn the knob. With a large beta the bowl dominates, and the peak stays close to the reference. As beta shrinks, the bowl flattens, and the peak slides toward the flattering corner: the answer the reward model overrates."
+  },
+  {
+   "id": "dome.6",
+   "start": 68.61666666666589,
+   "end": 80.2626666666659,
+   "cap": "That slide is reward over-optimization, in one picture. Beta sets how far the policy may wander from where it started, and so how far it trusts a reward that is only a model."
+  }
+ ]
+}

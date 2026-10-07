@@ -1,0 +1,71 @@
+{
+ "duration": 152.06666666666314,
+ "cues": [
+  {
+   "id": "logit.1",
+   "start": 0.15,
+   "end": 13.754,
+   "cap": "This is a companion to The Gradient of Reward: three of its ideas, drawn as landscapes. The first is the three-answer bandit. Asked seventeen times three, the model says fifty-one, about fifty, or forty-one."
+  },
+  {
+   "id": "logit.2",
+   "start": 14.449999999999998,
+   "end": 30.108999999999998,
+   "cap": "Its policy is a softmax over three logits. Adding the same number to all three changes nothing, so two numbers are enough: how far fifty-one is ahead of forty-one, and how far about fifty is ahead of forty-one. Those two numbers are the floor."
+  },
+  {
+   "id": "logit.3",
+   "start": 30.78333333333357,
+   "end": 46.64433333333357,
+   "cap": "Above each point of the floor, raise the expected reward: each answer's chance times its reward, summed. The surface has three plateaus, one for each answer the model can become sure of, with ramps between them. Training is a climb to the highest."
+  },
+  {
+   "id": "logit.4",
+   "start": 47.34999999999944,
+   "end": 59.84599999999944,
+   "cap": "Take the policy from the film, where fifty-one has about half the chance. Uphill from it is this arrow: the exact gradient. We never get to see it. What we get is one sampled answer, and its reward."
+  },
+  {
+   "id": "logit.5",
+   "start": 60.51666666666571,
+   "end": 78.05266666666571,
+   "cap": "One sample gives one of three arrows, one per answer: the reward times the score, which pushes the sampled answer up and the others down. Forty-one earns nothing, so its arrow has no length. Each arrow turns up as often as its answer does. Here, that is how bright it is."
+  },
+  {
+   "id": "logit.6",
+   "start": 78.74999999999879,
+   "end": 89.4109999999988,
+   "cap": "Weighted by those chances, the three arrows add up to exactly the uphill arrow. That is the log-derivative trick, seen from above: noisy pieces, the right average."
+  },
+  {
+   "id": "logit.7",
+   "start": 90.0833333333318,
+   "end": 99.0893333333318,
+   "cap": "Now add ten to every reward. The ranking is the same, and the surface simply rises by ten, so its slopes, and the gradient, do not change."
+  },
+  {
+   "id": "logit.8",
+   "start": 99.78333333333153,
+   "end": 115.08833333333152,
+   "cap": "The arrows do change. Each is scaled by its reward, now about 10, and they swing far out. The spread (variance) of one sample grows from 0.15 to 52: more than 300 times larger, with the same average."
+  },
+  {
+   "id": "logit.9",
+   "start": 115.78333333333103,
+   "end": 126.08633333333103,
+   "cap": "Subtract a baseline, the average reward, and the arrows fall back, to a spread of 0.02. The average has not changed. Only the noise has."
+  },
+  {
+   "id": "logit.10",
+   "start": 126.78333333333077,
+   "end": 144.1133333333308,
+   "cap": "Here is what that noise does to training. Eight runs of 60 steps, 4 samples a step, every reward +10. Without a baseline the runs stagger, and 6 of the 8 end on a wrong plateau: sure of a wrong answer, on flat ground, where no gradient can bring them back."
+  },
+  {
+   "id": "logit.11",
+   "start": 144.7833333333301,
+   "end": 149.6903333333301,
+   "cap": "With a leave-one-out baseline, all eight follow the exact path, up to fifty-one."
+  }
+ ]
+}

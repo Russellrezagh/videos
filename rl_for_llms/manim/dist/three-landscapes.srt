@@ -1,0 +1,87 @@
+1
+00:00:05,350 --> 00:00:18,954
+This is a companion to The Gradient of Reward: three of its ideas, drawn as landscapes. The first is the three-answer bandit. Asked seventeen times three, the model says fifty-one, about fifty, or forty-one.
+
+2
+00:00:19,650 --> 00:00:35,309
+Its policy is a softmax over three logits. Adding the same number to all three changes nothing, so two numbers are enough: how far fifty-one is ahead of forty-one, and how far about fifty is ahead of forty-one. Those two numbers are the floor.
+
+3
+00:00:35,983 --> 00:00:51,844
+Above each point of the floor, raise the expected reward: each answer's chance times its reward, summed. The surface has three plateaus, one for each answer the model can become sure of, with ramps between them. Training is a climb to the highest.
+
+4
+00:00:52,550 --> 00:01:05,046
+Take the policy from the film, where fifty-one has about half the chance. Uphill from it is this arrow: the exact gradient. We never get to see it. What we get is one sampled answer, and its reward.
+
+5
+00:01:05,717 --> 00:01:23,253
+One sample gives one of three arrows, one per answer: the reward times the score, which pushes the sampled answer up and the others down. Forty-one earns nothing, so its arrow has no length. Each arrow turns up as often as its answer does. Here, that is how bright it is.
+
+6
+00:01:23,950 --> 00:01:34,611
+Weighted by those chances, the three arrows add up to exactly the uphill arrow. That is the log-derivative trick, seen from above: noisy pieces, the right average.
+
+7
+00:01:35,283 --> 00:01:44,289
+Now add ten to every reward. The ranking is the same, and the surface simply rises by ten, so its slopes, and the gradient, do not change.
+
+8
+00:01:44,983 --> 00:02:00,288
+The arrows do change. Each is scaled by its reward, now about 10, and they swing far out. The spread (variance) of one sample grows from 0.15 to 52: more than 300 times larger, with the same average.
+
+9
+00:02:00,983 --> 00:02:11,286
+Subtract a baseline, the average reward, and the arrows fall back, to a spread of 0.02. The average has not changed. Only the noise has.
+
+10
+00:02:11,983 --> 00:02:29,313
+Here is what that noise does to training. Eight runs of 60 steps, 4 samples a step, every reward +10. Without a baseline the runs stagger, and 6 of the 8 end on a wrong plateau: sure of a wrong answer, on flat ground, where no gradient can bring them back.
+
+11
+00:02:29,983 --> 00:02:34,890
+With a leave-one-out baseline, all eight follow the exact path, up to fifty-one.
+
+12
+00:02:37,417 --> 00:02:55,472
+The second landscape is the objective of PPO. After one batch of samples, PPO takes several gradient steps, so it needs a rule for how far the new policy may move. Two numbers matter for each token: the ratio of its new probability to its old one, and its advantage.
+
+13
+00:02:56,150 --> 00:03:08,530
+With no rule, the objective is the ratio times the advantage. Over this floor, that is a twisted sheet. Where the advantage is positive, it keeps rising as the ratio grows, without limit.
+
+14
+00:03:09,250 --> 00:03:25,428
+PPO takes the smaller of that and a clipped copy, whose ratio is held between 0.8 and 1.2. Where the advantage is positive, the surface turns flat beyond 1.2. Where it is negative, it turns flat below 0.8.
+
+15
+00:03:26,117 --> 00:03:40,586
+Flat means zero slope. A token that has already gained enough gets no further push, so one batch cannot drag the policy far. And the clipped surface never rises above the sheet. It is a pessimistic estimate of the gain.
+
+16
+00:03:41,283 --> 00:03:51,207
+The flat part is on one side only. If a step went the wrong way, and made a good token rarer, the surface there is still the steep sheet, and the gradient pulls it back.
+
+17
+00:03:53,550 --> 00:04:07,937
+The last landscape is the KL leash. Take a prompt with three kinds of answer: vague, helpful, and flattering. Every policy over them is a point of this triangle. The corners are certainty. The middle is an even split.
+
+18
+00:04:08,617 --> 00:04:17,647
+The reference model sits here: vague 60% of the time, helpful 30%, flattering 10%. The reward model, though, pays most for flattery.
+
+19
+00:04:18,317 --> 00:04:30,579
+Expected reward over the triangle is a tilted plane, highest at the flattering corner. The KL divergence from the reference is a bowl: zero at the reference, rising toward the edges.
+
+20
+00:04:31,250 --> 00:04:46,623
+The objective is the plane, minus beta times the bowl. Together they make a dome. Its peak has a closed form: the reference, reweighted by e to the reward over beta, then normalized. The height of the peak is beta times log Z.
+
+21
+00:04:47,317 --> 00:05:01,318
+Now turn the knob. With a large beta the bowl dominates, and the peak stays close to the reference. As beta shrinks, the bowl flattens, and the peak slides toward the flattering corner: the answer the reward model overrates.
+
+22
+00:05:02,017 --> 00:05:13,663
+That slide is reward over-optimization, in one picture. Beta sets how far the policy may wander from where it started, and so how far it trusts a reward that is only a model.
