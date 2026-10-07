@@ -1,0 +1,6 @@
+node_modules/
+video/narration/clips/
+video/narration/words.json.cache
+video/dist/*.mp4
+video/dist/.render/
+__pycache__/

@@ -1,0 +1,16 @@
+{
+  "name": "gradient-of-reward",
+  "private": true,
+  "description": "The Gradient of Reward: a narrated, first-principles film on the mathematics of reinforcement learning for language models.",
+  "scripts": {
+    "verify": "node tests/verify.mjs",
+    "build": "node video/tools/build.mjs",
+    "lint": "node video/tools/lint-layout.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "katex": "0.16.22",
+    "mathjax": "3.2.2"
+  }
+}
