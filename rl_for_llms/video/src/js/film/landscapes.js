@@ -231,21 +231,21 @@ FILM.landscapes = FILM.landscapes || {};
         new MV.Text(`reward ${r[a]}`, { size: 34, color: C.GOLD }).at(0, 56)
       ).at(-420 + 420 * a, -260)));
       const head = S.add(S.english('every {policy|pt} becomes a point on a floor, and its {average reward|JJ} a height above it', { size: 46, width: 1400 }).at(0, 30));
-      S.beat('Everything we have done with our three answers can be drawn as one landscape. Every possible policy becomes a point on a floor. Its average reward becomes a height above that point. And training becomes a climb.',
+      S.beat('Everything so far can be drawn as one landscape. Every possible policy becomes a point on a floor, its average reward a height above that point, and training a climb.',
         A.FadeIn(h), lag(0.3, chips.map((c) => A.FadeIn(c, { dy: 16 }))), S.writeIn(head, 2.4));
 
       // why two numbers are enough
       const F1 = S.add(S.tex('\\pt(\\aa) \\;=\\; \\frac{e^{\\zz_{\\aa}}}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'}}}', { size: 76 }).at(0, -250));
       const F2 = S.add(S.tex('\\frac{e^{\\zz_{\\aa} + c}}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'} + c}} \\;=\\; \\frac{e^{c}\\; e^{\\zz_{\\aa}}}{e^{c} \\sum_{\\aa\'} e^{\\zz_{\\aa\'}}} \\;=\\; \\pt(\\aa)', { size: 72 }).at(0, -20));
       const R2 = S.add(S.reason('because: adding c to every logit multiplies every exponential by the same factor, on top and on bottom'));
-      S.beat('First, the floor. The policy is a softmax of three logits. Add the same number, c, to all three. Every term gains the same factor, e to the c, on top and on bottom, so it cancels. The policy does not change.',
+      S.beat('First, the floor. The policy is a softmax of three logits. Add the same number, c, to all three: every term gains the same factor, e to the c, on top and on bottom, so it cancels.',
         fade(A, [...chips, head]), A.Write(F1, 1.6), A.Write(F2, 2.4), S.writeIn(R2, 1.4),
-        { cap: 'First, the floor. The policy is a softmax of three logits. Add the same number c to all three. Every term gains the same factor, e^c, on top and on bottom, so it cancels. The policy does not change.' });
+        { cap: 'First, the floor. The policy is a softmax of three logits. Add the same number c to all three: every term gains the same factor, e^c, on top and on bottom, so it cancels.' });
 
       const F3 = S.add(S.tex(`${U} \\;=\\; \\zz_{51} - \\zz_{41}, \\qquad ${V} \\;=\\; \\zz_{\\approx 50} - \\zz_{41}`, { size: 76 }).at(0, -40));
       const E3 = S.add(S.english('only {differences between logits|zz} matter, so two numbers fix the whole {policy|pt}', { size: 40 }).at(0, 150));
       const R3 = S.add(S.reason('because: subtracting the logit of 41 from all three changes nothing'));
-      S.beat('So only differences between logits matter. Subtract forty-one’s logit from all three, so that it becomes zero. Two numbers are left, and together they fix the whole policy. Call them u and v.',
+      S.beat('So only differences matter. Subtract forty-one’s logit from all three, making it zero. Two numbers are left, and they fix the whole policy: u and v.',
         A.FadeOut(F1), A.FadeOut(R2), par(A.MoveTo(F2, 0, -275), A.ScaleTo(F2, 0.72), A.Set(F2, { o: 0.5 })), A.Write(F3, 1.8), S.writeIn(E3, 1.6), S.writeIn(R3, 1.2));
       S.tour(F3, [
         { sym: 'lu', at: [0, 175], anims: fade(A, [E3, R3]),
@@ -260,11 +260,11 @@ FILM.landscapes = FILM.landscapes || {};
       const M2 = S.add(S.tex(`(${U},\\, ${V}) \\;=\\; (${fx(u0, 1)},\\; ${fx(v0, 1)})`, { size: 54 })).at(RX, -80);
       const R6 = col.why(S, 'because: 0.6 − (−0.3) = 0.9 and 0.2 − (−0.3) = 0.5', 20);
       const E6 = col.say(S, 'every point of the floor is a policy: a mixture of the three answers', 150, 36);
-      S.beat('Here is that floor, seen from above. Our model, with logits zero point six, zero point two and minus zero point three, stands at u equals zero point nine, v equals zero point five. Far right, it would be sure of fifty-one; far up, of about fifty; down and left, of forty-one.',
+      S.beat('Here is that floor, seen from above. Our model sits at u equals zero point nine, v equals zero point five: its logits, minus forty-one’s. Far right, the model would be sure of fifty-one; far up, of about fifty; down and left, of forty-one.',
         S.endTour(F3), A.FadeOut(F2), par(A.MoveTo(F3, RX, -300), A.ScaleTo(F3, 0.68)),
         A.FadeIn(L.sp), A.FadeIn(L.labU), A.FadeIn(L.labV), A.Write(M1, 1.2), A.Write(M2, 1.2), A.FadeIn(L.dot, { from: 2 }), S.writeIn(R6, 1),
         lag(0.8, L.corner.map((c) => A.FadeIn(c))), S.writeIn(E6, 1.4),
-        { cap: 'Here is that floor, seen from above. Our model, with logits 0.6, 0.2 and −0.3, stands at u = 0.9, v = 0.5. Far right, it would be sure of 51; far up, of about 50; down and left, of 41.' });
+        { cap: 'Here is that floor, seen from above. Our model sits at u = 0.9, v = 0.5: its logits, minus 41’s. Far right, the model would be sure of 51; far up, of about 50; down and left, of 41.' });
 
       // lift the floor to J
       const F8 = col.tex(S, `\\JJ(${U}, ${V}) \\;=\\; \\sum_{\\aa} \\pt(\\aa)\\; \\rr(\\aa)`, -140, 62);
@@ -272,9 +272,9 @@ FILM.landscapes = FILM.landscapes || {};
       S.beat('Now lift every point of the floor to the average reward of its policy: each answer’s chance, times its reward, added up. The flat floor becomes a landscape.',
         fade(A, [M1, M2, R6, E6]), A.Write(F8, 1.6), S.writeIn(R8, 1.4), A.FadeIn(L.surf, { dur: 0.6 }), par(A.Set(L.surf, { h: 1 }, 3.2), A.Set(L.sp, VIEW, 3.2)));
       const E9 = col.say(S, 'three plateaus: height {1 for 51,|JJ} {0.3 for about 50,|JJ} {0 for 41;|JJ} ramps between them', 140, 36);
-      S.beat('It has three flat plateaus, one for each answer the model can become sure of: height one for fifty-one, zero point three for about fifty, and zero for forty-one. Ramps join them. Training is a climb to the highest.',
+      S.beat('It has three flat plateaus, one for each answer the model can become sure of: height one for fifty-one, zero point three for about fifty, zero for forty-one. Ramps join them, and training climbs.',
         S.writeIn(E9, 2.4), A.Set(L.sp, { theta: -50 }, 6, 'linear'),
-        { cap: 'It has three flat plateaus, one for each answer the model can become sure of: height 1 for 51, 0.3 for about 50, and 0 for 41. Ramps join them. Training is a climb to the highest.' });
+        { cap: 'It has three flat plateaus, one for each answer the model can become sure of: height 1 for 51, 0.3 for about 50, 0 for 41. Ramps join them, and training climbs.' });
 
       // which way is uphill?
       const hLab = new Label3(new MV.Tex(`\\JJ = ${fx(J0)}`, { size: 44 }), () => [u0, v0, HZ * L.surf.p.h * J0 + 1.1]);
@@ -285,9 +285,9 @@ FILM.landscapes = FILM.landscapes || {};
       const G2 = col.tex(S, `\\frac{\\partial \\JJ}{\\partial ${V}} \\;=\\; \\pt(\\approx 50)\\,\\big(\\rr(\\approx 50) - \\JJ\\big)`, -100, 50);
       const N2 = col.tex(S, `=\\; \\cPolicy{n1}{${fx(pi[1])}} \\times (\\cReward{n2}{0.3} - \\cReward{n3}{${fx(J0)}}) \\;=\\; \\cGrad{n4}{${fx(g[1])}}`, -10, 44);
       const R10 = col.why(S, 'because: with 41’s logit pinned at 0, u is the logit of 51 and v the logit of about 50; each slope is π × (r − J), as in chapter 3', 110);
-      S.beat('Our model stands on a ramp, at height zero point five eight. Which way is uphill? Each slope is a chance, times reward minus the average, as in chapter three: zero point two along u, and minus zero point zero nine along v.',
+      S.beat('Our model stands on a ramp, at height zero point five eight. Which way is uphill? As in chapter three, each slope is a chance, times reward minus the average: zero point two along u, minus zero point zero nine along v.',
         fade(A, [F8, R8, E9, F3]), A.FadeIn(hLab), A.Indicate(L.dot, { scale: 1.6 }), A.Write(G1, 1.4), A.Write(N1, 1.2), A.Write(G2, 1.4), A.Write(N2, 1.2), S.writeIn(R10, 1.6),
-        { cap: 'Our model stands on a ramp, at height 0.58. Which way is uphill? Each slope is a chance, times reward minus the average, as in chapter 3: 0.2 along u, and −0.09 along v.' });
+        { cap: 'Our model stands on a ramp, at height 0.58. Which way is uphill? As in chapter 3, each slope is a chance, times reward minus the average: 0.2 along u, −0.09 along v.' });
       const AR = arrows(L.sp);
       const tag = S.add(S.txt('arrows drawn 8 × longer', { size: 30, color: C.GREY, italic: true })).at(-440, 360);
       S.beat('Flatten the landscape into a map, seen from above, and the two slopes make one arrow: the gradient. It points mostly toward fifty-one, and a little away from about fifty.',
@@ -298,9 +298,9 @@ FILM.landscapes = FILM.landscapes || {};
       // one sample, one of three arrows
       const E12 = col.tex(S, '\\ghat \\;=\\; \\rr(\\aa)\\; \\grad\\lp(\\aa), \\quad \\aa \\sim \\pt', -300, 52);
       const E12b = col.say(S, 'a real model never sees the {yellow arrow;|grad} it gets {one sampled answer|aa} and its {reward|rr}', -190, 36);
-      S.beat('But a real model can never compute that arrow: it needs every possible answer. It gets one sampled answer, and its reward. Chapter three turned those into an estimate, g-hat: the reward, times the push that makes that answer more likely.',
+      S.beat('But a real model can never compute that arrow: it needs every possible answer. It gets one sampled answer and its reward, and forms g-hat: the reward, times the push that makes that answer more likely.',
         fade(A, [G1, N1, G2, N2, R10]), A.Write(E12, 1.6), S.writeIn(E12b, 2),
-        { cap: 'But a real model can never compute that arrow: it needs every possible answer. It gets one sampled answer, and its reward. Chapter 3 turned those into an estimate, ĝ: the reward, times the push that makes that answer more likely.' });
+        { cap: 'But a real model can never compute that arrow: it needs every possible answer. It gets one sampled answer and its reward, and forms ĝ: the reward, times the push that makes that answer more likely.' });
       const rowTex = [
         `\\aa = 51: \\quad \\cReward{q1}{1} \\times \\cGrad{q2}{(${fx(score[0][0])},\\, ${fx(score[0][1])})}`,
         `\\aa = {\\approx}50: \\quad \\cReward{q1}{0.3} \\times \\cGrad{q2}{(${fx(score[1][0])},\\, ${fx(score[1][1])})}`,
@@ -371,7 +371,7 @@ FILM.landscapes = FILM.landscapes || {};
       const T4 = col.tex(S, '\\sum_{\\aa} \\pt(\\aa)\\; \\ghat(\\aa) \\;=\\; \\grad\\JJ', -80, 56);
       const E4 = col.say(S, 'right on average; wildly off one sample at a time', 30, 36);
       AR.pieces.forEach((m) => (m.init.off = 10));
-      S.beat('Even forty-one now earns ten points, and gets a long arrow. Yet weighted by their chances and laid tip to tail, the huge arrows still land on the same small yellow arrow. Right on average; wildly off one at a time.',
+      S.beat('Even forty-one now earns ten points, and gets a long arrow. Yet weighted by their chances and laid tip to tail, the huge arrows still land on the small yellow one. Right on average; wildly off one at a time.',
         A.Indicate(AR.labels[2], { scale: 1.3 }), A.Write(T4, 1.4), par(AR.samples.map((m) => A.Set(m, { o: 0.35 }, 0.6))), lag(1.1, AR.pieces.map((m) => A.Arrow(m, 1))), A.Indicate(AR.gradLab, { scale: 1.3 }), S.writeIn(E4, 1.4));
 
       // how far they swing
@@ -565,10 +565,10 @@ FILM.landscapes = FILM.landscapes || {};
         S.add(new Readout(() => `slope = ${RL.ppoClipSlope(tok.p.rho, AT).toFixed(1)}`, { size: 40, color: C.WHITE }).hidden()).at(RX, -90),
       ];
       const E9 = col.say(S, 'flat ground: slope 0, so this batch stops pushing the token once it is 20% more likely', 10, 34);
-      S.beat('Follow one good token, with advantage plus zero point eight, as its ratio grows. Up to one point two the ground slopes up, and the gradient pushes. Past it, the ground is flat: slope zero. This batch stops pushing once the token is twenty percent more likely.',
+      S.beat('Follow one good token as its ratio grows. Up to one point two the ground slopes up, and the gradient pushes. Past it, the ground is flat: slope zero. This batch stops pushing once the token is twenty percent more likely.',
         fade(A, [...key, ...E8]), A.Set(sl[1], { o: 0.35 }, 0.6), A.FadeIn(tok), A.FadeIn(ghost), A.FadeIn(gap), par(rd.map((m) => A.FadeIn(m))),
         A.Set(sp, { theta: -118, phi: 64, zoom: 1.1, cx: 0.6, cy: 0.8 }, 2), A.Set(tok, { rho: 1.6 }, 5, 'linear'), S.writeIn(E9, 1.4),
-        { cap: 'Follow one good token, with advantage +0.8, as its ratio grows. Up to 1.2 the ground slopes up, and the gradient pushes. Past it, the ground is flat: slope zero. This batch stops pushing once the token is 20% more likely.' });
+        { cap: 'Follow one good token as its ratio grows. Up to 1.2 the ground slopes up, and the gradient pushes. Past it, the ground is flat: slope zero. This batch stops pushing once the token is 20% more likely.' });
 
       // 7. pessimism
       const F10 = col.tex(S, '\\min(x,\\, y) \\;\\le\\; x', 120, 52);
@@ -588,7 +588,7 @@ FILM.landscapes = FILM.landscapes || {};
         S.add(S.english('bad token made likelier {(ρ = 1.55):|rat} slope {−0.8|#FC6255}', { size: 32, width: COLW })).at(RX, -75),
         S.add(S.english('both are pulled back', { size: 32, width: COLW })).at(RX, -20),
       ];
-      S.beat('The flat parts are on one side only. If a step went the wrong way and made a good token rarer, the ground there is still the sloped sheet, and the gradient pulls it back. The same holds for a bad token that became more likely.',
+      S.beat('The flat parts are on one side only. If a step made a good token rarer, the ground there still slopes, and the gradient pulls it back. The same holds for a bad token that became more likely.',
         fade(A, [F10, E10, E9, ...rd]), A.Set(tok, { rho: 0.5 }, 2), A.Set(sp, { theta: -112, phi: 60, zoom: 1, cx: 0, cy: 0 }, 3), A.Set(sl[1], { o: 1 }, 0.6),
         A.Arrow(back[0], 1), A.FadeIn(E11[0]), A.Arrow(back[1], 1), A.FadeIn(E11[1]), A.FadeIn(E11[2]));
 
@@ -651,7 +651,7 @@ FILM.landscapes = FILM.landscapes || {};
         const [x, y] = TRI[i];
         const p = surf.p;
         const z = p.o * zOf(RL.expectedReward(corners[i], r) - p.m * Math.exp(p.lb) * RL.kl(corners[i], ref));
-        return i === 2 ? [x, y + 0.3, z + up] : [x + (x > 0 ? 0.75 : -0.75), y + 0.1, z + up];
+        return i === 2 ? [x, y + 0.3, z + up] : [x + (x > 0 ? 0.6 : -0.6), y + 0.1, z + up];
       };
       const cornerL = labels.map((s, i) => new Label3(s, cornerAt(i, 0.25), { size: 36, color: AC[i] }));
       const rewardL = labels.map((s, i) => new Label3(`r = ${r[i]}`, cornerAt(i, 0.25), { size: 32, color: C.GOLD, props: { dy: -44 } }));
@@ -746,9 +746,9 @@ FILM.landscapes = FILM.landscapes || {};
         { cap: 'The top of the dome is the exact solution we met before: the reference, reweighted by e^(r/β), then normalized. At β = 0.5 it is 17% vague, 43% helpful, 39% flattering.' });
       const F9 = col.tex(S, '\\JJ_{\\bt}(\\pp) \\;=\\; -\\bt\\, \\KL(\\pp \\,\\|\\, \\pstar) \\;+\\; \\bt \\log \\ZZ', 130, 46);
       const R9 = col.why(S, `because: at the peak the K L to {π*|pstar} is zero, so the height is {β log Z|bt} = ${fx(height(B0))}; the {reference|pref} sits at ${fx(Eref)}`, 230);
-      S.beat('How high is the peak? We rewrote the objective as minus beta times the K L to the peak, plus beta log Z. At the peak that K L is zero, so the height is beta log Z: zero point eight two, above the reference’s zero point five seven.',
+      S.beat('How high is the peak? Earlier we rewrote the objective as minus beta times the K L to the peak, plus beta log Z. At the peak that K L is zero, so the height is beta log Z: zero point eight two.',
         A.Write(F9, 2), S.writeIn(R9, 1.6), A.Indicate(peak, { scale: 1.5 }), A.Indicate(refDot, { scale: 1.5 }),
-        { cap: `How high is the peak? We rewrote the objective as −β KL(π ‖ π*) + β log Z. At the peak that KL is zero, so the height is β log Z = ${fx(height(B0))}, above the reference’s ${fx(Eref)}.` });
+        { cap: `How high is the peak? Earlier we rewrote the objective as −β KL(π ‖ π*) + β log Z. At the peak that KL is zero, so the height is β log Z = ${fx(height(B0))}.` });
 
       // 7. turn the knob
       const trailB = Array.from({ length: 80 }, (_, i) => Math.exp(Math.log(2.5) + (i / 79) * (Math.log(0.1) - Math.log(2.5))));
@@ -762,7 +762,7 @@ FILM.landscapes = FILM.landscapes || {};
       hide(trail);
       sp.add(trail);
       S.beat('Now turn the knob. A large beta makes the bowl steep, and moving away expensive. The peak stays close to the reference.',
-        fade(A, [F8, F9, R9]), A.Set(surf, { lb: Math.log(2.5) }, 3.4), A.Set(sp, { theta: -72 }, 3.4));
+        fade(A, [F8, F9, R9]), A.Set(surf, { lb: Math.log(2.5) }, 3.4), A.Set(sp, { theta: -78 }, 3.4));
       const E11 = col.say(S, 'smaller {β:|bt} a flatter bowl, and the peak slides toward {flattery|#D147BD}', 140, 36);
       S.beat('As beta shrinks, the bowl flattens, and the peak slides away from the reference, toward the flattering corner: the answer the reward model overrates. At beta zero point one, the best policy flatters ninety-eight percent of the time.',
         A.FadeIn(trail), A.Set(surf, { fo: 0.62 }, 1), A.Set(surf, { lb: Math.log(0.1) }, 7, 'linear'), A.Set(sp, { theta: -96, ...TALL }, 7), S.writeIn(E11, 1.6),
