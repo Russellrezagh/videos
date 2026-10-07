@@ -86,6 +86,15 @@ node video/tools/check-av.mjs                    # the voice plays in step with 
 node video/tools/lint-layout.mjs                 # every beat against the design rules
 ```
 
+## Three Landscapes (Manim)
+
+`manim/` holds a five-minute 3D companion made with Manim Community: the
+reward surface over the logit plane with REINFORCE's sample arrows and
+training runs, PPO's clipped surrogate as a surface, and the KL-regularised
+objective as a dome over the probability simplex whose peak slides as β
+shrinks. Its NumPy model is checked against `src/js/rl.js`; see
+`manim/README.md`.
+
 The engine, player and tools are a fork of `../agentic_science/video` (the
 same frame-as-a-function-of-time engine, narration pipeline and checks), with
 a dark board palette, Computer Modern text and flat 3b1b-style characters.

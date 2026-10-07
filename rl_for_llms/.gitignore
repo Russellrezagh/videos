@@ -4,3 +4,7 @@ video/narration/words.json.cache
 video/dist/*.mp4
 video/dist/.render/
 __pycache__/
+manim/narration/clips/
+manim/media/
+manim/dist/*.mp4
+manim/tex/

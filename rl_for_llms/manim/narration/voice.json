@@ -1,0 +1,5 @@
+{
+ "engine": "kokoro",
+ "voice": "af_heart",
+ "signature": "kokoro|af_heart|0.95|en-us|kokoro-v1.0.onnx:325532387:57ccd4ebcbc0|voices-v1.0.bin:28214398:0ba3897db6e8"
+}

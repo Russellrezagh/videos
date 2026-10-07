@@ -1,0 +1,17 @@
+{
+  "J": "J(\\theta) = \\sum_a \\pi_\\theta(a)\\, r_a",
+  "floor": "u = z_{51} - z_{41}, \\qquad v = z_{\\approx 50} - z_{41}",
+  "grad": "\\nabla J",
+  "sample": "\\hat g = r_a\\, \\nabla \\log \\pi_\\theta(a)",
+  "average": "\\sum_a \\pi_\\theta(a)\\; r_a\\, \\nabla \\log \\pi_\\theta(a) = \\nabla J",
+  "plus10": "r_a \\;\\to\\; r_a + 10",
+  "baseline": "\\hat g = (r_a - b)\\, \\nabla \\log \\pi_\\theta(a)",
+  "sheet": "\\rho\\, A",
+  "clipped": "\\min\\!\\big(\\rho A,\\; \\mathrm{clip}(\\rho,\\, 1-\\epsilon,\\, 1+\\epsilon)\\, A\\big)",
+  "rho": "\\rho = \\frac{\\pi_\\theta(y_t)}{\\pi_{\\text{old}}(y_t)}",
+  "objective": "\\mathbb{E}_{\\pi}[r] \\;-\\; \\beta\\, \\mathrm{KL}(\\pi \\,\\|\\, \\pi_{\\text{ref}})",
+  "reward": "\\mathbb{E}_{\\pi}[r]",
+  "kl": "\\mathrm{KL}(\\pi \\,\\|\\, \\pi_{\\text{ref}})",
+  "tilt": "\\pi^*(y) = \\frac{\\pi_{\\text{ref}}(y)\\, e^{r(y)/\\beta}}{Z}",
+  "height": "\\max = \\beta \\log Z"
+}
