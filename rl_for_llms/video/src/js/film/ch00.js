@@ -45,4 +45,45 @@ FILM.parts.push(function ch00(ctx) {
       A.FadeOut(big, { dur: 0.6 }), A.Write(title, 1.6), A.FadeIn(sub, { dy: 20 }), lag(0.2, ms.map((m) => A.FadeIn(m, { dy: 20, dur: 0.5 }))),
       { cap: 'This is The Gradient of Reward. We will build it from first principles: from one softmax, all the way to PPO, DPO and GRPO, the methods used to train today’s assistants and reasoning models.' });
   });
+
+  video.scene('colors', 'How to read the formulas', (S) => {
+    const h = S.add(S.title('How to read the formulas'));
+    const roles = [
+      ['pt', 'policy', 'what the model does: its probabilities'],
+      ['th', 'params', 'what training changes: weights, logits'],
+      ['grad', 'grad', 'directions: gradients and their estimates'],
+      ['rr', 'reward', 'what the judge says'],
+      ['bb', 'baseline', 'what we expected to get'],
+      ['AA', 'advantage', 'better or worse than expected'],
+      ['pref', 'frozen', 'copies of the model that do not train'],
+      ['bt', 'leash', 'how far we may stray'],
+      ['rat', 'ratio', 'new probability over old'],
+      ['eps', 'knob', 'numbers we choose'],
+    ];
+    const chips = roles.map(([id, role, meaning], i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const x = col === 0 ? -830 : 70;
+      const y = -300 + row * 122;
+      const g = S.add(S.group(
+        new Tex(`\\${id}`, { size: 70 }).at(60, 0),
+        new Text(FILM.ROLE_NAME[role], { size: 38, anchor: 'start', color: S.color(role) }).at(150, -20),
+        new Text(meaning, { size: 30, anchor: 'start', color: C.GREY_B }).at(150, 22)
+      ).at(x, y));
+      return g;
+    });
+    S.beat('Before we start, a word about how to read the formulas in this film. Every symbol keeps one colour from beginning to end, and the colour tells you what kind of thing it is.',
+      A.FadeIn(h), lag(0.12, chips.slice(0, 2).map((c) => A.FadeIn(c, { dy: 16 }))));
+    S.beat('Blue is what the model does: its probabilities. Teal is what training changes: the weights. Yellow is a direction, a gradient. Gold is what the judge says: reward. Purple is what we expected to get, and green is the difference: better or worse than expected.',
+      lag(0.5, chips.slice(2, 6).map((c) => A.FadeIn(c, { dy: 16 }))));
+    S.beat('Grey marks frozen copies of the model, orange the leash that keeps it close to where it began, maroon a ratio of new to old, and pink the knobs that we, the people training it, get to choose.',
+      lag(0.5, chips.slice(6).map((c) => A.FadeIn(c, { dy: 16 }))));
+    const line = S.add(S.tex('\\grad\\, \\JJ(\\th) \\;=\\; \\EE_{\\aa \\sim \\pt}\\Big[\\, \\rr(\\aa)\\; \\grad \\lp(\\aa) \\,\\Big]', { size: 84 }).at(0, -170));
+    const read = S.add(S.english('the {slope of the average reward|JJ} = the average, over the {model’s own answers|pt}, of {reward|rr} × {the direction that makes that answer more likely|grad}', { size: 40, width: 1500 }).at(0, 30));
+    S.beat('Here is the line this film is built around. You do not need to follow it yet. Just notice that you can already read its colours: a direction, a reward, the model’s probabilities. By chapter three, you will read it like a sentence.',
+      par(chips.map((c) => A.FadeOut(c, { dur: 0.6 }))), A.Write(line, 2.4), wait(0.4), S.writeIn(read, 2.6));
+    const cardEx = S.add(S.symcard('rr').at(0, 240));
+    S.beat('And whenever a new symbol appears, a card like this one tells you three things: its name, where it comes from, and why it is there at all.',
+      A.Spot(line, 'rr'), A.FadeIn(cardEx, { dy: 16 }), A.FadeOut(read));
+  });
 });

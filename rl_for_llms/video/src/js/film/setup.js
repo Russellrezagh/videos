@@ -11,6 +11,7 @@ window.FILM = window.FILM || { parts: [], papers: {} };
 window.buildVideo = function buildVideo(root, durations, words) {
   'use strict';
   const { C, A, Text, Tex, Group, Line, Arrow, Creature, Bubble, circle, rect, path, dot, polyPath, seq, par, lag, wait, mix } = MV;
+  if (!FILM.symbols) throw new Error('glossary.js must load before setup.js');
   const video = new MV.Video(root, { durations, words, kit });
   video.poster = 'open.5';
 
@@ -260,6 +261,149 @@ window.buildVideo = function buildVideo(root, durations, words) {
     // a framed note in a corner of a formula, used for term tours
     k.note = (str, { color = C.YELLOW, size = 36 } = {}) => H(new Text(str, { size, color }));
     k.toy = (x, y) => H(new Text('toy numbers', { size: 30, color: C.GREY, italic: true })).at(x, y);
+
+    /* ---------------------------------------------------- the teaching kit */
+    // See TEACHING.md. Symbols come from glossary.js (FILM.symbols); write
+    // formulas with their macros (\\pt, \\rr, \\grad ...) so colours and spotlights work.
+    const SYM = FILM.symbols;
+    const colorOf = (key) => (SYM[key] ? SYM[key].color : FILM.ROLE[key] || key);
+    k.color = colorOf;
+    k.sym = (id) => SYM[id];
+    // wrap words into lines of at most `max` characters
+    const wrap = (str, max) => {
+      const out = [];
+      let cur = '';
+      for (const w of String(str).split(' ')) {
+        if (cur && (cur + ' ' + w).length > max) {
+          out.push(cur);
+          cur = w;
+        } else cur = cur ? cur + ' ' + w : w;
+      }
+      if (cur) out.push(cur);
+      return out;
+    };
+    k.wrap = wrap;
+    /*
+     * A symbol card: the symbol in its colour, its plain-English name, where
+     * it comes from and why it is there. Any field can be reworded for the
+     * scene: S.symcard('rr', { why: 'it is all the judge tells us' }).
+     */
+    k.symcard = (id, { name, from, why, tex, w = 820 } = {}) => {
+      const sy = SYM[id];
+      if (!sy) throw new Error(`no symbol ${id} in glossary.js`);
+      const col = sy.color;
+      // glossary symbols are typeset by their macro; local ones (FILM.addSymbol)
+      // by their role macro, so both are coloured the same way as in formulas
+      const glyph = new Tex(tex || (sy.local ? `\\${FILM.ROLE_MACRO[sy.role]}{${id}}{${sy.tex}}` : `\\${id}`), { size: 104 });
+      const left = -w / 2 + 40 + Math.max(110, glyph.w) + 40;
+      const tw = w / 2 - 30 - left;
+      const chars = Math.floor(tw / 15.5);
+      const rows = [];
+      rows.push(new Text(name || sy.name, { size: 42, anchor: 'start', color: C.WHITE }));
+      for (const ln of wrap(`from: ${from || sy.from}`, chars)) rows.push(new Text(ln, { size: 32, anchor: 'start', color: C.GREY_B }));
+      for (const ln of wrap(`why: ${why || sy.why}`, chars)) rows.push(new Text(ln, { size: 32, anchor: 'start', color: C.GREY_B }));
+      const lh = (r) => (r.size >= 42 ? 58 : 44);
+      const hgt = rows.reduce((t, r) => t + lh(r), 0) + 44;
+      const box = rect(w, hgt, { stroke: col, width: 3, fill: mix(C.BG, col, 0.1), rx: 14 });
+      const bar = new Line(-w / 2 + 6, -hgt / 2 + 14, -w / 2 + 6, hgt / 2 - 14, { stroke: col, width: 6 });
+      glyph.at(-w / 2 + 40 + Math.max(110, glyph.w) / 2, 0);
+      const g = new Group(box, bar, glyph);
+      let yy = -hgt / 2 + 22;
+      for (const r of rows) {
+        r.at(left, yy + lh(r) / 2);
+        yy += lh(r);
+        g.add(r);
+      }
+      Object.assign(g, { w, h: hgt, id });
+      return H(g);
+    };
+    /*
+     * A plain-English reading, coloured like the formula it reads:
+     *   S.english('the {chance|pt} of answer a, times its {reward|rr}')
+     * {words|key}: key is a glossary id, a role (reward, policy ...), or a
+     * colour. Long text wraps (width in px). Returns a Group of lines; animate
+     * with S.writeIn(group) or A.FadeIn(group).
+     */
+    k.english = (markup, { size = 40, color = C.WHITE, width = 1560, italic = false, lineGap = 1.35 } = {}) => {
+      const runs = [];
+      const re = /\{([^{}|]+)\|([^{}]+)\}/g;
+      let last = 0;
+      let m;
+      while ((m = re.exec(markup))) {
+        if (m.index > last) runs.push([markup.slice(last, m.index), null]);
+        runs.push([m[1], colorOf(m[2].trim())]);
+        last = re.lastIndex;
+      }
+      if (last < markup.length) runs.push([markup.slice(last), null]);
+      // split runs into lines of at most `max` characters, at spaces
+      const max = Math.floor(width / (size * 0.47));
+      const lines = [[]];
+      let len = 0;
+      for (const [t, c] of runs) {
+        const parts = t.split(/(\s+)/);
+        for (const part of parts) {
+          if (!part) continue;
+          if (/^\s+$/.test(part)) {
+            if (len > 0) {
+              lines[lines.length - 1].push([' ', null]);
+              len += 1;
+            }
+            continue;
+          }
+          if (len + part.length > max && len > 0) {
+            const cur = lines[lines.length - 1];
+            while (cur.length && cur[cur.length - 1][0] === ' ') cur.pop();
+            lines.push([]);
+            len = 0;
+          }
+          lines[lines.length - 1].push([part, c]);
+          len += part.length;
+        }
+      }
+      const g = new Group();
+      g.lines = lines.map((rl, i) => {
+        const r = new MV.Rich(rl, { size, color, italic });
+        r.at(0, (i - (lines.length - 1) / 2) * size * lineGap);
+        g.add(r);
+        return r;
+      });
+      g.h = lines.length * size * lineGap;
+      return H(g);
+    };
+    // write a group of text lines (an english() reading) one after another
+    k.writeIn = (g, dur = 1.6) => seq(A.Show(g), lag(dur / Math.max(1, g.lines.length) * 0.8, g.lines.map((l) => A.Write(l, dur / Math.max(1, g.lines.length)))));
+    // the "because" strip: why a step is allowed, low on the screen
+    k.reason = (str, { y = 285, color = C.GREY_B } = {}) => k.english(str, { size: 34, color, italic: true, width: 1400 }).at(0, y);
+    /*
+     * A term tour: one beat per stop. The stop's symbols light up in the
+     * formula (others dim) and its card fades in at `at`, replacing the last.
+     *   S.tour(J, [{ sym: 'rr', say: '...', cap: '...' }, { sym: ['pt', 'aa'], card: 'pt', say: '...' }])
+     * stop fields: sym (id or ids to light), card (id, or false for none),
+     *   text ({name, from, why} for the card), say, cap, anims (extra), hold.
+     * After the tour: S.endTour(formula) to relight everything and clear the card.
+     */
+    k.tour = (formula, stops, { at = [0, 150] } = {}) => {
+      let prev = S._tourCard || null;
+      for (const st of stops) {
+        const cid = st.card === undefined ? [].concat(st.sym)[0] : st.card;
+        const card = cid ? S.add(k.symcard(cid, st.text || {})).at(...(st.at || at)) : null;
+        const out = [A.Spot(formula, st.sym)];
+        if (prev) out.push(A.FadeOut(prev, { dur: 0.4 }));
+        if (card) out.push(A.FadeIn(card, { dy: 16, dur: 0.6 }));
+        const opts = { hold: st.hold ?? 0.9 };
+        if (st.cap) opts.cap = st.cap;
+        if (st.paper) opts.paper = st.paper;
+        S.beat(st.say, par(out), ...(st.anims || []), opts);
+        prev = card;
+      }
+      S._tourCard = prev;
+      return prev;
+    };
+    k.endTour = (formula, dur = 0.6) => {
+      const c = S._tourCard;
+      S._tourCard = null;
+      return par(A.Unspot(formula, dur), c ? A.FadeOut(c, { dur }) : null);
+    };
     return k;
   }
 

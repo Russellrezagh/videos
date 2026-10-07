@@ -179,6 +179,9 @@ const MV = (() => {
     constructor(tex, { size = 56, color = C.WHITE, display = true } = {}) {
       super();
       const node = window.MathJax.tex2svg(tex, { display });
+      // MathJax draws a TeX error as red text; record it so tools can fail on it
+      const bad = node.querySelector('[data-mjx-error]');
+      if (bad) (window.__texErrors = window.__texErrors || []).push(`${bad.getAttribute('data-mjx-error')} in: ${tex}`);
       const s = node.querySelector('svg');
       const vb = s.getAttribute('viewBox').split(/[\s,]+/).map(Number);
       const k = size / 1000;
@@ -202,10 +205,22 @@ const MV = (() => {
         if (pt.tagName === 'path') pt.setAttribute('pathLength', '1');
       });
       this.frags = {};
+      this.syms = {};
       s.querySelectorAll('[class]').forEach((g) => {
-        for (const c of g.getAttribute('class').split(/\s+/)) if (/^f-/.test(c)) this.frags[c.slice(2)] = g;
+        for (const c of g.getAttribute('class').split(/\s+/)) {
+          if (/^f-/.test(c)) this.frags[c.slice(2)] = g;
+          if (/^s-/.test(c)) (this.syms[c.slice(2)] = this.syms[c.slice(2)] || []).push(g);
+        }
       });
-      Object.assign(this.init, { write: 1, color, focus: '', dim: 0, fcolor: '' });
+      // which symbols (glossary ids) each glyph belongs to, for A.Spot
+      this.parts.forEach((pt) => {
+        pt.symIds = [];
+        for (let n = pt.parentNode; n && n !== s; n = n.parentNode) {
+          const cl = n.getAttribute && n.getAttribute('class');
+          if (cl) for (const c of cl.split(/\s+/)) if (/^s-/.test(c)) pt.symIds.push(c.slice(2));
+        }
+      });
+      Object.assign(this.init, { write: 1, color, focus: '', dim: 0, fcolor: '', spot: '', sdim: 0 });
       this.k = k;
       this.vb = vb;
     }
@@ -241,6 +256,34 @@ const MV = (() => {
         }
         this.last.fk = fk;
       }
+      // spotlight: glyphs of the named symbols stay lit, the rest dims
+      const sk = `${p.spot}|${p.sdim.toFixed(3)}`;
+      if (sk !== this.last.sk) {
+        const on = new Set(String(p.spot).split(',').filter(Boolean));
+        for (const pt of this.parts) {
+          const lit = !on.size || pt.symIds.some((id) => on.has(id));
+          pt.style.opacity = lit ? '' : (1 - 0.8 * p.sdim).toFixed(3);
+        }
+        this.last.sk = sk;
+      }
+    }
+    // The bounding box of the k-th occurrence of a symbol, like fragBox.
+    symBox(id, k = 0) {
+      const g = this.syms[id] && this.syms[id][k];
+      if (!g) return this.fragBox('__none__');
+      const key = `s:${id}:${k}`;
+      this._fb = this._fb || {};
+      if (this._fb[key]) return this._fb[key];
+      const b = g.getBBox();
+      const m = this.el.getScreenCTM().inverse().multiply(g.getScreenCTM());
+      const pts = [[b.x, b.y], [b.x + b.width, b.y], [b.x, b.y + b.height], [b.x + b.width, b.y + b.height]].map(([x, y]) => new DOMPoint(x, y).matrixTransform(m));
+      const xs = pts.map((q) => q.x);
+      const ys = pts.map((q) => q.y);
+      const box = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+      box.cx = box.x + box.w / 2;
+      box.cy = box.y + box.h / 2;
+      if (box.w > 0) this._fb[key] = box;
+      return box;
     }
     // Fragment bounding box in this mob's local coordinates (needs layout).
     fragBox(name) {
@@ -326,6 +369,32 @@ const MV = (() => {
         return this.t.getComputedTextLength();
       } catch (e) {
         return String(this.p.str).length * this.size * 0.5;
+      }
+    }
+  }
+
+  /*
+   * Rich: one line of text in runs of different colours, e.g. a plain-English
+   * reading of a formula whose words share the symbols' colours.
+   *   new Rich([['the ', null], ['reward', '#F0AC5F'], [' of a', null]], opts)
+   * A run with no colour takes the text colour. Written letter by letter.
+   */
+  class Rich extends Text {
+    constructor(runs, opts = {}) {
+      super(runs.map((r) => r[0]).join(''), opts);
+      this.runs = runs;
+    }
+    build(str) {
+      super.build(str);
+      let i = 0;
+      for (const [t, c] of this.runs) {
+        for (let j = 0; j < [...t].length; j++, i++) {
+          const sp = this.spans[i];
+          if (sp && c) {
+            sp.setAttribute('fill', c);
+            sp.setAttribute('stroke', c);
+          }
+        }
       }
     }
   }
@@ -695,6 +764,19 @@ const MV = (() => {
         p.dim = a;
       }),
     Unfocus: (m, dur = 0.6) => anim(m, dur, (p, a) => (p.dim *= 1 - a)),
+    // light up the glyphs of one or more glossary symbols, dim the rest
+    Spot: (m, ids, { dur = 0.7 } = {}) =>
+      anim(m, dur, (p, a) => {
+        const next = [].concat(ids).join(',');
+        if (p.spot && p.spot !== next && p.sdim > 0) {
+          p.spot = next;
+          p.sdim = Math.max(p.sdim, a);
+        } else {
+          p.spot = next;
+          p.sdim = a;
+        }
+      }),
+    Unspot: (m, dur = 0.6) => anim(m, dur, (p, a) => (p.sdim *= 1 - a)),
     Arrow: (m, dur = 1) =>
       anim(m, dur, (p, a) => {
         p.o = 1;
@@ -944,7 +1026,7 @@ const MV = (() => {
 
   return {
     C, BASE_COLORS, FONT_CM, FONTS, NS, BOIL, jit, el, mix, lerp, clamp01, smooth, RATES, STYLE, strokeOf, typeOf,
-    Mob, Group, Tex, Text, Shape, Line, Arrow, Creature, Bubble, Stamp, Lens,
+    Mob, Group, Tex, Text, Rich, Shape, Line, Arrow, Creature, Bubble, Stamp, Lens,
     circle, rect, path, dot, polyPath,
     anim, seq, par, lag, wait, A, durOf,
     Video,

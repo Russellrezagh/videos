@@ -58,6 +58,9 @@ FILM.parts.push(function ch06(ctx) {
       A.Create(hl, 0.8), A.Indicate(hl, { scale: 1.2 }));
   });
 
+  // the 3D landscape (film/landscapes.js, drawn with space3.js)
+  if (FILM.landscapes && FILM.landscapes.clip) FILM.landscapes.clip(ctx);
+
   video.scene('ppoloop', 'PPO for language models', (S) => {
     const h = S.add(S.title('PPO for language models'));
     const tok = S.add(S.tex('r_t(\\theta) = \\frac{\\pi_\\theta(y_t \\mid x, y_{<t})}{\\pi_{\\text{old}}(y_t \\mid x, y_{<t})}', { size: 66 }).at(0, -260));

@@ -76,4 +76,8 @@ FILM.parts.push(function ch08(ctx) {
     S.beat('We cannot compute this posterior directly, because Z sums over every possible answer. That is why we train with P P O. Or is it?',
       A.FadeIn(zz, { dy: 20 }), { cap: 'We cannot compute this posterior directly, because Z sums over every possible answer. That is why we train with PPO. Or is it?' });
   });
+
+  // the 3D landscape (film/landscapes.js, drawn with space3.js)
+  if (FILM.landscapes && FILM.landscapes.dome) FILM.landscapes.dome(ctx);
+
 });

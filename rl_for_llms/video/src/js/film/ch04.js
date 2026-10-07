@@ -84,6 +84,9 @@ FILM.parts.push(function ch04(ctx) {
       A.FadeIn(h), A.FadeIn(ax), A.Create(none, 2.4), A.FadeIn(nl), A.Create(loo, 2.4), A.FadeIn(ll));
   });
 
+  // the 3D landscape (film/landscapes.js, drawn with space3.js)
+  if (FILM.landscapes && FILM.landscapes.logits) FILM.landscapes.logits(ctx);
+
   video.scene('baselines', 'Baselines for language models', (S) => {
     const h = S.add(S.title('Three baselines for language models'));
     const cards = [

@@ -38,24 +38,86 @@ FILM.parts.push(function ch03(ctx) {
 
   video.scene('trick', 'Deriving the policy gradient', (S) => {
     const h = S.add(S.title('The log-derivative trick'));
-    const l1 = S.add(S.tex('\\nabla_\\theta J \\;=\\; \\nabla_\\theta \\sum_a \\pi_\\theta(a)\\, r(a) \\;=\\; \\sum_a r(a)\\, \\class{f-g}{\\nabla_\\theta \\pi_\\theta(a)}', { size: 62 }).at(0, -270));
-    S.beat('Here is the trick. Start from the gradient of the sum: the rewards, times the gradient of each probability.', A.FadeIn(h), A.Write(l1, 2));
-    const l2 = S.add(S.tex('\\nabla_\\theta \\pi_\\theta(a) \\;=\\; \\pi_\\theta(a)\\, \\frac{\\nabla_\\theta \\pi_\\theta(a)}{\\pi_\\theta(a)} \\;=\\; \\pi_\\theta(a)\\, \\class{f-l}{\\nabla_\\theta \\log \\pi_\\theta(a)}', { size: 62 }).at(0, -105));
-    S.beat('Now multiply and divide by the probability itself. The gradient of pi, divided by pi, is the gradient of log pi. That is just the chain rule for the logarithm.',
-      A.Focus(l1, 'g', { color: C.YELLOW }), A.Write(l2, 2), A.Focus(l2, 'l', { color: C.TEAL }),
-      { cap: 'Now multiply and divide by the probability itself. The gradient of π, divided by π, is the gradient of log π. That is just the chain rule for the logarithm.' });
-    const l3 = S.add(S.tex('\\nabla_\\theta J \\;=\\; \\sum_a \\class{f-w}{\\pi_\\theta(a)}\\, r(a)\\, \\nabla_\\theta \\log \\pi_\\theta(a) \\;=\\; \\class{f-e}{\\mathbb{E}_{a \\sim \\pi_\\theta}}\\big[\\, r(a)\\, \\nabla_\\theta \\log \\pi_\\theta(a) \\,\\big]', { size: 58 }).at(0, 65));
+    // where each line of the derivation sits: the previous step above, dimmed
+    const UP = (m) => par(A.MoveTo(m, 0, -275), A.ScaleTo(m, 0.72), A.Set(m, { o: 0.5 }));
+
+    // 1. the question, in words and then in symbols
+    const goal = S.add(S.english('Which way should we nudge the {weights|th} so that the {average reward|JJ} goes up?', { size: 46 }).at(0, -250));
+    const g0 = S.add(S.tex('\\grad\\, \\JJ(\\th)', { size: 124 }).at(0, -40));
+    S.beat('Here is the question this whole chapter answers. Which way should we nudge the weights, so that the average reward goes up? In symbols, that question has a name: the gradient of J, with respect to theta.',
+      A.FadeIn(h), S.writeIn(goal, 2.2), A.Write(g0, 1.4));
+    S.tour(g0, [
+      { sym: 'grad', at: [0, 215], say: 'The upside-down triangle, nabla, means the gradient. For every single weight, it asks: if this weight moved a tiny bit, how much would the quantity change? Collected together, those answers form an arrow that points uphill.' },
+      { sym: 'JJ', at: [0, 215], say: 'J is the objective: the average reward the model earns when we sample answers from it. It is one number, and training exists to push it up.' },
+      { sym: 'th', at: [0, 215], say: 'And theta stands for every adjustable number inside the network. Training may change theta, and nothing else.',
+        cap: 'And θ stands for every adjustable number inside the network. Training may change θ, and nothing else.' },
+    ]);
+
+    // 2. the average, written out
+    const L1 = S.add(S.tex('\\JJ(\\th) \\;=\\; \\sum_{\\aa}\\, \\pt(\\aa)\\; \\rr(\\aa)', { size: 84 }).at(0, -60));
+    const e1 = S.add(S.english('for every answer {a|aa}: the {chance the model gives it|pt}, times the {reward it earns|rr}, all added up', { size: 40 }).at(0, 160));
+    S.beat('Start by writing the average out. For our three answers it is a short sum. For each answer: the chance the model gives it, times the reward it earns. Then add them up.',
+      S.endTour(g0), A.FadeOut(goal), A.FadeOut(g0), A.Write(L1, 1.8), S.writeIn(e1, 2.4));
+
+    // 3. differentiate: only the probabilities depend on the weights
+    const L2 = S.add(S.tex('\\grad \\JJ \\;=\\; \\sum_{\\aa}\\, \\rr(\\aa)\\; \\grad \\pt(\\aa)', { size: 84 }).at(0, -60));
+    const r2 = S.add(S.reason('because: an answer’s {reward|rr} does not depend on the {weights|th}; only its {probability|pt} does'));
+    S.beat('Now take the gradient of both sides. The rewards do not depend on the weights. Fifty-one is worth one point, whatever the model believes. Only the probabilities move when theta moves. So the gradient lands on each probability, and the rewards come along as plain numbers.',
+      A.FadeOut(e1), UP(L1), A.Write(L2, 1.8), S.writeIn(r2, 1.6), A.Spot(L2, ['grad', 'pt']),
+      { cap: 'Now take the gradient of both sides. The rewards do not depend on the weights: 51 is worth one point, whatever the model believes. Only the probabilities move when θ moves. So the gradient lands on each probability, and the rewards come along as plain numbers.' });
+
+    // 4. why that is not good enough
+    const huge = S.add(S.english('a language model’s possible answers outnumber the atoms in the universe', { size: 40, color: C.GREY_B }).at(0, 160));
+    S.beat('But look at what this formula asks for: a sum over every possible answer. For three answers, fine. For a language model, the possible answers outnumber the atoms in the universe. We will never add them all up. All we can ever do is sample a few.',
+      A.Unspot(L2), A.FadeOut(r2), S.writeIn(huge, 2), A.Spot(L2, 'aa'));
+
+    // 5. make a probability appear
+    const L3 = S.add(S.tex('\\grad\\pt(\\aa) \\;=\\; \\pt(\\aa)\\; \\frac{\\grad \\pt(\\aa)}{\\pt(\\aa)}', { size: 84 }).at(0, -60));
+    const r3 = S.add(S.reason('because: multiplying by {π|pt} and dividing by {π|pt} is multiplying by one'));
+    S.beat('Sampling is an average weighted by probability, so we need a probability out in front. Here is the trick: multiply the gradient of pi by pi, and divide by pi. That is multiplying by one, so nothing has changed. Yet.',
+      A.Unspot(L2), A.FadeOut(huge), A.FadeOut(L1), UP(L2), A.Write(L3, 1.8), S.writeIn(r3, 1.4), A.Spot(L3, 'pt'),
+      { cap: 'Sampling is an average weighted by probability, so we need a probability out in front. Here is the trick: multiply the gradient of π by π, and divide by π. That is multiplying by one, so nothing has changed. Yet.' });
+
+    // 6. the chain rule names the fraction
+    const L4 = S.add(S.tex('\\frac{\\grad \\pt(\\aa)}{\\pt(\\aa)} \\;=\\; \\grad \\lp(\\aa)', { size: 84 }).at(0, 130));
+    const r4 = S.add(S.reason('because: the chain rule, (log u)′ = u′ / u'));
+    S.beat('Now the fraction. The gradient of pi, divided by pi itself. The chain rule says the derivative of the log of anything is its derivative divided by itself. So this fraction is simply the gradient of log pi.',
+      A.Unspot(L3), A.FadeOut(r3), A.Write(L4, 1.6), S.writeIn(r4, 1.2), A.Spot(L4, ['grad', 'lp']),
+      { cap: 'Now the fraction: the gradient of π, divided by π itself. The chain rule says the derivative of the log of anything is its derivative divided by itself. So this fraction is simply the gradient of log π.' });
+    const e4 = S.add(S.english('{∇ log π(a)|grad}: the direction to move the {weights|th} that makes answer a more likely', { size: 40 }).at(0, 300));
+    S.beat('It is worth pausing on what that object means. The gradient of log pi of an answer is the direction to move the weights that makes that particular answer more likely. Back-propagation computes it for us, like any other gradient.',
+      A.FadeOut(r4), S.writeIn(e4, 2),
+      { cap: 'It is worth pausing on what that means. ∇ log π(a) is the direction to move the weights that makes that particular answer more likely. Back-propagation computes it for us, like any other gradient.' });
+
+    // 7. substitute: the probability is back, as a weight
+    const L5 = S.add(S.tex('\\grad\\JJ \\;=\\; \\sum_{\\aa}\\, \\pt(\\aa)\\; \\rr(\\aa)\\; \\grad\\lp(\\aa)', { size: 80 }).at(0, -60));
+    S.beat('Put both pieces back into the sum, and look at what has happened. The probability of each answer has reappeared, sitting in front of everything else, as a weight.',
+      A.Unspot(L4), A.FadeOut(e4), A.FadeOut(L2), A.FadeOut(L4), UP(L3), A.Write(L5, 2), A.Spot(L5, 'pt'));
+
+    // 8. a probability-weighted sum is an expectation
+    const L6 = S.add(S.tex('\\grad\\JJ \\;=\\; \\EE_{\\aa\\sim\\pt}\\Big[\\, \\rr(\\aa)\\; \\grad\\lp(\\aa) \\,\\Big]', { size: 80 }).at(0, 130));
+    const r6 = S.add(S.reason('because: a sum of {probabilities|pt} times anything is the average of that thing over samples'));
     S.paper('sutton2000');
-    S.beat('Substitute, and the probabilities reappear as weights. A sum weighted by probabilities is an expectation. So the gradient of the expected reward is the expected value of reward, times the gradient of log pi.',
-      A.Unfocus(l1), A.Unfocus(l2), A.Write(l3, 2.2), A.Focus(l3, 'w', { color: C.YELLOW }), wait(0.8), A.Focus(l3, 'e', { color: C.YELLOW }),
-      { cap: 'Substitute, and the probabilities reappear as weights. A sum weighted by probabilities is an expectation. So the gradient of the expected reward is the expected value of reward times the gradient of log π.' });
-    const est = S.add(S.tex('\\hat g \\;=\\; R(a)\\, \\nabla_\\theta \\log \\pi_\\theta(a), \\qquad a \\sim \\pi_\\theta', { size: 76, color: C.YELLOW }).at(0, 260));
-    const frame = S.add(S.rect(est.w + 90, 130, { stroke: C.YELLOW, width: 4, rx: 12 }).at(0, 260));
-    S.beat('That is the policy gradient. And we can estimate it with samples: draw an answer from the model, score it, and multiply the score by the gradient of its log-probability.',
-      A.Unfocus(l3), A.Write(est, 1.6), A.Create(frame, 0.8));
+    S.beat('And a sum over answers, weighted by their probabilities, is exactly what an average over samples means. That is the meaning of this E: an expectation, with answers drawn from the model itself.',
+      A.Write(L6, 2), S.writeIn(r6, 1.6), A.Spot(L6, ['EE', 'pt']));
+    const e6 = S.add(S.english('the slope of the {average reward|JJ} = the average, over answers the model really gives, of {reward|rr} × {the direction that makes that answer more likely|grad}', { size: 38, width: 1500 }).at(0, 300));
+    S.beat('Read the whole line as a sentence. The slope of the average reward is itself an average: over answers the model really gives, of reward, times the direction that makes that answer more likely. This is the policy gradient theorem.',
+      A.Unspot(L6), A.FadeOut(r6), A.FadeOut(L3), A.FadeOut(L5), A.MoveTo(L6, 0, -60), S.writeIn(e6, 2.6));
+
+    // 9. one sample, one estimate
+    const est = S.add(S.tex('\\ghat \\;=\\; \\rr(\\aa)\\; \\grad\\lp(\\aa), \\qquad \\aa \\sim \\pt', { size: 84 }).at(0, -40));
+    const frame = S.add(S.rect(est.w + 90, 140, { stroke: C.YELLOW, width: 4, rx: 12 }).at(0, -40));
+    S.beat('Any average can be estimated by sampling. So: draw one answer from the model, ask the judge for its reward, and multiply that reward by the gradient of the answer’s log-probability. That one product is an estimate of the gradient. Noisy, but right on average.',
+      A.FadeOut(e6), A.FadeOut(L6), A.Write(est, 1.8), A.Create(frame, 0.8));
+    S.tour(est, [
+      { sym: 'ghat', at: [0, 215], say: 'We call it g-hat. The hat is the statistician’s mark for: estimated from data, rather than computed exactly.' },
+      { sym: ['aa', 'pt'], card: 'aa', at: [0, 215], text: { why: 'it is drawn from the model itself, so common answers are tried often' },
+        say: 'And the little tilde says where the answer comes from. a is sampled from pi-theta, the model we are training. Answers it likes get tried often. Answers it rarely gives are rarely tried.',
+        cap: 'And the tilde says where the answer comes from: a is sampled from π_θ, the model we are training. Answers it likes get tried often; answers it rarely gives are rarely tried.' },
+    ]);
     const lens = S.lens();
     S.beat('Notice what is gone. The gradient never passes through the judge. We only need the reward as a plain number, and the gradient of the model’s own log-probability, which back-propagation computes as usual.',
-      par(S.cam(0, 260, 1.7, 1.6), A.Set(lens, { o: 1, r: 520 }, 1.6)), wait(1.4), par(S.pullBack(1.4), A.Set(lens, { o: 0, r: 1150 }, 1.4)));
+      S.endTour(est), par(S.cam(0, -40, 1.6, 1.6), A.Set(lens, { o: 1, r: 520 }, 1.6)), wait(1.4), par(S.pullBack(1.4), A.Set(lens, { o: 0, r: 1150 }, 1.4)));
   });
 
   video.scene('meaning', 'What the gradient says', (S) => {
