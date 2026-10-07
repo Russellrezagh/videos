@@ -3,9 +3,10 @@
  * animations that play while it is spoken. Numbers that appear on screen
  * come from the QUARTET science code (kernel.js, lab.js), computed here.
  */
-window.buildVideo = function buildVideo(root, durations) {
+window.buildVideo = function buildVideo(root, durations, words) {
   'use strict';
   const { C, A, Text, Tex, Group, Line, Arrow, Creature, Bubble, circle, rect, path, dot, polyPath, seq, par, lag, wait, mix } = MV;
+  const NB = window.Notebook;
   const K = QuartetKernel;
   const Lab = quartetLabFactory(K);
   const M0 = K.makeModel(K.VARIANTS[0]);
@@ -32,16 +33,24 @@ window.buildVideo = function buildVideo(root, durations) {
   const gofJCI = Lab.adequacy(gofData, { invariant: true });
   const jcd = (t, M) => Lab.jcDistance(1 - M.p(t).same);
 
-  const video = new MV.Video(root, { durations, kit });
+  const video = new MV.Video(root, { durations, words, kit });
 
   /* =========================================================== kit */
   function kit(S) {
     const H = (m) => m.hidden();
     const k = {};
-    k.txt = (str, o = {}) => H(new Text(str, o));
+    // Type roles (engine.js FONTS): small coloured notes are marginalia in
+    // the hand face; plain ink stays in the serif; headlines are hero type.
+    const MARGIN_INKS = new Set([C.WHITE, C.GREY_B]);
+    k.txt = (str, o = {}) => {
+      const hand = !o.font && !o.italic && (o.size ?? 44) <= 46 && o.color && !MARGIN_INKS.has(o.color);
+      return H(new Text(str, hand ? Object.assign({ font: 'hand' }, o) : o));
+    };
     k.tex = (t, o = {}) => H(new Tex(t, o));
-    k.head = (str, o = {}) => H(new Text(str, Object.assign({ size: 76 }, o)));
-    k.title = (str, o = {}) => H(new Text(str, Object.assign({ size: 54, color: C.GREY_B }, o))).at(0, -455);
+    k.head = (str, o = {}) => H(new Text(str, Object.assign({ size: 88, font: 'hero' }, o, o.size ? { size: o.size * 1.16 } : {})));
+    k.title = (str, o = {}) => H(new Text(str, Object.assign({ size: 64, color: C.GREY_B, font: 'hero', italic: true }, o))).at(0, -455);
+    k.hand = (str, o = {}) => H(new Text(str, Object.assign({ size: 38, font: 'hand', color: C.RED }, o)));
+    k.stamp = (label, o = {}) => H(new MV.Stamp(label, o));
     k.creature = (o = {}) => H(new Creature(o));
     k.bubble = (str, o = {}) => H(new Bubble(str, o));
     k.line = (x1, y1, x2, y2, o = {}) => H(new Line(x1, y1, x2, y2, o));
@@ -179,7 +188,7 @@ window.buildVideo = function buildVideo(root, durations) {
     };
     k.page = (label, { color = C.WHITE, w = 90, h = 116, size = 22 } = {}) => {
       const d = `M ${-w / 2} ${-h / 2} H ${w / 2 - 24} L ${w / 2} ${-h / 2 + 24} V ${h / 2} H ${-w / 2} Z`;
-      const g = new Group(path(d, { stroke: color, width: 3, fill: '#1a1c22' }));
+      const g = new Group(path(d, { stroke: color, width: 3, fill: C.SHEET }));
       for (let i = 0; i < 4; i++) g.add(new Line(-w / 2 + 14, -h / 2 + 34 + i * 18, w / 2 - 14, -h / 2 + 34 + i * 18, { stroke: mix(color, C.BG, 0.5), width: 2 }));
       // the file name sits above the sheet, clear of the desk it lies on
       if (label) g.add(new Text(label, { size, color }).at(0, -h / 2 - Math.max(size, 30) * 0.85));
@@ -218,33 +227,88 @@ window.buildVideo = function buildVideo(root, durations) {
       return H(b);
     };
     k.toTitle = (m, y = -450, s = 0.68) => par(A.MoveTo(m, 0, y), A.ScaleTo(m, s));
+    // The agent's finished research: a sheet with its tree on it.
+    k.report = ({ w = 330, h = 400 } = {}) => {
+      const g = new Group(rect(w, h, { stroke: C.WHITE, width: 3, fill: C.SHEET, rx: 4 }));
+      g.add(new Text('results', { size: 32, font: 'mono', color: C.GREY_B }).at(0, -h / 2 + 40));
+      const tree = k.quartet({ long: [0, 2], scale: 0.42, longLen: 250, short: 120, mid: 80, labelSize: 74, color: C.TEAL, longColor: C.TEAL, width: 5 });
+      tree.at(0, -20).with({ o: 1 });
+      g.add(tree);
+      for (let i = 0; i < 3; i++) g.add(new Line(-w / 2 + 40, h / 2 - 110 + i * 32, w / 2 - 40 - (i === 2 ? 90 : 0), h / 2 - 110 + i * 32, { stroke: C.GREY, width: 2 }));
+      g.tree = tree;
+      g.rotate(-2);
+      return H(g);
+    };
     return k;
+  }
+
+  /*
+   * Chapter card, silent, the same composition every time: the page turns,
+   * the margin tree flies onto the page and grows this chapter's branch,
+   * the agent climbs to the new tip, and the title is written beside it.
+   * The tree itself is an overlay (NB.motifOverlay), keyed below.
+   */
+  const CARD_AT = { x: -430, y: 40, s: 1 };
+  function card(n, title) {
+    video.scene(`card${n}`, title, (S) => {
+      S.still();
+      const turn = S.fixed(new NB.PageTurn(S.world).with({ k: 0 }));
+      const lines = NB.wrap(title, 22);
+      const y0 = -60 - ((lines.length - 1) * 126) / 2;
+      const kick = S.add(S.hand(`Chapter ${n}`, { size: 46, color: C.RED, anchor: 'start' }).at(40, y0 - 100));
+      const ts = lines.map((ln, i) => S.add(S.txt(ln, { size: 104, font: 'hero', italic: true, anchor: 'start' }).at(40, y0 + i * 126)));
+      const rule = S.add(S.line(44, y0 + (lines.length - 1) * 126 + 76, 344, y0 + (lines.length - 1) * 126 + 76, { stroke: C.WHITE, width: 4 }).with({ draw: 0 }));
+      S.silent(A.Set(turn, { k: 1 }, 1.1, MV.RATES.linear), par(A.FadeIn(kick, { dur: 0.5 }), lag(0.25, ts.map((t) => A.Write(t, 1.1))), seq(wait(0.6), A.Create(rule, 0.6))), wait(0.7));
+    });
   }
 
   /* =========================================================== CHAPTER 1 */
   video.chapter('ch1', 'The question');
 
+  // Cold open, silent: Darwin's 1837 tree, hedged with "I think".
+  const DARWIN_AT = [-30, 40];
+  video.scene('hook', 'I think', (S) => {
+    S.still();
+    S.keep();
+    const d = S.add(NB.darwin().at(...DARWIN_AT));
+    S.silent(par(A.Show(d), seq(wait(0.3), A.Write(d.think, 1.3)), seq(wait(0.6), d.grow(3.2))), wait(1.4));
+  });
+
   video.scene('open', 'Should you believe it?', (S) => {
     const { A } = S;
-    const agent = S.add(S.creature({ color: C.TEAL, kind: 'agent', size: 1.25 }).at(-420, 120));
-    const bub = S.add(S.bubble('I verified it. Everything checks out.', { size: 40, side: 'left' }).at(-120, -120));
-    const sci = S.add(S.creature({ color: C.GOLD, kind: 'scientist', size: 1.25 }).at(520, 120).with({ lx: -1, mood: 0.1 }));
-    const q = S.add(S.txt('?', { size: 150, color: C.YELLOW }).at(520, -150));
-    S.beat('Imagine an AI agent finishes a long piece of research for you. Then it says: I verified it. Everything checks out.',
-      A.FadeIn(agent, { dy: 40 }), A.FadeIn(bub, { dur: 0.6 }), A.Write(bub.text, 1.6), A.Mood(agent, 1, 0.4));
-    S.beat('Should you believe it? Not because the agent is lying, but because nobody, human or machine, gets everything right on the first try.',
-      A.FadeIn(sci, { dy: 40 }), A.Look(agent, 1, 0, 0.4), A.Write(q, 0.8), A.Mood(sci, -0.3), A.Blink(sci));
-    const title = S.add(S.head('The Tree and the Agent', { size: 100 }).at(0, -40));
-    const sub = S.add(S.txt('how to do science with AI agents, and how to know when it is right', { size: 40, color: C.GREY_B }).at(0, 60));
+    // the same sketch, already drawn: the cut from the cold open is invisible
+    const d = S.add(NB.darwin().done().at(...DARWIN_AT).with({ o: 1 }));
+    const rep = S.add(S.report().at(150, 40));
+    const agent = S.add(S.creature({ color: C.TEAL, kind: 'agent', size: 1.05 }).at(690, 200).with({ lx: -1, ly: 0.2 }));
+    const bub = S.add(S.bubble('I verified it. Everything checks out.', { size: 40, side: 'right' }).at(330, -300));
+    const stamp = S.add(S.stamp('VERIFIED', { size: 58, angle: -9 }).at(160, 10));
+    const say1 = 'Imagine an AI agent finishes a long piece of research for you. Then it says: I verified it. Everything checks out.';
+    S.beat(say1,
+      par(
+        seq(par(A.MoveTo(d, -470, 20, 1.3), A.ScaleTo(d, 0.78, 1.3)), par(A.FadeIn(rep, { dy: 30, dur: 0.7 }), seq(wait(0.3), rep.tree.grow(1.2))), A.FadeIn(agent, { dx: 40, dur: 0.7 })),
+        seq(wait(S.atWord(say1, 'Then it says')), A.FadeIn(bub, { dur: 0.5 }), A.Write(bub.text, 1.4), A.Mood(agent, 1, 0.4)),
+        seq(wait(S.atWord(say1, 'verified') + 0.15), A.Slam(stamp))
+      ));
+    const q = S.add(S.hand('?', { size: 170, color: C.RED }).at(430, -70).rotate(8));
+    const ul = S.add(S.path('M -806 -135 C -750 -127 -680 -131 -604 -141', { stroke: C.RED, width: 4 }).with({ draw: 0 }));
+    const say2 = 'Should you believe it? Not because the agent is lying, but because nobody, human or machine, gets everything right on the first try.';
+    S.beat(say2,
+      par(
+        seq(A.FadeIn(q, { from: 1.4, dur: 0.5 }), A.Mood(agent, 0.2, 0.5)),
+        seq(wait(S.atWord(say2, 'human')), A.Create(ul, 0.6)),
+        seq(wait(S.atWord(say2, 'machine')), A.Indicate(agent, { color: C.TEAL, scale: 1.08, dur: 0.8 }), A.Blink(agent))
+      ));
+    const title = S.add(S.head('The Tree and the Agent', { size: 112 }).at(230, -50));
+    const sub = S.add(S.txt('how to do science with AI agents, and how to know when it is right', { size: 38, color: C.GREY_B, italic: true }).at(230, 60));
     S.beat('This video is about how to do science with AI agents, and how to know when the science is actually right.',
-      par(A.FadeOut(agent), A.FadeOut(bub), A.FadeOut(sci), A.FadeOut(q)), A.Write(title, 1.8), A.FadeIn(sub, { dy: 20 }));
-    const s1 = S.add(S.txt('Isolation protects work.', { size: 64, color: C.BLUE }).at(0, -40));
-    const s2 = S.add(S.txt('Evidence supports claims.', { size: 64, color: C.YELLOW }).at(0, 60));
+      par([d, rep, stamp, agent, bub, q, ul].map((m) => A.FadeOut(m, { dur: 0.8 }))), A.Write(title, 1.8), A.FadeIn(sub, { dy: 20 }));
+    const s1 = S.add(S.head('Isolation protects work.', { size: 72, color: C.BLUE }).at(0, -40));
+    const s2 = S.add(S.head('Evidence supports claims.', { size: 72, color: C.YELLOW }).at(0, 70));
     S.beat('By the end, two short sentences will make complete sense. Isolation protects work. Evidence supports claims.',
       par(A.FadeOut(title, { dy: -40 }), A.FadeOut(sub, { dy: -40 })), A.Write(s1, 1.2), wait(0.4), A.Write(s2, 1.2));
     const tr = S.add(S.quartet({ long: [0, 2], scale: 0.6 }).at(0, 210));
     S.beat('We will get there through one small puzzle from biology. You do not need any biology to follow it. We will build everything from zero.',
-      par(A.MoveTo(s1, 0, -300), A.MoveTo(s2, 0, -210)), A.Show(tr), tr.grow(2));
+      par(A.MoveTo(s1, 0, -300), A.MoveTo(s2, 0, -200)), A.Show(tr), tr.grow(2));
   });
 
   video.scene('agents', 'What is an AI agent?', (S) => {
@@ -284,13 +348,13 @@ window.buildVideo = function buildVideo(root, durations) {
       arrowsOut.push(S.add(S.arrow(ux * 140 + nx, 40 + uy * 140 + ny, ux * (L - 110) + nx, 40 + uy * (L - 110) + ny, { color: C.GOLD, width: 4 })));
       arrowsBack.push(S.add(S.arrow(ux * (L - 110) - nx, 40 + uy * (L - 110) - ny, ux * 140 - nx, 40 + uy * 140 - ny, { color: C.TEAL, width: 4 })));
     });
-    const taskL = S.add(S.txt('tasks →', { size: 34, color: C.GOLD }).at(-330, -150));
-    const resL = S.add(S.txt('← results', { size: 34, color: C.TEAL }).at(330, 250));
+    const taskL = S.add(S.txt('tasks', { size: 34, color: C.GOLD }).at(-330, -150));
+    const resL = S.add(S.txt('results', { size: 34, color: C.TEAL }).at(330, 250));
     S.beat('In agentic science, a human scientist directs several of these agents. The scientist hands out tasks. The agents send back results.',
       par(A.FadeOut(h), A.FadeOut(chat), A.FadeOut(chatB), A.FadeOut(chatL), A.FadeOut(ag), A.FadeOut(agL), toolMobs.map((m) => A.FadeOut(m))),
       A.FadeIn(h2), A.FadeIn(sci, { dy: 30 }), A.FadeIn(sciL), lag(0.15, agents.map((a) => A.FadeIn(a, { from: 0.4 }))), lag(0.12, arrowsOut.map((a) => A.Arrow(a, 0.6))), A.FadeIn(taskL), lag(0.12, arrowsBack.map((a) => A.Arrow(a, 0.6))), A.FadeIn(resL));
     const card = S.add(S.box('Matthew Schwartz · Harvard physics · 2026', { w: 1200, h: 90, color: C.BLUE, size: 40 }).at(0, -300));
-    const stats = [['102', 'tasks'], ['270', 'sessions'], ['2', 'weeks']].map(([n, l], i) => S.add(S.group(new Text(n, { size: 120, color: C.BLUE }), new Text(l, { size: 40, color: C.GREY_B }).at(0, 90)).at(-420 + i * 420, -90)));
+    const stats = [['102', 'tasks'], ['270', 'sessions'], ['2', 'weeks']].map(([n, l], i) => S.add(S.group(new Text(n, { size: 150, color: C.BLUE, font: 'hero' }), new Text(l, { size: 40, color: C.GREY_B, italic: true }).at(0, 122)).at(-420 + i * 420, -110)));
     S.beat('This is already real. In twenty twenty-six, the Harvard physicist Matthew Schwartz supervised Claude through a genuine research calculation: one hundred and two tasks, two hundred and seventy sessions, about two weeks instead of the usual year.',
       par([sci, sciL, taskL, resL, ...agents, ...arrowsOut, ...arrowsBack].map((m) => A.FadeOut(m))), A.FadeIn(card, { dy: -20 }), lag(0.3, stats.map((m) => A.FadeIn(m, { dy: 30 }))),
       { cap: 'This is already real. In 2026, the Harvard physicist Matthew Schwartz supervised Claude through a genuine research calculation: 102 tasks, 270 sessions, about two weeks instead of the usual year.' });
@@ -306,13 +370,14 @@ window.buildVideo = function buildVideo(root, durations) {
     const n2 = S.add(S.txt('Problem 2', { size: 36, color: C.YELLOW }).at(440, -180));
     S.beat('So agentic science has two separate problems. One: keep a big, fast, many-agent project organized, so work does not collide or get lost. Two: know whether a result is actually correct.',
       par(A.FadeOut(card), stats.map((m) => A.FadeOut(m)), probs.map((m) => A.FadeOut(m)), A.FadeOut(h2)), par(A.FadeIn(n1), A.FadeIn(p1, { dy: 30 })), wait(1.2), par(A.FadeIn(n2), A.FadeIn(p2, { dy: 30 })));
-    const a1 = S.add(S.txt('Isolation protects work.', { size: 50, color: C.BLUE }).at(-440, 130));
-    const a2 = S.add(S.txt('Evidence supports claims.', { size: 50, color: C.YELLOW }).at(440, 130));
+    const a1 = S.add(S.head('Isolation protects work.', { size: 50, color: C.BLUE }).at(-440, 130));
+    const a2 = S.add(S.head('Evidence supports claims.', { size: 50, color: C.YELLOW }).at(440, 130));
     S.beat('Our two sentences answer these two problems. Now let us build the puzzle that will carry both of them.', A.Write(a1, 1.1), A.Write(a2, 1.1));
   });
 
   /* =========================================================== CHAPTER 2 */
   video.chapter('ch2', 'The puzzle: a family tree from DNA');
+  card(2, 'The puzzle: a family tree from DNA');
 
   video.scene('dna', 'DNA and branch length', (S) => {
     const h = S.add(S.head('DNA is a string of four letters'));
@@ -335,7 +400,7 @@ window.buildVideo = function buildVideo(root, durations) {
     const b2 = S.add(S.line(-820, 15, -620, 150, { stroke: C.WHITE, width: 4 }).with({ draw: 0 }));
     const l1 = S.add(S.txt('species 1', { size: 30, color: C.GREY_B }).at(-650, -170));
     const l2 = S.add(S.txt('species 2', { size: 30, color: C.GREY_B }).at(-650, 200));
-    const ancL = S.add(S.txt('ancestor', { size: 30, color: C.GREY_B }).at(-820, 60));
+    const ancL = S.add(S.txt('ancestor', { size: 30, color: C.GREY_B }).at(-830, 95));
     S.beat('When a species splits in two, both new species start out with the same DNA.',
       par(A.FadeOut(hl), A.FadeOut(siteL), A.FadeOut(row)), A.FadeIn(anc), A.FadeIn(ancL), par(A.Create(b1), A.Create(b2)), par(A.FadeIn(top, { dy: 60 }), A.FadeIn(bot, { dy: -60 }), A.FadeIn(l1), A.FadeIn(l2)));
     const flipsTop = [[3, 'A'], [9, 'T'], [15, 'C'], [20, 'G']];
@@ -346,7 +411,7 @@ window.buildVideo = function buildVideo(root, durations) {
       A.FadeIn(diffL), lag(0.35, [...flipsTop.map((f) => flip(top, f)), ...flipsBot.map((f) => flip(bot, f))]), A.Count(diffL, 0, 9, (v) => `differences: ${Math.round(v)}`, 0.8));
     // branch length
     const axisL = S.add(S.arrow(-700, 300, 700, 300, { color: C.GREY_B, width: 4 }).with({ draw: 0 }));
-    const timeL = S.add(S.txt('time apart →', { size: 32, color: C.GREY_B }).at(560, 345));
+    const timeL = S.add(S.txt('time apart', { size: 32, color: C.GREY_B }).at(560, 345));
     const ticks = [];
     for (let i = 0; i < 18; i++) {
       const x = -680 + ((i + 0.5) * 1360) / 18 + (i % 3) * 9;
@@ -449,8 +514,10 @@ window.buildVideo = function buildVideo(root, durations) {
       A.FadeIn(ax), A.FadeIn(d0, { from: 3 }), A.Focus(eq, 't', { color: C.YELLOW }));
     S.beat('As t grows, the chance falls toward one quarter. After many mutations, the letter is basically random, and a random letter matches by chance one time in four.',
       A.Create(curve, 2.4), A.Create(asym, 0.8), A.Focus(eq, 'quarter', { color: C.YELLOW }));
+    // the hand lens: an iris onto the one term that matters
+    const lens = S.fixed(new MV.Lens({ r: 1150 }));
     S.beat('And this four thirds is not decoration. It is exactly what makes t mean expected changes per site. Hold on to that number.',
-      A.Focus(eq, 'rate', { color: C.GOLD }), S.zoomTo(eq, 'rate', 2.6, 1.6), wait(1.2), S.pullBack(1.2), { cap: 'And this 4/3 is not decoration. It is exactly what makes t mean expected changes per site. Hold on to that number.' });
+      A.Focus(eq, 'rate', { color: C.GOLD }), par(S.zoomTo(eq, 'rate', 2.6, 1.6), A.Set(lens, { o: 1, r: 330 }, 1.6)), wait(1.2), par(S.pullBack(1.2), A.Set(lens, { o: 0, r: 1150 }, 1.2)), { cap: 'And this 4/3 is not decoration. It is exactly what makes t mean expected changes per site. Hold on to that number.' });
     // three trees with likelihoods
     const trees = [0, 1, 2].map((tp) => S.add(S.quartet({ topo: tp, long: [0, 2], scale: 0.48, longLen: 260, short: 110, mid: 70, labelSize: 64 }).at(-600 + tp * 600, -40)));
     const lls = [0, 1, 2].map((tp) => S.add(S.txt(`${TOPO[tp]}   ${infA.ml.logL[tp].toFixed(4)}`, { size: 40, font: 'mono', color: tp === 0 ? C.GREEN : C.GREY_B }).at(-600 + tp * 600, 190)));
@@ -459,6 +526,52 @@ window.buildVideo = function buildVideo(root, durations) {
     S.beat('Maximum likelihood combines these probabilities along every branch, for every site. It adjusts the branch lengths until the data are as probable as possible, then picks the tree with the highest score.',
       par(A.FadeOut(eq), A.FadeOut(ax), A.FadeOut(d0)), lag(0.3, trees.map((t) => seq(A.Show(t), t.grow(1)))), lag(0.3, lls.map((l) => A.FadeIn(l))), A.FadeIn(llT), A.Create(best, 0.6));
   });
+
+  // Felsenstein zone: x = the three short branches, y = the two long ones
+  // (the layout of the classic four-taxon plots). Each cell is the tree
+  // parsimony picks from exact infinite-data site frequencies.
+  function zoneMap() {
+    const N = 24;
+    const cell = 15;
+    const X0 = 0.01;
+    const X1 = 0.6;
+    const Y0 = 0.05;
+    const Y1 = 1.5;
+    const M = K.makeModel();
+    const g = new Group();
+    const cells = [];
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        const tS = X0 + (c / (N - 1)) * (X1 - X0);
+        const tL = Y1 - (r / (N - 1)) * (Y1 - Y0);
+        const wrong = K.parsimonyChoice(M.classProbabilities(Lab.felsensteinTree(tL, tS), 0))[1] > 0.5;
+        const sq = rect(cell - 2, cell - 2, { stroke: 'none', width: 0, fill: wrong ? mix(C.BG, C.RED, 0.62) : mix(C.BG, C.GREEN, 0.22), rx: 1 }).at(-N * cell / 2 + c * cell + cell / 2, -N * cell / 2 + r * cell + cell / 2);
+        sq.init.o = 0;
+        g.add(sq);
+        cells.push({ sq, r, c });
+      }
+    }
+    const half = (N * cell) / 2;
+    const axX = new Line(-half - 6, half + 6, half + 10, half + 6, { stroke: C.GREY_B, width: 3 });
+    const axY = new Line(-half - 6, half + 6, -half - 6, -half - 10, { stroke: C.GREY_B, width: 3 });
+    g.add(axX, axY);
+    const xl = new Text('short branches', { size: 32, color: C.GREY_B }).at(0, half + 42);
+    const yl = new Text('long branches', { size: 32, color: C.GREY_B }).at(-half - 30, 0).rotate(-90);
+    const px = -half + ((0.05 - X0) / (X1 - X0)) * (N - 1) * cell + cell / 2;
+    const py = -half + ((Y1 - 1.0) / (Y1 - Y0)) * (N - 1) * cell + cell / 2;
+    const ours = dot(9, C.WHITE).at(px, py);
+    const oursL = new Text('our tree', { size: 34, font: 'hand', color: C.WHITE, anchor: 'start' }).at(half + 70, -40);
+    const oursA = path(`M ${half + 62} -40 Q ${px + 120} ${py - 70} ${px + 14} ${py - 6}`, { stroke: C.WHITE, width: 3 });
+    const zL = new Text('parsimony picks the wrong tree', { size: 32, font: 'hand', color: C.RED, anchor: 'start' }).at(half + 30, -half + 20);
+    const rL = new Text('parsimony is right', { size: 32, font: 'hand', color: C.GREEN, anchor: 'start' }).at(half + 30, half - 20);
+    const labels = [xl, yl, ours, oursL, oursA, zL, rL];
+    labels.forEach((m) => (m.init.o = 0));
+    [axX, axY].forEach((m) => (m.init.draw = 0));
+    g.add(...labels);
+    g.at(-160, 90);
+    g.reveal = () => seq(par(A.Create(axX, 0.5), A.Create(axY, 0.5)), par(cells.map(({ sq, r, c }) => seq(wait((2 * N - 2 - r - c) * 0.04), A.FadeIn(sq, { dur: 0.3 })))), par(A.FadeIn(xl), A.FadeIn(yl), A.FadeIn(zL), A.FadeIn(rL)), par(A.FadeIn(ours, { from: 2.5 }), A.FadeIn(oursL), A.Create(oursA, 0.6)));
+    return g;
+  }
 
   video.scene('trap', 'The trap: long-branch attraction', (S) => {
     const h = S.add(S.head('The trap'));
@@ -489,9 +602,9 @@ window.buildVideo = function buildVideo(root, durations) {
       new Text(n, { size: 30, italic: true, color: i % 2 === 0 ? C.RED : C.WHITE }).at(-830, 0),
       new Text(align72[i].slice(0, 72), { size: 22, font: 'mono', color: C.GREY_B, anchor: 'start', spacing: 1 }).at(-800, 0)
     ).at(0, -300 + i * 40))));
-    const g1 = S.add(S.txt(`sites that support AB|CD (true):  ${supportCounts[0]}`, { size: 44, color: C.GREEN }).at(0, -60));
-    const g2 = S.add(S.txt(`sites that support AC|BD (wrong): ${supportCounts[1]}`, { size: 44, color: C.RED }).at(0, 20));
-    const g3 = S.add(S.txt(`sites that support AD|BC:          ${supportCounts[2]}`, { size: 44, color: C.GREY_B }).at(0, 100));
+    const g1 = S.add(S.txt(`sites that support AB|CD (true):  ${supportCounts[0]}`, { size: 40, color: C.GREEN, font: 'mono' }).at(0, -60));
+    const g2 = S.add(S.txt(`sites that support AC|BD (wrong): ${supportCounts[1]}`, { size: 40, color: C.RED, font: 'mono' }).at(0, 20));
+    const g3 = S.add(S.txt(`sites that support AD|BC:         ${supportCounts[2]}`, { size: 40, color: C.GREY_B, font: 'mono' }).at(0, 100));
     S.beat(`In our simulation, among the first seventy-two sites, ${supportCounts[0] === 0 ? 'zero' : supportCounts[0]} sites support the true tree, and ${supportCounts[1]} support the tree that pairs A with C. The fake signal wins.`,
       par(A.FadeOut(tree), tips.map((t) => A.FadeOut(t)), A.FadeOut(link), A.FadeOut(fake)), A.FadeIn(mini), lag(0.5, [A.FadeIn(g1), A.FadeIn(g2), A.FadeIn(g3)]),
       { cap: `In our simulation, among the first 72 sites, ${supportCounts[0]} support the true tree and ${supportCounts[1]} support AC|BD. The fake signal wins.` });
@@ -499,10 +612,13 @@ window.buildVideo = function buildVideo(root, durations) {
     const wl = S.add(S.txt('parsimony picks AC|BD', { size: 46, color: C.RED }).at(0, -150));
     S.beat('Parsimony counts honestly, and picks the wrong tree.',
       par(A.FadeOut(mini), A.FadeOut(g1), A.FadeOut(g2), A.FadeOut(g3)), A.Show(wrong), wrong.grow(1.2), A.FadeIn(wl));
-    const name = S.add(S.txt('long-branch attraction', { size: 72, color: C.YELLOW }).at(0, -40));
-    const who = S.add(S.txt('Joseph Felsenstein, 1978', { size: 40, color: C.GREY_B }).at(0, 50));
+    const name = S.add(S.head('long-branch attraction', { size: 72, color: C.YELLOW }).at(0, -330));
+    const who = S.add(S.txt('Joseph Felsenstein, 1978', { size: 36, color: C.GREY_B }).at(0, -250));
+    // The Felsenstein zone, computed here with infinite data: for each pair
+    // (short branches, long branches), which tree does parsimony pick?
+    const zone = S.add(zoneMap());
     S.beat('This is called long-branch attraction. Joseph Felsenstein described it in nineteen seventy-eight: long branches attract each other, even when they are not related.',
-      par(A.FadeOut(wrong), A.FadeOut(wl)), A.Write(name, 1.4), A.FadeIn(who), { cap: 'This is called long-branch attraction. Joseph Felsenstein described it in 1978: long branches attract each other, even when they are not related.' });
+      par(A.FadeOut(wrong), A.FadeOut(wl)), A.Write(name, 1.4), A.FadeIn(who), seq(wait(0.3), zone.reveal()), { cap: 'This is called long-branch attraction. Joseph Felsenstein described it in 1978: long branches attract each other, even when they are not related.' });
   });
 
   video.scene('confidence', 'More data makes it worse', (S) => {
@@ -541,6 +657,7 @@ window.buildVideo = function buildVideo(root, durations) {
 
   /* =========================================================== CHAPTER 3 */
   video.chapter('ch3', 'Isolation protects work');
+  card(3, 'Isolation protects work');
 
   video.scene('state', 'Six kinds of state', (S) => {
     const h = S.add(S.head('Six places where work lives'));
@@ -627,12 +744,12 @@ window.buildVideo = function buildVideo(root, durations) {
   video.scene('context', 'Context is a desk', (S) => {
     const h = S.add(S.head('Context is a desk, not a library'));
     const shelf = S.add(S.group(
-      rect(420, 380, { stroke: C.WHITE, width: 3, rx: 6, fill: '#15171c' }),
-      ...['CLAUDE.md', 'notes.md', 'kernel.js', 'study.log', 'paper.pdf', 'results/'].map((n, i) => new Group(rect(46, 300 - (i % 3) * 30, { stroke: C.GREY_B, width: 2, fill: '#22252c', rx: 3 }), new Text(n, { size: 22, color: C.GREY_B }).rotate(-90)).at(-160 + i * 64, 20 + (i % 3) * 15)),
+      rect(420, 380, { stroke: C.WHITE, width: 3, rx: 6, fill: mix(C.BG, C.GREY_B, 0.06) }),
+      ...['CLAUDE.md', 'notes.md', 'kernel.js', 'study.log', 'paper.pdf', 'results/'].map((n, i) => new Group(rect(46, 300 - (i % 3) * 30, { stroke: C.GREY_B, width: 2, fill: mix(C.BG, C.GREY_B, 0.14), rx: 3 }), new Text(n, { size: 22, color: C.GREY_B }).rotate(-90)).at(-160 + i * 64, 20 + (i % 3) * 15)),
       new Text('library: everything on disk', { size: 34, color: C.GREY_B }).at(0, 240)
     ).at(-520, -20));
     const lamp = S.add(S.group(
-      path('M -40 -200 h 80 l 22 34 h -124 z', { stroke: C.YELLOW, width: 3, fill: '#2a2616' }),
+      path('M -40 -200 h 80 l 22 34 h -124 z', { stroke: C.YELLOW, width: 3, fill: mix(C.BG, C.YELLOW, 0.25) }),
       path('M -62 -166 L -260 160 L 260 160 L 62 -166 Z', { stroke: 'none', width: 0, fill: C.YELLOW, fillOpacity: 0.07 }),
       new Line(-280, 160, 280, 160, { stroke: C.WHITE, width: 5 }),
       new Text('desk: what the agent sees now', { size: 34, color: C.YELLOW }).at(0, 220)
@@ -661,7 +778,7 @@ window.buildVideo = function buildVideo(root, durations) {
     });
     S.beat('As a session goes on, the desk fills up: instructions, conversation, and every file the agent reads. Somewhere in that conversation, the scientist said: branch length means expected changes per site.',
       par(A.FadeOut(shelf), A.FadeOut(lamp)), A.FadeIn(frame), A.FadeIn(limit), A.FadeIn(limitL), lag(0.5, chips.map((c) => A.FadeIn(c, { dx: -40 }))), A.Indicate(chips[1], { color: C.GREEN, scale: 1.08, dur: 1 }));
-    const summary = S.add(S.group(rect(292, 72, { stroke: C.WHITE, width: 2, fill: '#2b2e36', rx: 5 }), new Text('summary', { size: 30 })).at(-barW / 2 + 210 + 150, 230));
+    const summary = S.add(S.group(rect(292, 72, { stroke: C.WHITE, width: 2, fill: mix(C.BG, C.GREY_B, 0.18), rx: 5 }), new Text('summary', { size: 30 })).at(-barW / 2 + 210 + 150, 230));
     const lost = S.add(S.txt('lost at compaction', { size: 34, color: C.RED }).at(-barW / 2 + 305, -70));
     S.beat('When the desk is full, the system compacts it. Old conversation is replaced by a short summary. And a detail that was only said in conversation can simply vanish.',
       par(A.MoveTo(chips[2], -barW / 2 + 360, 230), A.MoveTo(chips[3], -barW / 2 + 360, 230), A.MoveTo(chips[4], -barW / 2 + 360, 230), A.MoveTo(chips[5], -barW / 2 + 360, 230), A.FadeOut(chips[2]), A.FadeOut(chips[3]), A.FadeOut(chips[4]), A.FadeOut(chips[5])),
@@ -688,7 +805,7 @@ window.buildVideo = function buildVideo(root, durations) {
     const eq = S.add(S.tex('\\text{output} = f(\\,\\text{version},\\ \\text{environment},\\ \\text{inputs},\\ \\text{seed}\\,)', { size: 62, color: C.WHITE }).at(0, 270));
     S.beat('Written as a formula: output equals f of version, environment, inputs, and seed.', A.Write(eq, 2));
     const card = S.add(S.group(
-      rect(760, 360, { stroke: C.YELLOW, width: 3, fill: '#1c1b14', rx: 10 }),
+      rect(760, 360, { stroke: C.YELLOW, width: 3, fill: C.SHEET, rx: 10 }),
       new Text('manifest.json', { size: 38, color: C.YELLOW, font: 'mono' }).at(0, -140),
       ...[['run id', '20261006T060056Z_dcda0e1a'], ['code version', 'source hash 5722de84…'], ['environment', 'Node v22.22.0'], ['inputs', 'tLong 1.0, tShort 0.05'], ['seed', '20261006']].map(([k, v], i) => new Group(new Text(k, { size: 28, color: C.GREY_B, anchor: 'end' }).at(-120, 0), new Text(v, { size: 28, font: 'mono', anchor: 'start' }).at(-100, 0)).at(0, -70 + i * 52))
     ).at(0, -20));
@@ -725,6 +842,7 @@ window.buildVideo = function buildVideo(root, durations) {
 
   /* =========================================================== CHAPTER 4 */
   video.chapter('ch4', 'Evidence supports claims');
+  card(4, 'Evidence supports claims');
 
   video.scene('drift', 'A lost convention', (S) => {
     const h = S.add(S.head('Day three: a lost convention'));
@@ -768,14 +886,15 @@ window.buildVideo = function buildVideo(root, durations) {
     checks.forEach((g) => g.kids.forEach((k) => (k.init.o = 1)));
     S.beat('And both are perfectly valid probability models. Every probability is between zero and one, they add up correctly, and two short branches combine exactly like one long branch.',
       lag(0.6, checks.map((c) => A.FadeIn(c, { dx: -20 }))));
+    const lens = S.fixed(new MV.Lens({ r: 1150 }));
     const t1 = S.add(S.line(30 + ax.fx(0), 20 + ax.fy(0), 30 + ax.fx(0.16), 20 + ax.fy(0.16), { stroke: C.BLUE, width: 3, dash: '6 6' }).with({ draw: 0 }));
     const t3 = S.add(S.line(30 + ax.fx(0), 20 + ax.fy(0), 30 + ax.fx(0.16 / 3), 20 + ax.fy(0.16), { stroke: C.RED, width: 3, dash: '6 6' }).with({ draw: 0 }));
     const s1 = S.add(S.txt('slope 1', { size: 16, color: C.BLUE, anchor: 'start' }).at(30 + ax.fx(0.1) + 8, 20 + ax.fy(0.08)));
     const s3 = S.add(S.txt('slope 3', { size: 16, color: C.RED, anchor: 'end' }).at(30 + ax.fx(0.03) - 6, 20 + ax.fy(0.12)));
     S.beat('The only difference is how fast they start. Let us zoom in near zero. With the right formula, a short branch of length t carries about t changes per site. With the wrong one, three times as many.',
-      par(checks.map((c) => A.FadeOut(c))), S.cam(30 + ax.fx(0.06), 20 + ax.fy(0.08) + 24, 4.2, 2), par(A.Create(t1), A.Create(t3)), par(A.FadeIn(s1), A.FadeIn(s3)), wait(1.5));
+      par(checks.map((c) => A.FadeOut(c))), par(S.cam(30 + ax.fx(0.06), 20 + ax.fy(0.08) + 24, 4.2, 2), A.Set(lens, { o: 1, r: 420 }, 2)), par(A.Create(t1), A.Create(t3)), par(A.FadeIn(s1), A.FadeIn(s3)), wait(1.5));
     S.beat('Same shape. Wrong unit. Every number computed downstream is now off by a factor of three, and nothing crashes.',
-      S.pullBack(1.6), A.Indicate(lm, { color: C.RED, scale: 1.15 }));
+      par(S.pullBack(1.6), A.Set(lens, { o: 0, r: 1150 }, 1.6)), A.Indicate(lm, { color: C.RED, scale: 1.15 }));
   });
 
   video.scene('agree', 'Two methods agree', (S) => {
@@ -791,17 +910,24 @@ window.buildVideo = function buildVideo(root, durations) {
     const v1 = S.add(S.txt(f(fast), { size: 40, font: 'mono', color: C.WHITE }).at(-460, -20));
     const v2 = S.add(S.txt(f(slow), { size: 40, font: 'mono', color: C.WHITE }).at(460, -20));
     const eqs = S.add(S.txt('=', { size: 90, color: C.GREEN }).at(0, -20));
-    S.beat('Our project computes each likelihood in two independent ways: a fast, clever algorithm, and a slow brute-force sum over every possibility. If they agree, surely the code is right?',
-      S.toTitle(h), par(A.FadeIn(b1, { dy: 30 }), A.FadeIn(b2, { dy: 30 })), par(A.FadeIn(v1), A.FadeIn(v2)), A.FadeIn(eqs, { from: 2 }));
+    const okStamp = S.add(S.stamp('VERIFIED', { size: 50, angle: -6 }).at(0, 92));
+    const sayAgree = 'Our project computes each likelihood in two independent ways: a fast, clever algorithm, and a slow brute-force sum over every possibility. If they agree, surely the code is right?';
+    S.beat(sayAgree,
+      par(seq(S.toTitle(h), par(A.FadeIn(b1, { dy: 30 }), A.FadeIn(b2, { dy: 30 })), par(A.FadeIn(v1), A.FadeIn(v2)), A.FadeIn(eqs, { from: 2 })),
+        seq(wait(S.atWord(sayAgree, 'surely')), A.Slam(okStamp))));
     const shared = S.add(S.box('shared constant: μ = 4', { w: 560, h: 110, color: C.RED, size: 44 }).at(0, 230));
     const l1 = S.add(S.line(-460, 30, -150, 175, { stroke: C.RED, width: 4 }).with({ draw: 0 }));
     const l2 = S.add(S.line(460, 30, 150, 175, { stroke: C.RED, width: 4 }).with({ draw: 0 }));
     const truth = S.add(S.txt(`correct value: ${f(right)}`, { size: 34, font: 'mono', color: C.GREEN }).at(0, -330));
-    S.beat('But both of them read the same constant, from the same place. The bug lives in what they share. So they agree perfectly, to fifteen digits, and both are wrong.',
-      A.FadeIn(shared), par(A.Create(l1), A.Create(l2)), A.Indicate(shared, { color: C.RED }), A.FadeIn(truth), { cap: 'But both of them read the same constant, from the same place. The bug lives in what they share. So they agree perfectly, to 15 digits, and both are wrong.' });
+    const strike = S.add(S.path('M -170 50 L 170 134 M -160 140 L 166 48', { stroke: C.WHITE, width: 6 }).with({ draw: 0 }));
+    const sayShared = 'But both of them read the same constant, from the same place. The bug lives in what they share. So they agree perfectly, to fifteen digits, and both are wrong.';
+    S.beat(sayShared,
+      par(seq(A.FadeIn(shared), par(A.Create(l1), A.Create(l2)), A.Indicate(shared, { color: C.RED }), A.FadeIn(truth)),
+        seq(wait(S.atWord(sayShared, 'both are wrong')), A.Create(strike, 0.5))),
+      { cap: 'But both of them read the same constant, from the same place. The bug lives in what they share. So they agree perfectly, to 15 digits, and both are wrong.' });
     const big = S.add(S.txt('Agreement is not independence.', { size: 76, color: C.YELLOW }).at(0, 0));
     S.beat('Agreement is not independence. Two agents with the same prompt, the same helper code, or the same convention can share one mistake.',
-      par([b1, b2, v1, v2, eqs, shared, l1, l2, truth].map((m) => A.FadeOut(m))), A.Write(big, 1.6));
+      par([b1, b2, v1, v2, eqs, shared, l1, l2, truth, okStamp, strike].map((m) => A.FadeOut(m))), A.Write(big, 1.6));
   });
 
   video.scene('ladder', 'The ladder of independence', (S) => {
@@ -840,6 +966,7 @@ window.buildVideo = function buildVideo(root, durations) {
 
   /* =========================================================== CHAPTER 5 */
   video.chapter('ch5', 'Correct code, wrong science');
+  card(5, 'Correct code, wrong science');
 
   video.scene('invariant', 'What if the code is perfect?', (S) => {
     const h = S.add(S.head('What if the code is perfect?'));
@@ -909,6 +1036,7 @@ window.buildVideo = function buildVideo(root, durations) {
 
   /* =========================================================== CHAPTER 6 */
   video.chapter('ch6', 'Putting it together');
+  card(6, 'Putting it together');
 
   video.scene('week', 'One week of agentic research', (S) => {
     const h = S.add(S.head('One week of agentic research'));
@@ -961,26 +1089,32 @@ window.buildVideo = function buildVideo(root, durations) {
   video.scene('claims', 'Claims with limits', (S) => {
     const h = S.add(S.head('Results become claims'));
     S.beat('At the end, results become claims. And a claim without evidence and limits is just an advertisement.', A.Write(h, 1.4));
-    const rows = [
-      ['ML recovers the true tree when the model is right', 'supported', C.GREEN],
-      ['parsimony converges to the wrong tree here', 'supported', C.GREEN],
-      ['two agents agreeing proves a result', 'rejected', C.RED],
-      ['this explains the history of real microsporidia', 'not tested', C.GREY_B],
-    ].map(([t, st, col], i) => S.add(S.group(
-      new Text(t, { size: 38, anchor: 'start' }).at(-760, 0),
-      rect(250, 60, { stroke: col, width: 3, fill: mix(C.BG, col, 0.15), rx: 6 }).at(600, 0),
-      new Text(st, { size: 32, color: col }).at(600, 0)
-    ).at(0, -230 + i * 120)));
+    // the stamp again, now used honestly: each claim gets the verdict its
+    // evidence earns
+    const verdicts = [
+      ['ML recovers the true tree when the model is right', 'SUPPORTED', C.GREEN, C.BLUE, -6],
+      ['parsimony converges to the wrong tree here', 'SUPPORTED', C.GREEN, C.BLUE, -3],
+      ['two agents agreeing proves a result', 'REJECTED', C.RED, C.PINK, -7],
+      ['this explains the history of real microsporidia', 'NOT TESTED', C.GREY_B, C.GREY, -4],
+    ];
+    const rows = verdicts.map(([t, st, col, ghost, ang], i) => {
+      const y = -230 + i * 120;
+      return {
+        text: S.add(S.txt(t, { size: 38, anchor: 'start' }).at(-780, y)),
+        stamp: S.add(S.stamp(st, { size: 40, color: col, ghost, angle: ang }).at(590, y)),
+      };
+    });
     S.beat('Some claims are supported, with evidence you can rerun. Some are rejected, like: two agents agreeing proves a result. And some are simply not tested, and we say so out loud.',
-      S.toTitle(h), lag(0.9, rows.map((r) => A.FadeIn(r, { dx: -30 }))));
+      S.toTitle(h), lag(0.9, rows.map((r) => seq(A.FadeIn(r.text, { dx: -30, dur: 0.6 }), A.Slam(r.stamp)))));
   });
 
   /* =========================================================== CHAPTER 7 */
   video.chapter('ch7', 'The two sentences');
+  card(7, 'The two sentences');
 
   video.scene('recap', 'Recap', (S) => {
-    const s1 = S.add(S.txt('Isolation protects work.', { size: 76, color: C.BLUE }).at(0, -60));
-    const s2 = S.add(S.txt('Evidence supports claims.', { size: 76, color: C.YELLOW }).at(0, 60));
+    const s1 = S.add(S.head('Isolation protects work.', { size: 70, color: C.BLUE }).at(0, -60));
+    const s2 = S.add(S.head('Evidence supports claims.', { size: 70, color: C.YELLOW }).at(0, 60));
     S.beat('Let us come back to the two sentences.', A.Write(s1, 1.2), A.Write(s2, 1.2));
     const iso = ['worktrees keep agents off each other’s files', 'run folders + manifests keep results apart and repeatable', 'files on disk keep rules alive through compaction'];
     const isoM = iso.map((t, i) => S.add(S.txt(t, { size: 40 }).at(0, -170 + i * 70)));
@@ -997,11 +1131,65 @@ window.buildVideo = function buildVideo(root, durations) {
     const taste = S.add(S.txt('taste', { size: 70, color: C.GOLD }).at(0, -170));
     S.beat('And at the top of the ladder, there is still a person. Agents can find thousands of problems that they can solve. Deciding which answers matter, what Schwartz calls taste, is still the scientist’s job.',
       par(A.FadeOut(s2), evM.map((m) => A.FadeOut(m))), A.FadeIn(sci, { dy: 40 }), lag(0.15, ags.map((a) => A.FadeIn(a, { dy: 30 }))), A.Write(taste, 1.2), A.Mood(sci, 1));
-    const end = S.add(S.head('The Tree and the Agent', { size: 90 }).at(0, -60));
-    const end2 = S.add(S.txt('every number in this video came from tested code that runs in your browser', { size: 36, color: C.GREY_B }).at(0, 40));
+    // the end page: the margin tree comes back to the page, fully inked, and
+    // signs off the way Darwin's page began
+    const end = S.add(S.head('The Tree and the Agent', { size: 90 }).at(250, -70));
+    const end2 = S.add(S.group(new Text('every number in this video came from', { size: 36, color: C.GREY_B, italic: true }).at(0, 0), new Text('tested code that runs in your browser', { size: 36, color: C.GREY_B, italic: true }).at(0, 48)).at(250, 30));
+    const sign = S.add(S.txt('I think', { size: 84, font: 'script' }).at(-735, -415));
     S.beat('Every number in this video came from real, tested code, running in your browser. Thanks for watching.',
-      par(A.FadeOut(sci), A.FadeOut(taste), ags.map((a) => A.FadeOut(a))), A.Write(end, 1.6), A.FadeIn(end2), { hold: 2.5 });
+      par(A.FadeOut(sci), A.FadeOut(taste), ags.map((a) => A.FadeOut(a))), A.Write(end, 1.6), A.FadeIn(end2), seq(wait(0.4), A.Write(sign, 1.2)), { hold: 2.5 });
     S.keep();
+  });
+
+  /* =========================================================== the margin */
+  // Sources behind the beats. On screen: the title only, bottom-left. The
+  // page under the player lists the full references from the same records.
+  // Every entry was checked against the source itself (publisher, PubMed,
+  // Darwin Online, NASA, git-scm.com).
+  const INSERTS = [
+    { from: 'hook.1', delay: 1.2, title: 'Notebook B: Transmutation of species', ref: 'Darwin, C. R. (1837–1838). Notebook B: [Transmutation of species], p. 36. Cambridge University Library, CUL-DAR121. Transcribed in Darwin Online (ed. J. van Wyhe).', url: 'https://darwin-online.org.uk/content/frameset?itemID=CUL-DAR121.-&viewtype=text&pageseq=1' },
+    { from: 'parsimony.1', to: 'parsimony.3', title: 'Toward Defining the Course of Evolution: Minimum Change for a Specific Tree Topology', ref: 'Fitch, W. M. (1971). Systematic Zoology 20(4): 406–416.', url: 'https://doi.org/10.1093/sysbio/20.4.406' },
+    { from: 'ml.2', to: 'ml.3', title: 'Evolution of Protein Molecules', ref: 'Jukes, T. H. & Cantor, C. R. (1969). In H. N. Munro (ed.), Mammalian Protein Metabolism, vol. III, pp. 21–132. Academic Press.', url: 'https://doi.org/10.1016/B978-1-4832-3211-9.50009-7' },
+    { from: 'ml.7', title: 'Evolutionary Trees from DNA Sequences: A Maximum Likelihood Approach', ref: 'Felsenstein, J. (1981). Journal of Molecular Evolution 17(6): 368–376.', url: 'https://doi.org/10.1007/BF01734359' },
+    { from: 'trap.7', title: 'Cases in which Parsimony or Compatibility Methods will be Positively Misleading', ref: 'Felsenstein, J. (1978). Systematic Zoology 27(4): 401–410.', url: 'https://doi.org/10.1093/sysbio/27.4.401' },
+    { from: 'confidence.2', to: 'confidence.3', title: 'Success of Phylogenetic Methods in the Four-Taxon Case', ref: 'Huelsenbeck, J. P. & Hillis, D. M. (1993). Systematic Biology 42(3): 247–264. Later work credits them with the name "Felsenstein zone".', url: 'https://doi.org/10.1093/sysbio/42.3.247' },
+    { from: 'confidence.5', title: 'Microsporidia are related to Fungi', ref: 'Hirt, R. P., Logsdon, J. M. Jr., Healy, B., Dorey, M. W., Doolittle, W. F. & Embley, T. M. (1999). Microsporidia are related to Fungi: Evidence from the largest subunit of RNA polymerase II and other proteins. PNAS 96(2): 580–585.', url: 'https://doi.org/10.1073/pnas.96.2.580' },
+    { from: 'worktrees.5', to: 'worktrees.6', title: 'git-worktree - Manage multiple working trees', ref: 'Git documentation, git-worktree(1): "The new worktree is linked to the current repository, sharing everything except per-worktree files such as HEAD, index, etc."', url: 'https://git-scm.com/docs/git-worktree' },
+    { from: 'runs.4', to: 'runs.5', title: 'Ten Simple Rules for Reproducible Computational Research', ref: 'Sandve, G. K., Nekrutenko, A., Taylor, J. & Hovig, E. (2013). PLoS Computational Biology 9(10): e1003285. Rule 1: "For Every Result, Keep Track of How It Was Produced"; Rule 6: "For Analyses That Include Randomness, Note Underlying Random Seeds".', url: 'https://doi.org/10.1371/journal.pcbi.1003285' },
+    { from: 'drift.4', title: 'Mars Climate Orbiter Mishap Investigation Board Phase I Report', ref: 'NASA (10 November 1999). The SM_FORCES output was to be in newton-seconds; it was reported in pound-seconds (lbf-s), a factor of 4.45.', url: 'https://llis.nasa.gov/llis_lib/pdf/1009464main1_0641-mr.pdf' },
+    { from: 'agree.4', title: 'An experimental evaluation of the assumption of independence in multiversion programming', ref: 'Knight, J. C. & Leveson, N. G. (1986). IEEE Transactions on Software Engineering SE-12(1): 96–109. 27 versions written independently from one specification, one million tests: coincident failures were substantially more frequent than independence predicts.', url: 'https://doi.org/10.1109/TSE.1986.6312924' },
+    { from: 'ladder.6', to: 'ladder.9', title: 'Hints on Test Data Selection: Help for the Practicing Programmer', ref: 'DeMillo, R. A., Lipton, R. J. & Sayward, F. G. (1978). Computer 11(4): 34–41. A founding paper of mutation testing.', url: 'https://doi.org/10.1109/C-M.1978.218136' },
+    { from: 'fit.4', to: 'fit.5', title: 'Statistical tests of models of DNA substitution', ref: 'Goldman, N. (1993). Journal of Molecular Evolution 36(2): 182–198.', url: 'https://doi.org/10.1007/BF00166252' },
+  ];
+  video.sources = INSERTS;
+  NB.paperOverlay(video, INSERTS);
+  NB.folioOverlay(video, { skip: (sc) => sc.id === 'hook' || /^card/.test(sc.id) });
+  const motif = NB.motifOverlay(video);
+  video.after((v) => {
+    const keys = [];
+    const o3 = v.beat('open.3');
+    const o4 = v.beat('open.4');
+    const SAP = { x: -600, y: -40, s: 1.05, size: 0.44 };
+    keys.push(Object.assign(NB.pageKey(o3.start + 0.7, 0, SAP), { ao: 0 }));
+    keys.push(NB.pageKey(o3.start + 2.4, 1, SAP));
+    keys.push(NB.pageKey(o4.start, 1, SAP));
+    keys.push(NB.cornerKey(o4.start + 1.4, 1));
+    for (const sc of v.scenes) {
+      const m = /^card(\d)$/.exec(sc.id);
+      if (!m) continue;
+      const n = Number(m[1]);
+      const end = sc.start + sc.duration;
+      keys.push(NB.cornerKey(sc.start, n - 1));
+      keys.push(NB.pageKey(sc.start + 1.0, n - 1, CARD_AT));
+      keys.push(NB.pageKey(sc.start + 1.15, n - 1, CARD_AT));
+      keys.push(NB.pageKey(sc.start + 2.5, n, CARD_AT));
+      keys.push(NB.pageKey(end - 1.0, n, CARD_AT));
+      keys.push(NB.cornerKey(end - 0.05, n));
+    }
+    const fin = v.beat('recap.6');
+    keys.push(NB.cornerKey(fin.start, 7));
+    keys.push(NB.pageKey(fin.start + 1.6, 7, { x: -560, y: 30, s: 1 }));
+    motif.setKeys(keys);
   });
 
   return video;

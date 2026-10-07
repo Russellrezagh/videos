@@ -7,7 +7,8 @@
  *                                                 with the narration embedded
  *   node video/tools/build.mjs --embed-audio      embed it in dist/index.html too
  *
- * Inlines: MathJax (SVG output), the KaTeX Computer Modern fonts, the QUARTET
+ * Inlines: MathJax (SVG output), every font (KaTeX for maths, and the OFL
+ * notebook faces from @fontsource), the QUARTET
  * science code, the engine, the script and the player. If narration exists
  * (narration/durations.json and dist/narration.mp3), the page uses the real
  * clip durations and plays the track as its clock. The track is either
@@ -31,10 +32,14 @@ let html = read(path.join(VIDEO, 'src/index.html'));
 
 // stylesheet with fonts as data URIs
 let css = read(path.join(VIDEO, 'src/css/player.css'));
-css = css.replace(/url\('\.\.\/\.\.\/\.\.\/node_modules\/katex\/dist\/fonts\/([^']+)'\)/g, (_, f) => {
-  const b64 = fs.readFileSync(path.join(ROOT, 'node_modules/katex/dist/fonts', f)).toString('base64');
-  return `url(data:font/woff2;base64,${b64})`;
+let fontBytes = 0;
+css = css.replace(/url\('\.\.\/\.\.\/\.\.\/node_modules\/([^']+\.woff2)'\)/g, (_, f) => {
+  const buf = fs.readFileSync(path.join(ROOT, 'node_modules', f));
+  fontBytes += buf.length;
+  return `url(data:font/woff2;base64,${buf.toString('base64')})`;
 });
+if (/url\('\.\./.test(css)) throw new Error('a local url() remains in the stylesheet');
+console.log(`  fonts inlined: ${(fontBytes / 1024).toFixed(0)} KB`);
 html = html.replace('<link rel="stylesheet" href="css/player.css">', () => `<style>\n${css}</style>`);
 
 // scripts
@@ -43,6 +48,7 @@ const scripts = {
   '../../src/js/kernel.js': path.join(ROOT, 'src/js/kernel.js'),
   '../../src/js/lab.js': path.join(ROOT, 'src/js/lab.js'),
   'js/engine.js': path.join(VIDEO, 'src/js/engine.js'),
+  'js/notebook.js': path.join(VIDEO, 'src/js/notebook.js'),
   'js/scenes.js': path.join(VIDEO, 'src/js/scenes.js'),
   'js/player.js': path.join(VIDEO, 'src/js/player.js'),
 };
@@ -56,8 +62,11 @@ for (const [src, file] of Object.entries(scripts)) {
 const durFile = path.join(VIDEO, 'narration/durations.json');
 const mp3 = path.join(VIDEO, 'dist/narration.mp3');
 let narr = null;
+const wordsFile = path.join(VIDEO, 'narration/words.json');
 if (fs.existsSync(durFile) && fs.existsSync(mp3)) {
   narr = { src: 'narration.mp3', durations: JSON.parse(read(durFile)) };
+  // word onsets, so visuals can land on a spoken word (tools/words.py)
+  if (fs.existsSync(wordsFile)) narr.words = JSON.parse(read(wordsFile));
 }
 html = html.replace('<script type="application/json" id="narration-data"></script>', () => `<script type="application/json" id="narration-data">${narr ? JSON.stringify(narr) : ''}</script>`);
 if (/src="(\.\.\/|js\/)/.test(html)) throw new Error('a local script reference remains');

@@ -2,3 +2,5 @@ node_modules/
 video/narration/clips/
 video/dist/*.mp4
 __pycache__/
+video/narration/words.json.cache
+video/dist/.render/

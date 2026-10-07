@@ -3,7 +3,8 @@
  * Narration pipeline:
  *   1. the page exports its script (one line per beat)
  *   2. a TTS engine speaks each line     (tools/tts.py; Kokoro-82M by default)
- *   3. the page re-times every beat with the real clip durations
+ *   3. the page re-times every beat with the real clip durations (and word
+ *      onsets from tools/words.py, so visuals can land on a spoken word)
  *   4. the clips are mixed into one track at those times (tools/mix.py)
  *   5. ffmpeg levels it to -17 LUFS (speech for screens) and encodes video/dist/narration.mp3
  *
@@ -54,8 +55,16 @@ console.log(`1. script: ${script.length} lines`);
 execFileSync('python3', [path.join(VIDEO, 'tools/tts.py'), N('script.json'), clips, N('durations.json'), ...ttsArgs], { stdio: 'inherit' });
 const durations = JSON.parse(fs.readFileSync(N('durations.json'), 'utf8'));
 console.log('2. speech synthesized');
+// word onsets let visuals land on a spoken word (needs faster-whisper; cached per clip)
+let words = null;
+try {
+  execFileSync('python3', [path.join(VIDEO, 'tools/words.py'), path.join(clips, 'index.json'), N('words.json')], { stdio: 'inherit' });
+  words = JSON.parse(fs.readFileSync(N('words.json'), 'utf8'));
+} catch (e) {
+  console.log('   (no word timings: visuals fall back to character shares)');
+}
 
-const schedule = await fromPage({ fn: (d) => (window.__narrationOverride = { durations: d }), arg: durations }, () => window.__schedule);
+const schedule = await fromPage({ fn: (a) => (window.__narrationOverride = a), arg: { durations, words } }, () => window.__schedule);
 fs.writeFileSync(N('schedule.json'), JSON.stringify(schedule, null, 1));
 console.log(`3. schedule: ${(schedule.duration / 60).toFixed(2)} min`);
 

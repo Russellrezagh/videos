@@ -243,13 +243,16 @@
       status.textContent = 'Math renderer failed to start.';
       return;
     }
-    try {
-      await document.fonts.load('48px KaTeX_Main');
-    } catch (e) {
-      /* system serif fallback */
-    }
+    // Text is measured while the scenes are built (bubbles, layouts), so
+    // every face must be loaded first.
+    const faces = ['48px KaTeX_Main', '48px Fraunces', 'italic 48px Fraunces', '600 48px Fraunces', '48px "Instrument Serif"', 'italic 48px "Instrument Serif"',
+      '48px "Shantell Sans"', '48px Caveat', '48px "IBM Plex Mono"', '500 48px "IBM Plex Mono"', '600 48px "IBM Plex Mono"'];
+    await Promise.all(faces.map((f) => document.fonts.load(f).catch(() => null)));
+    // the paper is painted once, from a seed: the same sheet in every frame
+    window.Notebook.paintPaper($('#paper'));
+    window.Notebook.paintGrain($('#grain'));
     const narr = readNarration();
-    const video = window.buildVideo({ world: $('#world'), hud: $('#hud') }, narr ? narr.durations : null);
+    const video = window.buildVideo({ world: $('#world'), hud: $('#hud'), over: $('#over') }, narr ? narr.durations : null, narr ? narr.words : null);
     video.compile();
     window.__video = video;
     window.__script = video.beats.filter((b) => b.say).map((b) => ({ id: b.id, say: b.say }));
@@ -257,7 +260,6 @@
 
     const cap = $('#caption');
     const capText = $('#caption-text');
-    const toast = $('#toast');
     let lastChapter = null;
     // Subtitles never grow past two lines: a long narration line is shown in
     // chunks (sentences, then clauses), each timed in proportion to its share
@@ -316,15 +318,13 @@
         capText.textContent = txt;
         lastCap = txt;
       }
+      // the chapter cards in the film carry the chapter titles
       const ch = video.chapterAt(t);
       if (ch !== lastChapter) {
         lastChapter = ch;
-        const i = video.chapters.indexOf(ch) + 1;
-        toast.textContent = `Chapter ${i} · ${ch.title}`;
-        document.querySelectorAll('.chapters button').forEach((x, j) => x.classList.toggle('now', j === i - 1));
+        const i = video.chapters.indexOf(ch);
+        document.querySelectorAll('.chapters button').forEach((x, j) => x.classList.toggle('now', j === i));
       }
-      // the chapter label is part of the picture: visible for 4 s after each chapter starts
-      toast.classList.toggle('show', t - ch.start < 4);
     }
 
     if (exportMode) {
@@ -466,6 +466,30 @@
       });
     });
 
+    /* ---------- sources (the same records as the corner titles) ---------- */
+    const srcList = $('#sources');
+    for (const src of video.sources || []) {
+      const at = video.beats.find((b) => b.id === src.from);
+      const li = document.createElement('li');
+      const when = document.createElement('button');
+      when.type = 'button';
+      when.className = 'where';
+      when.textContent = at ? fmt(at.start) : '';
+      when.addEventListener('click', () => {
+        if (at) seek(at.start + 0.01);
+        $('#player').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      const ttl = document.createElement('em');
+      ttl.textContent = src.title;
+      const a = document.createElement('a');
+      a.href = src.url;
+      a.textContent = 'link';
+      a.rel = 'noopener';
+      a.target = '_blank';
+      li.append(when, ttl, document.createTextNode('. ' + src.ref + ' '), a);
+      srcList.appendChild(li);
+    }
+
     /* ---------- buttons + keys ---------- */
     playBtn.addEventListener('click', toggle);
     $('#bigplay').addEventListener('click', toggle);
@@ -553,7 +577,6 @@
     if (!(start > 0) && posterBeat) {
       video.render(posterBeat.start + posterBeat.dur - 0.2);
       capText.textContent = '';
-      toast.classList.remove('show');
     }
     requestAnimationFrame(frame);
   }

@@ -18,14 +18,42 @@ const MV = (() => {
   'use strict';
 
   const NS = 'http://www.w3.org/2000/svg';
+  /*
+   * Inks on paper. The film is a field notebook: ink and watercolour on
+   * graph paper. No pure black or white anywhere. The names are colour
+   * roles kept from the first cut, so every scene keeps working:
+   *   WHITE  is now the main ink (the colour of plain text and lines)
+   *   GREY_B is sepia (secondary text), GREY is pencil, GREY_D/E are washes.
+   * Hues are riso-like inks chosen to read on paper at small sizes.
+   */
+  const INK = '#2A241E';
+  const PAPER = '#F2E8D2';
   const C = Object.freeze({
-    BLUE: '#58C4DD', TEAL: '#5CD0B3', GREEN: '#83C167', YELLOW: '#F7D96F', GOLD: '#F0AC5F',
-    RED: '#FC6255', MAROON: '#C55F73', PURPLE: '#9A72AC', PINK: '#D147BD', ORANGE: '#FF862F',
-    GREY: '#888888', GREY_B: '#BBBBBB', GREY_D: '#444444', GREY_E: '#222222', WHITE: '#ECECEC', BG: '#0E0F12',
+    BLUE: '#2F4F96', TEAL: '#00777E', GREEN: '#3D7A35', YELLOW: '#A86B00', GOLD: '#C2571A',
+    RED: '#C93A26', MAROON: '#93364F', PURPLE: '#62428A', PINK: '#D23C8A', ORANGE: '#D9651A',
+    GREY: '#8A7F70', GREY_B: '#6A5D4E', GREY_D: '#D9CDB4', GREY_E: '#E6DCC6', WHITE: INK, BG: PAPER,
+    INK, PAPER, SEPIA: '#6A5D4E', PENCIL: '#8A7F70', SHEET: '#FAF4E6',
   });
   const BASE_COLORS = Object.freeze({ A: C.GREEN, C: C.BLUE, G: C.YELLOW, T: C.RED });
-  const FONT_CM = "KaTeX_Main, 'Latin Modern Roman', 'CMU Serif', Georgia, serif";
-  const FONT_MONO = "'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace";
+  /*
+   * Type roles (all OFL fonts, inlined by tools/build.mjs):
+   *   serif  Fraunces            body labels, quotes        (default)
+   *   hero   Instrument Serif    headlines and titles
+   *   hand   Shantell Sans       marginalia, small coloured notes, bubbles
+   *   script Caveat              real handwriting (Darwin, page numbers)
+   *   mono   IBM Plex Mono       DNA, numbers, file names
+   * KaTeX_Main stays in every stack as the fallback for Greek and maths signs.
+   */
+  const FONT_CM = "KaTeX_Main, 'Latin Modern Roman', Georgia, serif";
+  const FONTS = Object.freeze({
+    serif: "Fraunces, KaTeX_Main, Georgia, serif",
+    hero: "'Instrument Serif', Fraunces, KaTeX_Main, Georgia, serif",
+    hand: "'Shantell Sans', Fraunces, KaTeX_Main, sans-serif",
+    script: "Caveat, 'Shantell Sans', KaTeX_Main, cursive",
+    mono: "'IBM Plex Mono', KaTeX_Main, ui-monospace, monospace",
+    tex: FONT_CM,
+  });
+  const FONT_MONO = FONTS.mono;
 
   /*
    * Design tokens, in 1080p units. The web player shows the 1920-wide frame
@@ -47,6 +75,23 @@ const MV = (() => {
   // the stroke scale: 2 -> 4, 3 -> 4.6, 4 -> 5.4, 5 -> 6.2, 6 -> 7
   const strokeOf = (w) => (w > 0 ? Math.max(STYLE.stroke.min, Math.round((2.2 + 0.8 * w) * 10) / 10) : w);
   const typeOf = (s) => Math.max(STYLE.type.min, s);
+
+  /*
+   * Line boil: like hand-drawn animation, the ink is redrawn 12 times a
+   * second, cycling through 4 poses. Lines move their end points, curves and
+   * creatures shift or tilt by about a pixel; text stays still to stay
+   * legible. BOIL.f is the pose, set from the film clock in Video.render.
+   */
+  const BOIL = { f: 0, on: true };
+  let boilIds = 0;
+  function jit(id, c) {
+    if (!BOIL.on) return 0;
+    let h = Math.imul(id + 1, 0x9e3779b1) ^ Math.imul(BOIL.f + 7, 0x85ebca6b) ^ Math.imul(c + 3, 0xc2b2ae35);
+    h ^= h >>> 15;
+    h = Math.imul(h, 0x2c1b3c6d);
+    h ^= h >>> 12;
+    return ((h >>> 0) / 4294967296) * 2 - 1;
+  }
 
   /* ---------- small math ---------- */
   const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -221,21 +266,29 @@ const MV = (() => {
     }
   }
 
-  /* ---------- Text: Computer Modern glyphs as SVG text ---------- */
+  /* ---------- Text: SVG text in one of the type roles ---------- */
   class Text extends Mob {
-    constructor(str, { size = 44, color = C.WHITE, weight = 400, italic = false, anchor = 'middle', font = 'cm', spacing = 0 } = {}) {
+    constructor(str, { size = 44, color = C.WHITE, weight = 400, italic = false, anchor = 'middle', font = 'serif', spacing = 0 } = {}) {
       super();
+      const role = FONTS[font] ? font : font === 'cm' ? 'serif' : 'serif';
+      // A hairline of the same ink around each glyph reads as ink bleed on
+      // paper; the display faces stay crisp.
+      const bleed = role === 'hero' || role === 'script' ? 0 : Math.max(0.6, size / 70);
       this.t = el('text', {
         'text-anchor': anchor,
         'dominant-baseline': 'central',
         'font-size': typeOf(size),
-        'font-family': font === 'mono' ? FONT_MONO : FONT_CM,
+        'font-family': FONTS[role],
         'font-weight': weight,
         'font-style': italic ? 'italic' : 'normal',
         'letter-spacing': spacing || null,
-        'stroke-width': Math.max(1, size / 26),
+        'stroke-width': bleed || Math.max(1, size / 40),
         'paint-order': 'stroke',
       });
+      // deliberate runs of spaces (aligned columns) are kept
+      this.t.style.whiteSpace = 'pre';
+      this.role = role;
+      this.bleed = bleed;
       this.el.appendChild(this.t);
       this.size = typeOf(size);
       Object.assign(this.init, { write: 1, color, str });
@@ -267,7 +320,8 @@ const MV = (() => {
           const start = N > 1 ? (i / (N - 1)) * (1 - win) : 0;
           const q = clamp01((p.write - start) / win);
           sp.setAttribute('fill-opacity', clamp01((q - 0.3) / 0.7).toFixed(3));
-          sp.setAttribute('stroke-opacity', (q <= 0 || q >= 1 ? 0 : 0.9 * (1 - q)).toFixed(3));
+          const edge = q <= 0 ? 0 : q >= 1 ? (this.bleed ? 0.55 : 0) : Math.max(this.bleed ? 0.55 : 0, 0.9 * (1 - q));
+          sp.setAttribute('stroke-opacity', edge.toFixed(3));
         });
         this.last.write = p.write;
       }
@@ -288,9 +342,15 @@ const MV = (() => {
       this.s = el(tag, Object.assign({ 'pathLength': 1, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke' }, attrs));
       this.el.appendChild(this.s);
       this.dash = dash;
+      this.bid = boilIds++;
+      this.boil = tag !== 'line';
       Object.assign(this.init, { draw: 1, stroke, sw: strokeOf(width), fill, fo: fill === 'none' ? 0 : fillOpacity });
     }
     draw(p) {
+      if (this.boil && BOIL.f !== this.last.bf) {
+        this.last.bf = BOIL.f;
+        this.s.setAttribute('transform', `translate(${f2(0.8 * jit(this.bid, 0))},${f2(0.8 * jit(this.bid, 1))})`);
+      }
       const key = `${p.draw}|${p.stroke}|${p.sw}|${p.fill}|${p.fo}`;
       if (key === this.last.key) return;
       this.last.key = key;
@@ -298,11 +358,26 @@ const MV = (() => {
       this.s.setAttribute('stroke-width', p.sw);
       this.s.setAttribute('fill', p.fill === 'none' ? 'none' : p.fill);
       this.s.setAttribute('fill-opacity', (p.fo * clamp01((p.draw - 0.6) / 0.4)).toFixed(3));
-      if (this.dash && p.draw >= 1) this.s.style.strokeDasharray = this.dash;
+      if (this.dash && p.draw >= 1) this.s.style.strokeDasharray = this.dashes();
       else this.s.style.strokeDasharray = p.draw >= 1 ? 'none' : `${clamp01(p.draw).toFixed(4)} 2`;
       this.s.style.strokeOpacity = p.draw <= 0 ? 0 : 1;
     }
   }
+
+  // pathLength is 1 (for the Create animation), so dash lengths are given
+  // as fractions of the measured length
+  Shape.prototype.dashes = function () {
+    if (this.dashN) return this.dashN;
+    let L = 0;
+    try {
+      L = this.s.getTotalLength();
+    } catch (e) {
+      L = 0;
+    }
+    if (!(L > 0)) return this.dash;
+    this.dashN = this.dash.split(/[\s,]+/).map((v) => (Number(v) / L).toFixed(5)).join(' ');
+    return this.dashN;
+  };
 
   class Line extends Shape {
     constructor(x1, y1, x2, y2, opts) {
@@ -310,12 +385,13 @@ const MV = (() => {
       Object.assign(this.init, { x1, y1, x2, y2 });
     }
     draw(p) {
-      const k = `${p.x1},${p.y1},${p.x2},${p.y2}`;
+      const k = `${p.x1},${p.y1},${p.x2},${p.y2},${BOIL.f}`;
       if (k !== this.last.geo) {
-        this.s.setAttribute('x1', f2(p.x1));
-        this.s.setAttribute('y1', f2(p.y1));
-        this.s.setAttribute('x2', f2(p.x2));
-        this.s.setAttribute('y2', f2(p.y2));
+        const a = 1.1;
+        this.s.setAttribute('x1', f2(p.x1 + a * jit(this.bid, 0)));
+        this.s.setAttribute('y1', f2(p.y1 + a * jit(this.bid, 1)));
+        this.s.setAttribute('x2', f2(p.x2 + a * jit(this.bid, 2)));
+        this.s.setAttribute('y2', f2(p.y2 + a * jit(this.bid, 3)));
         this.last.geo = k;
       }
       super.draw(p);
@@ -366,37 +442,48 @@ const MV = (() => {
     return pts.map((q, i) => `${i ? 'L' : 'M'}${f2(q[0])},${f2(q[1])}`).join(' ');
   }
 
-  /* ---------- Creature: a friendly 3b1b-style character ---------- */
+  /* ---------- Creature: a small watercolour character, inked ---------- */
+  const BODY = 'M -62 70 C -78 0 -62 -78 0 -80 C 62 -78 78 0 62 70 Q 0 84 -62 70 Z';
   class Creature extends Mob {
     constructor({ color = C.TEAL, kind = 'agent', size = 1 } = {}) {
       super();
-      const dark = mix(color, '#000000', 0.45);
-      this.body = el('path', { d: 'M -62 70 C -78 0 -62 -78 0 -80 C 62 -78 78 0 62 70 Q 0 84 -62 70 Z', fill: color, stroke: dark, 'stroke-width': 6.2 });
+      const line = mix(color, INK, 0.55);
+      // outlines keep at least 4 px on screen at the size it is made with
+      const lw = (w) => Math.max(w, 4.2 / size);
+      // a pale wash, a misregistered second pass of pigment, then the ink line
+      this.el.appendChild(el('path', { d: BODY, fill: color, 'fill-opacity': 0.22, transform: 'translate(5,4)' }));
+      this.body = el('path', { d: BODY, fill: mix(PAPER, color, 0.58), stroke: line, 'stroke-width': lw(5.6), 'stroke-linejoin': 'round' });
       this.el.appendChild(this.body);
+      this.el.appendChild(el('path', { d: 'M -46 52 Q 0 64 46 52', fill: 'none', stroke: color, 'stroke-opacity': 0.35, 'stroke-width': 9, 'stroke-linecap': 'round' }));
       if (kind === 'agent') {
-        this.el.appendChild(el('line', { x1: 0, y1: -80, x2: 0, y2: -108, stroke: dark, 'stroke-width': 6, 'stroke-linecap': 'round' }));
-        this.el.appendChild(el('circle', { cx: 0, cy: -114, r: 9, fill: C.YELLOW, stroke: dark, 'stroke-width': 4.5 }));
+        this.el.appendChild(el('line', { x1: 0, y1: -80, x2: 0, y2: -108, stroke: line, 'stroke-width': lw(5.6), 'stroke-linecap': 'round' }));
+        this.el.appendChild(el('circle', { cx: 0, cy: -114, r: 9.5, fill: mix(PAPER, C.YELLOW, 0.6), stroke: line, 'stroke-width': 4.5 }));
       }
       this.eyes = [-24, 24].map((ex) => {
         const g = el('g', { transform: `translate(${ex},-26)` });
-        g.appendChild(el('circle', { r: 17, fill: '#ffffff' }));
-        const pupil = el('circle', { r: 8.5, fill: '#16181d' });
+        g.appendChild(el('circle', { r: 17, fill: C.SHEET }));
+        const pupil = el('circle', { r: 8, fill: INK });
         g.appendChild(pupil);
         this.el.appendChild(g);
         return { g, pupil, ex };
       });
       if (kind === 'scientist') {
-        const gl = el('g', { fill: 'none', stroke: '#16181d', 'stroke-width': 6.2 });
+        const gl = el('g', { fill: 'none', stroke: INK, 'stroke-width': lw(5.6) });
         gl.appendChild(el('circle', { cx: -24, cy: -26, r: 22 }));
         gl.appendChild(el('circle', { cx: 24, cy: -26, r: 22 }));
         gl.appendChild(el('line', { x1: -2, y1: -28, x2: 2, y2: -28 }));
         this.el.appendChild(gl);
       }
-      this.mouth = el('path', { fill: 'none', stroke: '#16181d', 'stroke-width': 6.6, 'stroke-linecap': 'round' });
+      this.mouth = el('path', { fill: 'none', stroke: INK, 'stroke-width': lw(6), 'stroke-linecap': 'round' });
       this.el.appendChild(this.mouth);
+      this.bid = boilIds++;
       Object.assign(this.init, { s: size, lx: 0, ly: 0, blink: 0, mood: 0.5 });
     }
     draw(p) {
+      if (BOIL.f !== this.last.bf) {
+        this.last.bf = BOIL.f;
+        this.body.setAttribute('transform', `rotate(${f2(0.9 * jit(this.bid, 0))}) translate(${f2(0.9 * jit(this.bid, 1))},${f2(0.6 * jit(this.bid, 2))})`);
+      }
       const k = `${p.lx}|${p.ly}|${p.blink}|${p.mood}`;
       if (k === this.last.face) return;
       this.last.face = k;
@@ -410,13 +497,13 @@ const MV = (() => {
     }
   }
 
-  /* ---------- Speech bubble ---------- */
+  /* ---------- Speech bubble: a paper slip, inked, in the hand face ---------- */
   class Bubble extends Mob {
     constructor(text, { size = 34, color = C.WHITE, side = 'left', width = null } = {}) {
       super();
-      this.box = el('path', { fill: '#1b1d23', stroke: C.GREY_B, 'stroke-width': STYLE.stroke.fine });
+      this.box = el('path', { fill: C.SHEET, stroke: INK, 'stroke-width': STYLE.stroke.fine, 'stroke-linejoin': 'round' });
       this.el.appendChild(this.box);
-      this.text = new Text(text, { size, color });
+      this.text = new Text(text, { size, color, font: 'hand' });
       this.add(this.text);
       this.side = side;
       this.fixedW = width;
@@ -437,6 +524,73 @@ const MV = (() => {
         ` Q ${-w / 2} ${h / 2} ${-w / 2} ${h / 2 - r} V ${-h / 2 + r} Q ${-w / 2} ${-h / 2} ${-w / 2 + r} ${-h / 2} Z`;
       this.box.setAttribute('d', d);
       if (this.text.width() > 0) this.last.shaped = true;
+    }
+  }
+
+  /*
+   * Rubber stamp: two passes of ink, the second misregistered, with ink
+   * dropout from the #stamp-ink filter (index.html). A.Slam brings it down.
+   */
+  class Stamp extends Mob {
+    constructor(label, { color = C.RED, ghost = C.PINK, size = 60, angle = -7, sub = null } = {}) {
+      super();
+      const chars = label.length;
+      const w = chars * size * 0.66 + size * 1.3;
+      const h = size * (sub ? 2.15 : 1.55);
+      const pass = (col, dx, dy, op) => {
+        const g = el('g', { transform: `translate(${dx},${dy})`, opacity: op });
+        g.appendChild(el('rect', { x: -w / 2, y: -h / 2, width: w, height: h, rx: 10, fill: 'none', stroke: col, 'stroke-width': 7 }));
+        g.appendChild(el('rect', { x: -w / 2 + 11, y: -h / 2 + 11, width: w - 22, height: h - 22, rx: 5, fill: 'none', stroke: col, 'stroke-width': 4 }));
+        const t = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': FONTS.mono, 'font-weight': 600, 'font-size': size, 'letter-spacing': size * 0.06, fill: col, y: sub ? -size * 0.28 : 0 });
+        t.textContent = label;
+        g.appendChild(t);
+        if (sub) {
+          const u = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': FONTS.mono, 'font-weight': 500, 'font-size': Math.max(30, size * 0.5), fill: col, y: size * 0.55 });
+          u.textContent = sub;
+          g.appendChild(u);
+        }
+        return g;
+      };
+      this.inner = el('g', { filter: 'url(#stamp-ink)', 'data-stamp': '' });
+      this.inner.appendChild(pass(ghost, 4, 3, 0.3));
+      this.inner.appendChild(pass(color, 0, 0, 0.92));
+      this.el.appendChild(this.inner);
+      this.w = w;
+      this.h = h;
+      Object.assign(this.init, { r: angle });
+    }
+  }
+
+  /*
+   * Hand lens: the iris used for every zoom. A paper wash covers the frame
+   * outside a circle of radius r; the rim and handle are inked.
+   */
+  class Lens extends Mob {
+    constructor({ r = 400 } = {}) {
+      super();
+      this.wash = el('path', { fill: PAPER, 'fill-rule': 'evenodd', 'fill-opacity': 0.9 });
+      this.rim = el('circle', { cx: 0, cy: 0, fill: 'none', stroke: INK, 'stroke-width': 10 });
+      this.rim2 = el('circle', { cx: 0, cy: 0, fill: 'none', stroke: C.SEPIA, 'stroke-width': 3 });
+      this.handle = el('path', { fill: mix(PAPER, C.GOLD, 0.45), stroke: INK, 'stroke-width': 6, 'stroke-linejoin': 'round' });
+      for (const n of [this.wash, this.handle, this.rim, this.rim2]) this.el.appendChild(n);
+      Object.assign(this.init, { r, o: 0 });
+    }
+    draw(p) {
+      if (p.r === this.last.r) return;
+      this.last.r = p.r;
+      const r = p.r;
+      const R = f2(r);
+      this.wash.setAttribute('d', `M -1000 -600 H 1000 V 600 H -1000 Z M ${R} 0 A ${R} ${R} 0 0 1 0 ${R} A ${R} ${R} 0 0 1 -${R} 0 A ${R} ${R} 0 0 1 0 -${R} A ${R} ${R} 0 0 1 ${R} 0 Z`);
+      this.rim.setAttribute('r', f2(r));
+      this.rim2.setAttribute('r', f2(Math.max(0, r - 14)));
+      const a = Math.PI / 4;
+      const x0 = Math.cos(a) * (r + 4);
+      const y0 = Math.sin(a) * (r + 4);
+      const L = 230;
+      const ux = Math.cos(a);
+      const uy = Math.sin(a);
+      const hw = 22;
+      this.handle.setAttribute('d', `M ${f2(x0 - uy * hw)} ${f2(y0 + ux * hw)} L ${f2(x0 + ux * L - uy * hw)} ${f2(y0 + uy * L + ux * hw)} Q ${f2(x0 + ux * (L + 26))} ${f2(y0 + uy * (L + 26))} ${f2(x0 + ux * L + uy * hw)} ${f2(y0 + uy * L - ux * hw)} L ${f2(x0 + uy * hw)} ${f2(y0 - ux * hw)} Z`);
     }
   }
 
@@ -560,9 +714,25 @@ const MV = (() => {
         p.o = 1;
         p.draw = a;
       }),
+    // A rubber stamp coming down: 3 frames from 118 % to full size, then a
+    // short damped shake. Linear time, so the impact lands on its frame.
+    Slam: (m, { dur = 0.6, from = 1.18 } = {}) =>
+      anim(m, dur, (p, a) => {
+        const T = a * dur;
+        const k = Math.min(1, T / 0.1);
+        p.o = T <= 0 ? 0 : 0.4 + 0.6 * k;
+        p.s *= from + (1 - from) * k;
+        if (T > 0.1) {
+          const u = T - 0.1;
+          const amp = Math.exp(-u * 11);
+          p.x += 5 * amp * Math.sin(u * 95);
+          p.y += 3 * amp * Math.sin(u * 77 + 1);
+        }
+      }, linear),
   };
 
   /* =========================================================== Scenes */
+  const DRIFT = 0.012;
   class Camera {
     constructor() {
       this.init = { cx: 0, cy: 0, z: 1 };
@@ -579,6 +749,7 @@ const MV = (() => {
       this.title = title;
       this.fn = fn;
       this.built = false;
+      this.drift = DRIFT;
     }
     build(video) {
       this.world = el('g');
@@ -613,6 +784,26 @@ const MV = (() => {
         }),
         clearAll: (dur = 0.7) => par(S.mobs.map((m) => A.FadeOut(m, { dur }))),
         keep: () => (S.keepEnd = true),
+        still: () => (S.drift = 0),
+        // Seconds from a beat's start to where `word` is spoken. With word
+        // timings (narration/words.json, from tools/words.py) this is the
+        // measured onset; without them, the word's share of the characters.
+        // The clip starts 0.15 s into the beat (tools/mix.py).
+        atWord: (say, word, id) => {
+          const i = say.indexOf(word);
+          const id2 = id || `${S.id}.${S.beats.length + 1}`;
+          const d = video.durations && video.durations[id2] != null ? video.durations[id2] : video.estimate(say);
+          const est = i < 0 ? 0 : (i / say.length) * d;
+          const ws = video.words && video.words[id2];
+          if (ws && ws.length) {
+            const norm = (x) => x.toLowerCase().replace(/[^a-z0-9']/g, '');
+            const target = norm(word.split(/\s+/)[0]);
+            let best = null;
+            for (const [w, s0] of ws) if (norm(w) === target && (best === null || Math.abs(s0 - est) < Math.abs(best - est))) best = s0;
+            if (best !== null) return 0.15 + best;
+          }
+          return 0.15 + est;
+        },
       };
       Object.assign(api, video.kit(api));
       this.fn(api);
@@ -652,7 +843,9 @@ const MV = (() => {
         l.apply(l.mob.p, l.rate(a));
       }
       const c = this.camMob.p;
-      const tr = `scale(${c.z.toFixed(4)}) translate(${f2(-c.cx)},${f2(-c.cy)})`;
+      // a slow push-in across every scene keeps still pictures alive
+      const z = c.z * (1 + this.drift * smooth(clamp01(t / (this.duration || 1))));
+      const tr = `scale(${z.toFixed(4)}) translate(${f2(-c.cx)},${f2(-c.cy)})`;
       if (tr !== this.cam.last) {
         this.world.setAttribute('transform', tr);
         this.cam.last = tr;
@@ -664,14 +857,23 @@ const MV = (() => {
 
   /* =========================================================== Video */
   class Video {
-    constructor(root, { kit = () => ({}), durations = null, wordsPerSecond = 2.6 } = {}) {
+    constructor(root, { kit = () => ({}), durations = null, words = null, wordsPerSecond = 2.6 } = {}) {
       this.root = root;
       this.kit = kit;
       this.durations = durations;
+      this.words = words;
       this.wps = wordsPerSecond;
       this.chapters = [];
       this.scenes = [];
       this.current = null;
+      this.overlays = [];
+    }
+    // An overlay is drawn over every scene from the film's own clock:
+    // { el, render(t, video) }. The notebook's margin tree and page numbers.
+    overlay(o) {
+      this.overlays.push(o);
+      if (this.root.over) this.root.over.appendChild(o.el);
+      return this;
     }
     chapter(id, title) {
       this.chapters.push({ id, title, scenes: [] });
@@ -699,7 +901,18 @@ const MV = (() => {
       for (const ch of this.chapters) ch.start = ch.scenes[0].start;
       this.duration = t;
       this.beats = this.scenes.flatMap((sc) => sc.beats.map((b) => ({ id: b.id, say: b.say, cap: b.cap, start: sc.start + b.start, dur: b.dur, speech: b.speech || 0, scene: sc.id })));
+      for (const fn of this.afterCompile || []) fn(this);
       return this;
+    }
+    // run once the timeline is known (for overlays keyed to beats)
+    after(fn) {
+      (this.afterCompile = this.afterCompile || []).push(fn);
+      return this;
+    }
+    beat(id) {
+      const b = this.beats.find((x) => x.id === id);
+      if (!b) throw new Error(`unknown beat ${id}`);
+      return b;
     }
     sceneAt(t) {
       let lo = 0;
@@ -731,13 +944,18 @@ const MV = (() => {
         this.root.hud.appendChild(sc.hud);
         this.current = sc;
       }
+      BOIL.f = Math.floor(t * 12) % 4;
       sc.render(t - sc.start);
+      for (const o of this.overlays) o.render(t, this);
+    }
+    sceneIndex(sc) {
+      return this.scenes.indexOf(sc);
     }
   }
 
   return {
-    C, BASE_COLORS, FONT_CM, NS, el, mix, lerp, clamp01, smooth, RATES, STYLE, strokeOf, typeOf,
-    Mob, Group, Tex, Text, Shape, Line, Arrow, Creature, Bubble,
+    C, BASE_COLORS, FONT_CM, FONTS, NS, BOIL, jit, el, mix, lerp, clamp01, smooth, RATES, STYLE, strokeOf, typeOf,
+    Mob, Group, Tex, Text, Shape, Line, Arrow, Creature, Bubble, Stamp, Lens,
     circle, rect, path, dot, polyPath,
     anim, seq, par, lag, wait, A, durOf,
     Video,

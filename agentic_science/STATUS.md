@@ -1,8 +1,8 @@
-# Handoff / current state                       (agentic_science, 6 October 2026)
+# Handoff / current state                       (agentic_science, 7 October 2026)
 
 Goal:                    A public, self-testing HTML/JS course on agentic science,
                          built on one computational-biology project (QUARTET),
-                         plus a narrated 20-minute explainer video (video/).
+                         plus a narrated 21-minute explainer video (video/).
 Allowed paths:           agentic_science/ only.
 Source identity:         science source hash 5722de84b7201451c3fabe5cd4b574c1144e18d0e22f793c97432a671dcfefb9
 Working directory:       branch claude/agentic-science-html-demo-edmam9
@@ -29,6 +29,14 @@ Video checks:            136 narrated beats, 20:03. Every beat rendered to a sti
 Video design pass:       STYLE tokens (strokes >= 4 px, type >= 30 px, caption band);
                          lint-layout.mjs: 318 frames, 0 issues. Kokoro-82M voice (af_heart);
                          a non-initial capital A is spoken as the letter. MP4 20:36.
+Video notebook cut:      Field-notebook look (paper, inks, OFL type, line boil), a silent
+                         Darwin cold open, a margin tree inked one branch per chapter,
+                         6 chapter cards with page turns, hand-lens zooms, a rubber-stamp
+                         thread, 13 paper titles (each checked against its source) with
+                         full references under the player, a computed Felsenstein zone.
+                         Narration unchanged (all 136 clips reused); beats re-timed to
+                         21:07; word onsets from tools/words.py. lint-layout: 344 frames,
+                         0 issues. check-av: 4 windows pass, drift <= 95 ms.
 What has NOT been tested: Firefox and Safari rendering (MathML and canvas fonts);
                          screen-reader navigation of the SVG plates; very old browsers;
                          video playback outside Chromium.

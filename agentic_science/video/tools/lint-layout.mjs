@@ -58,7 +58,7 @@ await page.evaluate(() => {
       return o;
     };
     const items = [];
-    for (const t of svg.querySelectorAll('#world text, #hud text')) {
+    for (const t of svg.querySelectorAll('#world text, #hud text, #over text')) {
       const o = opacity(t);
       if (o < 0.6) continue;
       const spans = [...t.querySelectorAll('tspan')];
@@ -68,7 +68,8 @@ await page.evaluate(() => {
       if (r.width < 1) continue;
       const m = t.getScreenCTM();
       const fs = (Number(t.getAttribute('font-size')) * Math.hypot(m.a, m.b)) / unit;
-      items.push({ kind: 'text', str: t.textContent.slice(0, 48), box: box(r), fs: Math.round(fs) });
+      // a rubber stamp is meant to land on top of things
+      items.push({ kind: 'text', str: t.textContent.slice(0, 48), box: box(r), fs: Math.round(fs), stamp: !!t.closest('[data-stamp]') });
     }
     for (const s of svg.querySelectorAll('#world svg')) {
       if (s.parentNode.closest('#world svg')) continue; // nested MathJax parts
@@ -128,7 +129,7 @@ for (const b of beats) {
         issues.push({ at, rule: 'thin-line', what: `${it.str} ${it.sw}px [${it.box}]` });
       }
     }
-    const words = items.filter((i) => i.kind !== 'shape');
+    const words = items.filter((i) => i.kind !== 'shape' && !i.stamp);
     for (let i = 0; i < words.length; i++)
       for (let j = i + 1; j < words.length; j++) {
         const ov = inter(words[i].box, words[j].box);
