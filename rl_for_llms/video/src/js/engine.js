@@ -754,8 +754,11 @@ const MV = (() => {
         beat: (say, ...rest) => {
           let opts = {};
           if (rest.length && rest[rest.length - 1] && !Array.isArray(rest[rest.length - 1]) && !rest[rest.length - 1].kind) opts = rest.pop();
-          S.beats.push({ id: `${S.id}.${S.beats.length + 1}`, say: say || '', cap: opts.cap, anims: seq(...rest), hold: opts.hold ?? 0.35, min: opts.min ?? 0 });
+          S.beats.push({ id: `${S.id}.${S.beats.length + 1}`, say: say || '', cap: opts.cap, anims: seq(...rest), hold: opts.hold ?? 0.35, min: opts.min ?? 0, paper: opts.paper ?? S.pendingPaper });
+          S.pendingPaper = null;
         },
+        // the next beat shows this paper's title (FILM.papers[key])
+        paper: (key) => (S.pendingPaper = key),
         silent: (...rest) => S.beats.push({ id: `${S.id}.${S.beats.length + 1}`, say: '', anims: seq(...rest), hold: 0.1, min: 0 }),
         cam: (cx, cy, z, dur = 1.6) => anim(S.camMob, dur, (p, a) => {
           p.cx = lerp(p.cx, cx, a);
@@ -886,7 +889,7 @@ const MV = (() => {
       }
       for (const ch of this.chapters) ch.start = ch.scenes[0].start;
       this.duration = t;
-      this.beats = this.scenes.flatMap((sc) => sc.beats.map((b) => ({ id: b.id, say: b.say, cap: b.cap, start: sc.start + b.start, dur: b.dur, speech: b.speech || 0, scene: sc.id })));
+      this.beats = this.scenes.flatMap((sc) => sc.beats.map((b) => ({ id: b.id, say: b.say, cap: b.cap, start: sc.start + b.start, dur: b.dur, speech: b.speech || 0, scene: sc.id, paper: b.paper || null })));
       for (const fn of this.afterCompile || []) fn(this);
       return this;
     }

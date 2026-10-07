@@ -10,7 +10,7 @@
  *   small-text     text smaller than STYLE.type.min at 1080p
  *   thin-line      a stroke thinner than STYLE.stroke.min at 1080p
  *
- * usage: node video/tools/lint-layout.mjs [--json out.json] [--only scene-id,...] [--quiet]
+ * usage: node video/tools/lint-layout.mjs [--page file.html] [--json out.json] [--only scene-id,...] [--quiet]
  * exit code 1 when any off-safe, under-caption or overlap issue is found.
  */
 import fs from 'node:fs';
@@ -31,7 +31,8 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
-await page.goto(`${pathToFileURL(path.join(VIDEO, 'dist/index.html')).href}?export`);
+const pageFile = arg('--page') ? path.resolve(arg('--page')) : path.join(VIDEO, 'dist/index.html');
+await page.goto(`${pathToFileURL(pageFile).href}?export`);
 await page.waitForFunction(() => window.__ready === true, null, { timeout: 120000 });
 await page.evaluate(() => document.fonts.ready);
 

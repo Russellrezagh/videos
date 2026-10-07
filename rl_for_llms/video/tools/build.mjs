@@ -44,26 +44,24 @@ if (/url\('\.\./.test(css)) throw new Error('a local url() remains in the styles
 console.log(`  fonts inlined: ${(fontBytes / 1024).toFixed(0)} KB`);
 html = html.replace('<link rel="stylesheet" href="css/player.css">', () => `<style>\n${css}</style>`);
 
-// scripts
-const scripts = {
-  '../../node_modules/mathjax/es5/tex-svg-full.js': path.join(ROOT, 'node_modules/mathjax/es5/tex-svg-full.js'),
-  '../../src/js/rl.js': path.join(ROOT, 'src/js/rl.js'),
-  'js/engine.js': path.join(VIDEO, 'src/js/engine.js'),
-  'js/scenes.js': path.join(VIDEO, 'src/js/scenes.js'),
-  'js/player.js': path.join(VIDEO, 'src/js/player.js'),
-};
-for (const [src, file] of Object.entries(scripts)) {
-  const tag = `<script src="${src}"></script>`;
-  if (!html.includes(tag)) throw new Error(`missing ${tag}`);
-  html = html.replace(tag, () => `<script>\n${safeJs(read(file), path.basename(file))}</script>`);
-}
+// scripts: every <script src> in the page, inlined in place
+let nScripts = 0;
+html = html.replace(/<script src="([^"]+)"><\/script>/g, (_, src) => {
+  const file = path.resolve(path.join(VIDEO, 'src'), src);
+  if (!fs.existsSync(file)) throw new Error(`missing script ${src}`);
+  nScripts++;
+  return `<script>\n${safeJs(read(file), path.basename(file))}</script>`;
+});
+console.log(`  scripts inlined: ${nScripts}`);
 
 // narration
 const durFile = path.join(VIDEO, 'narration/durations.json');
 const mp3 = path.join(VIDEO, 'dist/narration.mp3');
 let narr = null;
 const wordsFile = path.join(VIDEO, 'narration/words.json');
-if (fs.existsSync(durFile) && fs.existsSync(mp3)) {
+// --no-narration: captions only, timings estimated from the text (drafts and
+// parallel builds, where beat ids may not match the recorded clips)
+if (!process.argv.includes('--no-narration') && fs.existsSync(durFile) && fs.existsSync(mp3)) {
   narr = { src: 'narration.mp3', durations: JSON.parse(read(durFile)) };
   // word onsets, so visuals can land on a spoken word (tools/words.py)
   if (fs.existsSync(wordsFile)) narr.words = JSON.parse(read(wordsFile));
@@ -93,8 +91,10 @@ const mb = (s) => `${(s.length / 1048576).toFixed(2)} MB`;
 const embedDist = process.argv.includes('--embed-audio');
 const dist = embedDist ? embedded() : html;
 fs.mkdirSync(path.join(VIDEO, 'dist'), { recursive: true });
-fs.writeFileSync(path.join(VIDEO, 'dist/index.html'), dist);
-console.log(`rl_for_llms/video/dist/index.html  ${mb(dist)}  narration: ${narr ? `${Object.keys(narr.durations).length} lines, ${embedDist ? 'embedded' : 'dist/narration.mp3'}` : 'none (captions only)'}`);
+const outFile = process.argv.includes('--out') ? path.resolve(process.argv[process.argv.indexOf('--out') + 1]) : path.join(VIDEO, 'dist/index.html');
+fs.mkdirSync(path.dirname(outFile), { recursive: true });
+fs.writeFileSync(outFile, dist);
+console.log(`${path.relative(ROOT, outFile)}  ${mb(dist)}  narration: ${narr ? `${Object.keys(narr.durations).length} lines, ${embedDist ? 'embedded' : 'dist/narration.mp3'}` : 'none (captions only)'}`);
 
 const i = process.argv.indexOf('--fragment');
 if (i > 0 && process.argv[i + 1]) {
