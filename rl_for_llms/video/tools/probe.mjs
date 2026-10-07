@@ -31,7 +31,7 @@ const r = await p.evaluate((only) => {
   return {
     lines: beats.length, words, minutes: +(v.duration / 60).toFixed(2), scenes: v.scenes.length,
     chapters: v.chapters.map((c) => `${c.id}:${((c.scenes.reduce((t, s) => t + s.duration, 0)) / 60).toFixed(1)}m`).join(' '),
-    papers: (v.sources || []).map((s) => `${s.key}@${s.from}`), texErrors: window.__texErrors || [],
+    papers: (v.sources || []).map((s) => `${s.key}@${s.from}`), texErrors: window.__texErrors || [], partErrors: window.__partErrors || [],
   };
 }, only);
 await browser.close();
@@ -43,5 +43,6 @@ console.log(`${r.lines} lines, ${r.words} words, ${r.minutes} min (estimated wit
 console.log(`chapters: ${r.chapters}`);
 console.log(`papers: ${r.papers.join(' ')}`);
 for (const e of r.texErrors) console.log(`TEX ERROR ${e}`);
+for (const e of r.partErrors) console.log(`CHAPTER ERROR ${e}`);
 for (const e of errors) console.log(`PAGE ERROR ${e}`);
-process.exit(r.texErrors.length || errors.length ? 1 : 0);
+process.exit(r.texErrors.length || r.partErrors.length || errors.length ? 1 : 0);

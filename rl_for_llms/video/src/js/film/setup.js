@@ -421,7 +421,16 @@ window.buildVideo = function buildVideo(root, durations, words) {
   /* =========================================================== the chapters */
   const ctx = { C, A, MV, Text, Tex, Group, Line, Arrow, Creature, Bubble, circle, rect, path, dot, polyPath, seq, par, lag, wait, mix,
     video, card, f2, f3, NEXT, ANSWER, BAND, R10, J10, VAR, TRAIN, CREDIT, RM, LEASH, DPO, GROUP, PASS };
-  for (const part of FILM.parts) part(ctx);
+  // a chapter that throws is reported by name and skipped, so one chapter in
+  // progress cannot take the others down (probe.mjs prints these)
+  for (const part of FILM.parts) {
+    try {
+      part(ctx);
+    } catch (e) {
+      (window.__partErrors = window.__partErrors || []).push(`${part.name}: ${e.message}`);
+      console.error(e);
+    }
+  }
 
   /* =========================================================== papers on screen */
   // A beat marked S.paper(key) shows that paper's title, small, bottom-left;
