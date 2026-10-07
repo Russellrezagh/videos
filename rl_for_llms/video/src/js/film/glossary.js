@@ -45,6 +45,7 @@ window.FILM = window.FILM || { parts: [], papers: {} };
     // gradients
     grad: ['grad', '\\nabla_{\\!\\theta}', 'the gradient', 'derivatives with respect to every weight', 'it points in the direction that increases a quantity fastest'],
     ghat: ['grad', '\\hat g', 'the gradient estimate', 'computed from sampled answers', 'the true gradient is a sum we cannot compute'],
+    sc: ['grad', 's', 'the score', 'the gradient of the log-probability of the sampled answer', 'it is the direction that makes that answer more likely'],
     // reward
     rr: ['reward', 'r', 'the reward', 'the judge: a person, a reward model, or a checker', 'it is the only signal of what we want'],
     RR: ['reward', 'R', 'the total reward', 'the reward for a whole response', 'it is what a response earns'],
@@ -72,7 +73,7 @@ window.FILM = window.FILM || { parts: [], papers: {} };
     gam: ['knob', '\\gamma', 'the discount', 'a number we choose, between 0 and 1', 'later rewards can count for less'],
     lam: ['knob', '\\lambda', 'the GAE mix', 'a number we choose, between 0 and 1', 'it trades bias against variance'],
     lr: ['knob', '\\eta', 'the step size', 'a number we choose', 'how far each update moves the weights'],
-    kk: ['knob', 'k', 'the number of tries', 'how many samples we allow', 'pass@k asks if any of k samples is right'],
+    kk: ['knob', 'k', 'the number of samples', 'how many answers we draw for one prompt', 'more samples give a better average, or more chances to be right'],
     GN: ['knob', 'G', 'the group size', 'how many answers per prompt', 'the group is its own baseline'],
     // data
     xx: ['data', 'x', 'the prompt', 'the question or instruction', 'everything is conditioned on it'],

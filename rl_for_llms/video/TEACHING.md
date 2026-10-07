@@ -68,6 +68,7 @@ so colours and spotlights work. Never hard-code colours for these symbols.
 | `\zz` | `z` | params | a logit |
 | `\grad` | `\nabla_{\!\theta}` | grad | the gradient |
 | `\ghat` | `\hat g` | grad | the gradient estimate |
+| `\sc` | `s` | grad | the score (∇ log π of the sampled answer) |
 | `\rr` | `r` | reward | the reward |
 | `\RR` | `R` | reward | the total reward |
 | `\GG` | `G` | reward | the return |

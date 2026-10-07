@@ -95,22 +95,44 @@ const MV3 = (() => {
   }
 
   /* =========================================================== Space3 */
+  let clipIds = 0;
   class Space3 extends Mob {
-    constructor({ unit = 60, phi = 60, theta = -70, zoom = 1, cx = 0, cy = 0, cz = 0, persp = 0, light = [-0.35, -0.55, 1] } = {}) {
+    /*
+     * window: [w, h] in screen px, centred on the space's origin. While the
+     * prop `win` is 1, everything in the space is clipped to that rounded
+     * rectangle (a map seen through a frame, when the camera zooms in).
+     */
+    constructor({ unit = 60, phi = 60, theta = -70, zoom = 1, cx = 0, cy = 0, cz = 0, persp = 0, light = [-0.35, -0.55, 1], window: win = null } = {}) {
       super();
       this.unit = unit;
+      this.inner = el('g');
       this.underG = el('g');
       this.faceG = el('g');
       this.topG = el('g');
-      this.el.appendChild(this.underG);
-      this.el.appendChild(this.faceG);
-      this.el.appendChild(this.topG);
+      this.el.appendChild(this.inner);
+      this.inner.appendChild(this.underG);
+      this.inner.appendChild(this.faceG);
+      this.inner.appendChild(this.topG);
+      if (win) {
+        this.clipId = `mv3clip${clipIds++}`;
+        this.win = win;
+        const cp = el('clipPath', { id: this.clipId });
+        this.clipRect = el('rect', { x: -win[0] / 2, y: -win[1] / 2, width: win[0], height: win[1], rx: 18 });
+        cp.appendChild(this.clipRect);
+        this.el.appendChild(cp);
+      }
       this.pool = [];
       this.surfaces = [];
       const n = Math.hypot(...light) || 1;
       this.light = light.map((x) => x / n);
-      Object.assign(this.init, { phi, theta, zoom, cx, cy, cz, persp });
+      Object.assign(this.init, { phi, theta, zoom, cx, cy, cz, persp, win: 0 });
       this.proj = camera(this.init, unit);
+    }
+    // a world point -> [x, y] on the stage, with the camera and placement of the current frame
+    screen(x, y, z) {
+      const q = this.proj(x, y, z);
+      const p = this.p;
+      return [p.x + p.s * q[0], p.y + p.s * q[1]];
     }
     // children: Surface3 faces go to the shared, depth-sorted pool; the rest
     // draw on top of every face, except those marked `under` (a floor grid)
@@ -129,6 +151,25 @@ const MV3 = (() => {
     }
     draw(p) {
       this.proj = camera(p, this.unit);
+      if (this.clipId) {
+        // win 0: no clip; win 1: the window; in between, a frame closing in from far outside
+        const k = clamp01(p.win);
+        const wk = k > 0.001 ? k.toFixed(3) : '';
+        if (wk !== this.last.win) {
+          if (wk) {
+            const [w, h] = this.win;
+            const W = w + (4000 - w) * (1 - k) * (1 - k);
+            const Hh = h + (3000 - h) * (1 - k) * (1 - k);
+            const r = this.clipRect;
+            r.setAttribute('x', f1(-W / 2));
+            r.setAttribute('y', f1(-Hh / 2));
+            r.setAttribute('width', f1(W));
+            r.setAttribute('height', f1(Hh));
+            this.inner.setAttribute('clip-path', `url(#${this.clipId})`);
+          } else this.inner.removeAttribute('clip-path');
+          this.last.win = wk;
+        }
+      }
       const camKey = `${p.phi}|${p.theta}|${p.zoom}|${p.cx}|${p.cy}|${p.cz}|${p.persp}`;
       let key = camKey;
       for (const s of this.surfaces) key += `#${s.key()}`;
@@ -212,7 +253,8 @@ const MV3 = (() => {
    * (o, fo = fill opacity, h, and any you pass in `props`), so animating them
    * re-shapes the surface. Each face gets the colour color(uc, vc, p, zc) of
    * its parameter centre (zc: the height of its centre), shaded by a fixed
-   * light; return null to leave a face out.
+   * light; return null to leave a face out, or [colour, opacity] to make one
+   * face fainter than the rest.
    */
   class Surface3 extends Mob {
     constructor(f, { u = [0, 1], v = [0, 1], res = [24, 24], color = () => C.BLUE, opacity = 0.9, stroke = C.BG, strokeOpacity = 0.35, shade = 0.3, bias = 0, props = {} } = {}) {
@@ -269,6 +311,12 @@ const MV3 = (() => {
           const uc = u0 + ((u1 - u0) * (i + 0.5)) / nu;
           const vc = v0 + ((v1 - v0) * (j + 0.5)) / nv;
           let col = this.color(uc, vc, p, zc);
+          // a colour, or [colour, opacity] for a face that is fainter than the rest
+          let fop = 1;
+          if (Array.isArray(col)) {
+            fop = col[1];
+            col = col[0];
+          }
           if (col && this.shade > 0) {
             // normal from the diagonals; two-sided Lambert light
             const e1 = [xyz[c] - xyz[a], xyz[c + 1] - xyz[a + 1], xyz[c + 2] - xyz[a + 2]];
@@ -278,7 +326,7 @@ const MV3 = (() => {
             const lam = len > 1e-12 ? Math.abs(n[0] * L[0] + n[1] * L[1] + n[2] * L[2]) / len : 1;
             col = shadeHex(col, 1 - this.shade + this.shade * lam);
           }
-          faces.push({ i, j, fill: col });
+          faces.push({ i, j, fill: col, op: fop });
         }
       }
       this.geo = { xyz, faces, nv };
@@ -294,8 +342,9 @@ const MV3 = (() => {
    * stroke, sw, and anything in `props`.
    */
   class Path3 extends Mob {
-    constructor(pts, { color = C.WHITE, width = 5, dash = null, closed = false, fill = 'none', fillOpacity = 0.2, opacity = 1, props = {} } = {}) {
+    constructor(pts, { color = C.WHITE, width = 5, dash = null, closed = false, fill = 'none', fillOpacity = 0.2, opacity = 1, under = false, props = {} } = {}) {
       super();
+      this.under = under;
       this.pts = pts;
       this.sop = opacity;
       this.closed = closed;
