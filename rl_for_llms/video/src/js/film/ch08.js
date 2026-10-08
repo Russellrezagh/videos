@@ -174,9 +174,9 @@ FILM.parts.push(function ch08(ctx) {
     const D1 = S.add(S.tex(`-${KLR} \\;=\\; \\sum_{\\yy} \\pp(\\yy)\\, \\log \\frac{\\pref(\\yy)}{\\pp(\\yy)}`, { size: 72 }).at(0, -60));
     const D2 = S.add(S.tex('\\;\\le\\; \\sum_{\\yy} \\pp(\\yy) \\Big(\\frac{\\pref(\\yy)}{\\pp(\\yy)} - 1\\Big) \\;=\\; \\sum_{\\yy} \\pref(\\yy) \\;-\\; \\sum_{\\yy} \\pp(\\yy) \\;\\le\\; 1 - 1 \\;=\\; 0', { size: 56 }).at(0, 120));
     const r7 = S.add(S.reason('because: minus a log is the log of the flipped fraction; then log u ≤ u − 1 with u = {π_ref|pref} / {π|pp}; and chances add up to at most 1'));
-    S.beat('Use it with u equal to pi ref over pi. Minus K L is an average of log u, so it is at most the average of u minus one. That is the reference’s chances minus the policy’s: at most one minus one, which is zero.',
+    S.beat('Use it with u equal to pi ref over pi. Minus K L is an average of log u, so it is at most the average of u minus one. That is the reference’s chances minus the policy’s: at most one minus one, zero.',
       fade([ax, zero, lc, tc, lcL, tcL, touch, eG]), par(A.MoveTo(G1, 0, -275), A.ScaleTo(G1, 0.72), A.Set(G1, { o: 0.5 })), A.Write(D1, 1.8), A.Write(D2, 2.4), S.writeIn(r7, 2),
-      { cap: 'Use it with u = π_ref / π. Minus KL is an average of log u, so it is at most the average of u − 1. That is the reference’s chances minus the policy’s: at most 1 − 1, which is zero.' });
+      { cap: 'Use it with u = π_ref / π. Minus KL is an average of log u, so it is at most the average of u − 1. That is the reference’s chances minus the policy’s: at most 1 − 1 = 0.' });
     const G2 = S.add(S.tex(`${KLR} \\;\\ge\\; 0, \\qquad \\text{and } = 0 \\text{ only when } \\pp = \\pref`, { size: 76 }).at(0, -60));
     const box2 = boxOf(S, G2, S.color('KL'));
     const e7 = S.add(S.english('Gibbs’ inequality: any move at all costs something, and only standing still is free', { size: 40, width: 1700 }).at(0, 120));
@@ -196,7 +196,8 @@ FILM.parts.push(function ch08(ctx) {
     const boxO = boxOf(S, O, S.color('JJ'));
     const eO = S.add(S.english('the {average reward|rr}, minus {β|bt} times how far the {policy|pp} has moved from the {reference|pref}', { size: 40, width: 1500 }).at(0, 140));
     S.beat('Now the leash. The objective subtracts K L, scaled by a number we choose. In words: the average reward, minus beta times how far the policy has moved from the reference.',
-      fade([G2, box2, AS, e8]), A.Write(O, 2), A.Create(boxO, 0.8), S.writeIn(eO, 2));
+      fade([G2, box2, AS, e8]), A.Write(O, 2), A.Create(boxO, 0.8), S.writeIn(eO, 2),
+      { cap: 'Now the leash. The objective subtracts KL, scaled by a number we choose. In words: the average reward, minus β times how far the policy has moved from the reference.' });
     S.tour(O, [
       { sym: 'bt', at: [0, 175], anims: [A.FadeOut(eO)], text: { why: 'the price of distance: how much reward one unit of KL costs' },
         say: 'Beta is the price of distance: how many points of reward one unit of K L costs. A large beta is a short leash. A small beta, a long one.',
@@ -206,8 +207,9 @@ FILM.parts.push(function ch08(ctx) {
     // 10. sequences: the log-ratio is a sum over tokens
     const Q1 = S.add(S.tex('\\log \\frac{\\pt(\\yy \\mid \\xx)}{\\pref(\\yy \\mid \\xx)} \\;=\\; \\sum_{t} \\log \\frac{\\pt(\\yy_t \\mid \\ss_t)}{\\pref(\\yy_t \\mid \\ss_t)}', { size: 62 }).at(0, -300));
     const rQ = S.add(S.reason('because: a response’s probability is the product of its tokens’ (chapter 1), and the log of a product is a sum', { y: -168 }));
-    S.beat('For a language model, an answer is a sequence of tokens. Its probability is a product over tokens, so its log-ratio is a sum: one log-ratio per token.',
-      S.endTour(O), fade([O, boxO]), A.Write(Q1, 2), S.writeIn(rQ, 1.6));
+    S.beat('Now let pi be the model we train, pi theta. For a language model, an answer is a sequence of tokens. Its probability is a product over tokens, so its log-ratio is a sum: one log-ratio per token.',
+      S.endTour(O), fade([O, boxO]), A.Write(Q1, 2), S.writeIn(rQ, 1.6),
+      { cap: 'Now let π be the model we train, π_θ. For a language model, an answer is a sequence of tokens. Its probability is a product over tokens, so its log-ratio is a sum: one log-ratio per token.' });
     const toks = S.add(S.tokens(TOK, { size: 46, gap: 80 }).at(60, -60));
     const rowY = [20, 85, 150];
     const rowLab = [
@@ -221,18 +223,18 @@ FILM.parts.push(function ch08(ctx) {
       S.add(S.txt(num(TLR[i], 2), { size: 34, font: 'mono', color: S.color('KL') }).at(60 + it.x, rowY[2])),
     ]);
     const toy2 = S.add(S.toy(760, -390));
-    S.beat(`On a toy answer: most tokens barely changed, and their log-ratios are near zero. The token fifty-one, now much likelier, carries most of it. One token’s log-ratio can be negative; only the average cannot.`,
+    S.beat(`On a toy answer: most tokens barely changed, and their log-ratios are near zero. The token fifty-one, now much likelier, carries most of it. One token’s log-ratio can be negative; only the average over the policy’s own answers cannot.`,
       A.FadeOut(rQ), A.FadeIn(toy2), A.Show(toks), lag(0.15, toks.items.map((t) => A.FadeIn(t.item, { dy: 12, dur: 0.5 }))), lag(0.3, rowLab.map((m) => A.FadeIn(m))), lag(0.12, cells.map((c) => par(c.map((m) => A.FadeIn(m))))),
       A.Indicate(cells[3][2], { color: C.ORANGE, scale: 1.3 }), A.Indicate(cells[0][2], { color: C.RED, scale: 1.3 }),
-      { cap: 'On a toy answer: most tokens barely changed, and their log-ratios are near zero. The token “51”, now much likelier, carries most of it. One token’s log-ratio can be negative; only the average cannot.' });
+      { cap: 'On a toy answer: most tokens barely changed, and their log-ratios are near zero. The token “51”, now much likelier, carries most of it. One token’s log-ratio can be negative; only the average over the policy’s own answers cannot.' });
 
     // 11. the per-token reward
     const PT = S.add(S.tex(`${RT} \\;=\\; -\\bt\\, \\log \\frac{\\pt(\\yy_t \\mid \\ss_t)}{\\pref(\\yy_t \\mid \\ss_t)} \\;\\;\\big(+\\; \\rr(\\xx, \\yy) \\text{ at the last token}\\big)`, { size: 54 }).at(60, 250));
     const e11 = S.add(S.english('added up: {reward|rr} − {β|bt} × the response’s log-ratio; averaged over responses: the {objective|JJ}', { size: 34, color: C.GREY_B, width: 1600 }).at(0, -175));
     S.paper('ziegler2019');
-    S.beat('So the penalty can be paid token by token: each token earns minus beta times its log-ratio, and the last also earns the reward. Summed and averaged, that is exactly our objective. Ziegler and colleagues trained this way; InstructGPT used beta zero point zero two.',
+    S.beat('So the penalty can be paid token by token: each token earns minus beta times its log-ratio, and the last also earns the reward. Summed and averaged, that is exactly our objective. Ziegler and colleagues used this penalty; InstructGPT, beta zero point zero two.',
       A.Write(PT, 2.2), A.Spot(PT, ['c8rt', 'bt']), wait(1.5), A.Unspot(PT), S.writeIn(e11, 2),
-      { cap: 'So the penalty can be paid token by token: each token earns −β times its log-ratio, and the last also earns the reward. Summed and averaged, that is exactly our objective. Ziegler and colleagues trained this way; InstructGPT used β = 0.02.' });
+      { cap: 'So the penalty can be paid token by token: each token earns −β times its log-ratio, and the last also earns the reward. Summed and averaged, that is exactly our objective. Ziegler and colleagues used this penalty; InstructGPT, β = 0.02.' });
   });
 
   /*
@@ -253,18 +255,21 @@ FILM.parts.push(function ch08(ctx) {
     const L1 = S.add(S.tex(`${JB} \\;=\\; \\EE_{\\yy \\sim \\pp}\\Big[\\rr(\\yy) \\;-\\; \\bt\\, ${LR}\\Big]`, { size: 80 }).at(0, -60));
     const r1 = S.add(S.reason('because: {KL|KL} is itself an average over y ~ {π|pp}; two averages over the same answers add into one'));
     S.beat('Both terms are averages over the same answers, the policy’s own. So write them as one average: the reward, minus beta times the log-ratio.',
-      A.FadeOut(q), UP(L0), A.Write(L1, 2), S.writeIn(r1, 1.8));
+      A.FadeOut(q), UP(L0), A.Write(L1, 2), S.writeIn(r1, 1.8),
+      { cap: 'Both terms are averages over the same answers, the policy’s own. So write them as one average: the reward, minus β times the log-ratio.' });
 
     // 3. take out -beta, gather into one log
     const L2 = S.add(S.tex(`\\;=\\; -\\bt\\; \\EE_{\\yy \\sim \\pp}\\Big[\\log \\frac{\\pp(\\yy)}{\\cData{c8w}{\\pref(\\yy)\\, e^{\\rr(\\yy)/\\bt}}}\\Big]`, { size: 80 }).at(0, 130));
     const r2 = S.add(S.reason('because: take out −β; then r / β = log e^(r / β), and log a − log b = log (a / b)'));
     S.beat('Take out minus beta. The reward over beta is the log of e to the reward over beta, and a difference of logs is the log of a ratio. Now everything sits inside one log.',
-      A.FadeOut(r1), A.Write(L2, 2.2), S.writeIn(r2, 1.8));
+      A.FadeOut(r1), A.Write(L2, 2.2), S.writeIn(r2, 1.8),
+      { cap: 'Take out −β. r/β is the log of e^(r/β), and a difference of logs is the log of a ratio. Now everything sits inside one log.' });
 
     // 4. the bottom is almost a distribution
     const e3 = S.add(S.english('the bottom: the {reference|pref}, with each answer reweighted by {e^(r/β)|rr}. Its weights do not add up to 1', { size: 38, width: 1500 }).at(0, 285));
     S.beat('Look at the bottom: the reference, with each answer reweighted by e to its reward over beta. If it were a probability distribution, this would be a K L. It is not: its weights do not add up to one.',
-      A.FadeOut(r2), A.Spot(L2, 'c8w'), S.writeIn(e3, 2));
+      A.FadeOut(r2), A.Spot(L2, 'c8w'), S.writeIn(e3, 2),
+      { cap: 'Look at the bottom: the reference, with each answer reweighted by e^(r/β). If it were a probability distribution, this would be a KL. It is not: its weights do not add up to 1.' });
 
     // 5. normalise: pi*
     const P = S.add(S.tex('\\pstar(\\yy) \\;=\\; \\frac{\\pref(\\yy)\\, e^{\\rr(\\yy)/\\bt}}{\\ZZ}, \\qquad \\ZZ \\;=\\; \\sum_{\\yy} \\pref(\\yy)\\, e^{\\rr(\\yy)/\\bt}', { size: 76 }).at(0, -60));
@@ -405,7 +410,8 @@ FILM.parts.push(function ch08(ctx) {
       return S.add(S.group(dot(12, S.color('bt')), new Text(`β = ${b}`, { size: 32, color: S.color('bt'), anchor: 'start' }).at(24, b === 8 ? 4 : 28)).at(AX + ax.fx(RL.kl(p, REF)), AY + ax.fy(RL.expectedReward(p, R))));
     });
     S.beat('Each beta buys some reward at some K L cost. Plot every beta, and you get a frontier: the most reward any policy can earn, for a given distance from the reference.',
-      fade([bars, ...ghosts, ...rew, ghostL, ...bl, ...stats, ...lim, toy]), A.FadeIn(ax), A.Create(fr, 2), lag(0.5, marks.map((m) => A.FadeIn(m, { from: 1.6 }))));
+      fade([bars, ...ghosts, ...rew, ghostL, ...bl, ...stats, ...lim, toy]), A.FadeIn(ax), A.Create(fr, 2), lag(0.5, marks.map((m) => A.FadeIn(m, { from: 1.6 }))),
+      { cap: 'Each β buys some reward at some KL cost. Plot every β, and you get a frontier: the most reward any policy can earn, for a given distance from the reference.' });
     const rF = S.add(S.reason('because: a {π|pp} with more {reward|rr} and no more {KL|KL} would beat {π*|pstar} on reward − β KL', { y: 315 }));
     const below = S.add(side(S, 'every policy lies on or below this curve', AX + 150, AY + 70, 700, 34));
     S.beat('Why the most? A policy with more reward and no more K L would beat pi star on the objective, and nothing does. Every policy lies on or below this curve; choosing beta chooses a point on it.',
@@ -416,9 +422,9 @@ FILM.parts.push(function ch08(ctx) {
     const bayes = S.add(S.tex('\\underbrace{\\pstar(\\yy)}_{\\text{posterior}} \\;\\propto\\; \\underbrace{\\pref(\\yy)}_{\\text{prior}}\\; \\underbrace{e^{\\rr(\\yy)/\\bt}}_{\\text{likelihood}}', { size: 84 }).at(0, -60));
     const eB = S.add(S.english('start from what the {reference|pref} believes; update it by the evidence of {reward|rr}; {β|bt} sets how strong that evidence is', { size: 38, width: 1500 }).at(0, 170));
     S.paper('korbak2022');
-    S.beat('A second reading: the reference is a prior, what we believed before. E to the reward over beta is a likelihood, and pi star is the posterior. Korbak, Perez and Buckley argued that R L with a K L penalty is best viewed as Bayesian inference.',
+    S.beat('A second reading: the reference is a prior, what we believed before. E to the reward over beta is a likelihood, and pi star is the posterior. Korbak, Perez and Buckley argued that R L with a K L penalty is better viewed this way.',
       fade([ax, fr, ...marks, rF, below]), A.Write(bayes, 2.2), S.writeIn(eB, 2),
-      { cap: 'A second reading: the reference is a prior, what we believed before. e^(r/β) is a likelihood, and π* is the posterior. Korbak, Perez and Buckley argued that RL with a KL penalty is best viewed as Bayesian inference.' });
+      { cap: 'A second reading: the reference is a prior, what we believed before. e^(r/β) is a likelihood, and π* is the posterior. Korbak, Perez and Buckley argued that RL with a KL penalty is better viewed this way, as Bayesian inference.' });
 
     // 6. what is still missing
     const zz = S.add(S.english('but {Z|ZZ} sums over every possible answer: for a language model, more than we could ever list', { size: 40, width: 1500 }).at(0, 170));

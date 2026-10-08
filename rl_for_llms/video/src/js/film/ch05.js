@@ -118,16 +118,17 @@ FILM.parts.push(function ch05(ctx) {
 
     // 4. the estimate, token by token, and the state
     const F1 = S.add(S.tex('\\ghat \\;=\\; \\sum_{t}\\, \\RR\\; \\grad \\lp(\\yy_t \\mid \\ss_t)', { size: 84 }).at(0, -60));
+    const r4 = S.add(S.reason('because: a response’s {log-probability|lp} is the sum of its tokens’ (chapter 1)', { y: -200 }));
     const c4 = S.add(S.symcard('ss', { w: 1300, name: 'the state', from: 'the prompt x plus the tokens y<t written so far', why: 'it is everything the model sees when it chooses token t' }).at(0, 170));
     S.beat('Write chapter three’s estimate token by token: for each token, R times the direction that makes that token more likely in its state, s t: the prompt plus the tokens before it.',
-      par(fade(c3, rl, rrow, row.items, R1, px), A.Unspot(F0), A.FadeOut(F0)), A.Write(F1, 1.8), A.Spot(F1, ['ss', 'yy']), A.FadeIn(c4, { dy: 16 }),
+      par(fade(c3, rl, rrow, row.items, R1, px), A.Unspot(F0), A.FadeOut(F0)), A.Write(F1, 1.8), S.writeIn(r4, 1.4), A.Spot(F1, ['ss', 'yy']), A.FadeIn(c4, { dy: 16 }),
       { cap: 'Write chapter 3’s estimate token by token: for each token, R times the direction that makes that token more likely in its state s_t: the prompt plus the tokens before it.' });
 
     // 5. R is a sum: split it at token t
     const F2 = S.add(S.tex("\\ghat \\;=\\; \\sum_{t}\\, \\Big(\\cReward{c5past}{\\textstyle\\sum_{t'<t} \\rr_{t'}} \\;+\\; \\cReward{c5fut}{\\textstyle\\sum_{t'\\ge t} \\rr_{t'}}\\Big)\\, \\grad \\lp(\\yy_t \\mid \\ss_t)", { size: 78 }).at(0, -60));
     const r5 = S.add(S.reason('because: {R|RR} is the sum of all the {token rewards|rr}: split it into those before token t, and those from t on'));
     S.beat('Now split R, the sum of all the token rewards, into two parts: the rewards before token t, and the rewards from t on. Nothing has changed; we have only regrouped.',
-      par(A.Unspot(F1), A.FadeOut(c4), UP(F1)), A.Write(F2, 2), S.writeIn(r5, 1.6));
+      par(A.Unspot(F1), A.FadeOut(c4), A.FadeOut(r4), UP(F1)), A.Write(F2, 2), S.writeIn(r5, 1.6));
 
     // 6. the past is a baseline: it averages to zero against the score
     const F3 = S.add(S.tex("\\EE\\Big[\\cReward{c5past}{\\textstyle\\sum_{t'<t} \\rr_{t'}}\\;\\, \\grad \\lp(\\yy_t \\mid \\ss_t)\\Big] \\;=\\; 0", { size: 72 }).at(0, 130));
@@ -138,7 +139,7 @@ FILM.parts.push(function ch05(ctx) {
     // 7. so drop it: each token answers for what came after it
     const F4 = S.add(S.tex("\\ghat \\;=\\; \\sum_{t}\\, \\Big(\\cReward{c5fut}{\\textstyle\\sum_{t'\\ge t} \\rr_{t'}}\\Big)\\, \\grad \\lp(\\yy_t \\mid \\ss_t)", { size: 80 }).at(0, -60));
     const r7 = S.add(S.reason('because: removing a term whose average is zero leaves the average unchanged: still unbiased'));
-    S.beat('So drop it. The estimate stays right on average, with less noise: each token now answers only for the rewards after it. A token cannot change the past.',
+    S.beat('So drop it. The estimate stays right on average, and usually less noisy: each token now answers only for the rewards after it. A token cannot change the past.',
       par(fade(r6, F3, F1), A.Unspot(F2), UP(F2)), A.Write(F4, 1.8), A.Spot(F4, 'c5fut'), S.writeIn(r7, 1.6));
 
     // 8. the return
@@ -166,7 +167,7 @@ FILM.parts.push(function ch05(ctx) {
     const rr2 = numRow(S, RW, RY.r, S.color('rr'), (v) => String(v));
     const gg = numRow(S, G1, RY.G, S.color('GG'));
     const gl = S.add(S.txt('γ = 1', { size: 46, color: S.color('gam') }).at(-700, 60));
-    const toy = S.add(S.toy(760, 60));
+    const toy = S.add(S.toy(760, -400));
     const e10 = S.add(S.english('less for early {tokens|yy}, but only because they are early', { size: 38, color: C.GREY_B }).at(0, 190));
     const say10 = 'On our solution, with gamma one, every return is one: the only reward comes at the end. With gamma zero point nine, early tokens get less, just for being early. Neither finds the step that mattered.';
     const in10 = seq(par(fade(e9, F4), A.MoveTo(F6, 0, 60), A.ScaleTo(F6, 0.7)), par(A.FadeIn(lT), showAll(row2.items), A.FadeIn(lR), showAll(rr2)), par(A.FadeIn(lG), showAll(gg), A.FadeIn(gl), A.FadeIn(toy)));
@@ -186,17 +187,17 @@ FILM.parts.push(function ch05(ctx) {
       { cap: `We need a reference point. The value, V(s_t), is the return we expect from this state on; chapter 4’s critic learns it. Our toy critic starts at ${VS[0].toFixed(2)} and grows more confident.` });
 
     // 12. the advantage: return minus value
-    const F8 = S.add(S.tex('\\AA_t \\;=\\; \\GG_t \\;-\\; \\VV(\\ss_t)', { size: 80 }).at(0, 70));
+    const F8 = S.add(S.tex('\\AA_t \\;=\\; \\GG_t \\;-\\; \\VV(\\ss_t), \\qquad \\ghat \\;=\\; \\sum_{t}\\, \\AA_t\\; \\grad \\lp(\\yy_t \\mid \\ss_t)', { size: 64 }).at(0, 95));
     const lA = rowLab(S, '\\text{advantage } \\AA_t', RY.A);
     const aa = numRow(S, ADV1, RY.A, S.color('AA'));
-    const e12 = S.add(S.english('the {advantage|AA}: how much better things went from here than the {critic expected|VV}', { size: 40, width: 1500 }).at(0, 190));
-    S.beat(`Subtract, and each token gets an advantage: return minus value, how much better things went than expected. The first token gets ${say2(ADV1[0])}, the last only ${say2(ADV1[T - 1])}.`,
+    const e12 = S.add(S.english('the {advantage|AA}: how much better things went from here than the {critic expected|VV}', { size: 40, width: 1500 }).at(0, 220));
+    S.beat(`Subtract, and each token gets an advantage: return minus value, how much better things went than expected. It takes the return’s place in the estimate. The first token gets ${say2(ADV1[0])}, the last only ${say2(ADV1[T - 1])}.`,
       par(A.Unspot(F7), A.FadeOut(c11), A.FadeOut(F7)), A.Write(F8, 1.4), A.FadeIn(lA), showAll(aa, 0.1), S.writeIn(e12, 2),
-      { cap: `Subtract, and each token gets an advantage: return minus value, how much better things went than expected. The first token gets ${ADV1[0].toFixed(2)}, the last only ${ADV1[T - 1].toFixed(2)}.` });
+      { cap: `Subtract, and each token gets an advantage: return minus value, how much better things went than expected. It takes the return’s place in the estimate. The first token gets ${ADV1[0].toFixed(2)}, the last only ${ADV1[T - 1].toFixed(2)}.` });
 
     // 13. what is still missing
     const hl = S.add(S.rect(COLW[0] + 20, 360, { stroke: C.YELLOW, width: 4, rx: 12 }).at(XS[0], (RY.tok + RY.A) / 2));
-    const e13 = S.add(S.english(`but the first {token|yy} only restated the question: its ${ADV1[0].toFixed(2)} is the work of later tokens`, { size: 40, width: 1500 }).at(0, 190));
+    const e13 = S.add(S.english(`but the first {token|yy} only restated the question: its ${ADV1[0].toFixed(2)} is the work of later tokens`, { size: 40, width: 1500 }).at(0, 230));
     S.beat(`But the first token only restated the question. Its ${say2(ADV1[0])} is the work of later tokens. Can we credit each token for the change it made itself?`,
       A.FadeOut(e12), A.Create(hl, 0.8), S.writeIn(e13, 2),
       { cap: `But the first token only restated the question. Its ${ADV1[0].toFixed(2)} is the work of later tokens. Can we credit each token for the change it made itself?` });
@@ -271,7 +272,8 @@ FILM.parts.push(function ch05(ctx) {
     const pL = pane(-430, '\\dd_t', 'one real step, then trust the critic', 'steady, but biased if the critic is wrong', GRN);
     const pR = pane(430, '\\GG_t - \\VV(\\ss_t)', 'only real rewards: unbiased for any critic', 'but it carries all the later luck', S.color('GG'));
     S.beat('But delta trusts the critic: if the critic is wrong, so is delta, and averaging cannot fix it. Return minus value uses real rewards: unbiased for any critic, but it carries all the later luck.',
-      fade(e5, bars, axis, F1), A.FadeIn(pL, { dy: 20 }), wait(1.5), A.FadeIn(pR, { dy: 20 }));
+      fade(e5, bars, axis, F1), A.FadeIn(pL, { dy: 20 }), wait(1.5), A.FadeIn(pR, { dy: 20 }),
+      { cap: 'But δ trusts the critic: if the critic is wrong, so is δ, and averaging cannot fix it. Return minus value uses real rewards: unbiased for any critic, but it carries all the later luck.' });
 
     // 7. telescoping: two deltas
     const F3 = S.add(S.tex('\\dd_t + \\gam\\, \\dd_{t+1} \\;=\\; \\rr_t + \\class{s-c5c}{\\gam\\, \\VV(\\ss_{t+1})} - \\VV(\\ss_t) \\;+\\; \\gam\\, \\rr_{t+1} + \\gam^2\\, \\VV(\\ss_{t+2}) \\class{s-c5c}{\\,- \\gam\\, \\VV(\\ss_{t+1})}', { size: 50 }).at(0, -60));
@@ -285,7 +287,7 @@ FILM.parts.push(function ch05(ctx) {
       A.FadeOut(r7), A.Spot(F3, 'c5c'), wait(1.2), A.Write(F4, 2), S.writeIn(r7b, 1.4));
 
     // 8. all the way to the end: the return minus the value
-    const F5 = S.add(S.tex('\\sum_{l \\ge 0} \\gam^{\\,l}\\, \\dd_{t+l} \\;=\\; \\sum_{l \\ge 0} \\gam^{\\,l}\\, \\rr_{t+l} \\;-\\; \\VV(\\ss_t) \\;=\\; \\GG_t - \\VV(\\ss_t)', { size: 68 }).at(0, 95));
+    const F5 = S.add(S.tex('\\sum_{l \\ge 0} \\gam^{\\,l}\\, \\dd_{t+l} \\;=\\; \\sum_{l \\ge 0} \\gam^{\\,l}\\, \\rr_{t+l} \\;-\\; \\VV(\\ss_t) \\;=\\; \\GG_t - \\VV(\\ss_t)', { size: 68 }).at(0, 80));
     const r8 = S.add(S.reason('because: every middle value cancels the same way, and after the last token V = 0: nothing is left to earn'));
     const chk = S.add(S.english(`first token: ${DEL.map((d) => (Math.abs(d) < 5e-3 ? '0' : d.toFixed(2))).join(' + ')} = ${RL.sum(DEL).toFixed(2)} = 1 − ${VS[0].toFixed(2)}`, { size: 32, color: C.GREY_B }).at(0, 195));
     S.beat(`Go on to the end. Every middle value cancels, and after the last token the value is zero. So the discounted surprises add up to return minus value. Here: ${say2(RL.sum(DEL))}, both ways.`,
@@ -294,11 +296,15 @@ FILM.parts.push(function ch05(ctx) {
 
     // 9. GAE: a dial between the two ends
     const F6 = S.add(S.tex('\\Ahat_t \\;=\\; \\sum_{l \\ge 0} \\big(\\gam\\, \\lam\\big)^{l}\\, \\dd_{t+l}', { size: 96 }).at(0, -60));
-    const c9 = S.add(S.symcard('lam', { name: 'the GAE mix', from: 'a number we choose, between 0 and 1', why: 'each surprise one more step away counts λ times less: it slides between the one-step surprise and return minus value', w: 1300 }).at(0, 175));
+    const c9a = S.add(S.symcard('Ahat', { name: 'the estimated advantage', from: 'the critic’s surprises from token t on, added up', why: 'the true advantage is unknown: the hat marks an estimate', w: 1300 }).at(0, 175));
+    const c9 = S.add(S.symcard('lam', { name: 'the GAE mix', from: 'a number we choose, between 0 and 1', why: 'each step further away multiplies a surprise by λ once more: it slides between the one-step surprise and return minus value', w: 1300 }).at(0, 175));
     S.paper('schulman2016gae');
-    S.beat('So one surprise and all the surprises are two ends of one sum. Generalized advantage estimation puts a dial between them, lambda: each step further away shrinks a surprise by gamma lambda.',
-      fade(F4, F5, r8, chk), A.Write(F6, 1.8), A.Spot(F6, 'lam'), A.FadeIn(c9, { dy: 16 }),
-      { cap: 'So one surprise and all the surprises are two ends of one sum. Generalized advantage estimation (GAE) puts a dial between them, λ: each step further away shrinks a surprise by γλ.' });
+    S.beat('So one surprise and all the surprises are two ends of one sum. Generalized advantage estimation, G A E, builds its estimate in between. The hat on A says: estimated from the critic’s surprises, not known exactly.',
+      fade(F4, F5, r8, chk), A.Write(F6, 1.8), A.Spot(F6, 'Ahat'), A.FadeIn(c9a, { dy: 16 }),
+      { cap: 'So one surprise and all the surprises are two ends of one sum. Generalized advantage estimation (GAE) builds its estimate in between. The hat on Â says: estimated from the critic’s surprises, not known exactly.' });
+    S.beat('The dial is lambda, a number we choose between zero and one. Each step further from token t shrinks a surprise by one more factor of gamma times lambda.',
+      A.Spot(F6, 'lam'), A.FadeOut(c9a, { dur: 0.4 }), A.FadeIn(c9, { dy: 16 }),
+      { cap: 'The dial is λ, a number we choose between 0 and 1. Each step further from token t shrinks a surprise by one more factor of γλ.' });
 
     // 10. the two ends, and the sum in words
     const E0 = S.add(S.tex('\\lam = 0: \\qquad \\Ahat_t = \\dd_t', { size: 60 }).at(-430, 110));
@@ -340,7 +346,8 @@ FILM.parts.push(function ch05(ctx) {
     const sR = S.add(S.english('trust the {rewards|rr}: unbiased, but noisy', { size: 34, width: 700 }).at(470, -40));
     const e12 = S.add(S.english('if restating the question changed nothing, its credit averages to zero over many samples: here it is luck', { size: 36, color: C.GREY_B, width: 1500 }).at(0, 80));
     S.beat('Is that fair? If restating the question changed nothing, that credit would average out over many samples. Large lambda: unbiased, but noisy. Small lambda: steady, but only as right as the critic. Values just below one are common.',
-      fade(gb, ax2, row2.items, v0, lamT, F6), S.writeIn(e12, 1.8), A.Create(tl, 0.8), par(tk.map((m) => A.FadeIn(m)), tL.map((m) => A.FadeIn(m))), S.writeIn(sL, 1.4), S.writeIn(sR, 1.4));
+      fade(gb, ax2, row2.items, v0, lamT, F6), S.writeIn(e12, 1.8), A.Create(tl, 0.8), par(tk.map((m) => A.FadeIn(m)), tL.map((m) => A.FadeIn(m))), S.writeIn(sL, 1.4), S.writeIn(sR, 1.4),
+      { cap: 'Is that fair? If restating the question changed nothing, that credit would average out over many samples. Large λ: unbiased, but noisy. Small λ: steady, but only as right as the critic. Values just below 1 are common.' });
 
     // 13. another route: grade every step
     const prm = S.add(S.box('process supervision: a judge that grades every step', { w: 1200, h: 110, color: S.color('rr'), size: 40 }).at(0, -120));

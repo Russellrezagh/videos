@@ -137,7 +137,8 @@ FILM.parts.push(function ch06(ctx) {
     const L3 = S.add(S.tex('\\EE_{\\yy \\sim \\pt}\\big[\\, f(\\yy) \\,\\big] \\;=\\; \\EE_{\\yy \\sim \\pold}\\big[\\, \\rat(\\yy)\\; f(\\yy) \\,\\big], \\qquad \\rat(\\yy) \\;=\\; \\frac{\\pt(\\yy)}{\\pold(\\yy)}', { size: 72 }).at(0, 120));
     const r4 = S.add(S.reason('because: a sum weighted by {old probabilities|pold} is an average over samples from the {old policy|pold}'));
     S.beat('Now the sum is weighted by old probabilities, so it is an average over old samples, each multiplied by one correction: new probability over old. This is importance sampling; the correction is rho.',
-      par(A.Unspot(L2), A.FadeOut(r3)), A.Write(L3, 2.2), S.writeIn(r4, 1.6));
+      par(A.Unspot(L2), A.FadeOut(r3)), A.Write(L3, 2.2), S.writeIn(r4, 1.6),
+      { cap: 'Now the sum is weighted by old probabilities, so it is an average over old samples, each multiplied by one correction: new probability over old. This is importance sampling; the correction is ρ.' });
 
     // 5. symbol tour: the ratio, and the old policy
     const cR = S.add(S.symcard('rat', { w: 1300, why: '1: the policies agree on this answer; above 1 the new policy likes it more, so the old sample counts more' }).at(0, -140));
@@ -145,9 +146,10 @@ FILM.parts.push(function ch06(ctx) {
       par(A.FadeOut(r4), A.FadeOut(L1), A.FadeOut(L2)), A.Spot(L3, 'rat'), A.FadeIn(cR, { dy: 16 }),
       { cap: 'ρ, the probability ratio. 1 means the two policies agree on this answer. Above 1, the new policy likes it more, so the old sample counts more. Below 1, less.' });
     const cO = S.add(S.symcard('pold', { w: 1300, why: 'the samples came from it; its probabilities are recorded when they are drawn' }).at(0, -140));
-    S.beat('And pi old is a frozen copy, the policy that drew the batch. It does not train; its probabilities are recorded when the samples are drawn.',
-      A.Spot(L3, 'pold'), A.FadeOut(cR, { dur: 0.4 }), A.FadeIn(cO, { dy: 16 }),
-      { cap: 'And π_old is a frozen copy, the policy that drew the batch. It does not train; its probabilities are recorded when the samples are drawn.' });
+    const eIS = S.add(S.english('an average under the {new policy|pt} = an average over {old samples|pold}, each re-weighted by {new ÷ old|rat}', { size: 38, width: 1600 }).at(0, 285));
+    S.beat('And pi old is a frozen copy, the policy that drew the batch. It does not train. In words: an average under the new policy is an average over old samples, each re-weighted by new over old.',
+      A.Spot(L3, 'pold'), A.FadeOut(cR, { dur: 0.4 }), A.FadeIn(cO, { dy: 16 }), S.writeIn(eIS, 2),
+      { cap: 'And π_old is a frozen copy, the policy that drew the batch. It does not train. In words: an average under the new policy is an average over old samples, each re-weighted by new over old.' });
 
     // 6. numbers on the bandit
     const COLS = [-560, -260, 0, 260, 520];
@@ -166,22 +168,30 @@ FILM.parts.push(function ch06(ctx) {
     const toy6 = S.add(S.toy(760, HY));
     const r6 = S.add(S.reason('after one small step: old samples, re-weighted by {ρ|rat}, give exactly the {new average reward|JJ}'));
     S.beat(`On our bandit, one small step took fifty-one from ${sayN(PI[0])} to ${sayN(PN[0])}: a ratio of ${sayN(RHO[0])}. Re-weighted this way, the old samples give exactly the new average reward, ${sayN(IS)}.`,
-      par(A.Unspot(L3), A.FadeOut(cO), A.FadeOut(L3)), par(hd.map((m) => A.FadeIn(m)), hdT.map((m) => A.FadeIn(m)), A.FadeIn(toy6)), lag(0.3, rows.map((r) => A.FadeIn(r, { dx: 20 }))), A.Write(sumL, 2.2), S.writeIn(r6, 1.4),
+      par(A.Unspot(L3), A.FadeOut(cO), A.FadeOut(L3), A.FadeOut(eIS)), par(hd.map((m) => A.FadeIn(m)), hdT.map((m) => A.FadeIn(m)), A.FadeIn(toy6)), lag(0.3, rows.map((r) => A.FadeIn(r, { dx: 20 }))), A.Write(sumL, 2.2), S.writeIn(r6, 1.4),
       { cap: `On our bandit, one small step took 51 from ${PI[0].toFixed(2)} to ${PN[0].toFixed(2)}: a ratio of ${RHO[0].toFixed(2)}. Re-weighted this way, the old samples give exactly the new average reward, ${IS.toFixed(2)}.` });
 
     // 7. the surrogate objective
     const L4 = S.add(S.tex('\\cReward{c6L}{L}(\\th) \\;=\\; \\EE_{\\pold}\\big[\\, \\rat_t(\\th)\\; \\AA_t \\,\\big]', { size: 92 }).at(0, -60));
-    const e7 = S.add(S.english('{L|c6L}: the average {advantage|AA} the {new policy|pt} would get, judged from {old samples|pold}', { size: 40, width: 1500 }).at(0, 110));
-    const e7b = S.add(S.english(`on the bandit, with {A = r − old average|AA}: {L|c6L} = ${JNEW.toFixed(2)} − ${JOLD.toFixed(2)} = ${GAIN.toFixed(2)}, exactly the gain`, { size: 36, color: C.GREY_B }).at(0, 210));
-    S.beat(`Now average the advantage, measured on the old batch. That is the surrogate objective, L: how much better the new policy would do, judged from old samples. On the bandit it is exactly the gain, ${sayN(GAIN)}.`,
-      fade(hd, hdT, rows, sumL, r6, toy6), A.Write(L4, 1.6), A.Spot(L4, 'c6L'), wait(0.8), A.Unspot(L4), S.writeIn(e7, 2), S.writeIn(e7b, 1.6),
-      { cap: `Now average the advantage, measured on the old batch. That is the surrogate objective, L: how much better the new policy would do, judged from old samples. On the bandit it is exactly the gain, ${GAIN.toFixed(2)}.` });
+    const r7 = S.add(S.reason('because: importance sampling with f = the {advantage|AA}, measured under the {old policy|pold}'));
+    S.beat('Now put the advantage, A, in for f. The average advantage the new policy would get becomes rho times A, averaged over the old batch. This is the surrogate objective, L: a stand-in that old samples can compute.',
+      fade(hd, hdT, rows, sumL, r6, toy6), A.Write(L4, 1.6), S.writeIn(r7, 1.6), A.Spot(L4, ['rat', 'AA']),
+      { cap: 'Now put the advantage, A, in for f. The average advantage the new policy would get becomes ρ times A, averaged over the old batch. This is the surrogate objective, L: a stand-in that old samples can compute.' });
+    const cL = S.add(S.symcard('c6L', { w: 1300, from: 'the advantage, re-weighted by ρ, averaged over the old batch', why: 'it says how much better the new policy would do, and we can keep climbing it on the same samples' }).at(0, 160));
+    S.beat('L is a stand-in for the real objective: not the reward itself, but how much better the new policy would do than the old one, estimated from samples we already have.',
+      A.Spot(L4, 'c6L'), A.FadeOut(r7, { dur: 0.4 }), A.FadeIn(cL, { dy: 16 }));
+    const e7 = S.add(S.english('{L|c6L}({θ|th}): the average over the {old batch|pold} of {ratio|rat} × {advantage|AA}: how much better the {new policy|pt} would do', { size: 40, width: 1500 }).at(0, 110));
+    const e7b = S.add(S.english(`on the bandit, with {A = r − old average|AA}: {L|c6L} = ${JNEW.toFixed(2)} − ${JOLD.toFixed(2)} = ${GAIN.toFixed(2)}, exactly the gain`, { size: 36, color: C.GREY_B }).at(0, 230));
+    S.beat(`In words: the average over the old batch of ratio times advantage. On the bandit, with the advantage as reward minus the old average, L is exactly the gain: ${sayN(JNEW)} minus ${sayN(JOLD)}, ${sayN(GAIN)}.`,
+      A.Unspot(L4), A.FadeOut(cL), S.writeIn(e7, 2), S.writeIn(e7b, 1.6),
+      { cap: `In words: the average over the old batch of ratio times advantage. On the bandit, with the advantage as reward minus the old average, L is exactly the gain: ${JNEW.toFixed(2)} − ${JOLD.toFixed(2)} = ${GAIN.toFixed(2)}.` });
 
     // 8. its gradient: grad rho = rho grad log pi
     const L5 = S.add(S.tex('\\grad \\rat_t \\;=\\; \\frac{\\grad \\pt(\\yy_t \\mid \\ss_t)}{\\pold(\\yy_t \\mid \\ss_t)} \\;=\\; \\rat_t\\; \\grad \\lp(\\yy_t \\mid \\ss_t)', { size: 76 }).at(0, -60));
     const r8 = S.add(S.reason('because: the {old policy|pold} is frozen, so only the top moves; and ∇π = π ∇log π, the chain rule of chapter 3'));
     S.beat('Its slope? Pi old is frozen, so only the top of the ratio moves, and the gradient of pi is pi times the gradient of log pi. So the gradient of rho is rho times the gradient of log pi.',
-      par(A.Unspot(L4), A.FadeOut(e7), A.FadeOut(e7b), UP(L4)), A.Write(L5, 2), S.writeIn(r8, 1.6));
+      par(A.Unspot(L4), A.FadeOut(e7), A.FadeOut(e7b), UP(L4)), A.Write(L5, 2), S.writeIn(r8, 1.6),
+      { cap: 'Its slope? π_old is frozen, so only the top of the ratio moves, and ∇π = π ∇log π. So ∇ρ = ρ ∇log π.' });
 
     // 9. at the start of the update it is the policy gradient
     const L6 = S.add(S.tex('\\grad \\cReward{c6L}{L}\\,\\Big|_{\\th = \\th_{\\mathrm{old}}} \\;=\\; \\EE_{\\pold}\\big[\\, \\AA_t\\; \\grad \\lp(\\yy_t \\mid \\ss_t) \\,\\big]', { size: 76 }).at(0, 120));
@@ -199,7 +209,8 @@ FILM.parts.push(function ch06(ctx) {
     const go = S.add(S.arrow(AXc + ax.fx(2.2), AYc + ax.fy(2.2 * AP) - 40, AXc + ax.fx(2.85), AYc + ax.fy(2.85 * AP) - 40, { color: S.color('grad'), width: 6 }));
     const bandL = S.add(S.txt('← near ρ = 1: old samples trustworthy', { size: 30, color: C.GREY_B, italic: true, anchor: 'start' }).at(AXc + ax.fx(1.2) + 14, AYc + 95));
     S.beat('But nothing in L says stop. For a good token, rho times A keeps growing with rho, so the optimizer makes it as likely as it can, far beyond where old samples can be trusted.',
-      fade(L4, L5, L6, r9), A.FadeIn(ax), A.FadeIn(band), A.FadeIn(bandL), A.Create(ln, 1.4), A.Arrow(go, 0.8));
+      fade(L4, L5, L6, r9), A.FadeIn(ax), A.FadeIn(band), A.FadeIn(bandL), A.Create(ln, 1.4), A.Arrow(go, 0.8),
+      { cap: 'But nothing in L says stop. For a good token, ρA keeps growing with ρ, so the optimizer makes it as likely as it can, far beyond where old samples can be trusted.' });
 
     // 11. a distance between policies: KL
     const K1 = S.add(S.tex('\\KL\\big(\\pold \\,\\|\\, \\pt\\big) \\;=\\; \\sum_{\\yy} \\pold(\\yy)\\, \\log \\frac{\\pold(\\yy)}{\\pt(\\yy)}', { size: 80 }).at(0, -90));
@@ -231,7 +242,8 @@ FILM.parts.push(function ch06(ctx) {
     const e1 = S.add(S.english('enforcing it takes a quadratic model of the {KL|KL}, conjugate gradient and a line search: heavy for billions of {weights|th}', { size: 38, width: 1500, color: C.GREY_B }).at(0, -150));
     const e1b = S.add(S.english('PPO: ordinary gradient steps, but no reason to push a {ratio|rat} far from 1', { size: 44, width: 1500 }).at(0, 20));
     S.beat('T R P O enforces that limit with second-order machinery: a quadratic model of the K L, conjugate gradient, a line search. Heavy, for billions of weights. Can plain gradient steps do the job?',
-      A.FadeIn(h), A.FadeIn(TR), S.writeIn(e1, 2.2), S.writeIn(e1b, 1.8));
+      A.FadeIn(h), A.FadeIn(TR), S.writeIn(e1, 2.2), S.writeIn(e1b, 1.8),
+      { cap: 'TRPO enforces that limit with second-order machinery: a quadratic model of the KL, conjugate gradient, a line search. Heavy, for billions of weights. Can plain gradient steps do the job?' });
 
     // 2. the clip function
     const CX = 280;
@@ -277,9 +289,9 @@ FILM.parts.push(function ch06(ctx) {
     const slP = S.add(S.english(`slope: {${RL.ppoClipSlope(0.5, AP)}|AA} at ρ = 0.5,  {${RL.ppoClipSlope(1.1, AP)}|AA} at 1.1,  {${RL.ppoClipSlope(1.6, AP)}|AA} at 1.6`, { size: 32, color: C.GREY_B }).at(-460, 330));
     const CP = S.add(S.tex('\\AA > 0: \\;\\; \\min\\big(\\rat\\AA,\\, \\operatorname{clip}(\\rat)\\AA\\big) = \\AA\\, \\min\\big(\\rat,\\, 1+\\eps\\big)', { size: 40 }).at(-460, -215));
     const sP = S.add(side(S, 'because: a positive {A|AA} keeps the order, so the smaller {ratio|rat} wins; the clipped one is smaller only past 1 + ε', -460, -145, 820));
-    S.beat(`A good token, advantage plus zero point eight. A positive factor keeps the order, so the minimum takes the smaller ratio: rho, until rho passes one point two. Then it is flat: no more push. Below the band, it still pulls back.`,
+    S.beat(`A good token, advantage plus zero point eight. A positive factor keeps the order, so the minimum takes the smaller ratio: rho, until rho passes one point two. Then it is flat: no more push. Below the band, the slope remains, pushing it back up.`,
       par(A.FadeOut(e3), A.MoveTo(LC, 0, -335), A.ScaleTo(LC, 0.7)), A.Write(CP, 1.8), S.writeIn(sP, 1.4), showPlot(P), S.writeIn(slP, 1.2),
-      { cap: `A good token, advantage +0.8. A positive factor keeps the order, so the minimum takes the smaller ratio: ρ, until ρ passes 1.2. Then it is flat: no more push. Below the band, it still pulls back.` });
+      { cap: `A good token, advantage +0.8. A positive factor keeps the order, so the minimum takes the smaller ratio: ρ, until ρ passes 1.2. Then it is flat: no more push. Below the band, the slope remains, pushing it back up.` });
 
     // 6. A < 0: a negative factor flips the order
     const CN = S.add(S.tex('\\AA < 0: \\;\\; \\min\\big(\\rat\\AA,\\, \\operatorname{clip}(\\rat)\\AA\\big) = \\AA\\, \\max\\big(\\rat,\\, 1-\\eps\\big)', { size: 40 }).at(460, -215));
@@ -350,15 +362,26 @@ FILM.parts.push(function ch06(ctx) {
 
     // 4. per-token rewards with the KL price
     const KR = S.add(S.tex('\\rr_t \\;=\\; -\\,\\bt\\, \\log \\frac{\\pold(\\yy_t \\mid \\ss_t)}{\\pref(\\yy_t \\mid \\ss_t)} \\;+\\; \\begin{cases} \\RR(\\xx, \\yy) & \\text{last token} \\\\ 0 & \\text{otherwise} \\end{cases}', { size: 56 }).at(0, 215));
-    S.beat('Each token gets its own reward, as in chapter five: the score on the last token, and on every token a small price, beta times the log-ratio to the reference model, the model before R L began. Chapter eight explains this leash.',
-      A.FadeOut(e3), A.Arrow(arr[1], 0.5), A.FadeIn(boxes[2], { dy: 20 }), A.Write(KR, 2.4), A.Spot(KR, ['bt', 'pref', 'RR']), wait(2.5), A.Unspot(KR),
-      { cap: 'Each token gets its own reward, as in chapter 5: the score on the last token, and on every token a small price, β times the log-ratio to the reference model, the model before RL began. Chapter 8 explains this leash.' });
+    S.beat('Each token gets its own reward, as in chapter five: the reward model’s score on the last token, and on every token a small price, beta times the log of a ratio of two probabilities. Two symbols here are new.',
+      A.FadeOut(e3), A.Arrow(arr[1], 0.5), A.FadeIn(boxes[2], { dy: 20 }), A.Write(KR, 2.4), A.Spot(KR, ['bt', 'pref']),
+      { cap: 'Each token gets its own reward, as in chapter 5: the reward model’s score on the last token, and on every token a small price, β times the log of a ratio of two probabilities. Two symbols here are new.' });
+    // a closer look at the price: the loop steps aside while its two new symbols are toured
+    const loop = [boxes[0], boxes[1], boxes[2], arr[0], arr[1]];
+    const cRef = S.add(S.symcard('pref', { w: 1300, why: 'the price grows as the policy drifts from it: it anchors what normal text looks like' }).at(0, 175));
+    S.beat('Pi ref is the reference model: a frozen copy of the model from before R L began. The log-ratio is positive when the policy that sampled, pi old, gives this token more chance than the reference would.',
+      par(loop.map((m) => A.Set(m, { o: 0 }, 0.6)), A.MoveTo(KR, 0, -60), A.ScaleTo(KR, 1.15)), A.Spot(KR, 'pref'), A.FadeIn(cRef, { dy: 16 }),
+      { cap: 'π_ref is the reference model: a frozen copy of the model from before RL began. The log-ratio is positive when the policy that sampled, π_old, gives this token more chance than the reference would.' });
+    const cBt = S.add(S.symcard('bt', { w: 1300, why: 'it sets the price of drifting: large β keeps the policy near the reference, where the reward model can be trusted' }).at(0, 175));
+    S.beat('Beta is a number we choose: the price of drifting. A large beta keeps the policy near the reference, where, as chapter seven shows, the reward model can be trusted. Chapter eight builds this leash properly.',
+      A.Spot(KR, 'bt'), A.FadeOut(cRef, { dur: 0.4 }), A.FadeIn(cBt, { dy: 16 }),
+      { cap: 'β is a number we choose: the price of drifting. A large β keeps the policy near the reference, where, as chapter 7 shows, the reward model can be trusted. Chapter 8 builds this leash properly.' });
 
     // 5. critic and GAE
-    const GA = S.add(S.tex('\\Ahat_t \\;=\\; \\dd_t \\;+\\; \\gam\\, \\lam\\, \\Ahat_{t+1}, \\qquad \\text{critic target: } \\Ahat_t + \\VV(\\ss_t)', { size: 56 }).at(0, 200));
-    const r5 = S.add(S.reason('because: the GAE sum, computed backwards from the last token in one pass'));
-    S.beat('The critic values every token’s state, and G A E turns the surprises into advantages, computed backwards from the last token in one pass. The critic’s own target is advantage plus value.',
-      A.FadeOut(KR), A.Arrow(arr[2], 0.5), A.FadeIn(boxes[3], { dy: 20 }), A.Write(GA, 2), S.writeIn(r5, 1.4));
+    const GA = S.add(S.tex('\\Ahat_t \\;=\\; \\dd_t \\;+\\; \\gam\\, \\lam\\, \\Ahat_{t+1}, \\qquad \\text{critic target: } \\Ahat_t + \\VV(\\ss_t)', { size: 56 }).at(0, 170));
+    const r5 = S.add(S.reason('because: the GAE sum from t is {δ|dd} at t, plus {γλ|lam} times the same sum from the next token; and {Â|Ahat} + {V|VV} estimates the {return|GG}'));
+    S.beat('The critic values every token’s state, and G A E turns the surprises into advantages, computed backwards from the last token in one pass. The critic’s own target is advantage plus value: an estimate of the return.',
+      par(A.Unspot(KR), A.FadeOut(KR), A.FadeOut(cBt), loop.map((m) => A.Set(m, { o: 1 }, 0.6))), A.Arrow(arr[2], 0.5), A.FadeIn(boxes[3], { dy: 20 }), A.Write(GA, 2), S.writeIn(r5, 1.4),
+      { cap: 'The critic values every token’s state, and GAE turns the surprises into advantages, computed backwards from the last token in one pass. The critic’s own target is advantage plus value: an estimate of the return.' });
 
     // 6. the update: epochs of clipped minibatch steps
     const UPF = S.add(S.tex('\\text{maximize} \\;\\; \\cReward{c6L}{L^{\\text{CLIP}}} \\;=\\; \\frac{1}{N} \\sum_{t} \\min\\big(\\rat_t \\Ahat_t,\\; \\operatorname{clip}(\\rat_t,\\, 1-\\eps,\\, 1+\\eps)\\, \\Ahat_t\\big)', { size: 52 }).at(0, 200));

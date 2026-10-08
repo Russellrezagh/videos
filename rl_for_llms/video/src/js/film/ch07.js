@@ -182,9 +182,9 @@ FILM.parts.push(function ch07(ctx) {
     const ar2 = S.add(S.arrow(165, 0, 325, 0, { color: C.GREY_B, width: 5 }));
     const e12 = S.add(S.english('a {reward model|rr}: a language model whose last layer gives one number instead of next-token {probabilities|pt}', { size: 38, width: 1500 }).at(0, 190));
     S.paper('christiano2017');
-    S.beat('In practice, the hidden score is a network: a language model whose last layer outputs one number, instead of next-token probabilities. In twenty seventeen, Christiano and colleagues trained such a reward model from human comparisons.',
+    S.beat('In practice, the hidden score is a network: a language model whose last layer outputs one number. In twenty seventeen, Christiano and colleagues trained agents with a reward network learned from human comparisons, with feedback on less than one percent of their interactions.',
       fade([F7, ax, sc, ...marks]), A.FadeIn(inp, { dx: -20 }), A.Arrow(ar1, 0.5), A.FadeIn(net), A.Arrow(ar2, 0.5), A.FadeIn(head), A.Write(outT, 1), S.writeIn(e12, 2),
-      { cap: 'In practice, the hidden score is a network: a language model whose last layer outputs one number, instead of next-token probabilities. In 2017, Christiano and colleagues trained such a reward model from human comparisons.' });
+      { cap: 'In practice, the hidden score is a network: a language model whose last layer outputs one number. In 2017, Christiano and colleagues trained agents with a reward network learned from human comparisons, with feedback on less than 1% of their interactions.' });
   });
 
   /*
@@ -280,10 +280,10 @@ FILM.parts.push(function ch07(ctx) {
     // 8. the push: winner up, loser down
     const G3 = S.add(S.tex(`\\frac{\\partial\\, \\text{loss}}{\\partial\\, ${RP}(\\xx, \\yw)} = -\\big(1 - \\sig(${GAP})\\big), \\qquad \\frac{\\partial\\, \\text{loss}}{\\partial\\, ${RP}(\\xx, \\yl)} = +\\big(1 - \\sig(${GAP})\\big)`, { size: 62 }).at(0, -60));
     const rg3 = S.add(S.reason('because: {Δ|c7gap} = winner’s {score|rr} − loser’s {score|rr}: it moves +1 with the first and −1 with the second'));
-    const e8 = S.add(S.english('a step downhill: the {winner’s score|rr} goes up, the {loser’s score|rr} goes down, both by {1−σ(Δ)|c7gap}; back-propagation carries this into {φ|c7phi}', { size: 38, width: 1500 }).at(0, 140));
-    S.beat('Delta rises with the winner’s score and falls with the loser’s. So a step downhill raises the winner’s score and lowers the loser’s, both by one minus sigma. Back-propagation carries that into phi.',
+    const e8 = S.add(S.english('a step downhill: the {winner’s score|rr} goes up, the {loser’s score|rr} goes down, both in proportion to {1−σ(Δ)|c7gap}; back-propagation carries this into {φ|c7phi}', { size: 38, width: 1500 }).at(0, 140));
+    S.beat('Delta rises with the winner’s score and falls with the loser’s. So a step downhill raises the winner’s score and lowers the loser’s, both in proportion to one minus sigma. Back-propagation carries that into phi.',
       A.FadeOut(rg2), A.FadeOut(G1), UP(G2), A.Write(G3, 2.2), S.writeIn(rg3, 1.6), S.writeIn(e8, 2),
-      { cap: 'Δ rises with the winner’s score and falls with the loser’s. So a step downhill raises the winner’s score and lowers the loser’s, both by 1 − σ(Δ). Back-propagation carries that into φ.' });
+      { cap: 'Δ rises with the winner’s score and falls with the loser’s. So a step downhill raises the winner’s score and lowers the loser’s, both in proportion to 1 − σ(Δ). Back-propagation carries that into φ.' });
 
     // 9. the push is the surprise
     const G4 = S.add(S.tex(`1 - \\sig(${GAP}) \\;=\\; P_{${PHI}}(\\yl \\succ \\yw)`, { size: 90 }).at(0, -60));
@@ -339,7 +339,7 @@ FILM.parts.push(function ch07(ctx) {
     const ar = [0, 1].map((i) => S.add(S.arrow(-580 + i * 580 + 250, BY, -580 + (i + 1) * 580 - 250, BY, { color: C.GREY_B, width: 5 })));
     const e0 = S.add(S.english('imitation (chapter 2), {policy gradients|grad} and PPO (chapters 3 to 6), a {learned reward|rr} (this chapter)', { size: 38, color: C.GREY_B, width: 1600 }).at(0, -40));
     S.paper('ouyang2022');
-    S.beat('Now we have every piece. In twenty twenty-two, OpenAI put them together to turn G P T 3 into InstructGPT, in three steps you have already met.',
+    S.beat('Now we have every piece. In twenty twenty-two, OpenAI put them together to turn G P T three into InstructGPT, in three steps you have already met.',
       A.FadeIn(h), lag(1.0, boxes.map((b, i) => seq(A.FadeIn(b, { dy: 20, dur: 0.6 }), i < 2 ? A.Arrow(ar[i], 0.5) : wait(0)))), S.writeIn(e0, 2.2),
       { cap: 'Now we have every piece. In 2022, OpenAI put them together to turn GPT-3 into InstructGPT, in three steps you have already met.' });
 
@@ -373,7 +373,7 @@ FILM.parts.push(function ch07(ctx) {
     const sl = S.add(S.txt('InstructGPT, 1.3B', { size: 38, color: C.TEAL }).at(-300, 250));
     const ll = S.add(S.txt('GPT-3, 175B', { size: 38, color: C.GREY_B }).at(300, 250));
     const pref = S.add(S.tex('\\succ', { size: 96 }).at(0, 100));
-    S.beat('The result: labelers preferred the one point three billion parameter InstructGPT to the one hundred and seventy-five billion parameter G P T 3, a model over a hundred times larger.',
+    S.beat('The result: labelers preferred the one point three billion parameter InstructGPT to the one hundred and seventy-five billion parameter G P T three, a model over a hundred times larger.',
       fade([F3, d3]), par(boxes.map((b) => A.Set(b, { o: 1 }, 0.6))), A.FadeIn(small, { dy: 20 }), A.FadeIn(sl), A.FadeIn(large, { dy: 20 }), A.FadeIn(ll), A.FadeIn(pref, { from: 2 }), A.Mood(small, 1),
       { cap: 'The result: labelers preferred the 1.3B-parameter InstructGPT to the 175B-parameter GPT-3, a model over 100 times larger.' });
   });
@@ -430,9 +430,9 @@ FILM.parts.push(function ch07(ctx) {
     const FG = S.add(S.tex('\\cReward{c7R}{R}_{\\mathrm{RL}}(\\cLeash{c7d}{d}) \\;=\\; \\cLeash{c7d}{d}\\,\\big(\\alpha - \\beta \\log \\cLeash{c7d}{d}\\big), \\qquad \\cLeash{c7d}{d} \\;=\\; \\sqrt{\\KL(\\pp \\,\\|\\, \\cFrozen{c7init}{\\pi_{\\mathrm{init}}})}', { size: 54 }).at(0, -290));
     const e6 = S.add(side(S, 'a gain that grows like {d|c7d}, minus a cost, {d|c7d} log {d|c7d}, that grows faster and wins in the end', 0, -222, 1750, 34));
     const nG = S.add(S.english('α, β: constants fitted to each experiment. This β is not the {leash β|bt} of chapter 8', { size: 32, color: C.GREY_B, width: 1500 }).at(0, 345));
-    S.beat('They found the gold score follows d times alpha minus beta log d, where d is the square root of a K L divergence, defined next chapter. A gain grows with distance; a cost grows faster, and wins. Alpha and beta are fitted constants, not our beta.',
+    S.beat('They found the gold score follows d times alpha minus beta log d, where d is the square root of a K L divergence, defined next chapter. The cost grows faster than the gain, and wins. Alpha and beta are fitted constants, not our leash.',
       A.FadeOut(shape), A.Write(FG, 2.2), S.writeIn(e6, 2), S.writeIn(nG, 1.8), A.Indicate(gL, { color: C.RED, scale: 1.1 }),
-      { cap: 'They found the gold score follows d(α − β log d), where d is the square root of a KL divergence, defined next chapter. A gain grows with distance; a cost grows faster, and wins. α and β are fitted constants, not our β.' });
+      { cap: 'They found the gold score follows d(α − β log d), where d is the square root of a KL divergence, defined next chapter. The cost grows faster than the gain, and wins. α and β are fitted constants, not our leash.' });
 
     // 4. what we need
     const e7 = S.add(S.english('the {reward model|rr} learned from answers like the {starting model’s|pref}: it is trustworthy near there', { size: 40, width: 1500 }).at(0, -60));
