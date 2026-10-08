@@ -317,7 +317,8 @@ FILM.parts.push(function ch03(ctx) {
     });
     const bars2 = barsAt();
     const p11 = pushes(bars2, BAND.grad, 900);
-    const rows = BAND.pi.map((p, j) => S.add(S.tex(`\\cPolicy{np}{${p.toFixed(2)}} \\times \\big(\\cReward{nr}{${BAND.r[j]}} - \\cReward{nJ}{${f2(BAND.J)}}\\big) \\;=\\; \\cGrad{ng}{${tsgn(BAND.grad[j], 3)}}`, { size: 50 }).at(450, -150 + j * 95)));
+    // three decimals in, three out, so the arithmetic on screen checks
+    const rows = BAND.pi.map((p, j) => S.add(S.tex(`\\cPolicy{np}{${p.toFixed(3)}} \\times \\big(\\cReward{nr}{${BAND.r[j]}} - \\cReward{nJ}{${f3(BAND.J)}}\\big) \\;\\approx\\; \\cGrad{ng}{${tsgn(BAND.grad[j], 3)}}`, { size: 50 }).at(450, -150 + j * 95)));
     const chk = S.add(side(S, `nudging each logit by a hair and measuring {J|JJ}: ${fd.map((v) => sgn(v, 3)).join(', ')}`, 450, 155, 760));
     S.beat(`On our numbers: plus ${say2(BAND.grad[0])}, ${say2(BAND.grad[1])}, ${say2(BAND.grad[2])}. Nudging each logit by a hair gives the same. Puzzle solved: about fifty earns less than average, so raising it lowers J.`,
       par(A.FadeOut(e10), A.FadeOut(e10b), TOP(E3, box9)),
@@ -380,7 +381,7 @@ FILM.parts.push(function ch03(ctx) {
     const ex = ax.plot(() => exact, { color: GRD, width: 4, dash: '14 12', from: 1, to: 2000 });
     const exL = S.add(S.txt(`true slope ${sgn(exact, 3)}`, { size: 34, color: GRD }).at(AX + ax.fx(600), AY + ax.fy(exact) + 42));
     const run = ax.polyline(BAND.mc.filter((_, i) => i < 40 || i % 4 === 0), { color: S.color('pt'), width: 5 });
-    const mean = S.add(S.tex('\\bar g_N \\;=\\; \\frac{1}{N} \\sum_{i=1}^{N} \\ghat_i', { size: 60 }).at(-560, -345));
+    const mean = S.add(S.tex('\\cGrad{gbar}{\\bar g_N} \\;=\\; \\frac{1}{N} \\sum_{i=1}^{N} \\ghat_i', { size: 60 }).at(-560, -345));
     S.beat('So average many. Sample, compute the estimate, keep a running mean. At first it jumps around; then it settles onto the true slope. That is the law of large numbers: averages of independent samples converge to the expected value.',
       par([...heads, rule, ...rows, trueRow, col0, avg, r2].map((m) => A.FadeOut(m, { dur: 0.6 }))), A.FadeIn(ax), A.Write(mean, 1.2), A.Create(ex, 0.8), A.FadeIn(exL), A.Create(run, 4.5));
 

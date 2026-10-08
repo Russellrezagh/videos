@@ -107,10 +107,10 @@ FILM.parts.push(function ch02(ctx) {
     const s2 = S.add(S.english(`so this token adds {−log ${NEXT.p[0].toFixed(2)} ≈ ${nlog(NEXT.p[0]).toFixed(2)}|c2L} to the loss`, { size: 36, width: 760 }).at(sideX, -20));
     const s3 = S.add(S.english('near 0 the cost shoots up: confident mistakes cost the most', { size: 36, width: 760, color: C.GREY_B }).at(sideX, 100));
     const toy = S.add(S.toy(sideX, 190));
-    S.beat(`Numbers. Our model gives the demonstrated fifty-one ${say2(NEXT.p[0])}, so this token adds ${say2(nlog(NEXT.p[0]))}. At zero point nine, only ${say2(nlog(0.9))}. Near zero, the cost explodes: confident mistakes cost most.`,
+    S.beat(`Numbers. The person wrote fifty-one, and our model gives it ${say2(NEXT.p[0])}, so this token adds ${say2(nlog(NEXT.p[0]))}. At zero point nine, only ${say2(nlog(0.9))}. Near zero, the cost explodes: confident mistakes cost most.`,
       fade(e4, e4b), par(A.MoveTo(LOSS, 0, -330), A.ScaleTo(LOSS, 0.7)), A.FadeIn(ax), A.Create(curve, 1.4), A.FadeIn(pL), A.FadeIn(lL),
       A.FadeIn(dots[0], { from: 2 }), A.FadeIn(dl[0]), S.writeIn(s1, 1.4), S.writeIn(s2, 1.4), A.FadeIn(toy), lag(0.8, [1, 2].map((i) => par(A.FadeIn(dots[i], { from: 2 }), A.FadeIn(dl[i])))), S.writeIn(s3, 1.4),
-      { cap: `Numbers. Our model gives the demonstrated 51 ${NEXT.p[0].toFixed(2)}, so this token adds ${nlog(NEXT.p[0]).toFixed(2)}. At 0.9, only ${nlog(0.9).toFixed(2)}. Near zero, the cost explodes: confident mistakes cost most.` });
+      { cap: `Numbers. The person wrote 51, and our model gives it ${NEXT.p[0].toFixed(2)}, so this token adds ${nlog(NEXT.p[0]).toFixed(2)}. At 0.9, only ${nlog(0.9).toFixed(2)}. Near zero, the cost explodes: confident mistakes cost most.` });
 
     // 6. the gradient flows straight through
     const GR = S.add(S.tex('\\grad\\, \\cData{c2L}{\\mathcal{L}_{\\mathrm{SFT}}} \\;=\\; -\\sum_{t}\\; \\grad \\lp\\big(\\cData{c2ys}{\\yy^{\\star}_t} \\mid \\xx,\\, \\cData{c2ys}{\\yy^{\\star}_{<t}}\\big)', { size: 64 }).at(0, -330));
@@ -146,7 +146,7 @@ FILM.parts.push(function ch02(ctx) {
     const AX = [-420, 0, 420];
     const chips = BAND.labels.map((lab, i) => S.add(S.group(new Text(lab, { size: 46, font: 'mono' }), new Text('→', { size: 40, color: C.GREY }).at(0, 60), new Tex(`\\RR = \\cReward{jr${i}}{${BAND.r[i]}}`, { size: 50 }).at(0, 120)).at(AX[i], -20)));
     const e2 = S.add(S.english('the {reward|RR} says how good an answer is, not what would have been better', { size: 42, width: 1500 }).at(0, 230));
-    S.beat(`Whatever the judge is, it hands back one number: the reward, R of x and y. Here, perhaps one, ${say2(BAND.r[1])}, and zero. It says how good an answer is, not how to fix it.`,
+    S.beat(`Whatever the judge is, it hands back one number: the reward, R of x and y. Here, perhaps one, zero point three, and zero. It says how good an answer is, not how to fix it.`,
       lag(0.4, chips.map((c) => A.FadeIn(c, { dy: 16 }))), S.writeIn(e2, 2),
       { cap: `Whatever the judge is, it hands back one number: the reward, R(x, y). Here, perhaps 1, ${BAND.r[1]}, and 0. It says how good an answer is, not how to fix it.` });
 
@@ -212,9 +212,10 @@ FILM.parts.push(function ch02(ctx) {
     const P = (z, v) => [AXX + ax.fx(z), AXY + ax.fy(v)];
     const now = S.add(S.dot(13, C.WHITE).at(...P(NEXT.z[0], 0)));
     const fixed = S.add(S.english('the dice roll held fixed', { size: 32, color: C.GREY_B, italic: true, width: 600 }).at(AXX + 300, AXY - 205));
+    const rule = S.add(S.english('toy judge: {reward 1|RR} for 51, {reward 0|RR} for anything else', { size: 32, color: C.GREY_B, italic: true, width: 1200 }).at(0, 330));
     const bad = [2, 3].map((i) => S.add(S.cross(40).at(mid(i), CY - 78)));
-    S.beat('Then comes the sample. Hold the dice roll fixed and slide the logit of fifty-one up. The sample jumps from one whole token to another, and the reward sits at zero, then leaps to one: a staircase.',
-      A.FadeOut(e2), A.FadeIn(ax), A.FadeIn(xL), A.FadeIn(yL), A.FadeIn(fixed), A.FadeIn(now, { from: 2 }), A.Create(st1, 1.2), A.Create(cliff, 0.5), A.Create(st2, 0.8), lag(0.3, bad.map((m) => A.Create(m, 0.5))));
+    S.beat('Now the sample. Say the judge gives one for fifty-one, and zero otherwise. Hold the dice roll fixed, and slide the logit of fifty-one up. The sample jumps between whole tokens: the reward sits at zero, then leaps to one. A staircase.',
+      A.FadeOut(e2), A.FadeIn(ax), A.FadeIn(xL), A.FadeIn(yL), A.FadeIn(rule), A.FadeIn(fixed), A.FadeIn(now, { from: 2 }), A.Create(st1, 1.2), A.Create(cliff, 0.5), A.Create(st2, 0.8), lag(0.3, bad.map((m) => A.Create(m, 0.5))));
     const sl = [S.add(S.txt('slope 0', { size: 32, color: C.GREY_B, italic: true }).at(...P(0.3, 0.18))), S.add(S.txt('slope 0', { size: 32, color: C.GREY_B, italic: true }).at(...P(2.5, 0.82))), S.add(S.txt('no slope', { size: 32, color: C.RED, italic: true }).at(...P(zStar + 0.42, 0.5)))];
     S.beat('Its slope is zero on every flat step, and does not exist at the cliff. Zero says that moving theta changes nothing. That is false, yet it is all that differentiating one sample can report.',
       lag(0.6, sl.map((m) => A.FadeIn(m, { dy: 10 }))), A.Indicate(now, { color: C.RED, scale: 1.6 }),
@@ -230,15 +231,15 @@ FILM.parts.push(function ch02(ctx) {
     const avg = ax.plot(pi51, { color: POL, width: 6, from: -1, to: 3 });
     const nowJ = S.add(S.dot(13, POL).at(...P(NEXT.z[0], pi51(NEXT.z[0]))));
     const avgL = S.add(S.english(`average over all dice rolls = {π(51)|pt}: smooth`, { size: 32, width: 700 }).at(...P(0.28, 0.8)));
-    S.beat(`Yet the average over every dice roll is smooth. If the judge gives one for fifty-one and zero otherwise, the average reward is just the probability of fifty-one, here ${say2(pi51(NEXT.z[0]))}. The gradient we want exists.`,
+    S.beat(`Yet the average over every dice roll is smooth. With this judge, the average reward is just the chance of drawing fifty-one, here ${say2(pi51(NEXT.z[0]))}, and it rises smoothly with the logit. The gradient we want exists.`,
       A.FadeOut(e5), fade(sl), A.Create(avg, 1.6), A.FadeIn(avgL), A.FadeIn(nowJ, { from: 2 }),
-      { cap: `Yet the average over every dice roll is smooth. If the judge gives 1 for 51 and 0 otherwise, the average reward is just the probability of 51, here ${pi51(NEXT.z[0]).toFixed(2)}. The gradient we want exists.` });
+      { cap: `Yet the average over every dice roll is smooth. With this judge, the average reward is just the chance of drawing 51, here ${pi51(NEXT.z[0]).toFixed(2)}, and it rises smoothly with the logit. The gradient we want exists.` });
 
     // the question
     const Q = S.add(S.tex('\\grad\\, \\EE_{\\yy \\sim \\pt(\\cdot \\mid \\xx)}\\big[\\, \\RR(\\xx, \\yy) \\,\\big] \\;=\\; ?', { size: 100 }).at(0, 20));
     const e7 = S.add(S.english('{θ|th} hides in the sampling itself: in {which answers we draw|pt}', { size: 42, width: 1500 }).at(0, 220));
     S.beat('So the expected reward depends on theta smoothly, yet no chain of derivatives reaches it. Theta hides in the sampling: in which answers we draw. What is its gradient?',
-      fade(ax, xL, yL, fixed, now, nowJ, avgL), A.Write(Q, 2), wait(0.4), A.Spot(Q, ['pt', 'grad']), S.writeIn(e7, 1.8), wait(1.6), A.Unspot(Q));
+      fade(ax, xL, yL, fixed, rule, now, nowJ, avgL), A.Write(Q, 2), wait(0.4), A.Spot(Q, ['pt', 'grad']), S.writeIn(e7, 1.8), wait(1.6), A.Unspot(Q));
 
     // next: the trick
     const trick = S.add(S.head('the log-derivative trick', { size: 80, color: S.color('grad') }).at(0, 20));

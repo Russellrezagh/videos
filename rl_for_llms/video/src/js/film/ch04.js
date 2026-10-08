@@ -32,9 +32,8 @@ FILM.parts.push(function ch04(ctx) {
     if (last < markup.length) runs.push([markup.slice(last), null]);
     return S.add(new MV.Rich(runs, { size, color, italic, anchor: 'start' }).hidden());
   };
-  // the score, s = grad log pi(a), as its own short symbol in this chapter
-  FILM.addSymbol('c4s', 'grad', 's', 'the score', 'the gradient of the sampled answer’s log-probability, ∇ log π(a)', 'a one-letter name keeps the variance formulas short');
-  const S_ = '\\cGrad{c4s}{s}';
+  // the score, s = grad log pi(a): the glossary's sc, yellow like every direction
+  const S_ = '\\sc';
   // the bandit's numbers (kernel: src/js/rl.js)
   const SC = BAND.labels.map((_, a) => RL.score(BAND.pi, a));
   const varAt = (b, r = R10) => RL.estimatorStats(BAND.z, r, b).variance;
@@ -90,7 +89,7 @@ FILM.parts.push(function ch04(ctx) {
       return S.add(S.arrow(x, y, x, y - g * K, { color: S.color('grad'), width: 6 }));
     });
     const vec = (g) => `(${g.map((v) => sgn(v, 2)).join(', ')})`;
-    const t41 = S.add(S.tex(`\\aa = 41: \\quad \\ghat \\;=\\; 10 \\times (${SC[2].map((v) => tsgn(v, 2)).join(',\\, ')})`, { size: 50 }).at(400, -190));
+    const t41 = S.add(S.tex(`\\aa = 41: \\quad \\ghat \\;=\\; 10 \\times (${SC[2].map((v) => tsgn(v, 3)).join(',\\, ')})`, { size: 46 }).at(410, -190));
     const v41 = S.add(S.txt(`= ${vec(g41)}`, { size: 42, color: S.color('grad'), font: 'mono' }).at(440, -100));
     const v51 = S.add(S.txt(`a = 51:  ĝ = ${vec(g51)}`, { size: 38, color: S.color('grad'), font: 'mono' }).at(400, 10));
     const vt = S.add(S.txt(`true gradient:  ${vec(BAND.grad)}`, { size: 38, color: C.GREY_B, font: 'mono' }).at(400, 110));
@@ -117,7 +116,8 @@ FILM.parts.push(function ch04(ctx) {
     const rB = rowV('rewards 11, 10.3, 10', VAR.off, 220, C.RED);
     const ratio = VAR.off / VAR.plain;
     const eN = S.add(S.english(`about ${Math.round(ratio / 10) * 10} times the variance: ${Math.round(ratio / 10) * 10} times as many samples for the same precision`, { size: 36, color: C.GREY_B }).at(0, 310));
-    S.beat(`Computed exactly: zero point one six with the original judge, sixty-eight with the generous one. About ${Math.round(ratio / 10) * 10} times more. Averaging divides the variance by the number of samples, so we would need ${Math.round(ratio / 10) * 10} times as many.`,
+    if (Math.round(ratio / 10) * 10 !== 430) throw new Error('ch04: the variance ratio is no longer about 430; update the narration');
+    S.beat('Computed exactly: zero point one six with the original judge, sixty-eight with the generous one. About four hundred and thirty times more. Averaging divides the variance by the number of samples, so we would need four hundred and thirty times as many.',
       par(A.FadeOut(eV), A.FadeOut(rV), par(A.MoveTo(Vf, 0, -250), A.ScaleTo(Vf, 0.8))),
       A.FadeIn(rA[0]), A.Create(rA[1], 0.5), A.FadeIn(rA[2]), wait(0.6), A.FadeIn(rB[0]), A.Create(rB[1], 1.6), A.FadeIn(rB[2]), S.writeIn(eN, 1.6),
       { cap: `Computed exactly: ${VAR.plain.toFixed(2)} with the original judge, ${VAR.off.toFixed(1)} with the generous one. About ${Math.round(ratio / 10) * 10} times more. Averaging divides the variance by the number of samples, so we would need ${Math.round(ratio / 10) * 10} times as many.` });
@@ -244,9 +244,9 @@ FILM.parts.push(function ch04(ctx) {
 
     // 2. a short name for the score
     const est = S.add(S.tex(`\\ghat \\;=\\; \\big(\\rr - \\bb\\big)\\, ${S_}, \\qquad ${S_} \\;=\\; \\grad\\lp(\\aa)`, { size: 76 }).at(0, -60));
-    const cs = S.add(S.symcard('c4s', { w: 1100 }).at(0, 170));
+    const cs = S.add(S.symcard('sc', { w: 1100, from: 'the gradient of the sampled answer’s log-probability, ∇ log π(a)', why: 'the direction that makes that answer more likely; one letter keeps the variance formulas short' }).at(0, 170));
     S.beat('Why a parabola, and where is its bottom? To keep the lines short, write s for the score of the sampled answer, the gradient of log pi. Then the estimate is r minus b, times s.',
-      par([ax, cv, off, toy, ...p10].map((m) => A.FadeOut(m))), A.Write(est, 1.8), A.Spot(est, 'c4s'), A.FadeIn(cs, { dy: 16 }));
+      par([ax, cv, off, toy, ...p10].map((m) => A.FadeOut(m))), A.Write(est, 1.8), A.Spot(est, 'sc'), A.FadeIn(cs, { dy: 16 }));
 
     // 3. the variance, written out
     const V1 = S.add(S.tex(`\\operatorname{Var}(\\bb) \\;=\\; \\EE\\Big[\\big(\\rr - \\bb\\big)^2\\, \\|${S_}\\|^2\\Big] \\;-\\; \\|\\grad\\JJ\\|^2`, { size: 76 }).at(0, -60));
@@ -284,10 +284,10 @@ FILM.parts.push(function ch04(ctx) {
       new Text(String(R10[a]), { size: 38, font: 'mono', color: S.color('rr') }).at(HX[4], 0)
     ).at(0, 10 + a * 64)));
     const res = S.add(S.tex(`\\bb^{*} = ${wts.map((w, a) => `${w.toFixed(3)} \\cdot ${R10[a]}`).join(' + ')} = ${VAR.bStar.toFixed(2)} \\qquad \\text{mean reward } ${J10.toFixed(2)}`, { size: 46 }).at(0, 250));
-    S.beat('Read it as a weighted average of the rewards: each answer counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so forty-one counts more, and b star lands just under the mean reward.',
+    S.beat('Read it as a weighted average of the rewards: each answer counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so the low-reward answers count for more than their chances, and b star lands just under the mean reward.',
       par(A.FadeOut(r5), A.FadeOut(D1), par(A.MoveTo(BS, 0, -330), A.ScaleTo(BS, 0.55), A.MoveTo(boxS, 0, -330), A.ScaleTo(boxS, 0.55))),
       S.writeIn(e6, 2), lag(0.15, heads.map((m) => A.FadeIn(m))), lag(0.4, trows.map((r) => A.FadeIn(r, { dx: 20 }))), A.Write(res, 1.8),
-      { cap: `Read it as a weighted average of the rewards: each answer counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so 41 counts more, and b* = ${VAR.bStar.toFixed(2)} lands just under the mean reward, ${J10.toFixed(2)}.` });
+      { cap: `Read it as a weighted average of the rewards: each answer counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so the low-reward answers count for more than their chances, and b* = ${VAR.bStar.toFixed(2)} lands just under the mean reward, ${J10.toFixed(2)}.` });
 
     // 7. back to the picture: the mean is nearly as good
     const ax2 = S.add(S.axes({ x0: 9, x1: 12, y0: 0, y1: 1.6, w: 1100, h: 460, xticks: [9, 10, 11, 12], yticks: [0, 0.5, 1, 1.5], yfmt: (v) => String(v), xlabel: 'baseline b', ylabel: 'variance of the estimate' }).at(AX, AY));

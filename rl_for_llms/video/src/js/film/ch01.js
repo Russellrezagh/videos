@@ -124,15 +124,15 @@ FILM.parts.push(function ch01(ctx) {
     // 7. the two steps as one formula: the softmax
     const FX = 480;
     const FY = -130;
-    const SM = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{\\cData{c1num}{e^{\\zz_\\aa}}}{\\cData{c1den}{\\sum_{b} e^{\\zz_b}}}', { size: 72 }).at(FX, FY));
-    const say7 = 'Written once, for any token a, these two steps are the softmax. On top: e to the logit of a. Underneath: the same, summed over every token b. That is the total.';
+    const SM = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{\\cData{c1num}{e^{\\zz_\\aa}}}{\\cData{c1den}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'}}}}', { size: 72 }).at(FX, FY));
+    const say7 = 'Written once, for any token a, these two steps are the softmax. On top: e to the logit of a. Underneath: the same, summed over every token. That is the total.';
     const w7 = par(A.FadeOut(r6), A.Write(SM, 2));
     const s7 = seq(A.Spot(SM, 'c1num'), lag(0.12, eVals.map((m) => A.Indicate(m, { color: PAR, scale: 1.2 }))));
     const t7a = Math.max(MV.durOf(w7), S.atWord(say7, 'On top'));
     S.beat(say7,
       w7, wait(t7a - MV.durOf(w7)), s7,
       wait(Math.max(0, S.atWord(say7, 'Underneath') - t7a - MV.durOf(s7))), A.Spot(SM, 'c1den'), A.Indicate(eSum, { color: PAR, scale: 1.3 }),
-      { cap: 'Written once, for any token a, these two steps are the softmax. On top: e to the logit of a. Underneath: the same, summed over every token b. That is the total.' });
+      { cap: 'Written once, for any token a, these two steps are the softmax. On top: e to the logit of a. Underneath: the same, summed over every token. That is the total.' });
 
     // 8. the policy, named; then read in English
     S.tour(SM, [
@@ -145,7 +145,7 @@ FILM.parts.push(function ch01(ctx) {
       S.endTour(SM), S.writeIn(e8, 2.4));
 
     // 9. what if every logit rises by the same amount?
-    const SH = S.add(S.tex('\\frac{e^{\\zz_\\aa + c}}{\\sum_{b} e^{\\zz_b + c}} \\;=\\; \\frac{e^{c}\\; e^{\\zz_\\aa}}{e^{c} \\sum_{b} e^{\\zz_b}} \\;=\\; \\pt(\\aa \\mid \\text{context})', { size: 56 }).at(0, 222));
+    const SH = S.add(S.tex('\\frac{e^{\\zz_\\aa + c}}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'} + c}} \\;=\\; \\frac{e^{c}\\; e^{\\zz_\\aa}}{e^{c} \\sum_{\\aa\'} e^{\\zz_{\\aa\'}}} \\;=\\; \\pt(\\aa \\mid \\text{context})', { size: 56 }).at(0, 222));
     const r9 = S.add(S.reason('because: adding c multiplies every exponential by the same factor, {e to the c|zz}, on top and underneath, so it cancels', { y: 340 }));
     const add2 = S.add(S.english(`add {${SHIFT}|zz} to every {logit|zz}:`, { size: 40, width: 700 }).at(FX, 50));
     const f2v = (v) => v.toFixed(2);
@@ -157,7 +157,7 @@ FILM.parts.push(function ch01(ctx) {
       { cap: 'What if the network added the same number, say 2, to every logit? Each exponential is multiplied by e², on top and underneath, so the factor cancels. The probabilities do not move at all.' });
 
     // 10. so only differences matter
-    const RT = S.add(S.tex('\\frac{\\pt(\\aa)}{\\pt(b)} \\;=\\; \\frac{e^{\\zz_\\aa}}{e^{\\zz_b}} \\;=\\; e^{\\zz_\\aa - \\zz_b}', { size: 60 }).at(FX, 55));
+    const RT = S.add(S.tex('\\frac{\\pt(\\aa)}{\\pt(\\aa\')} \\;=\\; \\frac{e^{\\zz_\\aa}}{e^{\\zz_{\\aa\'}}} \\;=\\; e^{\\zz_\\aa - \\zz_{\\aa\'}}', { size: 60 }).at(FX, 55));
     const e10 = S.add(S.tex(`\\text{51 against 41:}\\quad \\frac{\\cPolicy{q1}{${NEXT.p[0].toFixed(3)}}}{\\cPolicy{q2}{${NEXT.p[1].toFixed(3)}}} \\;\\approx\\; ${(NEXT.p[0] / NEXT.p[1]).toFixed(2)} \\;\\approx\\; e^{\\cParams{q3}{${NEXT.z[0].toFixed(2)}} \\,-\\, \\cParams{q4}{${NEXT.z[1].toFixed(2)}}}`, { size: 52 }).at(0, 225));
     const r10 = S.add(S.reason('because: the total underneath is the same for every token, so it cancels in a ratio', { y: 340 }));
     const dz = NEXT.z[0] - NEXT.z[1];
@@ -176,7 +176,7 @@ FILM.parts.push(function ch01(ctx) {
       A.FadeIn(bars, { dy: 30 }), A.FadeIn(after), wait(1.4), S.writeIn(e10b, 1.6));
 
     // 12. temperature: a knob for sampling
-    const SMT = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{e^{\\zz_\\aa / \\cKnob{c1T}{T}}}{\\sum_{b} e^{\\zz_b / \\cKnob{c1T}{T}}}', { size: 62 }).at(0, -310));
+    const SMT = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{e^{\\zz_\\aa / \\cKnob{c1T}{T}}}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'} / \\cKnob{c1T}{T}}}', { size: 62 }).at(0, -310));
     const tl = [['T = 1/2', 'sharper'], ['T = 2', 'flatter'], ['T = 1', 'as built']].map(([t, w]) => S.add(S.english(`{${t}|knob}: ${w}`, { size: 44, width: 600 }).at(620, -120)));
     const sayT = `One last knob: the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T equals one half, fifty-one rises to ${say2(PH[0])}: sharper. At T equals two, it falls to ${say2(P2[0])}: flatter. We keep T at one.`;
     const tA = S.atWord(sayT, 'At T equals one');
