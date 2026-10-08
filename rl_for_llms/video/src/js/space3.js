@@ -94,6 +94,24 @@ const MV3 = (() => {
     };
   }
 
+  /*
+   * The children of a space draw at projected points inside the space's own
+   * frame, so a scale on their element would scale about the space's origin
+   * and throw them across the screen. A.Indicate and A.FadeIn({ from }) scale
+   * p.s; a 3D child reads that as ks (its own size: a dot's radius, a label's
+   * text) and keeps its element unscaled.
+   */
+  class Kid3 extends Mob {
+    flush() {
+      const p = this.p;
+      const s = p.s;
+      p.ks = s;
+      p.s = 1;
+      super.flush();
+      p.s = s;
+    }
+  }
+
   /* =========================================================== Space3 */
   let clipIds = 0;
   class Space3 extends Mob {
@@ -256,7 +274,7 @@ const MV3 = (() => {
    * light; return null to leave a face out, or [colour, opacity] to make one
    * face fainter than the rest.
    */
-  class Surface3 extends Mob {
+  class Surface3 extends Kid3 {
     constructor(f, { u = [0, 1], v = [0, 1], res = [24, 24], color = () => C.BLUE, opacity = 0.9, stroke = C.BG, strokeOpacity = 0.35, shade = 0.3, bias = 0, props = {} } = {}) {
       super();
       this.f = f;
@@ -276,13 +294,13 @@ const MV3 = (() => {
     key() {
       const p = this.p;
       let k = '';
-      for (const name in p) if (name !== 'x' && name !== 'y' && name !== 's' && name !== 'r') k += `${p[name]},`;
+      for (const name in p) if (name !== 'x' && name !== 'y' && name !== 's' && name !== 'r' && name !== 'ks') k += `${p[name]},`;
       return k;
     }
     geometry() {
       const p = this.p;
       let k = '';
-      for (const name in p) if (name !== 'x' && name !== 'y' && name !== 's' && name !== 'r' && name !== 'o' && name !== 'fo') k += `${p[name]},`;
+      for (const name in p) if (name !== 'x' && name !== 'y' && name !== 's' && name !== 'r' && name !== 'ks' && name !== 'o' && name !== 'fo') k += `${p[name]},`;
       if (k === this.geoKey) return this.geo;
       const { nu, nv } = this;
       const [u0, u1] = this.ur;
@@ -341,7 +359,7 @@ const MV3 = (() => {
    * function of the path's props, pts(p). Props: draw (0..1, for A.Create),
    * stroke, sw, and anything in `props`.
    */
-  class Path3 extends Mob {
+  class Path3 extends Kid3 {
     constructor(pts, { color = C.WHITE, width = 5, dash = null, closed = false, fill = 'none', fillOpacity = 0.2, opacity = 1, under = false, props = {} } = {}) {
       super();
       this.under = under;
@@ -386,7 +404,7 @@ const MV3 = (() => {
 
   /* =========================================================== Dot3 */
   // a dot at a 3D point: [x, y, z], or at(p) -> [x, y, z]; props px py pz r color
-  class Dot3 extends Mob {
+  class Dot3 extends Kid3 {
     constructor(at, { r = 10, color = C.WHITE, ring = null, props = {} } = {}) {
       super();
       this.at3 = typeof at === 'function' ? at : null;
@@ -404,12 +422,13 @@ const MV3 = (() => {
       if (!this.space) return;
       const w = this.where(p);
       const q = this.space.project(w[0], w[1], w[2]);
-      const key = `${f1(q[0])}|${f1(q[1])}|${p.rad}|${p.color}`;
+      const rad = p.rad * p.ks;
+      const key = `${f1(q[0])}|${f1(q[1])}|${rad}|${p.color}`;
       if (key === this.last.k3) return;
       this.last.k3 = key;
       this.c.setAttribute('cx', f1(q[0]));
       this.c.setAttribute('cy', f1(q[1]));
-      this.c.setAttribute('r', f1(p.rad));
+      this.c.setAttribute('r', f1(rad));
       this.c.setAttribute('fill', p.color);
       if (this.ring) this.c.setAttribute('stroke-width', 4);
     }
@@ -421,7 +440,7 @@ const MV3 = (() => {
    * a, b: [x, y, z], or ends(p) -> [[ax, ay, az], [bx, by, bz]]. Props: ax ay
    * az bx by bz (when fixed), draw (0..1, for A.Arrow), color, sw.
    */
-  class Arrow3 extends Mob {
+  class Arrow3 extends Kid3 {
     constructor(a, b, { color = C.WHITE, width = 6, head = 22, props = {} } = {}) {
       super();
       this.ends = typeof a === 'function' ? a : null;
@@ -485,7 +504,7 @@ const MV3 = (() => {
    * Props: px py pz (the point), dx dy (a screen offset in px). bg: a dark
    * card behind the content, so it stays readable over a surface.
    */
-  class Label3 extends Mob {
+  class Label3 extends Kid3 {
     constructor(content, at, { size = 34, color = C.WHITE, tex = false, bg = 0.72, anchor = 'middle', italic = false, props = {} } = {}) {
       super();
       this.at3 = typeof at === 'function' ? at : null;
@@ -506,6 +525,7 @@ const MV3 = (() => {
       const q = this.space.project(w[0], w[1], w[2]);
       this.mob.p.x = this.mob.init.x + q[0] + p.dx;
       this.mob.p.y = this.mob.init.y + q[1] + p.dy;
+      this.mob.p.s = this.mob.init.s * p.ks;
       if (this.card) {
         if (!this.box) {
           // measured once the content is laid out
@@ -522,13 +542,16 @@ const MV3 = (() => {
           if (w0 > 0) this.box = { w: w0 + 22, h: h0 + 12 };
         }
         if (this.box) {
-          const sh = this.anchor === 'start' ? this.box.w / 2 - 11 : this.anchor === 'end' ? -this.box.w / 2 + 11 : 0;
-          const k = `${f1(this.mob.p.x)},${f1(this.mob.p.y)}`;
+          const ks = p.ks;
+          const bw = this.box.w * ks;
+          const bh = this.box.h * ks;
+          const sh = this.anchor === 'start' ? bw / 2 - 11 * ks : this.anchor === 'end' ? -bw / 2 + 11 * ks : 0;
+          const k = `${f1(this.mob.p.x)},${f1(this.mob.p.y)},${ks}`;
           if (k !== this.last.ck) {
-            this.card.setAttribute('x', f1(this.mob.p.x + sh - this.box.w / 2));
-            this.card.setAttribute('y', f1(this.mob.p.y - this.box.h / 2));
-            this.card.setAttribute('width', f1(this.box.w));
-            this.card.setAttribute('height', f1(this.box.h));
+            this.card.setAttribute('x', f1(this.mob.p.x + sh - bw / 2));
+            this.card.setAttribute('y', f1(this.mob.p.y - bh / 2));
+            this.card.setAttribute('width', f1(bw));
+            this.card.setAttribute('height', f1(bh));
             this.last.ck = k;
           }
         }
