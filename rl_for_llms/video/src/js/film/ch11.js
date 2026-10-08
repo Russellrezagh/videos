@@ -13,7 +13,8 @@ FILM.parts.push(function ch11(ctx) {
     return `${ONES[Math.floor(n / 100)]} hundred${n % 100 ? ` and ${words(n % 100)}` : ''}`;
   };
   const sayN = (x, d = 2) => {
-    const [a, b] = Math.abs(x).toFixed(d).split('.');
+    const [a, b0] = Math.abs(x).toFixed(d).split('.');
+    const b = b0 && b0.replace(/0+$/, '');
     return `${x < 0 ? 'minus ' : ''}${words(+a)}${b ? ` point ${b.split('').map((c) => ONES[+c]).join(' ')}` : ''}`;
   };
   const pct = (p) => `${Math.round(100 * p)}%`;
@@ -84,7 +85,8 @@ FILM.parts.push(function ch11(ctx) {
     const box2 = boxOf(S, F2, S.color('kk'));
     const r3 = S.add(S.reason('because: tries are independent samples, so their chances multiply; and “at least one right” is the opposite of “all wrong”'));
     S.beat('Say one try is right with chance p, so wrong with one minus p. Tries are independent, so all k are wrong with chance one minus p, multiplied k times. At least one right is the opposite: one, minus that.',
-      fade([q, prob, ...tries, ...marks, D]), A.Write(F1, 2.4), A.Write(F2, 1.6), A.Create(box2, 0.8), S.writeIn(r3, 1.8));
+      fade([q, prob, ...tries, ...marks, D]), A.Write(F1, 2.4), A.Write(F2, 1.6), A.Create(box2, 0.8), S.writeIn(r3, 1.8),
+      { cap: 'Say one try is right with chance p, so wrong with 1 − p. Tries are independent, so all k are wrong with chance (1 − p), multiplied k times: (1 − p)^k. At least one right is the opposite: 1 minus that.' });
     S.tour(F2, [
       { sym: 'c11p', at: [0, 230], anims: [A.FadeOut(r3)],
         say: 'p is the solve rate: the chance that one sampled answer to this problem is right. It belongs to the policy, problem by problem. And k is the number of tries we allow.' },
@@ -124,16 +126,17 @@ FILM.parts.push(function ch11(ctx) {
     const F3 = S.add(S.tex(`\\Pr\\big(\\text{no correct one among } \\kk \\text{ picked}\\big) \\;=\\; \\dfrac{\\dbinom{${NN} - ${CC}}{\\kk}}{\\dbinom{${NN}}{\\kk}}`, { size: 60 }).at(0, 80));
     const r6 = S.add(S.reason('because: every set of k of the n answers is equally likely to be picked; count the sets that miss every correct one'));
     S.beat('Imagine picking k of the n answers at random. All n choose k picks are equally likely. The picks that miss every correct answer take all k from the n minus c wrong ones: n minus c choose k.',
-      A.FadeOut(nc), lag(0.2, rings.map((r) => A.FadeIn(r, { from: 1.3, dur: 0.5 }))), A.Write(F3, 2.4), S.writeIn(r6, 1.8));
+      A.FadeOut(nc), lag(0.2, rings.map((r) => A.FadeIn(r, { from: 1.3, dur: 0.5 }))), A.Write(F3, 2.4), S.writeIn(r6, 1.8),
+      { cap: 'Imagine picking k of the n answers at random. All (n choose k) picks are equally likely. The picks that miss every correct answer take all k from the n − c wrong ones: (n − c choose k).' });
 
     // 7. the estimator, with numbers
     const F4 = S.add(S.tex(`\\widehat{${PASSK}} \\;=\\; 1 - \\dfrac{\\dbinom{${NN} - ${CC}}{\\kk}}{\\dbinom{${NN}}{\\kk}} \\;=\\; 1 - \\dfrac{\\dbinom{${N - Cn}}{${K}}}{\\dbinom{${N}}{${K}}} \\;=\\; 1 - \\frac{${RL.binom(N - Cn, K)}}{${RL.binom(N, K)}} \\;\\approx\\; ${est.toFixed(2)}`, { size: 56 }).at(0, 75));
     const box4 = boxOf(S, F4, S.color('kk'));
     S.paper('chen2021');
     const ub = S.add(S.english(`unbiased: if {p = ${P0}|c11p}, the truth is ${pk(P0, K).toFixed(2)}; this estimate averages ${avgEst.toFixed(2)}, plugging in {c / n|c11c} averages ${avgPlug.toFixed(2)}`, { size: 34, color: C.GREY_B, italic: true, width: 1700 }).at(0, 280));
-    S.beat(`So the estimate is one minus that ratio: here, one minus seventy over two hundred and ten, about ${sayN(est)}. Chen and colleagues use it because it is right on average. Plugging c over n into the formula would come out too low.`,
+    S.beat(`So the estimate is one minus that ratio: one minus seventy over two hundred and ten, about ${sayN(est)}. Chen and colleagues use it because it is right on average. Plugging in c over n comes out too low.`,
       fade([r6, F3]), A.Write(F4, 2.4), A.Create(box4, 0.8), S.writeIn(ub, 1.8),
-      { cap: `So the estimate is one minus that ratio: here, 1 − 70/210, about ${est.toFixed(2)}. Chen and colleagues use it because it is right on average. Plugging c/n into the formula would come out too low.` });
+      { cap: `So the estimate is one minus that ratio: 1 − 70/210, about ${est.toFixed(2)}. Chen and colleagues use it because it is right on average. Plugging in c/n comes out too low.` });
 
     // 9. the toy curves: RL raises pass@1, the base model wins at large k
     const AX2 = 40;
@@ -146,14 +149,20 @@ FILM.parts.push(function ch11(ctx) {
     const toy = S.add(S.toy(760, -390));
     const n1 = S.add(S.txt(`k = 1:  ${at(PASS.base, 1).toFixed(2)} → ${at(PASS.rl, 1).toFixed(2)}`, { size: 34, color: C.GREY_B, font: 'mono', anchor: 'start' }).at(-760, -330));
     const n2 = S.add(S.txt(`k = 256:  ${at(PASS.base, 256).toFixed(2)} → ${at(PASS.rl, 256).toFixed(2)}`, { size: 34, color: C.GREY_B, font: 'mono', anchor: 'start' }).at(-760, -280));
-    S.paper('yue2025');
-    S.beat(`Now two toy models, over ten problems. R L raises pass at one, from ${sayN(at(PASS.base, 1))} to ${sayN(at(PASS.rl, 1))}. But as k grows, the base model passes it. Yue and colleagues found this in real models: with enough tries, base models often solve as many problems, or more.`,
+    // the first k (of PASS.ks) from which the base model is ahead
+    const KX = PASS.ks.find((k) => at(PASS.base, k) >= at(PASS.rl, k));
+    if (KX !== 8) throw new Error(`ch11: the toy curves should cross at k = 8, not ${KX}`);
+    S.beat(`Now two toy models, over ten problems. R L raises pass at one, from ${sayN(at(PASS.base, 1))} to ${sayN(at(PASS.rl, 1))}. But the base model’s curve keeps climbing: from ${words(KX)} tries on, it is ahead.`,
       fade([...dots, ...rings, F4, box4, ub]), A.FadeIn(toy), A.FadeIn(ax2), A.Create(cb, 1.6), A.FadeIn(lb), A.Create(cr, 1.6), A.FadeIn(lr), A.FadeIn(n1), A.FadeIn(n2),
-      { cap: `Now two toy models, over ten problems. RL raises pass@1, from ${at(PASS.base, 1).toFixed(2)} to ${at(PASS.rl, 1).toFixed(2)}. But as k grows, the base model passes it. Yue et al. found this in real models: with enough tries, base models often solve as many problems, or more.` });
+      { cap: `Now two toy models, over ten problems. RL raises pass@1, from ${at(PASS.base, 1).toFixed(2)} to ${at(PASS.rl, 1).toFixed(2)}. But the base model’s curve keeps climbing: from ${KX} tries on, it is ahead.` });
+    S.paper('yue2025');
+    S.beat('Yue and colleagues report the same pattern in real models: with enough tries, base models often solve as many problems as their R L versions, or more. To see why, look inside the toy.',
+      A.Indicate(n2, { color: C.YELLOW, scale: 1.08 }), A.Indicate(lb, { color: S.color('pref'), scale: 1.15 }),
+      { cap: 'Yue and colleagues report the same pattern in real models: with enough tries, base models often solve as many problems as their RL versions, or more. To see why, look inside the toy.' });
 
     // 10. inside the toy: sharpening
     const toy2 = S.add(S.toy(760, -390));
-    const COL = [-470, -60, 250, 560];
+    const COL = [-560, -150, 230, 610];
     const HY = -230;
     const heads = ['', `${PP}`, `\\text{pass@}1`, `\\text{pass@}256`].map((t, i) => S.add(S.tex(t || '\\,', { size: 46 }).at(COL[i], HY)));
     const rowOf = (label, p0, p1, y) => S.add(S.group(
@@ -165,9 +174,13 @@ FILM.parts.push(function ch11(ctx) {
     const row1 = rowOf('solved half the time', MID.base, MID.rl, -130);
     const row2 = rowOf('solved 1 time in 100', RARE.base, RARE.rl, -30);
     const e10 = S.add(S.english('sharpening: {probability|pt} moves onto answers the model already finds, and away from rare ones', { size: 40, width: 1500 }).at(0, 110));
-    S.beat(`Inside the toy: on a problem the base model solves half the time, R L raises p to ${sayN(MID.rl)}. On one it solves once in a hundred tries, p falls to zero, and pass at two fifty-six from ${sayN(pk(RARE.base, 256))} to zero. That is sharpening.`,
-      fade([toy, ax2, cb, cr, lb, lr, n1, n2]), A.FadeIn(toy2), lag(0.1, heads.map((m) => A.FadeIn(m))), A.FadeIn(row1, { dx: 20 }), A.FadeIn(row2, { dx: 20 }), A.Indicate(row2, { color: C.RED, scale: 1.03 }), S.writeIn(e10, 2),
-      { cap: `Inside the toy: on a problem the base model solves half the time, RL raises p to ${MID.rl}. On one it solves once in a hundred tries, p falls to zero, and pass@256 from ${pk(RARE.base, 256).toFixed(2)} to zero. That is sharpening.` });
+    if (pk(MID.base, 256).toFixed(2) !== '1.00' || pk(MID.rl, 256).toFixed(2) !== '1.00') throw new Error('ch11: both models should solve the half-the-time problem at k = 256');
+    S.beat(`Inside the toy, take two problems. One the base model solves half the time: R L raises p to ${sayN(MID.rl)}, a far better pass at one. With two hundred fifty-six tries, both models solve it anyway.`,
+      fade([toy, ax2, cb, cr, lb, lr, n1, n2]), A.FadeIn(toy2), lag(0.1, heads.map((m) => A.FadeIn(m))), A.FadeIn(row1, { dx: 20 }),
+      { cap: `Inside the toy, take two problems. One the base model solves half the time: RL raises p to ${MID.rl}, a far better pass@1. With 256 tries, both models solve it anyway.` });
+    S.beat(`The other it solves once in a hundred tries. After R L, p is zero. With two hundred fifty-six tries, the base model solves it ${sayPct(pk(RARE.base, 256))} of the time; the R L model, never. That is sharpening.`,
+      A.FadeIn(row2, { dx: 20 }), A.Indicate(row2, { color: C.RED, scale: 1.03 }), S.writeIn(e10, 2),
+      { cap: `The other it solves once in a hundred tries. After RL, p is zero. With 256 tries, the base model solves it ${pct(pk(RARE.base, 256))} of the time; the RL model, never. That is sharpening.` });
 
     // 11. why: the policy gradient only sees what the policy samples
     const PG = S.add(S.tex('\\grad\\, \\JJ(\\th) \\;=\\; \\EE_{\\cData{c11s}{\\yy \\sim \\pt}}\\Big[\\, \\RR(\\xx, \\yy)\\; \\grad \\lp(\\yy \\mid \\xx) \\,\\Big]', { size: 76 }).at(0, -40));
@@ -195,7 +208,8 @@ FILM.parts.push(function ch11(ctx) {
     ]);
     const e1 = S.add(S.english('every update = the average, over some {responses|yy}, of {a weight|c11w} × {the direction that makes that response more likely|grad}', { size: 40, width: 1500 }).at(0, 170));
     S.beat('The direction is the same in every method: chapter three’s gradient of log pi. So a method is two choices: which responses to average over, and what weight to give each one.',
-      S.endTour(GF), A.Spot(GF, ['grad', 'lp']), S.writeIn(e1, 2.2), A.Unspot(GF));
+      S.endTour(GF), A.Spot(GF, ['grad', 'lp']), S.writeIn(e1, 2.2), A.Unspot(GF),
+      { cap: 'The direction is the same in every method: chapter 3’s gradient of log π_θ. So a method is two choices: which responses to average over, and what weight to give each one.' });
 
     // 2. the table
     const XM = -860;
@@ -229,18 +243,20 @@ FILM.parts.push(function ch11(ctx) {
     S.beat('Actor-critic and G A E: an estimated advantage, token by token. P P O: the same advantage, times the ratio rho, because its samples come from the old policy; and zero wherever the clip is active.',
       lag(2.4, rows.slice(3, 5).map((r) => A.FadeIn(r, { dx: -24 }))),
       { cap: 'Actor-critic and GAE: an estimated advantage, token by token. PPO: the same advantage, times the ratio ρ, because its samples come from the old policy; and zero wherever the clip is active.' });
+    // the GRPO row shows the weight on one token's push; its averaging and its leash are left out
+    const foot = S.add(S.english('(GRPO also averages over each answer’s tokens and the group, and adds its {leash|bt}: left out here)', { size: 30, color: C.GREY_B, italic: true, width: 1700 }).at(0, 350));
     S.beat('G R P O: P P O’s weight, with the group-normalised reward as the advantage. D P O: beta, times the sigmoid of how wrong the implicit reward is; plus for the winner, minus for the loser.',
-      lag(2.6, rows.slice(5).map((r) => A.FadeIn(r, { dx: -24 }))),
+      lag(2.6, rows.slice(5).map((r) => A.FadeIn(r, { dx: -24 }))), A.FadeIn(foot),
       { cap: 'GRPO: PPO’s weight, with the group-normalised reward as the advantage. DPO: β times the sigmoid of how wrong the implicit reward is; plus for the winner, minus for the loser.' });
 
     // 3. the last column
     const colBox = S.add(S.rect(470, 630, { stroke: C.WHITE, width: 4, rx: 14 }).at(XS, 47));
     S.beat('Now read the last column. Most methods average over responses the policy writes itself: they learn from their own successes and mistakes. S F T and D P O average over responses written in advance.',
-      A.Create(colBox, 1), par(rows.map((r, i) => (i === 0 || i === 6 ? A.Indicate(r, { color: C.YELLOW, scale: 1.03 }) : wait(0)))),
+      A.FadeOut(foot), A.Create(colBox, 1), par(rows.map((r, i) => (i === 0 || i === 6 ? A.Indicate(r, { color: C.YELLOW, scale: 1.03 }) : wait(0)))),
       { cap: 'Now read the last column. Most methods average over responses the policy writes itself: they learn from their own successes and mistakes. SFT and DPO average over responses written in advance.' });
 
     // 4. the art is in the weight
-    S.beat('So a method comes down to two choices: whose responses to average over, and what weight to give each. A good weight is low in noise, honest, and hard to game, and keeps the policy close to what it knows.',
+    S.beat('So a method comes down to two choices: whose responses to average over, and what weight to give each. A good weight is low in noise, right on average, and hard to game, and keeps the policy close to what it knows.',
       A.FadeOut(colBox), A.Spot(GF, 'c11w'), lag(0.12, rows.map((r) => A.Indicate(r, { color: C.YELLOW, scale: 1.03, dur: 0.6 }))));
   });
 

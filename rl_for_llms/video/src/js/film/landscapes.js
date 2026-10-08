@@ -269,12 +269,15 @@ FILM.landscapes = FILM.landscapes || {};
       const E3 = S.add(S.english('only {differences between logits|zz} matter, so two numbers fix the whole {policy|pt}', { size: 40 }).at(0, 150));
       const R3 = S.add(S.reason('because: subtracting the logit of 41 from all three changes nothing'));
       S.beat('So only differences matter. Subtract forty-one’s logit from all three, making it zero. Two numbers are left, and they fix the whole policy: u and v.',
-        A.FadeOut(F1), A.FadeOut(R2), par(A.MoveTo(F2, 0, -275), A.ScaleTo(F2, 0.72), A.Set(F2, { o: 0.5 })), A.Write(F3, 1.8), S.writeIn(E3, 1.6), S.writeIn(R3, 1.2));
+        A.FadeOut(F1), A.FadeOut(R2), par(A.MoveTo(F2, 0, -275), A.ScaleTo(F2, 0.72), A.Set(F2, { o: 0.5 })), A.Write(F3, 1.8), S.writeIn(E3, 1.6), S.writeIn(R3, 1.2),
+        { cap: 'So only differences matter. Subtract 41’s logit from all three, making it zero. Two numbers are left, and they fix the whole policy: u and v.' });
       S.tour(F3, [
         { sym: 'lu', at: [0, 175], anims: fade(A, [E3, R3]),
-          say: 'u is how far fifty-one is ahead of forty-one. When u is large, fifty-one dominates, and the model is sure of it.' },
+          say: 'u is how far fifty-one is ahead of forty-one. When u is large, fifty-one dominates, and the model is sure of it.',
+          cap: 'u is how far 51 is ahead of 41. When u is large, 51 dominates, and the model is sure of it.' },
         { sym: 'lv', at: [0, 175],
-          say: 'v is how far about fifty is ahead of forty-one. When v is large, the model is sure of about fifty. When both are very negative, forty-one wins.' },
+          say: 'v is how far about fifty is ahead of forty-one. When v is large, the model is sure of about fifty. When both are very negative, forty-one wins.',
+          cap: 'v is how far “about 50” is ahead of 41. When v is large, the model is sure of about 50. When both are very negative, 41 wins.' },
       ]);
 
       // the floor, seen from above, and our model on it
@@ -316,7 +319,8 @@ FILM.landscapes = FILM.landscapes || {};
       S.beat('Flatten the landscape into a map, seen from above, and the two slopes make one arrow: the gradient. It points mostly toward fifty-one, and a little away from about fifty.',
         fade(A, [hLab, ...L.corner, L.labU, L.labV]),
         par(A.Set(L.surf, { h: 0, fo: MAPFO }, 2.6), A.Set(L.sp, MAP, 2.6), A.Set(L.sp, { win: 1 }, 2.6)),
-        A.Arrow(AR.grad, 1), A.FadeIn(AR.gradLab), A.FadeIn(tag));
+        A.Arrow(AR.grad, 1), A.FadeIn(AR.gradLab), A.FadeIn(tag),
+        { cap: 'Flatten the landscape into a map, seen from above, and the two slopes make one arrow: the gradient. It points mostly toward 51, and a little away from about 50.' });
 
       // one sample, one of three arrows
       const E12 = col.tex(S, '\\ghat \\;=\\; \\rr(\\aa)\\; \\grad\\lp(\\aa), \\quad \\aa \\sim \\pt', -300, 52);
@@ -383,19 +387,22 @@ FILM.landscapes = FILM.landscapes || {};
       ));
       const ticks = [0, 1].map((j) => S.add(S.txt(String(j), { size: 32, color: C.GOLD, anchor: 'end' })).at(SL.cx - SL.w / 2 - 14, sy(j)));
       S.beat('Now chapter four’s generous judge: add ten to every reward. Every policy’s average reward rises by exactly ten, because the chances add up to one. The landscape lifts by ten, and keeps its shape.',
-        A.FadeIn(h), A.FadeIn(L.sp), A.FadeIn(tag), A.Write(F1, 1.8), S.writeIn(R1, 1.4), A.FadeIn(slice), par(ticks.map((t) => A.FadeIn(t))));
+        A.FadeIn(h), A.FadeIn(L.sp), A.FadeIn(tag), A.Write(F1, 1.8), S.writeIn(R1, 1.4), A.FadeIn(slice), par(ticks.map((t) => A.FadeIn(t))),
+        { cap: 'Now chapter 4’s generous judge: add 10 to every reward. Every policy’s average reward rises by exactly 10, because the chances add up to one. The landscape lifts by 10, and keeps its shape.' });
       const F2 = col.tex(S, '\\grad\\big(\\JJ + 10\\big) \\;=\\; \\grad\\JJ', 230, 52);
       const F3 = col.tex(S, '\\ghat \\;=\\; \\big(\\rr(\\aa) + 10\\big)\\; \\grad\\lp(\\aa)', -300, 54);
       const R3 = col.why(S, 'every {reward|rr} is now about 10, so every arrow is about 10 times longer', -205);
       S.beat('Seen from the side, only the numbers on the axis change, so the yellow gradient stays exactly the same. The samples do not. Each is its reward times its push, and every reward is now about ten.',
         par(ticks.map((t, j) => A.Count(t, j, j + 10, (x) => String(Math.round(x)), 1.6))), A.Write(F2, 1.2), wait(1.2),
         fade(A, [F1, R1, slice, ...ticks, F2, tag]), A.Write(F3, 1.4), S.writeIn(R3, 1.2),
-        par(A.Set(L.sp, FAR, 3), A.Set(L.sp, { win: 0 }, 1.2), AR.samples.map((m) => A.Set(m, { off: 10 }, 3)), A.Show(AR.samples[2]), A.Set(AR.samples[2], { draw: 1 }, 0.01)));
+        par(A.Set(L.sp, FAR, 3), A.Set(L.sp, { win: 0 }, 1.2), AR.samples.map((m) => A.Set(m, { off: 10 }, 3)), A.Show(AR.samples[2]), A.Set(AR.samples[2], { draw: 1 }, 0.01)),
+        { cap: 'Seen from the side, only the numbers on the axis change, so the yellow gradient stays exactly the same. The samples do not. Each is its reward times its push, and every reward is now about 10.' });
       const T4 = col.tex(S, '\\sum_{\\aa} \\pt(\\aa)\\; \\ghat(\\aa) \\;=\\; \\grad\\JJ', -80, 56);
       const E4 = col.say(S, 'right on average; wildly off one sample at a time', 30, 36);
       AR.pieces.forEach((m) => (m.init.off = 10));
       S.beat('Even forty-one now earns ten points, and gets a long arrow. Yet weighted by their chances and laid tip to tail, the huge arrows still land on the small yellow one. Right on average; wildly off one at a time.',
-        A.Indicate(AR.labels[2], { scale: 1.3 }), A.Write(T4, 1.4), par(AR.samples.map((m) => A.Set(m, { o: 0.35 }, 0.6))), lag(1.1, AR.pieces.map((m) => A.Arrow(m, 1))), A.Indicate(AR.gradLab, { scale: 1.3 }), S.writeIn(E4, 1.4));
+        A.Indicate(AR.labels[2], { scale: 1.3 }), A.Write(T4, 1.4), par(AR.samples.map((m) => A.Set(m, { o: 0.35 }, 0.6))), lag(1.1, AR.pieces.map((m) => A.Arrow(m, 1))), A.Indicate(AR.gradLab, { scale: 1.3 }), S.writeIn(E4, 1.4),
+        { cap: 'Even 41 now earns 10 points, and gets a long arrow. Yet weighted by their chances and laid tip to tail, the huge arrows still land on the small yellow one. Right on average; wildly off one at a time.' });
 
       // how far they swing
       const S5 = col.tex(S, '\\text{spread} \\;=\\; \\EE_{\\aa\\sim\\pt}\\Big[\\, \\big\\|\\, \\ghat - \\grad\\JJ \\,\\big\\|^{2} \\,\\Big]', -290, 52);
@@ -471,13 +478,15 @@ FILM.landscapes = FILM.landscapes || {};
       const E10 = col.say(S, 'with no {baseline,|bb} every {reward|rr} is about 10, so every sample says “more of this”', 90, 36);
       const R10 = col.why(S, 'once it is sure of a wrong answer, it almost never samples 51 again', 200);
       S.beat('With every reward about ten, every sample says: more of this. Whatever the model says often gets pushed further, until it is sure. Then it almost never samples fifty-one again, so it almost never learns.',
-        S.writeIn(E10, 1.8), S.writeIn(R10, 1.4), A.Set(L.sp, { theta: -61 }, 5, 'linear'));
+        S.writeIn(E10, 1.8), S.writeIn(R10, 1.4), A.Set(L.sp, { theta: -61 }, 5, 'linear'),
+        { cap: 'With every reward about 10, every sample says: more of this. Whatever the model says often gets pushed further, until it is sure. Then it almost never samples 51 again, so it almost never learns.' });
       const L11 = col.tex(S, '\\bb_i \\;=\\; \\tfrac{1}{3} \\textstyle\\sum_{j \\ne i} \\big(\\rr_j + 10\\big)', -80, 52);
       const C11 = S.add(S.english(`with it, sure of {51:|#83C167} ${END.loo[0]} of 8`, { size: 36, width: COLW })).at(RX, 20);
       const E11 = col.say(S, 'a {baseline|bb} leaves the average alone; it tames the swing, and that decides whether training finds the top', 150, 34);
       S.beat(`With a leave-one-out baseline, each sample is compared with the average reward of the other three in its batch. All ${words[END.loo[0]]} runs climb to fifty-one. A baseline leaves the average alone; it tames the swing, and that decides whether training finds the top.`,
         fade(A, [...C9, E10, R10]), par(none.map((m) => A.Set(m, { o: 0.25 }, 0.6)), endsN.map((m) => A.Set(m, { o: 0.25 }, 0.6))), A.Write(L11, 1.4),
-        lag(0.25, loo.map((m) => A.Create(m, 2.2))), A.FadeIn(C11), S.writeIn(E11, 2));
+        lag(0.25, loo.map((m) => A.Create(m, 2.2))), A.FadeIn(C11), S.writeIn(E11, 2),
+        { cap: `With a leave-one-out baseline, each sample is compared with the average reward of the other three in its batch. All ${END.loo[0]} runs climb to 51. A baseline leaves the average alone; it tames the swing, and that decides whether training finds the top.` });
     });
   };
 
@@ -575,7 +584,8 @@ FILM.landscapes = FILM.landscapes || {};
         S.add(S.english('{grey:|#9A9EA6} flat, no push at all', { size: 32, width: COLW })).at(RX, 60),
       ];
       S.beat('In words: take the smaller of the ratio times the advantage, and the same thing with the ratio held within epsilon of one. The colours show the slope. Green and red still push. Grey is flat: no push at all.',
-        S.writeIn(E7, 2), lag(0.6, key.map((m) => A.FadeIn(m, { dx: -10 }))));
+        S.writeIn(E7, 2), lag(0.6, key.map((m) => A.FadeIn(m, { dx: -10 }))),
+        { cap: 'In words: take the smaller of the ratio times the advantage, and the same thing with the ratio held within ε of 1. The colours show the slope. Green and red still push. Grey is flat: no push at all.' });
 
       // 5. two slices
       const slice = (a) => {
@@ -640,7 +650,8 @@ FILM.landscapes = FILM.landscapes || {};
       const E12 = col.say(S, 'a larger {ε|eps} moves the shelves out: each batch may move the policy further', 80, 34);
       const E13 = col.say(S, 'push only so far where we want to go; always undo a mistake', 200, 38);
       S.beat('What if epsilon were larger? The shelves move out, and each batch may move the policy further. So epsilon sets the size of step we trust: push only so far where we want to go, and always undo a mistake.',
-        fade(A, [...E11, ...back, tok, ghost, gap, sl[0], sl[1]]), A.Set(band, { o: 0 }, 0.6), A.Set(clipS, { eps: 0.4 }, 2.4), A.Spot(F6, 'eps'), S.writeIn(E12, 1.4), wait(0.6), A.Set(clipS, { eps: EPS }, 2.4), A.Unspot(F6), S.writeIn(E13, 1.6), A.Set(sp, { theta: -96 }, 4));
+        fade(A, [...E11, ...back, tok, ghost, gap, sl[0], sl[1]]), A.Set(band, { o: 0 }, 0.6), A.Set(clipS, { eps: 0.4 }, 2.4), A.Spot(F6, 'eps'), S.writeIn(E12, 1.4), wait(0.6), A.Set(clipS, { eps: EPS }, 2.4), A.Unspot(F6), S.writeIn(E13, 1.6), A.Set(sp, { theta: -96 }, 4),
+        { cap: 'What if ε were larger? The shelves move out, and each batch may move the policy further. So ε sets the size of step we trust: push only so far where we want to go, and always undo a mistake.' });
     });
   };
 
@@ -766,7 +777,8 @@ FILM.landscapes = FILM.landscapes || {};
         { cap: 'The objective is the plane, minus β times the bowl. With β = 0.5, that is exactly the bowl as drawn. Subtract it, and watch the plane bend: its edges sink, most of all toward flattery, and a dome rises in between.' });
       const E7 = col.say(S, '{expected reward,|rr} minus a price for moving away from the {reference;|pref} {β|bt} sets the price', -100, 36);
       S.beat('Read it as: expected reward, minus a price for moving away from the reference. Beta sets the price.',
-        S.writeIn(E7, 2), A.Spot(F6, 'bt'));
+        S.writeIn(E7, 2), A.Spot(F6, 'bt'),
+        { cap: 'Read it as: expected reward, minus a price for moving away from the reference. β sets the price.' });
 
       // 6. the peak and its height
       const peakAt = () => [...floorOf(tilt(beta())), zOf(height(beta()))];
@@ -796,7 +808,7 @@ FILM.landscapes = FILM.landscapes || {};
         A.Unspot(F6), fade(A, [E7]), A.Write(F8, 2), A.FadeIn(peak, { from: 2 }), A.Create(drop, 0.8), A.FadeIn(foot), A.FadeIn(peakLab), A.FadeIn(piRd),
         { cap: 'The top of the dome is the exact solution we met before: the reference, reweighted by e^(r/β), then normalized. At β = 0.5 it is 17% vague, 43% helpful, 39% flattering.' });
       const F9 = col.tex(S, '\\JJ_{\\bt}(\\pp) \\;=\\; -\\bt\\, \\KL(\\pp \\,\\|\\, \\pstar) \\;+\\; \\bt \\log \\ZZ', 130, 46);
-      const R9 = col.why(S, `because: at the peak the K L to {π*|pstar} is zero, so the height is {β log Z|bt} = ${fx(height(B0))}; the {reference|pref} sits at ${fx(Eref)}`, 230);
+      const R9 = col.why(S, `because: at the peak the KL to {π*|pstar} is zero, so the height is {β log Z|bt} = ${fx(height(B0))}; the {reference|pref} sits at ${fx(Eref)}`, 230);
       S.beat('How high is the peak? Earlier we rewrote the objective as minus beta times the K L to the peak, plus beta log Z. At the peak that K L is zero, so the height is beta log Z: zero point eight two.',
         A.Write(F9, 2), S.writeIn(R9, 1.6), A.Indicate(peak, { scale: 1.5 }), A.Indicate(refDot, { scale: 1.5 }),
         { cap: `How high is the peak? Earlier we rewrote the objective as −β KL(π ‖ π*) + β log Z. At the peak that KL is zero, so the height is β log Z = ${fx(height(B0))}.` });
@@ -813,7 +825,8 @@ FILM.landscapes = FILM.landscapes || {};
       hide(trail);
       sp.add(trail);
       S.beat('Now turn the knob. A large beta makes the bowl steep, and moving away expensive. The peak stays close to the reference.',
-        fade(A, [F8, F9, R9]), A.Set(surf, { lb: Math.log(2.5) }, 3.4), A.Set(sp, { theta: -78 }, 3.4));
+        fade(A, [F8, F9, R9]), A.Set(surf, { lb: Math.log(2.5) }, 3.4), A.Set(sp, { theta: -78 }, 3.4),
+        { cap: 'Now turn the knob. A large β makes the bowl steep, and moving away expensive. The peak stays close to the reference.' });
       const E11 = col.say(S, 'smaller {β:|bt} a flatter bowl, and the peak slides toward {flattery|#D147BD}', 140, 36);
       S.beat('As beta shrinks, the bowl flattens, and the peak slides away from the reference, toward the flattering corner: the answer the reward model overrates. At beta zero point one, the best policy flatters ninety-eight percent of the time.',
         A.FadeIn(trail), A.Set(surf, { fo: 0.62 }, 1), A.Set(surf, { lb: Math.log(0.1) }, 7, 'linear'), A.Set(sp, { theta: -96, ...TALL }, 7), S.writeIn(E11, 1.6),
@@ -821,17 +834,19 @@ FILM.landscapes = FILM.landscapes || {};
       const F12a = col.tex(S, '\\bt \\to \\infty: \\quad \\pstar \\to \\pref', 220, 44);
       const F12b = col.tex(S, '\\bt \\to 0: \\quad \\pstar \\to \\text{the top-reward answer}', 290, 44);
       S.beat('In the limits: as beta grows without bound, the best policy is the reference itself. As beta goes to zero, the leash is gone, and the best policy is whichever answer the reward model likes most.',
-        A.Write(F12a, 1.4), A.Write(F12b, 1.6), A.Set(sp, { theta: -84 }, 4));
+        A.Write(F12a, 1.4), A.Write(F12b, 1.6), A.Set(sp, { theta: -84 }, 4),
+        { cap: 'In the limits: as β grows without bound, the best policy is the reference itself. As β goes to zero, the leash is gone, and the best policy is whichever answer the reward model likes most.' });
 
       // 8. what it means
       const E13 = col.say(S, 'reward over-optimization: the {reward|rr} is only a model, and the climb finds its flaws', 140, 36);
       S.paper('gao2023');
       S.beat('That slide is reward over-optimization. The reward model is only a model of what we want. Gao, Schulman and Hilton measured it, with a gold reward model standing in for people: optimize hard against a learned proxy, and the gold reward first rises, then falls.',
-        fade(A, [F12a, F12b, toy, E11]), S.writeIn(E13, 2), A.Set(surf, { lb: Math.log(0.6) }, 4), A.Set(sp, CAM, 4),
+        fade(A, [F12a, F12b, toy, E11]), S.writeIn(E13, 2), A.Set(surf, { lb: lb0 }, 4), A.Set(sp, CAM, 4),
         { cap: 'That slide is reward over-optimization. The reward model is only a model of what we want. Gao, Schulman and Hilton measured it, with a gold reward model standing in for people: optimize hard against a learned proxy, and the gold reward first rises, then falls.' });
       const E14 = col.say(S, '{β|bt} decides how far the {policy|pt} may wander from where it started, and so how much it trusts the {reward|rr}', 260, 34);
       S.beat('Beta decides how far the policy may wander from where it started, and so how much it trusts the reward. And the peak has a closed form. Could we find it without climbing at all?',
-        S.writeIn(E14, 2), A.Indicate(peak, { scale: 1.4 }));
+        S.writeIn(E14, 2), A.Indicate(peak, { scale: 1.4 }),
+        { cap: 'β decides how far the policy may wander from where it started, and so how much it trusts the reward. And the peak has a closed form. Could we find it without climbing at all?' });
     });
   };
 })();

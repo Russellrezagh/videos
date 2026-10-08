@@ -110,10 +110,10 @@ FILM.parts.push(function ch09(ctx) {
     const arc = S.add(S.path('M -690 -218 C -350 -400 350 -400 690 -218', { stroke: S.color('pt'), width: 4, dash: '16 14' }).with({ draw: 0 }));
     const qm = S.add(S.tex('?', { size: 64, color: S.color('pt') }).at(0, -300));
     const ask = S.add(S.english('could we skip the middle, and fit the {policy|pt} straight to the comparisons?', { size: 42 }).at(0, 250));
-    S.beat('Recall R L H F. Fit a reward model to people’s comparisons, then run P P O against it, on a K L leash. That is four networks at once, and a lot of sampling. Could we skip the middle, and fit the policy straight to the comparisons?',
+    S.beat('Recall R L H F: fit a reward model to people’s comparisons, then run P P O against it on a K L leash. That is four networks, and a lot of sampling. Could we skip the middle, and fit the policy straight to the comparisons?',
       A.FadeIn(h), lag(0.35, stages.map((m, i) => seq(A.FadeIn(m, { dx: -20, dur: 0.5 }), i < links.length ? A.Arrow(links[i], 0.3) : wait(0)))),
       lag(0.25, nets.map((m) => A.FadeIn(m, { dy: 16, dur: 0.6 }))), par(A.Create(arc, 1.2), A.FadeIn(qm)), S.writeIn(ask, 1.8),
-      { cap: 'Recall RLHF. Fit a reward model to people’s comparisons, then run PPO against it, on a KL leash. That is four networks at once, and a lot of sampling. Could we skip the middle, and fit the policy straight to the comparisons?' });
+      { cap: 'Recall RLHF: fit a reward model to people’s comparisons, then run PPO against it on a KL leash. That is four networks, and a lot of sampling. Could we skip the middle, and fit the policy straight to the comparisons?' });
 
     // 2. the way in: chapter 8's optimum, for each prompt
     const P0 = S.add(S.tex('\\pstar(\\yy \\mid \\xx) \\;=\\; \\frac{\\pref(\\yy \\mid \\xx)\\; e^{\\rr(\\xx, \\yy)/\\bt}}{\\ZZ(\\xx)}', { size: 84 }).at(0, -140));
@@ -140,7 +140,8 @@ FILM.parts.push(function ch09(ctx) {
     const E1 = S.add(S.tex('\\log \\pstar(\\yy \\mid \\xx) \\;=\\; \\log \\pref(\\yy \\mid \\xx) \\;+\\; \\frac{\\rr(\\xx, \\yy)}{\\bt} \\;-\\; \\log \\ZZ(\\xx)', { size: 76 }).at(0, -60));
     const r5 = S.add(S.reason('because: the log of a product is a sum, the log of a quotient a difference, and log eᵘ = u'));
     S.beat('Take the log of both sides. The product becomes a sum, the division a subtraction, and the log of e to the reward over beta is just the reward over beta.',
-      A.Unspot(P0), fade([e4a, e4b]), UP(P0), A.Write(E1, 2), S.writeIn(r5, 1.6));
+      A.Unspot(P0), fade([e4a, e4b]), UP(P0), A.Write(E1, 2), S.writeIn(r5, 1.6),
+      { cap: 'Take the log of both sides. The product becomes a sum, the division a subtraction, and the log of e^(r/β) is just r/β.' });
 
     // 5. the reward on its own
     const E2 = S.add(S.tex('\\frac{\\rr(\\xx, \\yy)}{\\bt} \\;=\\; \\log \\pstar(\\yy \\mid \\xx) \\;-\\; \\log \\pref(\\yy \\mid \\xx) \\;+\\; \\log \\ZZ(\\xx)', { size: 76 }).at(0, 150));
@@ -154,12 +155,14 @@ FILM.parts.push(function ch09(ctx) {
     const box7 = boxOf(S, E3, S.color('rr'));
     const r7 = S.add(S.reason('because: multiply both sides by {β|bt}; and log a − log b = log (a / b)'));
     S.beat('Multiply both sides by beta, and write the difference of logs as the log of a ratio. There it is: the reward, written with the best policy and the reference, plus one more term.',
-      fade([r6, P0, E1]), UP(E2), A.Write(E3, 2.2), A.Create(box7, 0.8), S.writeIn(r7, 1.4));
+      fade([r6, P0, E1]), UP(E2), A.Write(E3, 2.2), A.Create(box7, 0.8), S.writeIn(r7, 1.4),
+      { cap: 'Multiply both sides by β, and write the difference of logs as the log of a ratio. There it is: the reward, written with the best policy and the reference, plus one more term.' });
 
     // 7. read it
     const e8 = S.add(S.english('the {reward|rr} of a response = {β|bt} × the log of how many times likelier {the best policy|pstar} makes it than {the reference|pref}, + {one number for the whole prompt|ZZ}', { size: 40, width: 1500 }).at(0, 170));
     S.beat('In words: a response’s reward is beta, times the log of how many times likelier the best policy makes it than the reference, plus one number shared by every response to this prompt.',
-      fade([r7, E2]), A.Spot(E3, ['pstar', 'pref', 'ZZ', 'bt']), S.writeIn(e8, 2.6));
+      fade([r7, E2]), A.Spot(E3, ['pstar', 'pref', 'ZZ', 'bt']), S.writeIn(e8, 2.6),
+      { cap: 'In words: a response’s reward is β, times the log of how many times likelier the best policy makes it than the reference, plus one number shared by every response to this prompt.' });
 
     // 8. check it on chapter 8's toy
     const toy = S.add(S.toy(760, -400));
@@ -195,19 +198,22 @@ FILM.parts.push(function ch09(ctx) {
     const e11 = S.add(S.english('and people never hand us a {reward|rr}: they pick the better of two {responses|yy}', { size: 40 }).at(0, 180));
     const r11 = S.add(S.reason('because: chapter 7: Bradley-Terry: the chance depends only on the gap between the two {rewards|rr}'));
     S.beat('But this still needs Z of x, which we can never compute. And people never hand us rewards anyway. They compare two responses to one prompt, and by Bradley-Terry, only the gap between the rewards matters.',
-      fade([...table, E3, box7]), A.Write(BT, 2), S.writeIn(e10, 1.6), S.writeIn(e11, 1.8), S.writeIn(r11, 1.4));
+      fade([...table, E3, box7]), A.Write(BT, 2), S.writeIn(e10, 1.6), S.writeIn(e11, 1.8), S.writeIn(r11, 1.4),
+      { cap: 'But this still needs Z(x), which we can never compute. And people never hand us rewards anyway. They compare two responses to one prompt, and by Bradley–Terry, only the gap between the rewards matters.' });
 
     // 10. both rewards, one prompt: the same beta log Z
     const SUB = S.add(S.tex(`\\begin{aligned} \\rr(\\xx, \\yw) &= \\bt\\, ${LR('\\pstar', '\\yw')} \\;+\\; \\cData{c9z}{\\bt \\log \\ZZ(\\xx)} \\\\[4pt] \\rr(\\xx, \\yl) &= \\bt\\, ${LR('\\pstar', '\\yl')} \\;+\\; \\cData{c9z}{\\bt \\log \\ZZ(\\xx)} \\end{aligned}`, { size: 56 }).at(0, -78));
     const r12 = S.add(S.reason('because: our formula holds for every response; both answer the same prompt {x|xx}, so both get the same {β log Z(x)|ZZ}'));
     S.beat('So write each of the two rewards with our new formula. Both responses answer the same prompt, x. So both carry exactly the same extra term: beta log Z of x.',
-      fade([e10, e11, r11]), UP(BT), A.Write(SUB, 2.4), A.Spot(SUB, 'c9z'), S.writeIn(r12, 1.6));
+      fade([e10, e11, r11]), UP(BT), A.Write(SUB, 2.4), A.Spot(SUB, 'c9z'), S.writeIn(r12, 1.6),
+      { cap: 'So write each of the two rewards with our new formula. Both responses answer the same prompt, x. So both carry exactly the same extra term: β log Z(x).' });
 
     // 11. subtract: it cancels
     const DIFF = S.add(S.tex(`\\rr(\\xx, \\yw) - \\rr(\\xx, \\yl) \\;=\\; \\bt\\, ${LR('\\pstar', '\\yw')} \\;-\\; \\bt\\, ${LR('\\pstar', '\\yl')}`, { size: 56 }).at(0, 176));
     const r13 = S.add(S.reason('because: subtract the two lines: {β log Z(x)|ZZ} − {β log Z(x)|ZZ} = 0'));
     S.beat('Bradley-Terry only needs the difference. Subtract the lines, and the two copies of beta log Z cancel. The one thing we could not compute is gone.',
-      A.FadeOut(r12), A.Write(DIFF, 2.2), S.writeIn(r13, 1.4));
+      A.FadeOut(r12), A.Write(DIFF, 2.2), S.writeIn(r13, 1.4),
+      { cap: 'Bradley–Terry only needs the difference. Subtract the lines, and the two copies of β log Z(x) cancel. The one thing we could not compute is gone.' });
 
     // 12. the preference, with no reward and no Z
     const PB = S.add(S.tex(PREF('\\pstar', 'P(\\yw \\succ \\yl \\mid \\xx)'), { size: 62 }).at(0, -60));
@@ -296,10 +302,15 @@ FILM.parts.push(function ch09(ctx) {
       ).at(0, y));
       return g;
     });
-    S.beat(`One comparison from the toy: helpful beat rude. At the start, both implicit rewards are zero: a coin flip, and a loss of ${sayN(Math.log(2))}. At pi star they are ${sayN(IMP[IW])} and ${sayN(IMP[IL])}, and the loss falls to ${sayN(lossOf(gapStar))}. Ranked the wrong way round: ${sayN(lossOf(-gapStar))}.`,
+    S.beat(`One comparison from the toy: helpful beat rude. At the start the policy is the reference, so both implicit rewards are zero. To the policy it is a coin flip, and the loss is log two, about ${sayN(Math.log(2))}.`,
       fade([e4, IR, boxC]), TOP(LC, -340, 0.62), A.FadeIn(toy), A.Write(pair, 1.2), lag(0.12, heads.map((m) => A.FadeIn(m))), A.Create(hrule, 0.5),
-      lag(2.2, rows.map((r) => A.FadeIn(r, { dx: 20 }))), A.Indicate(rows[2], { color: C.RED, scale: 1.03 }),
-      { cap: `One comparison from the toy: helpful beat rude. At the start, both implicit rewards are zero: a coin flip, and a loss of ${Math.log(2).toFixed(2)}. At π* they are ${num(IMP[IW])} and ${num(IMP[IL])}, and the loss falls to ${lossOf(gapStar).toFixed(2)}. Ranked the wrong way round: ${lossOf(-gapStar).toFixed(2)}.` });
+      A.FadeIn(rows[0], { dx: 20 }),
+      { cap: `One comparison from the toy: helpful beat rude. At the start the policy is the reference, so both implicit rewards are zero. To the policy it is a coin flip, and the loss is log 2 ≈ ${Math.log(2).toFixed(2)}.` });
+    // at pi*, the implicit-reward gap is the true reward gap (the beta log Z cancels)
+    if (Math.abs(gapStar - (R[IW] - R[IL])) > 1e-9 || R[IW] - R[IL] !== 1) throw new Error('ch09: the implicit-reward gap at pi* must be the true gap, 1');
+    S.beat(`At pi star the implicit rewards are ${sayN(IMP[IW])} and ${sayN(IMP[IL])}: a gap of one, exactly the true reward gap. The loss falls to ${sayN(lossOf(gapStar))}. Ranked the wrong way round, it would rise to ${sayN(lossOf(-gapStar))}.`,
+      A.FadeIn(rows[1], { dx: 20 }), wait(1.2), A.FadeIn(rows[2], { dx: 20 }), A.Indicate(rows[2], { color: C.RED, scale: 1.03 }),
+      { cap: `At π* the implicit rewards are ${num(IMP[IW])} and ${num(IMP[IL])}: a gap of 1, exactly the true reward gap. The loss falls to ${lossOf(gapStar).toFixed(2)}. Ranked the wrong way round, it would rise to ${lossOf(-gapStar).toFixed(2)}.` });
   });
 
   /*
@@ -315,10 +326,12 @@ FILM.parts.push(function ch09(ctx) {
     const q = S.add(S.english('training follows the slope of the loss: which {responses|yy} go up, which go down, and how hard?', { size: 42, width: 1600 }).at(0, -260));
     const G0 = S.add(S.tex(`\\ell \\;=\\; -\\log \\sig(${GAP}), \\qquad ${GAP} \\;=\\; ${RH}(\\xx, \\yw) - ${RH}(\\xx, \\yl)`, { size: 76 }).at(0, -60));
     S.beat('Training follows the slope of the loss. Which responses go up, which down, and how hard? One comparison costs ell: minus log sigma of the gap between its two implicit rewards.',
-      A.FadeIn(h), S.writeIn(q, 2), A.Write(G0, 2));
+      A.FadeIn(h), S.writeIn(q, 2), A.Write(G0, 2),
+      { cap: 'Training follows the slope of the loss. Which responses go up, which down, and how hard? One comparison costs ℓ: −log σ of the gap between its two implicit rewards.' });
     S.tour(G0, [
       { sym: 'c9gap', at: [0, 200], anims: [A.FadeOut(q)],
-        say: 'Call that gap delta, as in chapter seven: the winner’s implicit reward minus the loser’s. Positive means the policy already ranks the pair the way people did.' },
+        say: 'Call that gap delta, as in chapter seven: the winner’s implicit reward minus the loser’s. Positive means the policy already ranks the pair the way people did.',
+        cap: 'Call that gap Δ, as in chapter 7: the winner’s implicit reward minus the loser’s. Positive means the policy already ranks the pair the way people did.' },
     ]);
 
     // 2. slope in the gap
@@ -332,14 +345,16 @@ FILM.parts.push(function ch09(ctx) {
     const D2 = S.add(S.tex(`\\grad ${GAP} \\;=\\; \\bt\\, \\grad \\lp(\\yw \\mid \\xx) \\;-\\; \\bt\\, \\grad \\lp(\\yl \\mid \\xx)`, { size: 76 }).at(0, 130));
     const r3 = S.add(S.reason('because: each log-ratio is {log of the policy|lp} − {log of the reference|pref}; the reference is frozen, so its gradient is zero; {β|bt} is a fixed number'));
     S.beat('How does delta move with the weights? Each log-ratio is log pi theta minus log pi ref. The reference is frozen, so it has no gradient. What is left: beta, times the winner’s gradient of log pi, minus the loser’s.',
-      A.FadeOut(r2), A.Write(D2, 2), S.writeIn(r3, 1.8));
+      A.FadeOut(r2), A.Write(D2, 2), S.writeIn(r3, 1.8),
+      { cap: 'How does Δ move with the weights? Each log-ratio is log π_θ minus log π_ref. The reference is frozen, so it has no gradient. What is left: β, times the winner’s gradient of log π_θ, minus the loser’s.' });
 
     // 4. the chain rule: the gradient of the DPO loss
     const GD = S.add(S.tex(`\\grad ${LD} \\;=\\; -\\bt\\; \\EE_{${DD}}\\Big[\\cData{c9wt}{\\sig\\big(${RH}(\\xx, \\yl) - ${RH}(\\xx, \\yw)\\big)}\\, \\big(\\grad \\lp(\\yw \\mid \\xx) - \\grad \\lp(\\yl \\mid \\xx)\\big)\\Big]`, { size: 50 }).at(0, -60));
     const boxG = boxOf(S, GD, S.color('grad'));
     const r4 = S.add(S.reason('because: the chain rule: the slope in {Δ|c9gap} × the gradient of {Δ|c9gap}; average over the comparisons; and −{Δ|c9gap} = the loser’s {implicit reward|c9rh} − the winner’s'));
     S.beat('The chain rule multiplies the two slopes. Average over the comparisons, and write minus delta as the loser’s implicit reward minus the winner’s. That is the gradient of the D P O loss.',
-      fade([r3, G0]), UP(D1), A.FadeOut(D2), A.Write(GD, 2.6), A.Create(boxG, 0.8), S.writeIn(r4, 1.8));
+      fade([r3, G0]), UP(D1), A.FadeOut(D2), A.Write(GD, 2.6), A.Create(boxG, 0.8), S.writeIn(r4, 1.8),
+      { cap: 'The chain rule multiplies the two slopes. Average over the comparisons, and write −Δ as the loser’s implicit reward minus the winner’s. That is the gradient of the DPO loss.' });
 
     // 5. read it: direction
     const e5 = S.add(S.english('a step goes against the gradient: {the winner’s log-probability|pt} goes up, {the loser’s|pt} goes down', { size: 40, width: 1600 }).at(0, 120));
@@ -351,7 +366,8 @@ FILM.parts.push(function ch09(ctx) {
     const e6 = S.add(S.english('the weight: the {chance|sig} the {implicit reward model|c9rh} gives to the wrong outcome, the loser beating the winner', { size: 40, width: 1600 }).at(0, 105));
     const sumB = S.add(S.box('push the winner up and the loser down,  ×  how wrong the implicit reward model still is', { w: 1640, h: 100, color: S.color('grad'), size: 38 }).at(0, 225));
     S.beat('The weight in front is the chance the implicit reward model gives to the wrong outcome: the loser winning. So D P O pushes the winner up and the loser down, weighted by how wrong its implicit reward model still is.',
-      fade([e5, e5b]), A.Spot(GD, 'c9wt'), S.writeIn(e6, 2), A.FadeIn(sumB, { from: 0.9 }));
+      fade([e5, e5b]), A.Spot(GD, 'c9wt'), S.writeIn(e6, 2), A.FadeIn(sumB, { from: 0.9 }),
+      { cap: 'The weight in front is the chance the implicit reward model gives to the wrong outcome: the loser winning. So DPO pushes the winner up and the loser down, weighted by how wrong its implicit reward model still is.' });
 
     // 7. the weight, with numbers
     const AX = -330;
@@ -384,7 +400,8 @@ FILM.parts.push(function ch09(ctx) {
     const SC = S.add(S.tex('\\frac{\\partial}{\\partial \\zz_j}\\big[\\lp(\\yw) - \\lp(\\yl)\\big] \\;=\\; \\mathbf{1}[j = \\yw] - \\mathbf{1}[j = \\yl]', { size: 38 }).at(440, -125));
     const n8 = S.add(side(S, 'each is chapter 3’s score, 1[a = j] − {π(j)|pt}; the {π(j)|pt} terms cancel, so only two {logits|zz} move', 440, -15, 780));
     S.beat('One step on chapter eight’s toy, for one comparison: helpful beats rude. The weights are the four logits. Subtract chapter three’s scores of the two responses: the pi terms cancel, and only two logits get a push.',
-      fade([ax, wc, ...pts, ...wrows]), A.FadeIn(bars, { dy: 20 }), lag(0.1, refT.map((t) => A.Create(t, 0.4))), A.FadeIn(toy), A.Write(pairT, 1.2), A.Write(SC, 1.8), S.writeIn(n8, 1.6));
+      fade([ax, wc, ...pts, ...wrows]), A.FadeIn(bars, { dy: 20 }), lag(0.1, refT.map((t) => A.Create(t, 0.4))), A.FadeIn(toy), A.Write(pairT, 1.2), A.Write(SC, 1.8), S.writeIn(n8, 1.6),
+      { cap: 'One step on chapter 8’s toy, for one comparison: helpful beats rude. The weights are the four logits. Subtract chapter 3’s scores of the two responses: the π terms cancel, and only two logits get a push.' });
 
     // 9. the step
     const xw = BX + bars.xs[IW] + 95;
@@ -395,9 +412,13 @@ FILM.parts.push(function ch09(ctx) {
     const s2 = S.add(S.tex(`\\text{each logit moves } \\lr\\, \\bt\\, \\sig(-${GAP}) = ${ETA} \\times ${B} \\times ${W0.toFixed(2)} = ${(ETA * B * W0).toFixed(2)}`, { size: 38 }).at(440, 185));
     const s3 = S.add(S.tex(`\\text{after: } ${GAP} = ${gap1.toFixed(2)}, \\;\\; \\sig(-${GAP}) = ${W1.toFixed(2)}`, { size: 40 }).at(440, 260));
     const s4 = S.add(S.txt(`helpful ${REF[IW].toFixed(2)} → ${P1[IW].toFixed(2)},  rude ${REF[IL].toFixed(2)} → ${P1[IL].toFixed(2)}`, { size: 34, font: 'mono', color: S.color('pt') }).at(440, 30));
-    S.beat(`At the start delta is zero, so the weight is one half. A step of size two moves both logits by a half: helpful rises to ${sayN(P1[IW])}, rude falls to ${sayN(P1[IL])}. The next step pulls less: the weight is now ${sayN(W1)}.`,
-      A.FadeOut(n8), A.Write(s1, 1.2), A.Write(s2, 1.4), par(A.Arrow(upA, 0.6), A.Arrow(dnA, 0.6)), par(bars.to(P1, 1.6), A.FadeIn(s4, { dur: 1.2 })), A.Write(s3, 1.2),
-      { cap: `At the start Δ is zero, so the weight is one half. A step of size 2 moves both logits by a half: helpful rises to ${P1[IW].toFixed(2)}, rude falls to ${P1[IL].toFixed(2)}. The next step pulls less: the weight is now ${W1.toFixed(2)}.` });
+    S.beat('At the start delta is zero, so the weight is one half. Take a step of size two: each of the two logits moves by two, times beta, times the weight. That is a half: helpful’s up, rude’s down.',
+      A.FadeOut(n8), A.Write(s1, 1.2), A.Write(s2, 1.4), par(A.Arrow(upA, 0.6), A.Arrow(dnA, 0.6)),
+      { cap: 'At the start Δ is zero, so the weight is one half. Take a step of size η = 2: each of the two logits moves by η × β × the weight = 2 × 0.5 × 0.5. That is a half: helpful’s up, rude’s down.' });
+    if (Math.abs(gap1 - 0.5) > 1e-9) throw new Error('ch09: after one step the gap is one half');
+    S.beat(`Helpful rises to ${sayN(P1[IW])}, rude falls to ${sayN(P1[IL])}. The gap is now one half, so the weight drops to ${sayN(W1)}: the better the pair is ranked, the less the next step pulls.`,
+      par(bars.to(P1, 1.6), A.FadeIn(s4, { dur: 1.2 })), A.Write(s3, 1.2),
+      { cap: `Helpful rises to ${P1[IW].toFixed(2)}, rude falls to ${P1[IL].toFixed(2)}. The gap Δ is now ${gap1.toFixed(1)}, so the weight drops to ${W1.toFixed(2)}: the better the pair is ranked, the less the next step pulls.` });
   });
 
   /*
@@ -419,16 +440,24 @@ FILM.parts.push(function ch09(ctx) {
     const C2 = S.add(S.tex(`P_{\\th} = P \\;\\text{ for every pair} \\quad\\Longleftrightarrow\\quad ${RH}(\\xx, \\yy) - ${RH}(\\xx, \\yy') \\;=\\; \\rr(\\xx, \\yy) - \\rr(\\xx, \\yy')`, { size: 56 }).at(0, 140));
     const r2 = S.add(S.reason('because: the average loss is a fixed amount plus a {KL|KL}, zero only when the chances match (chapter 8); and σ only goes up, so equal chances mean equal gaps'));
     S.beat('Then the loss is lowest when the policy’s chances match people’s: any mismatch costs a K L divergence, zero only when they agree. And since sigma only rises, equal chances mean equal gaps.',
-      A.FadeOut(q), A.Write(C2, 2.4), S.writeIn(r2, 2));
+      A.FadeOut(q), A.Write(C2, 2.4), S.writeIn(r2, 2),
+      { cap: 'Then the loss is lowest when the policy’s chances match people’s: any mismatch costs a KL divergence, zero only when they agree. And since σ only rises, equal chances mean equal gaps.' });
 
     // 3. rewards up to a shift, then normalise: pi*
-    const C3 = S.add(S.tex(`${RH}(\\xx, \\yy) = \\rr(\\xx, \\yy) + c(\\xx) \\;\\;\\Longrightarrow\\;\\; \\pt(\\yy \\mid \\xx) = \\pref(\\yy \\mid \\xx)\\, e^{\\rr(\\xx, \\yy)/\\bt}\\; e^{c(\\xx)/\\bt}`, { size: 60 }).at(0, -60));
-    const C4 = S.add(S.tex('e^{c(\\xx)/\\bt} \\;=\\; \\frac{1}{\\ZZ(\\xx)} \\quad\\Longrightarrow\\quad \\pt \\;=\\; \\pstar', { size: 72 }).at(0, 130));
+    const C3 = S.add(S.tex(`${RH}(\\xx, \\yy) = \\rr(\\xx, \\yy) + c(\\xx) \\;\\;\\Longrightarrow\\;\\; \\pt(\\yy \\mid \\xx) = \\pref(\\yy \\mid \\xx)\\, e^{\\rr(\\xx, \\yy)/\\bt}\\; e^{c(\\xx)/\\bt}`, { size: 54 }).at(0, -60));
+    const r3 = S.add(S.reason('because: equal gaps fix the values up to one shift c(x), shared by every response; then unpack the {implicit reward|c9rh} and take e to both sides'));
+    S.beat('Equal gaps mean the implicit reward is the true reward plus one shift, c, shared by every response to the prompt. Unpack it and take e to both sides: the reference, times e to the r over beta, times e to the c over beta.',
+      fade([r2, C1]), UP(C2), A.Write(C3, 2.4), S.writeIn(r3, 2),
+      { cap: 'Equal gaps mean the implicit reward is the true reward plus one shift, c(x), shared by every response to the prompt. Unpack it and take e to both sides: the reference, times e^(r/β), times e^(c/β).' });
+
+    // 4. normalise: the shift is fixed, and the policy is pi*
+    const C4a = S.add(S.tex('1 \\;=\\; \\sum_{\\yy} \\pt(\\yy \\mid \\xx) \\;=\\; e^{c(\\xx)/\\bt} \\sum_{\\yy} \\pref(\\yy \\mid \\xx)\\, e^{\\rr(\\xx, \\yy)/\\bt} \\;=\\; e^{c(\\xx)/\\bt}\\, \\ZZ(\\xx)', { size: 52 }).at(0, -60));
+    const C4 = S.add(S.tex('e^{c(\\xx)/\\bt} \\;=\\; \\frac{1}{\\ZZ(\\xx)} \\quad\\Longrightarrow\\quad \\pt \\;=\\; \\pstar', { size: 68 }).at(0, 110));
     const box4 = boxOf(S, C4, S.color('pstar'));
-    const r3 = S.add(S.reason('because: equal gaps fix the values up to one shift c(x); unpack the {implicit reward|c9rh}, take e to both sides; and {the policy|pt} must add up to 1, which only 1/{Z(x)|ZZ} does'));
-    S.beat('Equal gaps mean the implicit reward is the true reward, plus one shift c for the prompt. Unpack it: the policy is the reference, times e to the reward over beta, times a constant, which must be one over Z. That is pi star.',
-      fade([r2, C1]), UP(C2), A.Write(C3, 2.4), A.Write(C4, 1.6), A.Create(box4, 0.8), S.writeIn(r3, 2),
-      { cap: 'Equal gaps mean the implicit reward is the true reward, plus one shift c for the prompt. Unpack it: the policy is the reference, times e to the reward over β, times a constant, which must be 1/Z. That is π*.' });
+    const r3b = S.add(S.reason('because: the {policy’s|pt} chances add up to 1; the shift’s factor is the same for every response, so it comes out of the sum, leaving {Z(x)|ZZ}'));
+    S.beat('Which shift? The policy’s chances must add up to one. The shift’s factor is shared by every response, so it comes out of the sum, leaving Z. So that factor is one over Z, and the policy is exactly pi star.',
+      A.FadeOut(r3), A.FadeOut(C2), UP(C3), A.Write(C4a, 2.4), A.Write(C4, 1.6), A.Create(box4, 0.8), S.writeIn(r3b, 2),
+      { cap: 'Which shift? The policy’s chances must add up to 1. The shift’s factor is shared by every response, so it comes out of the sum, leaving Z(x). So that factor is 1/Z(x), and the policy is exactly π*.' });
 
     // 4. check on the toy
     const BX = -430;
@@ -444,13 +473,13 @@ FILM.parts.push(function ch09(ctx) {
     const steps = SNAP.slice(1).map((sn) => seq(par(bars.to(sn.pi, 1.1), A.Set(kl, { str: fmtKL(sn) }, 0.01)), wait(0.35)));
     const fin = S.add(S.txt(`step ${STEPS_END}:  ${KLend < 1e-12 ? '< 1e-12' : KLend.toExponential(1)}`, { size: 40, font: 'mono', color: S.color('KL'), anchor: 'start' }).at(170, 0));
     S.beat(`On the toy, with choices drawn from the true rewards, D P O slides from the reference onto pi star. After a hundred steps the K L to pi star is ${sayN(SNAP[4].kl * 1e6, 1)} in a million; after ${words(STEPS_END)}, zero to machine precision.`,
-      fade([C2, C3, C4, box4, r3]), A.FadeIn(toy), A.FadeIn(bars), lag(0.1, ticks.map((t) => A.Create(t, 0.4))), A.FadeIn(leg), A.FadeIn(klL), A.Set(kl, { o: 1, str: fmtKL(SNAP[0]) }, 0.01), seq(steps), A.FadeIn(fin),
+      fade([C3, C4a, C4, box4, r3b]), A.FadeIn(toy), A.FadeIn(bars), lag(0.1, ticks.map((t) => A.Create(t, 0.4))), A.FadeIn(leg), A.FadeIn(klL), A.Set(kl, { o: 1, str: fmtKL(SNAP[0]) }, 0.01), seq(steps), A.FadeIn(fin),
       { cap: `On the toy, with choices drawn from the true rewards, DPO slides from the reference onto π*. After 100 steps the KL to π* is ${(SNAP[4].kl * 1e6).toFixed(1)} in a million; after ${STEPS_END.toLocaleString('en')}, zero to machine precision.` });
 
     // 5. what it buys
     const pros = S.add(S.english('no {reward model|rr} · no sampling · no {critic|VV}: one loss on pairs', { size: 40, width: 820 }).at(440, 130));
-    S.beat('The same destination as R L H F, with no reward model, no sampling and no critic: one loss on pairs, as cheap as fine-tuning. That is why D P O spread so quickly.',
-      S.writeIn(pros, 2), { cap: 'The same destination as RLHF, with no reward model, no sampling and no critic: one loss on pairs, as cheap as fine-tuning. That is why DPO spread so quickly.' });
+    S.beat('The same destination as R L H F, with no reward model, no sampling and no critic: one loss on pairs, nearly as cheap as fine-tuning. That is why D P O spread so quickly.',
+      S.writeIn(pros, 2), { cap: 'The same destination as RLHF, with no reward model, no sampling and no critic: one loss on pairs, nearly as cheap as fine-tuning. That is why DPO spread so quickly.' });
 
     // 6. what it gives up: offline data, no exploration
     const assume = S.add(S.txt('the proof assumed', { size: 38, color: C.GREY_B }).at(0, -300));

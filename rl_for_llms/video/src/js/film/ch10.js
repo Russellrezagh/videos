@@ -134,13 +134,15 @@ FILM.parts.push(function ch10(ctx) {
     const no = S.add(S.cross(40).at(670, -40));
     const e1 = S.add(S.english('some answers can be {checked|rr}, not just judged', { size: 46 }).at(0, 170));
     S.beat('Until now, rewards came from a reward model, a network imitating people. But seventeen times three is fifty-one, whatever anyone prefers. Some answers can simply be checked.',
-      A.FadeIn(h), A.FadeIn(q, { dy: -16 }), A.FadeIn(a1, { dx: -20 }), A.Arrow(ar1, 0.5), A.FadeIn(chk), A.Arrow(out1, 0.5), A.Write(r1, 0.8), A.Create(ok, 0.5), S.writeIn(e1, 1.6));
+      A.FadeIn(h), A.FadeIn(q, { dy: -16 }), A.FadeIn(a1, { dx: -20 }), A.Arrow(ar1, 0.5), A.FadeIn(chk), A.Arrow(out1, 0.5), A.Write(r1, 0.8), A.Create(ok, 0.5), S.writeIn(e1, 1.6),
+      { cap: 'Until now, rewards came from a reward model, a network imitating people. But 17 × 3 is 51, whatever anyone prefers. Some answers can simply be checked.' });
 
     // 2. the checker is a program; the reward is one bit
     const F = S.add(S.tex('\\rr(\\xx, \\yy) \\;=\\; \\begin{cases} 1 & \\text{if the checker accepts } \\yy \\\\ 0 & \\text{otherwise} \\end{cases}', { size: 62 }).at(0, 175));
     const n2 = S.add(S.english('for code, the checker runs the unit tests: {1|rr} if they all pass', { size: 34, color: C.GREY_B, italic: true }).at(0, 305));
     S.beat('A checker is an ordinary program. It pulls out the final answer and compares it with the reference: one if they match, zero if not. For code, it runs unit tests.',
-      A.FadeOut(e1), A.FadeIn(a2, { dx: -20 }), A.Arrow(ar2, 0.5), A.Arrow(out2, 0.5), A.Write(r0, 0.8), A.Create(no, 0.5), A.Write(F, 1.8), S.writeIn(n2, 1.2));
+      A.FadeOut(e1), A.FadeIn(a2, { dx: -20 }), A.Arrow(ar2, 0.5), A.Arrow(out2, 0.5), A.Write(r0, 0.8), A.Create(no, 0.5), A.Write(F, 1.8), S.writeIn(n2, 1.2),
+      { cap: 'A checker is an ordinary program. It pulls out the final answer and compares it with the reference: 1 if they match, 0 if not. For code, it runs unit tests.' });
 
     // 3. symbol card: the reward, now computed
     const cR = S.add(S.symcard('rr', { w: 1100, from: 'a checker: a program that tests the final answer, or runs unit tests', why: 'it is computed, not predicted: there is no network in between to fool' }).at(0, 150));
@@ -169,14 +171,16 @@ FILM.parts.push(function ch10(ctx) {
     const pRM = S.add(panel(S, 'a reward model (chapter 7)', ['the truth plus a fitted error', 'optimisation hunts for the error'], { color: C.GREY_B })).at(-420, -150);
     const pCK = S.add(panel(S, 'a checker', ['fits nothing: 51 matches, or not', 'flattery earns 0'], { color: RW })).at(420, -150);
     S.beat('Why is this harder to hack? Chapter seven’s reward model was the truth plus an error, and optimization hunted for the error. A checker fits nothing: fifty-one matches or it does not. Flattery earns zero.',
-      fade([O, D, r5, n5, toy5]), A.FadeIn(pRM, { dy: 20 }), A.FadeIn(pCK, { dy: 20 }));
+      fade([O, D, r5, n5, toy5]), A.FadeIn(pRM, { dy: 20 }), A.FadeIn(pCK, { dy: 20 }),
+      { cap: 'Why is this harder to hack? Chapter 7’s reward model was the truth plus an error, and optimization hunted for the error. A checker fits nothing: 51 matches or it does not. Flattery earns 0.' });
 
     // 7. what it cannot do
     const l1 = S.add(S.english('1. the check can have holes: a loose answer extractor, tests that miss a case', { size: 36 }).at(0, 80));
     const l2 = S.add(S.english('2. it sees only what it checks: a right number from wrong reasoning still gets {1|rr}', { size: 36 }).at(0, 160));
     const l3 = S.add(S.english('3. helpfulness, clarity and honesty have no checker at all', { size: 36 }).at(0, 240));
     S.beat('Limits remain. The check can have holes, like a sloppy answer extractor, and optimization will find them. A right number from wrong reasoning still scores one. And helpfulness has no checker.',
-      S.writeIn(l1, 1.4), wait(2.2), S.writeIn(l2, 1.4), wait(2), S.writeIn(l3, 1.2));
+      S.writeIn(l1, 1.4), wait(2.2), S.writeIn(l2, 1.4), wait(2), S.writeIn(l3, 1.2),
+      { cap: 'Limits remain. The check can have holes, like a sloppy answer extractor, and optimization will find them. A right number from wrong reasoning still scores 1. And helpfulness has no checker.' });
   });
 
   /*
@@ -194,7 +198,8 @@ FILM.parts.push(function ch10(ctx) {
     const rB = S.add(S.tex('\\rr = 1', { size: 60 }).at(420, 10));
     const e1 = S.add(S.english('chapter 4: compare with a {baseline|bb}, the {reward we expected|bb} for this {prompt|xx}', { size: 40 }).at(0, 170));
     S.beat('A reward of one says right. But on two plus two nearly every answer is right, while on an olympiad problem a right answer is news. As in chapter four, compare with the reward we expected.',
-      A.FadeIn(h), S.writeIn(e0, 1.6), A.FadeIn(pA, { dy: 16 }), A.FadeIn(rA), A.FadeIn(pB, { dy: 16 }), A.FadeIn(rB), S.writeIn(e1, 1.8));
+      A.FadeIn(h), S.writeIn(e0, 1.6), A.FadeIn(pA, { dy: 16 }), A.FadeIn(rA), A.FadeIn(pB, { dy: 16 }), A.FadeIn(rB), S.writeIn(e1, 1.8),
+      { cap: 'A reward of 1 says right. But on 2 + 2 nearly every answer is right, while on an olympiad problem a right answer is news. As in chapter 4, compare with the reward we expected.' });
 
     // 2. the group
     const X = GROUP.r.map((_, i) => -470 + i * 180);
@@ -279,13 +284,15 @@ FILM.parts.push(function ch10(ctx) {
     const e1 = S.add(S.english('token t of answer i, in the same {state|ss} for both models: the prompt plus the tokens before it', { size: 36, color: C.GREY_B }).at(0, 130));
     const r1 = reason(S, 'because: {π_old|pold} sampled the group; the {ratio|rat} re-weights it for {π_θ|pt} (chapter 6)');
     S.beat('Now the update, borrowed from P P O. An old copy of the policy wrote the group, so each token gets a ratio: its new probability over its old one.',
-      A.FadeIn(h), S.writeIn(e0, 1.6), A.Write(RT, 1.8), A.Spot(RT, ['pt', 'pold']), S.writeIn(e1, 1.6), S.writeIn(r1, 1.6), A.Unspot(RT));
+      A.FadeIn(h), S.writeIn(e0, 1.6), A.Write(RT, 1.8), A.Spot(RT, ['pt', 'pold']), S.writeIn(e1, 1.6), S.writeIn(r1, 1.6), A.Unspot(RT),
+      { cap: 'Now the update, borrowed from PPO. An old copy of the policy wrote the group, so each token gets a ratio: its new probability over its old one.' });
 
     // 2. the clipped term
     const CL = S.add(S.tex(CLIP, { size: 72 }).at(0, -60));
     const r2 = reason(S, 'because: one batch should not move any token’s {probability|pt} too far (chapter 6)');
     S.beat('Each token gets P P O’s clipped term, with its answer’s advantage: ratio times advantage, but no extra credit once the ratio leaves the band one plus or minus epsilon.',
-      fade([e0, e1, r1]), UP(RT), A.Write(CL, 2), S.writeIn(r2, 1.4), A.Spot(CL, ['Ahat']), wait(1), A.Spot(CL, ['rat', 'eps']), wait(1), A.Unspot(CL));
+      fade([e0, e1, r1]), UP(RT), A.Write(CL, 2), S.writeIn(r2, 1.4), A.Spot(CL, ['Ahat']), wait(1), A.Spot(CL, ['rat', 'eps']), wait(1), A.Unspot(CL),
+      { cap: 'Each token gets PPO’s clipped term, with its answer’s advantage: ratio times advantage, but no extra credit once the ratio leaves the band 1 ± ε.' });
 
     // 3. the leash: the token's score
     const LT = S.add(S.tex(`${ELL} \\;=\\; ${CLIP} \\;-\\; \\bt\\, ${KH}`, { size: 60 }).at(0, -60));
@@ -298,12 +305,14 @@ FILM.parts.push(function ch10(ctx) {
     const JG = S.add(S.tex(`\\JJ_{\\text{GRPO}}(\\th) \\;=\\; \\EE_{\\xx,\\; \\yy_1 \\dots \\yy_{\\GN} \\sim \\pold}\\Big[\\frac{1}{\\GN}\\sum_{i=1}^{\\GN} \\frac{1}{${LEN}} \\sum_{t=1}^{${LEN}} ${ELL}\\Big]`, { size: 70 }).at(0, -250));
     const r4 = reason(S, 'because: dividing by its {length|c10len} makes each answer count once, however long');
     S.beat('Finally, average the scores over each answer’s tokens, dividing by its length; then over the G answers and the prompts. That is the G R P O objective from DeepSeekMath.',
-      A.FadeOut(r3), A.FadeOut(CL), A.Write(JG, 2.4), S.writeIn(r4, 1.8));
+      A.FadeOut(r3), A.FadeOut(CL), A.Write(JG, 2.4), S.writeIn(r4, 1.8),
+      { cap: 'Finally, average the scores over each answer’s tokens, dividing by its length; then over the G answers and the prompts. That is the GRPO objective from DeepSeekMath.' });
 
     // 5. tour
     tour(S, JG, [
       { sym: 'GN', pre: [A.FadeOut(r4)], text: { why: 'more answers make a better baseline, and cost more compute' },
-        say: 'G, the group size, is a knob: more answers give a better baseline, at more compute. DeepSeekMath sampled sixty-four per question.' },
+        say: 'G, the group size, is a knob: more answers give a better baseline, at more compute. DeepSeekMath sampled sixty-four per question.',
+        cap: 'G, the group size, is a knob: more answers give a better baseline, at more compute. DeepSeekMath sampled 64 per question.' },
       { sym: 'c10len', say: 'The bars around y i mean its length in tokens. Dividing by it gives every answer the same total weight. Remember this division.',
         cap: 'The bars around yᵢ mean its length in tokens. Dividing by it gives every answer the same total weight. Remember this division.' },
       { f: LT, sym: ['bt', 'c10kh'], card: 'c10kh', pre: [A.Unspot(JG)],
@@ -367,17 +376,18 @@ FILM.parts.push(function ch10(ctx) {
     const r3 = reason(S, 'because: the {KL|KL} is defined as the {policy’s|pt} own average of this log-ratio (chapter 8)');
     // 4. but single samples misbehave
     const e4 = S.add(S.english(`one sample of {k₁|c10k1} can be negative, and its spread is ${KL.k1.sd.toFixed(3)}: about ${Math.round(KL.k1.sd / KL.truth)} times the {KL|KL} it estimates`, { size: 38 }).at(0, 175));
-    const say3 = `Chapter eight suggests k one, the sampled token’s log-ratio: on average, exactly the K L. But token d gives ${sayN(KV1[3])}, a negative distance, and samples scatter ${words(Math.round(KL.k1.sd / KL.truth))} times wider than the K L itself.`;
+    const say3 = `Chapter eight’s definition suggests k one, the sampled token’s log-ratio: on average, exactly the K L. But token d gives ${sayN(KV1[3])}, a negative distance, and samples scatter ${words(Math.round(KL.k1.sd / KL.truth))} times wider than the K L itself.`;
     const first3 = seq(A.FadeOut(KLF), A.Write(F1, 1.8), A.FadeIn(lU), lag(0.15, cU.map((m) => A.FadeIn(m))), A.FadeIn(lK1), lag(0.15, cK1.map((m) => A.FadeIn(m))), S.writeIn(r3, 1.6));
     S.beat(say3, first3, wait(Math.max(0, S.atWord(say3, 'But token') - MV.durOf(first3))),
       A.FadeOut(r3), A.FadeOut(F1), A.Indicate(cK1[3], { color: C.RED, scale: 1.35 }), A.Indicate(cK1[1], { color: C.RED, scale: 1.25 }), S.writeIn(e4, 1.8),
-      { cap: `Chapter 8 suggests k₁, the sampled token’s log-ratio: on average, exactly the KL. But token d gives ${num(KV1[3])}, a negative distance, and samples scatter ${Math.round(KL.k1.sd / KL.truth)} times wider than the KL itself.` });
+      { cap: `Chapter 8’s definition suggests k₁, the sampled token’s log-ratio: on average, exactly the KL. But token d gives ${num(KV1[3])}, a negative distance, and samples scatter ${Math.round(KL.k1.sd / KL.truth)} times wider than the KL itself.` });
 
     // 5. a term with average zero
     const EU = S.add(S.tex('\\EE_{\\yy \\sim \\pt}\\big[\\,u\\,\\big] \\;=\\; \\sum_{\\yy} \\pt(\\yy)\\, \\frac{\\pref(\\yy)}{\\pt(\\yy)} \\;=\\; \\sum_{\\yy} \\pref(\\yy) \\;=\\; 1', { size: 62 }).at(0, 150));
     const r5 = reason(S, `because: {π_θ|pt} cancels; the {reference’s|pref} chances sum to 1 (${KP.map((v) => v.toFixed(2)).join(' + ')})`);
     S.beat('The fix uses u. Its average under the policy is exactly one: the policy’s probabilities cancel, and the reference’s add up to one. So u minus one averages to zero.',
-      A.FadeOut(e4), A.Write(EU, 2), S.writeIn(r5, 1.6), A.Indicate(lU, { color: C.YELLOW, scale: 1.3 }));
+      A.FadeOut(e4), A.Write(EU, 2), S.writeIn(r5, 1.6), A.Indicate(lU, { color: C.YELLOW, scale: 1.3 }),
+      { cap: 'The fix uses u. Its average under the policy is exactly 1: the policy’s probabilities cancel, and the reference’s add up to 1. So u − 1 averages to zero.' });
 
     // 6. k3
     const F3 = S.add(S.tex(`${K3} \\;=\\; \\underbrace{-\\log u}_{${K1}} \\;+\\; \\underbrace{(u - 1)}_{\\text{averages } 0} \\;=\\; \\frac{\\pref}{\\pt} \\;-\\; \\log\\frac{\\pref}{\\pt} \\;-\\; 1`, { size: 58 }).at(0, 170));
@@ -386,7 +396,8 @@ FILM.parts.push(function ch10(ctx) {
     const r6 = reason(S, 'because: the average of a sum is the sum of the averages: {KL|KL} + 0');
     S.paper('schulman2020kl');
     S.beat('Add u minus one to k one. Adding something that averages zero leaves the average alone. This is k three, from a note by John Schulman, and it is what G R P O uses.',
-      A.FadeOut(r5), A.FadeOut(EU), A.Write(F3, 2), A.FadeIn(lK3), lag(0.15, cK3.map((m) => A.FadeIn(m))), S.writeIn(r6, 1.4));
+      A.FadeOut(r5), A.FadeOut(EU), A.Write(F3, 2), A.FadeIn(lK3), lag(0.15, cK3.map((m) => A.FadeIn(m))), S.writeIn(r6, 1.4),
+      { cap: 'Add u − 1 to k₁. Adding something that averages zero leaves the average alone. This is k₃, from a note by John Schulman, and it is what GRPO uses.' });
 
     // 7. never negative: log u <= u - 1
     const table = [toks, lT, lQ, lP, cQ, cP, lU, lK1, cU, cK1, lK3, cK3];
@@ -404,14 +415,16 @@ FILM.parts.push(function ch10(ctx) {
     const I2 = S.add(S.tex(`\\Longrightarrow\\quad ${K3} \\;=\\; u - 1 - \\log u \\;\\ge\\; 0`, { size: 54 }).at(470, -60));
     const r7 = reason(S, 'because: {log u ≤ u − 1|leash} (chapter 8), with equality only at u = 1');
     S.beat('And every sample is now non-negative. Chapter eight showed that log u is at most u minus one, touching only at one. So u minus one minus log u never drops below zero.',
-      fade([F3, r6, table]), A.FadeIn(ax), A.FadeIn(zero), A.Create(c3, 1.4), A.FadeIn(c3L), A.FadeIn(touch, { from: 2 }), A.Write(I1, 1.2), A.Write(I2, 1.6), S.writeIn(r7, 1.6));
+      fade([F3, r6, table]), A.FadeIn(ax), A.FadeIn(zero), A.Create(c3, 1.4), A.FadeIn(c3L), A.FadeIn(touch, { from: 2 }), A.Write(I1, 1.2), A.Write(I2, 1.6), S.writeIn(r7, 1.6),
+      { cap: 'And every sample is now non-negative. Chapter 8 showed that log u ≤ u − 1, touching only at u = 1. So u − 1 − log u never drops below zero.' });
 
     // 8. calm near u = 1
     const T1 = S.add(S.tex('-\\log u \\;\\approx\\; -(u - 1)', { size: 54 }).at(470, 70));
     const T3 = S.add(S.tex(`${K3} \\;\\approx\\; \\tfrac{1}{2}\\,(u - 1)^2`, { size: 54 }).at(470, 170));
     const r8 = reason(S, 'because: near u = 1, log u ≈ (u − 1) − ½ (u − 1)²');
     S.beat('It is also calm. Near one, minus log u tilts like a straight line, up on one side and down on the other. Adding u minus one cancels the tilt, leaving a small square.',
-      A.FadeOut(r7), A.Create(c1, 1.2), A.FadeIn(c1L), A.Write(T1, 1.2), A.Write(T3, 1.4), S.writeIn(r8, 1.4));
+      A.FadeOut(r7), A.Create(c1, 1.2), A.FadeIn(c1L), A.Write(T1, 1.2), A.Write(T3, 1.4), S.writeIn(r8, 1.4),
+      { cap: 'It is also calm. Near u = 1, −log u tilts like a straight line, up on one side and down on the other. Adding u − 1 cancels the tilt, leaving a small square: ½(u − 1)².' });
 
     // 9. exact numbers for k1, k2, k3
     const CX = [-640, -300, 120, 430, 720];
@@ -459,14 +472,16 @@ FILM.parts.push(function ch10(ctx) {
     const e2 = S.add(S.english('all wrong: the same. Every {advantage|Ahat} is 0, so the clipped term is 0, and only the {leash|bt} still pulls', { size: 38, width: 1500 }).at(0, 220));
     const say1 = 'A weakness. If all eight answers are right, every reward equals the mean: every difference is zero, the spread is zero, and every advantage comes out zero. All wrong is the same. Only the leash still pulls.';
     const first1 = seq(A.FadeIn(h), lag(0.08, marks.map((m) => A.Create(m, 0.3))), A.FadeIn(lR), lag(0.05, cR.map((m) => A.FadeIn(m))), A.Write(Z, 2), A.FadeIn(lD), lag(0.05, cD.map((m) => A.FadeIn(m))), A.FadeIn(lA), lag(0.05, cA.map((m) => A.FadeIn(m))));
-    S.beat(say1, first1, wait(Math.max(0, S.atWord(say1, 'All wrong') - MV.durOf(first1))), S.writeIn(e2, 2));
+    S.beat(say1, first1, wait(Math.max(0, S.atWord(say1, 'All wrong') - MV.durOf(first1))), S.writeIn(e2, 2),
+      { cap: 'A weakness. If all 8 answers are right, every reward equals the mean: every difference is 0, the spread is 0, and every advantage comes out 0. All wrong is the same. Only the leash still pulls.' });
 
     // 2. how often: p^G + (1 - p)^G
     const PF = S.add(S.tex(`\\Pr(\\text{all } \\GN \\text{ answers equal}) \\;=\\; ${P}^{\\GN} \\;+\\; (1 - ${P})^{\\GN}`, { size: 74 }).at(0, -60));
     const cp = S.add(S.symcard('c10p', { w: 1100 }).at(0, 130));
     const r2 = reason(S, 'because: the answers are independent, so chances multiply; the two cases never overlap');
     S.beat('How often? If each answer is right with probability p, independently, all G are right with probability p to the G, and all wrong with one minus p to the G.',
-      fade([marks, lR, cR, lD, cD, lA, cA, Z, e2]), A.Write(PF, 2), A.FadeIn(cp, { dy: 16 }), S.writeIn(r2, 1.8));
+      fade([marks, lR, cR, lD, cD, lA, cA, Z, e2]), A.Write(PF, 2), A.FadeIn(cp, { dy: 16 }), S.writeIn(r2, 1.8),
+      { cap: 'How often? If each answer is right with probability p, independently, all G are right with probability p^G, and all wrong with probability (1 − p)^G.' });
 
     // 3. the curve for G = 8
     const AX = 40;
@@ -502,9 +517,9 @@ FILM.parts.push(function ch10(ctx) {
     const toyG = S.add(S.toy(720, -330));
     const e4 = S.add(S.english('dynamic sampling: keep sampling prompts until the batch is full of groups with 0 < right answers < {G|GN}', { size: 36, width: 1400 }).at(160, 270));
     S.paper('yu2025dapo');
-    S.beat('DAPO, from ByteDance Seed and Tsinghua, uses dynamic sampling: sample extra prompts, drop every group that is all right or all wrong, and refill until the batch is full of groups that teach.',
+    S.beat('DAPO, an open-source training recipe built on G R P O, uses dynamic sampling: sample extra prompts, drop every group that is all right or all wrong, and refill until the batch is full of groups that teach.',
       fade([ax, cv, pts, lab, PF]), A.FadeIn(toyG), lag(0.25, rowsG.map((r) => par(A.FadeIn(r.lab2), r.mk.map((m) => A.Create(m, 0.3))))), lag(0.3, rowsG.map((r) => par(A.FadeIn(r.verdict), r.strike ? A.Create(r.strike, 0.5) : null, r.dead ? par(r.mk.map((m) => A.Set(m, { o: 0.35 }))) : null))), S.writeIn(e4, 1.8),
-      { cap: 'DAPO, from ByteDance Seed and Tsinghua, uses dynamic sampling: sample extra prompts, drop every group that is all right or all wrong, and refill until the batch is full of groups that teach.' });
+      { cap: 'DAPO, an open-source training recipe built on GRPO, uses dynamic sampling: sample extra prompts, drop every group that is all right or all wrong, and refill until the batch is full of groups that teach.' });
   });
 
   /*
@@ -525,7 +540,8 @@ FILM.parts.push(function ch10(ctx) {
     const toy1 = S.add(S.toy(0, 100));
     S.paper('yu2025dapo');
     S.beat('DAPO also changed the clip. With epsilon zero point two, a token at probability zero point zero one stops being pushed at zero point zero one two, while one at zero point nine can gain fifty times more.',
-      A.FadeIn(h), S.writeIn(e0, 1.6), A.FadeIn(lo, { dy: 16 }), A.Write(lot, 1.2), A.FadeIn(gl), A.FadeIn(hi, { dy: 16 }), A.Write(hit, 1.2), A.FadeIn(gh), A.FadeIn(toy1));
+      A.FadeIn(h), S.writeIn(e0, 1.6), A.FadeIn(lo, { dy: 16 }), A.Write(lot, 1.2), A.FadeIn(gl), A.FadeIn(hi, { dy: 16 }), A.Write(hit, 1.2), A.FadeIn(gh), A.FadeIn(toy1),
+      { cap: 'DAPO also changed the clip. With ε = 0.2, a token at probability 0.01 stops being pushed at 0.012, while one at 0.9 can gain 50 times more.' });
 
     // 2. clip-higher
     const CH = S.add(S.tex('\\operatorname{clip}\\big(\\rat_{i,t},\\; 1 - \\cKnob{c10el}{\\eps_{\\text{low}}},\\; 1 + \\cKnob{c10eh}{\\eps_{\\text{high}}}\\big), \\qquad \\cKnob{c10el}{\\eps_{\\text{low}}} = 0.2,\\;\\; \\cKnob{c10eh}{\\eps_{\\text{high}}} = 0.28', { size: 58 }).at(0, 210));
@@ -565,20 +581,21 @@ FILM.parts.push(function ch10(ctx) {
       S.add(S.txt(note, { size: 34, color: C.GREY_B }).at(MX[2], -200 + j * 185)),
     ]);
     const hdW = S.add(S.txt('how much one token counts', { size: 38, color: C.GREY_B }).at(0, -310));
-    const sayB = 'So long wrong answers are punished less per token, and short right ones rewarded more: a response-level length bias, in the Dr. G R P O paper’s words. DAPO divides by the group’s total tokens instead; Dr. G R P O drops the length.';
-    const firstB = seq(A.FadeOut(nG), S.writeIn(eB, 1.8));
     S.paper('liu2025drgrpo');
-    S.beat(sayB, firstB, wait(Math.max(0, S.atWord(sayB, 'DAPO divides') - MV.durOf(firstB))),
-      fade([WF, sS, sL, tS, tL, vS, vL, eB]), A.FadeIn(hdW), lag(0.8, fixes.map((r) => par(r.map((m) => A.FadeIn(m, { dy: 12 }))))),
-      { cap: 'So long wrong answers are punished less per token, and short right ones rewarded more: a response-level length bias, in the Dr. GRPO paper’s words. DAPO divides by the group’s total tokens instead; Dr. GRPO drops the length.' });
+    S.beat('So long wrong answers are punished less per token, and short right ones are rewarded more. The Dr. G R P O paper calls this a response-level length bias.',
+      A.FadeOut(nG), S.writeIn(eB, 1.8),
+      { cap: 'So long wrong answers are punished less per token, and short right ones are rewarded more. The Dr. GRPO paper calls this a response-level length bias.' });
+    S.beat('Two repairs. DAPO divides every token by the group’s total number of tokens, so all tokens in the group count the same. Dr. G R P O drops the length altogether, and divides by G alone.',
+      fade([WF, sS, sL, tS, tL, vS, vL, eB]), A.FadeIn(hdW), lag(1.6, fixes.map((r) => par(r.map((m) => A.FadeIn(m, { dy: 12 }))))),
+      { cap: 'Two repairs. DAPO divides every token by the group’s total number of tokens, so all tokens in the group count the same. Dr. GRPO drops the length altogether, and divides by G alone.' });
 
     // 5. the division by the spread: a difficulty bias
     const DF = S.add(S.tex(`\\text{Dr. GRPO:}\\quad \\Ahat_i \\;=\\; \\rr_i - \\rbar \\qquad \\big(\\text{no division by } ${SD_T}\\big)`, { size: 58 }).at(0, -280));
     const dRows = [1, 4].map((k, j) => S.add(S.tex(`${k} \\text{ right of } ${G}: \\quad ${SD_T} = ${sdOf(k).toFixed(2)} \\quad\\Longrightarrow\\quad \\text{advantages} \\times ${(1 / sdOf(k)).toFixed(2)}`, { size: 52 }).at(0, -120 + j * 110)));
     const eD = S.add(S.english('prompts that are nearly always right, or nearly always wrong, weigh more: a question-level difficulty bias', { size: 38, width: 1500 }).at(0, 160));
-    S.beat('Dr. G R P O also drops the division by the spread. With one right answer in eight, it triples the advantages; with four in eight, it doubles them. Lopsided prompts weigh more: a difficulty bias.',
+    S.beat('Dr. G R P O also drops the division by the spread. That division triples the advantages when one answer in eight is right, but only doubles them at four in eight. So lopsided prompts weigh more: a difficulty bias.',
       fade([hdW, fixes]), A.Write(DF, 1.8), lag(0.8, dRows.map((m) => A.Write(m, 1.4))), S.writeIn(eD, 1.8),
-      { cap: 'Dr. GRPO also drops the division by the spread. With one right answer in eight, it triples the advantages; with four in eight, it doubles them. Lopsided prompts weigh more: a question-level difficulty bias.' });
+      { cap: 'Dr. GRPO also drops the division by the spread. That division triples the advantages when one answer in 8 is right, but only doubles them at 4 in 8. So lopsided prompts weigh more: a question-level difficulty bias.' });
 
     // 6. GSPO: one ratio per answer
     const PR = S.add(S.tex('\\frac{\\pt(\\yy_i \\mid \\xx)}{\\pold(\\yy_i \\mid \\xx)} \\;=\\; \\prod_{t=1}^{|\\yy_i|} \\frac{\\pt(\\yy_{i,t} \\mid \\ss_{i,t})}{\\pold(\\yy_{i,t} \\mid \\ss_{i,t})} \\;=\\; \\prod_{t=1}^{|\\yy_i|} \\rat_{i,t}', { size: 64 }).at(0, -60));
@@ -615,7 +632,8 @@ FILM.parts.push(function ch10(ctx) {
     const rw = S.add(S.english('{reward|rr} = is the final answer correct? + is the response in the required format?', { size: 40 }).at(0, -100));
     S.paper('deepseek2025');
     S.beat('Now the result that made this recipe famous. DeepSeek ran G R P O straight on a base model, with no supervised fine-tuning first, and two checker rewards: is the answer correct, and is the format right?',
-      A.FadeIn(h), lag(0.6, steps.map((s, i) => seq(A.FadeIn(s, { dx: -16 }), i < arr.length ? A.Arrow(arr[i], 0.4) : null))), S.writeIn(rw, 1.8));
+      A.FadeIn(h), lag(0.6, steps.map((s, i) => seq(A.FadeIn(s, { dx: -16 }), i < arr.length ? A.Arrow(arr[i], 0.4) : null))), S.writeIn(rw, 1.8),
+      { cap: 'Now the result that made this recipe famous. DeepSeek ran GRPO straight on a base model, with no supervised fine-tuning first, and two checker rewards: is the answer correct, and is the format right?' });
 
     // 2. AIME 2024 pass@1
     const base = 300;
@@ -626,9 +644,9 @@ FILM.parts.push(function ch10(ctx) {
     const l1 = S.add(S.txt(`after: ${R1.after}%`, { size: 38, color: S.color('pt') }).at(260, base - R1.after * sc - 34));
     const axl = S.add(S.line(-480, base, 480, base, { stroke: C.GREY_B, width: 3 }));
     const lab = S.add(S.txt('AIME 2024, pass@1: the chance one sampled answer is right', { size: 32, color: C.GREY_B }).at(0, base + 36));
-    S.beat('On the A I M E twenty twenty-four problems, the chance that one sampled answer is right rose from fifteen point six percent to seventy-seven point nine. With a one-bit reward, that is the average reward itself.',
+    S.beat('On the A I M E twenty twenty-four problems, the chance that one sampled answer is right rose from fifteen point six percent to seventy-seven point nine. That is exactly the average of the one-bit correctness reward.',
       fade([rw]), par(steps.map((s) => A.Set(s, { o: 0.5 }))), A.FadeIn(axl), A.FadeIn(lab), A.Create(b0, 0.8), A.FadeIn(l0), A.Create(b1, 2), A.FadeIn(l1),
-      { cap: `On the AIME 2024 problems, the chance that one sampled answer is right (pass@1) rose from ${R1.before}% to ${R1.after}% (Nature version; ${R1.v1.toFixed(1)}% in the first arXiv version). With a one-bit reward, that is the average reward itself.` });
+      { cap: `On the AIME 2024 problems, the chance that one sampled answer is right (pass@1) rose from ${R1.before}% to ${R1.after}% (Nature version; ${R1.v1.toFixed(1)}% in the first arXiv version). That is exactly the average of the one-bit correctness reward.` });
 
     // 3. the question for the last chapter
     const e4 = S.add(S.english('did RL teach new reasoning, or {sharpen|pt} what the base model could already do?', { size: 46 }).at(0, -40));
