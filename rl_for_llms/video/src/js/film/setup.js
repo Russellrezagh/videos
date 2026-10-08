@@ -335,29 +335,47 @@ window.buildVideo = function buildVideo(root, durations, words) {
         last = re.lastIndex;
       }
       if (last < markup.length) runs.push([markup.slice(last), null]);
-      // split runs into lines of at most `max` characters, at spaces
+      // subscripts: y_w or y_{ref} become a small lowered run (third field)
+      const pieces = [];
+      for (const [t, c] of runs) {
+        const sre = /_\{([^}]*)\}|_([A-Za-z0-9])/g;
+        let at = 0;
+        let sm;
+        while ((sm = sre.exec(t))) {
+          if (sm.index > at) pieces.push([t.slice(at, sm.index), c, false]);
+          pieces.push([sm[1] !== undefined ? sm[1] : sm[2], c, true]);
+          at = sre.lastIndex;
+        }
+        if (at < t.length) pieces.push([t.slice(at), c, false]);
+      }
+      // split into lines of at most `max` characters, at spaces only: a
+      // piece glued to the one before it (punctuation after a coloured word,
+      // a subscript) never starts a line
       const max = Math.floor(width / (size * 0.47));
       const lines = [[]];
       let len = 0;
-      for (const [t, c] of runs) {
-        const parts = t.split(/(\s+)/);
+      let glued = false;
+      for (const [t, c, sub] of pieces) {
+        const parts = sub ? [t] : t.split(/(\s+)/);
         for (const part of parts) {
           if (!part) continue;
           if (/^\s+$/.test(part)) {
             if (len > 0) {
-              lines[lines.length - 1].push([' ', null]);
+              lines[lines.length - 1].push([' ', null, false]);
               len += 1;
             }
+            glued = false;
             continue;
           }
-          if (len + part.length > max && len > 0) {
+          if (!glued && len + part.length > max && len > 0) {
             const cur = lines[lines.length - 1];
             while (cur.length && cur[cur.length - 1][0] === ' ') cur.pop();
             lines.push([]);
             len = 0;
           }
-          lines[lines.length - 1].push([part, c]);
-          len += part.length;
+          lines[lines.length - 1].push([part, c, sub]);
+          len += sub ? Math.ceil(part.length * 0.7) : part.length;
+          glued = true;
         }
       }
       const g = new Group();

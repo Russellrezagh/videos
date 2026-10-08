@@ -380,6 +380,7 @@ const MV = (() => {
    * A run with no colour takes the text colour. Written letter by letter.
    */
   class Rich extends Text {
+    // a run may carry a third field, true for a subscript (smaller, lowered)
     constructor(runs, opts = {}) {
       super(runs.map((r) => r[0]).join(''), opts);
       this.runs = runs;
@@ -387,15 +388,26 @@ const MV = (() => {
     build(str) {
       super.build(str);
       let i = 0;
-      for (const [t, c] of this.runs) {
-        for (let j = 0; j < [...t].length; j++, i++) {
+      for (const [t, c, sub] of this.runs) {
+        const n = [...t].length;
+        for (let j = 0; j < n; j++, i++) {
           const sp = this.spans[i];
-          if (sp && c) {
+          if (!sp) continue;
+          if (c) {
             sp.setAttribute('fill', c);
             sp.setAttribute('stroke', c);
           }
+          if (sub) {
+            sp.setAttribute('font-size', Math.round(this.size * 0.72));
+            // lowered on the first letter, back to the baseline after the last
+            if (j === 0 && !this._afterSub) sp.setAttribute('dy', Math.round(this.size * 0.22));
+          } else if (j === 0 && i > 0 && this.runs.length && this._afterSub) {
+            sp.setAttribute('dy', -Math.round(this.size * 0.22));
+          }
         }
+        this._afterSub = !!sub;
       }
+      this._afterSub = false;
     }
   }
 

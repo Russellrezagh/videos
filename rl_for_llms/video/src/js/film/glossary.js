@@ -54,7 +54,7 @@ window.FILM = window.FILM || { parts: [], papers: {} };
     // baselines and values
     bb: ['baseline', 'b', 'the baseline', 'a reward we expected anyway', 'subtracting it removes noise and adds no bias'],
     VV: ['baseline', 'V', 'the value', 'a critic’s prediction of the reward to come', 'it is a baseline that depends on the state'],
-    rbar: ['baseline', '\\bar r', 'the group mean', 'the average reward of the other answers', 'a baseline that needs no critic'],
+    rbar: ['baseline', '\\bar r', 'the group mean', 'the average reward of a group of answers to the same prompt', 'a baseline that needs no critic'],
     // advantage
     AA: ['advantage', 'A', 'the advantage', 'reward minus what we expected', 'it says better or worse than usual, not just good or bad'],
     Ahat: ['advantage', '\\hat A', 'the estimated advantage', 'computed from rewards and value predictions', 'the true advantage is unknown'],
