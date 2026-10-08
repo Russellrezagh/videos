@@ -607,7 +607,7 @@ FILM.parts.push(function ch10(ctx) {
     const SF = S.add(S.tex(`${SR}(\\th) \\;=\\; \\Big(\\frac{\\pt(\\yy_i \\mid \\xx)}{\\pold(\\yy_i \\mid \\xx)}\\Big)^{1/|\\yy_i|} \\;=\\; \\Big(\\prod_{t=1}^{|\\yy_i|} \\rat_{i,t}\\Big)^{1/|\\yy_i|}`, { size: 64 }).at(0, 130));
     const nB = S.add(S.english(`500 token ratios of 1.01 multiply to ${big.toFixed(0)}; of 0.99, to ${small.toFixed(4)}`, { size: 34, color: C.GREY_B, italic: true }).at(0, 268));
     S.paper('zheng2025gspo');
-    S.beat(`But products of hundreds of ratios run wild: five hundred ratios of one point zero one make about ${words(Math.round(big))}. So G S P O, from the Qwen team, takes the length-th root: their geometric mean.`,
+    S.beat(`But products of hundreds of ratios run wild: five hundred ratios of one point zero one make about ${words(Math.round(big))}. So G S P O, from the Kwen team, uses their geometric mean instead.`,
       A.FadeOut(rP), UP(PR), A.Write(SF, 2.2), S.writeIn(nB, 1.4),
       { cap: `But products of hundreds of ratios run wild: five hundred ratios of 1.01 make about ${Math.round(big)}. So GSPO, from the Qwen team, takes the length-th root: their geometric mean.` });
     tour(S, SF, [

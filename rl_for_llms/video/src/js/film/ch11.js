@@ -156,7 +156,7 @@ FILM.parts.push(function ch11(ctx) {
       fade([...dots, ...rings, F4, box4, ub]), A.FadeIn(toy), A.FadeIn(ax2), A.Create(cb, 1.6), A.FadeIn(lb), A.Create(cr, 1.6), A.FadeIn(lr), A.FadeIn(n1), A.FadeIn(n2),
       { cap: `Now two toy models, over ten problems. RL raises pass@1, from ${at(PASS.base, 1).toFixed(2)} to ${at(PASS.rl, 1).toFixed(2)}. But the base model’s curve keeps climbing: from ${KX} tries on, it is ahead.` });
     S.paper('yue2025');
-    S.beat('Yue and colleagues report the same pattern in real models: with enough tries, base models often solve as many problems as their R L versions, or more. To see why, look inside the toy.',
+    S.beat('A twenty twenty-five study reports the same pattern in real models: with enough tries, base models often solve as many problems as their R L versions, or more. To see why, look inside the toy.',
       A.Indicate(n2, { color: C.YELLOW, scale: 1.08 }), A.Indicate(lb, { color: S.color('pref'), scale: 1.15 }),
       { cap: 'Yue and colleagues report the same pattern in real models: with enough tries, base models often solve as many problems as their RL versions, or more. To see why, look inside the toy.' });
 

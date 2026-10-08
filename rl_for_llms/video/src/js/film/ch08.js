@@ -127,12 +127,12 @@ FILM.parts.push(function ch08(ctx) {
     const K1 = S.add(S.tex(`${KLR} \\;=\\; \\sum_{\\yy} \\pp(\\yy)\\, ${LR} \\;=\\; \\EE_{\\yy \\sim \\pp}\\Big[ ${LR} \\Big]`, { size: 64 }).at(0, -60));
     const box1 = boxOf(S, K1, S.color('KL'));
     const r4 = S.add(S.reason('because: a sum weighted by {π(y)|pp} is an average over answers drawn from {π|pp} (chapter 3)'));
-    S.beat('One number for the whole policy: average those log-ratios over the answers the policy actually gives, each weighted by its chance under pi. That average is the Kullback-Leibler divergence: K L, for short.',
+    S.beat('One number for the whole policy: average those log-ratios over the answers the policy actually gives, each weighted by its chance under pi. That average is the Coolback Lyebler divergence: K L, for short.',
       fade([refB, polB, ...labs, legR, legP, toy, e1, rowL1, rowL2, ...ratio, ...logs]), UP(F1), A.Write(K1, 2.2), A.Create(box1, 0.8), S.writeIn(r4, 1.6),
       { cap: 'One number for the whole policy: average those log-ratios over the answers the policy actually gives, each weighted by its chance under π. That average is the Kullback–Leibler divergence: KL, for short.' });
     S.tour(K1, [
       { sym: 'KL', at: [0, 175], anims: [A.FadeOut(r4), A.FadeOut(F1)], text: { from: 'Kullback and Leibler: the average log-ratio of two distributions', why: 'one number for how far a policy has moved' },
-        say: 'K L is named after Kullback and Leibler, the two statisticians who defined it. It is one number: how far pi has moved away from pi ref.',
+        say: 'K L is named after Coolback and Lyebler, the two statisticians who defined it. It is one number: how far pi has moved away from pi ref.',
         cap: 'KL is named after Kullback and Leibler, the two statisticians who defined it. It is one number: how far π has moved away from π_ref.' },
       { sym: 'pref', at: [0, 175], text: { why: 'it is where the leash is tied: the model the reward model learned around' },
         say: 'Pi ref is the reference: the model before this training began, kept frozen. It is where the leash is tied.',
