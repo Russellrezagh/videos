@@ -1,25 +1,53 @@
 # The Gradient of Reward
 
-A narrated film (29 minutes) on the mathematics of reinforcement learning
-for language models, built from first principles, drawn in a 3Blue1Brown-like
-style with a Manim-style engine written in JavaScript and SVG.
+A narrated film (about 100 minutes) on the mathematics of reinforcement learning
+for language models, built from first principles and drawn in a 3Blue1Brown-like
+style with a Manim-style engine written in JavaScript and SVG, including 3D
+landscapes.
 
 It starts from one question: how do you take the gradient of something you can
-only sample? It then builds, step by step:
+only sample? Then it builds the answer one justified step at a time. Every
+formula is introduced the same way: why we need it, a derivation with a
+"because" for each step, a tour of its symbols (name, where it comes from, why
+it is there), a plain-English reading in the symbols' colours, and what it does
+to real numbers from the film's tested kernel.
 
 | Chapter | What it derives or shows |
 |---|---|
-| 1. A language model is a policy | tokens, logits, softmax; a response's probability is a product, its log-probability a sum; states, actions, rewards; the objective J(θ) |
-| 2. Learning from a score | SFT as maximum likelihood; why judging is easier than writing; why the reward cannot be back-propagated |
-| 3. The log-derivative trick | ∇E[R] = E[R ∇log π] derived on a three-answer bandit; the softmax score 1[a=b] − π_b; Monte Carlo convergence; REINFORCE for sequences |
-| 4. Taming the noise | why an offset of 10 makes the estimate noisy; E[∇log π] = 0, so any baseline keeps it unbiased; the variance as a function of the baseline; the advantage; critic, leave-one-out (RLOO) and group baselines |
-| 5. Credit assignment | reward-to-go, the value function, TD errors, GAE(γ, λ); process supervision |
-| 6. Small steps | importance ratios, the surrogate objective, TRPO's KL constraint, PPO's clipped objective plotted for A > 0 and A < 0, the PPO loop for language models |
-| 7. Rewards from preferences | Bradley–Terry, the reward-model loss, a reward model fitted to 20,000 simulated comparisons, the InstructGPT recipe, reward over-optimization |
-| 8. The KL leash | KL divergence, the per-token penalty, the exact optimum π* ∝ π_ref e^{r/β} with its derivation, the β knob, the reward–KL frontier, the Bayesian reading |
-| 9. DPO | solving for the reward, the cancelling log Z, the DPO loss and gradient, and DPO on unlimited comparisons converging to the exact RLHF optimum |
-| 10. Verifiable rewards and GRPO | RLVR, group-normalized advantages, the GRPO objective, Schulman's k3 KL estimator, groups with no signal, DAPO, Dr. GRPO's length bias, GSPO, DeepSeek-R1-Zero |
-| 11. What RL changes | pass@k and sharpening; every method as one weight on ∇log π; recap |
+| 0. The question | the problem; how to read the film's colour-coded formulas |
+| 1. A language model is a policy | logits and the softmax (why exponentiate, why divide, shift invariance, temperature); a response's probability as a product and its log as a sum; states, actions, rewards; the objective J(θ) toured symbol by symbol |
+| 2. Learning from a score | SFT as maximum likelihood (why the minus and the log); judging is easier than writing; why the reward cannot be back-propagated |
+| 3. The log-derivative trick | the softmax built on a three-answer bandit; the policy gradient derived in 17 steps; the softmax score 1[a=j] − π(j) derived from log π = z − log Σe^z; the exact gradient π(j)(r(j) − J); Monte Carlo convergence; REINFORCE for sequences |
+| 4. Taming the noise | an offset of 10 keeps the gradient but multiplies the variance; the proof that E[∇log π] = 0, so any baseline adds no bias; the variance as a parabola in b and the optimal baseline; the advantage; critic, leave-one-out and group baselines; **3D**: the reward landscape over the logit plane, the one-sample arrows laid tip to tail, the +10 offset and the baseline, training runs with and without a baseline |
+| 5. Credit assignment | reward-to-go and why past rewards may be dropped; the value as a learned baseline; the TD error; GAE and its λ = 0 and λ = 1 limits by telescoping; process supervision |
+| 6. Small steps | importance sampling derived; the surrogate and its gradient at θ_old; TRPO's trust region; PPO's clip case by case; the PPO loop for language models; **3D**: the clipped surrogate as a surface over (ρ, A) |
+| 7. Rewards from preferences | Bradley–Terry derived (a two-answer softmax is a sigmoid of the gap); the reward-model loss as maximum likelihood and its gradient; InstructGPT; reward over-optimization |
+| 8. The KL leash | KL defined, read and its properties; the per-token penalty; the optimum π* = π_ref e^{r/β} / Z derived from E[r] − βKL = β log Z − βKL(π‖π*); the β knob and the Bayesian reading; **3D**: the objective as a dome over the simplex, its peak sliding as β shrinks |
+| 9. DPO | solving the optimum for the reward; log Z cancelling inside Bradley–Terry; the DPO loss and its gradient; convergence to the RLHF optimum |
+| 10. Verifiable rewards and GRPO | RLVR; group-normalized advantages; the GRPO objective; the k3 estimator shown non-negative and unbiased; groups with no signal; DAPO, Dr. GRPO, GSPO; DeepSeek-R1-Zero |
+| 11. What RL changes | pass@k and its unbiased estimator; sharpening; every method as E[w ∇log π]; recap |
+
+## The teaching layer
+
+- `video/src/js/film/glossary.js`: every symbol of the film with one colour
+  by role (the policy blue, weights teal, gradients yellow, rewards gold,
+  baselines purple, advantages green, frozen models grey, the KL leash
+  orange, ratios maroon, knobs pink), a plain-English name, where it comes
+  from and why it is there. The symbols become TeX macros (`\pt`, `\rr`,
+  `\grad`, ...), so every formula is coloured and tagged automatically.
+- The kit (`film/setup.js`): `S.tour` spotlights a formula's symbols one beat at
+  a time with their cards, `S.english` writes a plain-English reading in the
+  same colours, `S.reason` shows why a derivation step is allowed.
+- `video/TEACHING.md`: the pattern every formula follows, notation, layout and
+  narration rules.
+- `video/src/js/space3.js`: 3D surfaces, paths, points and labels for the
+  engine (projected to SVG, painter's algorithm, frame-pure), used by the
+  landscapes in `film/landscapes.js`.
+
+The film is one file per chapter (`video/src/js/film/ch00.js` ... `ch11.js`),
+so chapters can be written and reviewed in parallel. This version was written
+that way: one writer per chapter group and one for the 3D module, then
+reviewers who re-derived every formula and recomputed every number.
 
 ## The model first
 
@@ -84,6 +112,9 @@ node video/tools/build.mjs --fragment out.html --embed-kbps 40   # one file, voi
 node video/tools/render-mp4.mjs --workers 4      # video/dist/the-gradient-of-reward.mp4
 node video/tools/check-av.mjs                    # the voice plays in step with the picture
 node video/tools/lint-layout.mjs                 # every beat against the design rules
+node video/tools/probe.mjs                       # page, TeX and chapter errors; length per chapter
+node video/tools/sheet.mjs --page video/dist/index.html --scenes trick --out trick.png   # contact sheet
+node video/tools/build.mjs --publish pub/        # page + voice as Opus and MP3 files (long films)
 ```
 
 ## Three Landscapes (Manim)
