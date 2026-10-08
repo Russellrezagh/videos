@@ -65,7 +65,7 @@ window.FILM = window.FILM || { parts: [], papers: {} };
     // the leash
     bt: ['leash', '\\beta', 'the leash strength', 'a number we choose', 'it trades reward against staying close'],
     KL: ['leash', '\\mathrm{KL}', 'the KL divergence', 'an average log-ratio of two distributions', 'it measures how far the policy has moved'],
-    ZZ: ['leash', 'Z', 'the normaliser', 'the sum that makes probabilities add to one', 'it cancels out in DPO'],
+    ZZ: ['leash', 'Z', 'the normaliser', 'the sum of the reweighted chances', 'dividing by it makes the reweighted chances add up to 1'],
     // ratios
     rat: ['ratio', '\\rho', 'the probability ratio', 'new probability over old probability', 'it re-weights old samples for the new policy'],
     // knobs
@@ -84,7 +84,7 @@ window.FILM = window.FILM || { parts: [], papers: {} };
     yl: ['data', 'y_l', 'the rejected response', 'the one a person passed over', 'the loser of the comparison'],
     // operators
     EE: ['op', '\\mathbb{E}', 'the expectation', 'an average weighted by probability', 'it is what “on average” means'],
-    sig: ['op', '\\sigma', 'the sigmoid', '1 / (1 + e^{-u})', 'it turns any number into a probability'],
+    sig: ['op', '\\sigma', 'the sigmoid', '1 / (1 + e^(−t)), an S-shaped curve', 'it turns any number into a probability'],
   };
   const symbols = {};
   const macros = {};

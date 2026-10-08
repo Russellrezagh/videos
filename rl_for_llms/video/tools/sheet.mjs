@@ -5,6 +5,7 @@
  * read by an agent that cannot watch video).
  *
  * usage: node video/tools/sheet.mjs --page draft.html --scenes trick,meaning --out sheet.png [--at 0.85] [--cols 3] [--width 2400]
+ *          [--from 5 --to 12]   only beats 5..12 (1-based, inclusive) of the selection
  *   --at   where in each beat to take the frame (0 = start, 1 = end; default 0.85)
  * Each tile is labelled with the beat id. Needs playwright (Chromium) and
  * python3 with Pillow (for tiling).
@@ -36,7 +37,8 @@ p.on('pageerror', (e) => errors.push(e.message));
 await p.goto(`${pathToFileURL(page).href}?export`);
 await p.waitForFunction(() => window.__ready === true, null, { timeout: 180000 });
 await p.evaluate(() => document.fonts.ready);
-const beats = await p.evaluate((ids) => window.__video.beats.filter((b) => b.say && (!ids.length || ids.includes(b.scene))).map((b) => ({ id: b.id, t: b.start, dur: b.dur })), scenes);
+const all = await p.evaluate((ids) => window.__video.beats.filter((b) => b.say && (!ids.length || ids.includes(b.scene))).map((b) => ({ id: b.id, t: b.start, dur: b.dur })), scenes);
+const beats = all.slice(Number(arg('--from', 1)) - 1, Number(arg('--to', all.length)));
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sheet-'));
 const files = [];
 for (const b of beats) {

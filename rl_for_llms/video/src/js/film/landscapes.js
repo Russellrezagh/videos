@@ -2,11 +2,14 @@
  * The three 3D landscapes, as scene builders called from chapters 4, 6 and 8
  * (drawn with space3.js, numbers from src/js/rl.js).
  *
- *   FILM.landscapes.logits(ctx)  chapter 4: the reward landscape over two logits,
- *                                the exact gradient, the one-sample arrows, the
- *                                +10 offset, the baseline, training runs
- *   FILM.landscapes.clip(ctx)    chapter 6: PPO's clipped objective over (ratio, advantage)
- *   FILM.landscapes.dome(ctx)    chapter 8: reward minus beta KL over the triangle of policies
+ *   FILM.landscapes.logits(ctx)  chapter 4, scenes land-logits and land-noise: the
+ *                                reward landscape over two logits, the exact
+ *                                gradient, the one-sample arrows, the +10 offset,
+ *                                the baseline, training runs with and without
+ *   FILM.landscapes.clip(ctx)    chapter 6, scene land-clip: PPO's clipped
+ *                                objective over (ratio, advantage)
+ *   FILM.landscapes.dome(ctx)    chapter 8, scene land-dome: reward minus beta KL
+ *                                over the triangle of policies, and the beta sweep
  *
  * Each adds its scenes (ids 'land-...') to the chapter it is called from.
  * The pictures sit on the left; formulas, readings and reasons in a column
@@ -51,6 +54,22 @@ FILM.landscapes = FILM.landscapes || {};
   // fade a list of mobs
   const fade = (A, ms, dur = 0.5) => ms.filter(Boolean).map((m) => A.FadeOut(m, { dur }));
   const hide = (...ms) => ms.flat().forEach((m) => (m.init.o = 0));
+  // animations cued to words of the narration: steps [word or null, anim];
+  // each anim waits until its word is spoken (call before S.beat)
+  const cued = (S, say, steps) => {
+    const out = [];
+    let t = 0;
+    for (const [word, an] of steps) {
+      if (word) {
+        const w = Math.max(0, S.atWord(say, word) - t);
+        out.push(MV.wait(w));
+        t += w;
+      }
+      out.push(an);
+      t += MV.durOf(an);
+    }
+    return MV.seq(...out);
+  };
   const undrawn = (...ms) => ms.flat().forEach((m) => {
     m.init.o = 0;
     m.init.draw = 0;
@@ -156,7 +175,8 @@ FILM.landscapes = FILM.landscapes || {};
     const HEIGHT = ramp(GOLDEN, 0, 1);
     const ZA = 0.06; // arrows float just above the map
     const TOP = { phi: 0, theta: -90, zoom: 1, cx: 0, cy: 0, cz: 0 };
-    const VIEW = { phi: 50, theta: -64, zoom: 1.15, cx: -0.4, cy: 0.8, cz: 2 };
+    // (cameras chosen so the picture stays inside x -900..60, y -280..380)
+    const VIEW = { phi: 50, theta: -64, zoom: 1.06, cx: -0.6, cy: 0.8, cz: 1.25 };
     const MAP = { phi: 0, theta: -90, zoom: 2.3, cx: u0 + 1.3, cy: v0 + 0.15, cz: 0 };
     const FAR = { phi: 0, theta: -90, zoom: 0.165, cx: u0 + 0.5, cy: v0 + 6, cz: 0 };
     const MAPFO = 0.55; // the map is darker than the landscape, so the arrows read on it
@@ -202,8 +222,11 @@ FILM.landscapes = FILM.landscapes || {};
         return [u0 + K * d[0] * s.draw + dir[0] * 95 * px, v0 + K * d[1] * s.draw + dir[1] * 34 * px, ZA];
       }, { size: 32, color: AC[a] }));
       const gradLab = new Label3(new MV.Tex('\\grad\\JJ', { size: 46 }), () => {
+        // below the tip on the close map; above it when the map is far away and
+        // the long sample arrows take the other directions
         const px = 1 / (44 * sp.p.zoom);
-        return [u0 + K * g[0] + 30 * px, v0 + K * g[1] - 44 * px, ZA];
+        const t = MV.clamp01((sp.p.zoom - 0.3) / 1.2);
+        return [u0 + K * g[0] - 72 * t * px, v0 + K * g[1] + (58 - 108 * t) * px, ZA];
       });
       // the chain: each arrow times its chance, tip to tail
       const pieces = [0, 1, 2].map((a) => new Arrow3((p) => {
@@ -273,16 +296,16 @@ FILM.landscapes = FILM.landscapes || {};
         fade(A, [M1, M2, R6, E6]), A.Write(F8, 1.6), S.writeIn(R8, 1.4), A.FadeIn(L.surf, { dur: 0.6 }), par(A.Set(L.surf, { h: 1 }, 3.2), A.Set(L.sp, VIEW, 3.2)));
       const E9 = col.say(S, 'three plateaus: height {1 for 51,|JJ} {0.3 for about 50,|JJ} {0 for 41;|JJ} ramps between them', 140, 36);
       S.beat('It has three flat plateaus, one for each answer the model can become sure of: height one for fifty-one, zero point three for about fifty, zero for forty-one. Ramps join them, and training climbs.',
-        S.writeIn(E9, 2.4), A.Set(L.sp, { theta: -50 }, 6, 'linear'),
+        S.writeIn(E9, 2.4), A.Set(L.sp, { theta: -55 }, 6, 'linear'),
         { cap: 'It has three flat plateaus, one for each answer the model can become sure of: height 1 for 51, 0.3 for about 50, 0 for 41. Ramps join them, and training climbs.' });
 
       // which way is uphill?
       const hLab = new Label3(new MV.Tex(`\\JJ = ${fx(J0)}`, { size: 44 }), () => [u0, v0, HZ * L.surf.p.h * J0 + 1.1]);
       hide(hLab);
       L.sp.add(hLab);
-      const G1 = col.tex(S, `\\frac{\\partial \\JJ}{\\partial ${U}} \\;=\\; \\pt(51)\\,\\big(\\rr(51) - \\JJ\\big)`, -300, 50);
+      const G1 = col.tex(S, `\\frac{\\partial \\JJ}{\\partial ${U}} \\;=\\; \\pt(51)\\,\\big(\\rr(51) - \\JJ\\big)`, -300, 46);
       const N1 = col.tex(S, `=\\; \\cPolicy{n1}{${fx(pi[0])}} \\times (\\cReward{n2}{1} - \\cReward{n3}{${fx(J0)}}) \\;=\\; \\cGrad{n4}{${fx(g[0])}}`, -210, 44);
-      const G2 = col.tex(S, `\\frac{\\partial \\JJ}{\\partial ${V}} \\;=\\; \\pt(\\approx 50)\\,\\big(\\rr(\\approx 50) - \\JJ\\big)`, -100, 50);
+      const G2 = col.tex(S, `\\frac{\\partial \\JJ}{\\partial ${V}} \\;=\\; \\pt(\\text{about 50})\\,\\big(\\rr(\\text{about 50}) - \\JJ\\big)`, -100, 46);
       const N2 = col.tex(S, `=\\; \\cPolicy{n1}{${fx(pi[1])}} \\times (\\cReward{n2}{0.3} - \\cReward{n3}{${fx(J0)}}) \\;=\\; \\cGrad{n4}{${fx(g[1])}}`, -10, 44);
       const R10 = col.why(S, 'because: with 41’s logit pinned at 0, u is the logit of 51 and v the logit of about 50; each slope is π × (r − J), as in chapter 3', 110);
       S.beat('Our model stands on a ramp, at height zero point five eight. Which way is uphill? As in chapter three, each slope is a chance, times reward minus the average: zero point two along u, minus zero point zero nine along v.',
@@ -303,7 +326,7 @@ FILM.landscapes = FILM.landscapes || {};
         { cap: 'But a real model can never compute that arrow: it needs every possible answer. It gets one sampled answer and its reward, and forms ĝ: the reward, times the push that makes that answer more likely.' });
       const rowTex = [
         `\\aa = 51: \\quad \\cReward{q1}{1} \\times \\cGrad{q2}{(${fx(score[0][0])},\\, ${fx(score[0][1])})}`,
-        `\\aa = {\\approx}50: \\quad \\cReward{q1}{0.3} \\times \\cGrad{q2}{(${fx(score[1][0])},\\, ${fx(score[1][1])})}`,
+        `\\aa = \\text{about 50}: \\quad \\cReward{q1}{0.3} \\times \\cGrad{q2}{(${fx(score[1][0])},\\, ${fx(score[1][1])})}`,
         `\\aa = 41: \\quad \\cReward{q1}{0} \\times \\cGrad{q2}{(${fx(score[2][0])},\\, ${fx(score[2][1])})}`,
       ];
       const rows = rowTex.map((t, i) => col.tex(S, t, -80 + 76 * i, 44));
@@ -322,7 +345,7 @@ FILM.landscapes = FILM.landscapes || {};
       const R15 = col.why(S, 'because: an average over samples is each value times its {chance,|pt} added up', 80);
       const E16 = col.say(S, 'one {sample|aa} gives one of three arrows; weighted by their {chances,|pt} they add up to the {gradient|grad}', 200, 36);
       S.beat('Shrink each arrow by its chance, and lay them tip to tail. They land exactly on the tip of the gradient. That is the log-derivative trick, seen from above: noisy pieces, the right average.',
-        fade(A, [...rows, R13]), A.Write(T15, 1.4), par(AR.samples.map((m) => A.Set(m, { o: 0.35 }, 0.6))), lag(1.1, AR.pieces.slice(0, 2).map((m) => A.Arrow(m, 1))), A.Write(T15b, 1.6), A.Write(T15c, 1), S.writeIn(R15, 1.2), S.writeIn(E16, 1.8));
+        fade(A, [...rows, R13]), A.Write(T15, 1.4), par(AR.samples.map((m) => A.Set(m, { o: 0.35 }, 0.6)), fade(A, AR.labels), A.Set(L.sp, { zoom: 3.4, cx: u0 + 0.85, cy: v0 - 0.35 }, 1.4)), lag(1.1, AR.pieces.slice(0, 2).map((m) => A.Arrow(m, 1))), A.Write(T15b, 1.6), A.Write(T15c, 1), S.writeIn(R15, 1.2), S.writeIn(E16, 1.8));
     });
 
     /* ---------------------------------------------------- scene 2 */
@@ -408,9 +431,21 @@ FILM.landscapes = FILM.landscapes || {};
 
       // training runs
       const onTop = (u, v) => [u, v, HZ * Jf(u, v) + 0.1];
-      const exact = new Path3(RUNS.exact.map(([u, v]) => onTop(u, v)), { color: C.YELLOW, width: 6 });
-      const none = RUNS.none.map((pth) => new Path3(pth.map(([u, v]) => onTop(u, v)), { color: C.RED, width: 4 }));
-      const loo = RUNS.loo.map((pth) => new Path3(pth.map(([u, v]) => onTop(u, v)), { color: C.PURPLE, width: 5 }));
+      // a run drawn on the ground: each step is a straight move on the floor,
+      // lifted point by point to the height of the landscape under it
+      const hug = (pth) => {
+        const out = [onTop(...pth[0])];
+        for (let i = 1; i < pth.length; i++) {
+          const [u0_, v0_] = pth[i - 1];
+          const [u1, v1] = pth[i];
+          const n = Math.max(1, Math.ceil(Math.hypot(u1 - u0_, v1 - v0_) / 0.25));
+          for (let k = 1; k <= n; k++) out.push(onTop(u0_ + ((u1 - u0_) * k) / n, v0_ + ((v1 - v0_) * k) / n));
+        }
+        return out;
+      };
+      const exact = new Path3(hug(RUNS.exact), { color: C.YELLOW, width: 6 });
+      const none = RUNS.none.map((pth) => new Path3(hug(pth), { color: C.RED, width: 4 }));
+      const loo = RUNS.loo.map((pth) => new Path3(hug(pth), { color: C.PURPLE, width: 5 }));
       const endsN = RUNS.none.map((pth) => new Dot3(onTop(...pth[pth.length - 1]), { r: 9, color: C.RED }));
       const start = new Dot3(onTop(...RUN.start), { r: 12, color: C.WHITE });
       undrawn(exact, none, loo);
@@ -419,7 +454,7 @@ FILM.landscapes = FILM.landscapes || {};
       L.corner.forEach((c) => L.sp.topG.appendChild(c.el)); // labels above the runs
       const U8 = col.tex(S, `(${U}, ${V}) \\;\\leftarrow\\; (${U}, ${V}) \\;+\\; \\lr \\cdot \\tfrac{1}{4} \\textstyle\\sum_{i=1}^{4} \\ghat_i`, -300, 48);
       const E8 = col.say(S, 'start: says {41|#FC6255} two times in three · 4 samples a step · {η = 1|lr} · every {reward|rr} + 10 · 60 steps', -200, 32);
-      const VIEW2 = { phi: 48, theta: -70, zoom: 1.2, cx: -0.5, cy: 0.8, cz: 2 };
+      const VIEW2 = { phi: 48, theta: -70, zoom: 1.06, cx: -0.6, cy: 0.8, cz: 1.25 };
       S.beat('Does the swing matter? Start from a model that says forty-one two times in three, and train: four samples a step, every reward plus ten, sixty steps. The exact gradient would climb this smooth yellow path to fifty-one.',
         fade(A, [...rowsA, E7, B6, B6b, AR.grad, AR.gradLab, ...AR.samples, L.dot]),
         par(A.Set(L.sp, { win: 0 }, 1), A.Set(L.sp, VIEW2, 3.2), A.Set(L.surf, { h: 1, fo: 0.9 }, 3.2)), A.Write(U8, 1.6), S.writeIn(E8, 1.4),
@@ -436,7 +471,7 @@ FILM.landscapes = FILM.landscapes || {};
       const E10 = col.say(S, 'with no {baseline,|bb} every {reward|rr} is about 10, so every sample says “more of this”', 90, 36);
       const R10 = col.why(S, 'once it is sure of a wrong answer, it almost never samples 51 again', 200);
       S.beat('With every reward about ten, every sample says: more of this. Whatever the model says often gets pushed further, until it is sure. Then it almost never samples fifty-one again, so it almost never learns.',
-        S.writeIn(E10, 1.8), S.writeIn(R10, 1.4), A.Set(L.sp, { theta: -60 }, 5, 'linear'));
+        S.writeIn(E10, 1.8), S.writeIn(R10, 1.4), A.Set(L.sp, { theta: -61 }, 5, 'linear'));
       const L11 = col.tex(S, '\\bb_i \\;=\\; \\tfrac{1}{3} \\textstyle\\sum_{j \\ne i} \\big(\\rr_j + 10\\big)', -80, 52);
       const C11 = S.add(S.english(`with it, sure of {51:|#83C167} ${END.loo[0]} of 8`, { size: 36, width: COLW })).at(RX, 20);
       const E11 = col.say(S, 'a {baseline|bb} leaves the average alone; it tames the swing, and that decides whether training finds the top', 150, 34);
@@ -470,20 +505,24 @@ FILM.landscapes = FILM.landscapes || {};
 
     video.scene('land-clip', 'The clipped landscape', (S) => {
       const h = S.add(S.title('PPO’s objective, as a landscape'));
-      const CAM = { phi: 60, theta: -122, zoom: 1, cx: 0, cy: 0, cz: -0.4 };
-      const sp = S.add(new Space3({ unit: 88, ...CAM }).at(-400, -10).hidden());
+      // seen from the front: ratio left to right, advantage running away from us
+      const CAM = { phi: 66, theta: -104, zoom: 1.1, cx: 0, cy: 0, cz: -0.4 };
+      const sp = S.add(new Space3({ unit: 88, ...CAM }).at(-370, -10).hidden());
       // the floor: ratio across, advantage front to back
       const fl = new Path3([[X(0.2), Y(-1), ZF], [X(1.8), Y(-1), ZF], [X(1.8), Y(1), ZF], [X(0.2), Y(1), ZF]], { color: C.GREY, width: 2, closed: true, fill: C.GREY, fillOpacity: 0.08, under: true, opacity: 0.7 });
       const ticks = [0.8, 1, 1.2].map((x) => new Path3([[X(x), Y(-1), ZF], [X(x), Y(1), ZF]], { color: x === 1 ? C.WHITE : C.GREY_B, width: 2, dash: '10 10', under: true, opacity: 0.7 }));
       const zero = new Path3([[X(0.2), 0, ZF], [X(1.8), 0, ZF]], { color: C.GREY_B, width: 2, under: true, opacity: 0.6 });
       const tickL = [0.8, 1, 1.2].map((x) => new Label3(String(x), [X(x), Y(-1.3), ZF], { size: 32, color: C.GREY_B, bg: 0 }));
       const rhoL = new Label3(new MV.Tex('\\text{ratio } \\rat', { size: 44 }), [X(1.25), Y(-1.95), ZF], { bg: 0 });
-      const advL = [new Label3('A = +1', [X(0.2) - 0.9, Y(1), ZF], { size: 32, color: C.GREEN }), new Label3('A = −1', [X(0.2) - 0.9, Y(-1), ZF], { size: 32, color: C.RED })];
+      // the advantage axis runs away from us along the left edge: labels end just left of it
+      const advT = new MV.Tex('\\text{advantage } \\AA', { size: 36 });
+      const advL = [new Label3('A = +1', [X(0.2) - 0.3, Y(1), ZF], { size: 32, color: C.GREEN, anchor: 'end', bg: 0 }), new Label3('A = −1', [X(0.2) - 0.3, Y(-1), ZF], { size: 32, color: C.RED, anchor: 'end', bg: 0 }),
+        new Label3(advT, [X(0.2) - 0.3, Y(-0.4), ZF], { bg: 0, props: { dx: -advT.w / 2 - 6 } })];
       const sheet = new Surface3((rho, a) => [X(rho), Y(a), Z(rho * a)], {
         u: [0.2, 1.8], v: [-1, 1], res: [32, 20], color: (rho, a) => mix(C.GREY_B, a > 0 ? C.GREEN : C.RED, 0.35), opacity: 0.36, stroke: C.GREY_B, strokeOpacity: 0.45, shade: 0.25,
       });
       const clipS = new Surface3((rho, a, p) => [X(rho), Y(a), Z((1 - p.m) * rho * a + p.m * RL.ppoClip(rho, a, p.eps))], {
-        u: [0.2, 1.8], v: [-1, 1], res: [32, 20], color: (rho, a, p) => mix(C.GREY_B, slopeColor(rho, a, p.eps), p.m), opacity: 0.88, shade: 0.25, props: { m: 0, eps: EPS },
+        u: [0.2, 1.8], v: [-1, 1], res: [32, 20], color: (rho, a, p) => mix(C.GREY_B, slopeColor(rho, a, p.eps), p.m), opacity: 0.88, shade: 0.25, bias: 0.05, props: { m: 0, eps: EPS },
       });
       hide(sheet, clipS, tickL, rhoL, advL);
       sp.add(fl, zero, ...ticks, sheet, clipS, ...tickL, rhoL, ...advL);
@@ -497,11 +536,12 @@ FILM.landscapes = FILM.landscapes || {};
         { cap: 'Here is PPO’s clipped objective, as a landscape. Each token brings two numbers: its ratio, new probability over old, and its advantage, better or worse than expected. They make the floor: ratio left to right, advantage front to back.' });
 
       // 2. the plain surrogate: a twisted sheet
-      const F3 = col.tex(S, 'L \\;=\\; \\rat\\, \\AA', 100, 64);
+      const F3 = col.tex(S, '\\cReward{Lc}{L} \\;=\\; \\rat\\, \\AA', 100, 64);
       const R3 = col.why(S, 'because: averaging {ρ × A|rat} over old samples is averaging {A|AA} under the new policy (importance sampling)', 210);
       S.beat('With no rule, the objective is the ratio times the advantage. Over this floor, that is a twisted sheet: rising with the ratio where the advantage is positive, falling where it is negative, flat along zero.',
-        fade(A, [E1a, E1b]), A.Write(F3, 1.2), S.writeIn(R3, 1.6), A.FadeIn(sheet, { dur: 1.6 }), A.Set(sp, { theta: -108 }, 5, 'linear'));
-      const up = new Arrow3([X(1.2), Y(0.8), Z(1.2 * 0.8) + 0.12], [X(1.75), Y(0.8), Z(1.75 * 0.8) + 0.12], { color: C.GREEN, width: 7 });
+        fade(A, [E1a, E1b]), A.Write(F3, 1.2), S.writeIn(R3, 1.6), A.FadeIn(sheet, { dur: 1.6 }), A.Set(sp, { theta: -96 }, 5, 'linear'));
+      // pushes are directions, so they are drawn in the gradient's yellow
+      const up = new Arrow3([X(1.15), Y(0.8), Z(1.15 * 0.8) + 0.25], [X(1.75), Y(0.8), Z(1.75 * 0.8) + 0.25], { color: C.YELLOW, width: 8 });
       undrawn(up);
       sp.add(up);
       const E4 = col.say(S, 'the sheet never levels off, so a good token is pushed to be more and more likely', 250, 34);
@@ -519,10 +559,14 @@ FILM.landscapes = FILM.landscapes || {};
         { cap: 'PPO’s fix starts with a clipped copy of the ratio, held between 1 − ε and 1 + ε. With ε = 0.2, that is between 0.8 and 1.2.' });
 
       // 4. the minimum: the sheet folds
-      const F6 = col.tex(S, 'L^{\\text{CLIP}} \\;=\\; \\min\\!\\big(\\rat\\, \\AA,\\;\\; \\operatorname{clip}(\\rat, 1-\\eps, 1+\\eps)\\, \\AA\\big)', -300, 44);
+      // the two terms of the minimum can be spotlit as 'plainT' and 'clipT'
+      const F6 = col.tex(S, '\\cReward{Lc}{L^{\\text{CLIP}}} \\;=\\; \\min\\!\\big(\\class{s-plainT}{\\rat\\, \\AA},\\;\\; \\class{s-clipT}{\\operatorname{clip}(\\rat, 1-\\eps, 1+\\eps)\\, \\AA}\\big)', -300, 44);
       S.paper('schulman2017ppo');
-      S.beat('Then take the smaller of two things: the plain product, and the product with the clipped ratio. Watch the sheet fold. Where the advantage is positive, it turns flat beyond one point two. Where it is negative, flat below zero point eight.',
-        fade(A, [F5, ...E5, F3]), A.Write(F6, 2), A.FadeIn(clipS, { dur: 0.4 }), A.Set(sheet, { fo: 0.14 }, 1), A.Set(clipS, { m: 1 }, 3.2), A.Set(sp, { theta: -132, phi: 58 }, 4),
+      const say5 = 'Then take the smaller of two things: the plain product, and the product with the clipped ratio. Watch the sheet fold. Where the advantage is positive, it turns flat beyond one point two. Where it is negative, flat below zero point eight.';
+      S.beat(say5,
+        cued(S, say5, [[null, par(fade(A, [F5, ...E5, F3]))], [null, A.Write(F6, 2)], ['plain', A.Spot(F6, 'plainT', { dur: 0.5 })], ['clipped', A.Spot(F6, 'clipT', { dur: 0.5 })],
+          ['Watch', par(A.Unspot(F6, 0.5), A.FadeIn(clipS, { dur: 0.4 }), A.Set(sheet, { fo: 0.14 }, 1))]]),
+        par(A.Set(clipS, { m: 1 }, 3.2), A.Set(sp, { theta: -112, phi: 64 }, 4)),
         { cap: 'Then take the smaller of two things: the plain product, and the product with the clipped ratio. Watch the sheet fold. Where the advantage is positive, it turns flat beyond 1.2. Where it is negative, flat below 0.8.' });
       const E7 = col.say(S, 'take the smaller of {ratio × advantage|rat} and the same with the {ratio held within ε of 1|eps}', -170, 34);
       const key = [
@@ -567,7 +611,7 @@ FILM.landscapes = FILM.landscapes || {};
       const E9 = col.say(S, 'flat ground: slope 0, so this batch stops pushing the token once it is 20% more likely', 10, 34);
       S.beat('Follow one good token as its ratio grows. Up to one point two the ground slopes up, and the gradient pushes. Past it, the ground is flat: slope zero. This batch stops pushing once the token is twenty percent more likely.',
         fade(A, [...key, ...E8]), A.Set(sl[1], { o: 0.35 }, 0.6), A.FadeIn(tok), A.FadeIn(ghost), A.FadeIn(gap), par(rd.map((m) => A.FadeIn(m))),
-        A.Set(sp, { theta: -118, phi: 64, zoom: 1.1, cx: 0.6, cy: 0.8 }, 2), A.Set(tok, { rho: 1.6 }, 5, 'linear'), S.writeIn(E9, 1.4),
+        A.Set(sp, { theta: -110, phi: 64 }, 2), A.Set(tok, { rho: 1.6 }, 5, 'linear'), S.writeIn(E9, 1.4),
         { cap: 'Follow one good token as its ratio grows. Up to 1.2 the ground slopes up, and the gradient pushes. Past it, the ground is flat: slope zero. This batch stops pushing once the token is 20% more likely.' });
 
       // 7. pessimism
@@ -578,8 +622,8 @@ FILM.landscapes = FILM.landscapes || {};
 
       // 8. one-sided: mistakes are always corrected
       const back = [
-        new Arrow3([X(0.5), Y(AT), Z(0.5 * AT) + 0.12], [X(0.78), Y(AT), Z(0.78 * AT) + 0.12], { color: C.GREEN, width: 8 }),
-        new Arrow3([X(1.55), Y(-AT), Z(-1.55 * AT) + 0.12], [X(1.27), Y(-AT), Z(-1.27 * AT) + 0.12], { color: C.RED, width: 8 }),
+        new Arrow3([X(0.45), Y(AT), Z(0.45 * AT) + 0.25], [X(0.8), Y(AT), Z(0.8 * AT) + 0.25], { color: C.YELLOW, width: 8 }),
+        new Arrow3([X(1.6), Y(-AT), Z(-1.6 * AT) + 0.25], [X(1.25), Y(-AT), Z(-1.25 * AT) + 0.25], { color: C.YELLOW, width: 8 }),
       ];
       undrawn(back);
       sp.add(...back);
@@ -589,14 +633,14 @@ FILM.landscapes = FILM.landscapes || {};
         S.add(S.english('both are pulled back', { size: 32, width: COLW })).at(RX, -20),
       ];
       S.beat('The flat parts are on one side only. If a step made a good token rarer, the ground there still slopes, and the gradient pulls it back. The same holds for a bad token that became more likely.',
-        fade(A, [F10, E10, E9, ...rd]), A.Set(tok, { rho: 0.5 }, 2), A.Set(sp, { theta: -112, phi: 60, zoom: 1, cx: 0, cy: 0 }, 3), A.Set(sl[1], { o: 1 }, 0.6),
+        fade(A, [F10, E10, E9, ...rd]), A.Set(tok, { rho: 0.5 }, 2), A.Set(sp, { theta: -104, phi: 66, zoom: 1.1, cx: 0, cy: 0, cz: -0.4 }, 3), A.Set(sl[1], { o: 1 }, 0.6),
         A.Arrow(back[0], 1), A.FadeIn(E11[0]), A.Arrow(back[1], 1), A.FadeIn(E11[1]), A.FadeIn(E11[2]));
 
       // 9. a bigger epsilon, and what it buys
       const E12 = col.say(S, 'a larger {ε|eps} moves the shelves out: each batch may move the policy further', 80, 34);
       const E13 = col.say(S, 'push only so far where we want to go; always undo a mistake', 200, 38);
       S.beat('What if epsilon were larger? The shelves move out, and each batch may move the policy further. So epsilon sets the size of step we trust: push only so far where we want to go, and always undo a mistake.',
-        fade(A, [...E11, ...back, tok, ghost, gap, sl[0], sl[1]]), A.Set(band, { o: 0 }, 0.6), A.Set(clipS, { eps: 0.4 }, 2.4), A.Spot(F6, 'eps'), S.writeIn(E12, 1.4), wait(0.6), A.Set(clipS, { eps: EPS }, 2.4), A.Unspot(F6), S.writeIn(E13, 1.6), A.Set(sp, { theta: -100 }, 4));
+        fade(A, [...E11, ...back, tok, ghost, gap, sl[0], sl[1]]), A.Set(band, { o: 0 }, 0.6), A.Set(clipS, { eps: 0.4 }, 2.4), A.Spot(F6, 'eps'), S.writeIn(E12, 1.4), wait(0.6), A.Set(clipS, { eps: EPS }, 2.4), A.Unspot(F6), S.writeIn(E13, 1.6), A.Set(sp, { theta: -96 }, 4));
     });
   };
 
@@ -664,8 +708,10 @@ FILM.landscapes = FILM.landscapes || {};
       const bowl = new Surface3((s, t) => {
         const q = simplex(s, t);
         const [x, y] = floorOf(q);
-        return [x, y, KZ * Math.min(RL.kl(q, ref), 1.3)];
-      }, { u: [0, 1], v: [0, 0.999], res: [30, 30], color: () => C.ORANGE, opacity: 0.42, stroke: C.ORANGE, strokeOpacity: 0.3, shade: 0.35 });
+        // drawn at the height of beta KL for beta = 0.5, in the objective's own
+        // units, so that the dome below is this plane minus this bowl
+        return [x, y, KZ * B0 * RL.kl(q, ref)];
+      }, { u: [0, 1], v: [0, 0.999], res: [30, 30], color: () => C.ORANGE, opacity: 0.5, stroke: C.ORANGE, strokeOpacity: 0.3, shade: 0.35 });
       hide(surf, bowl, cornerL, rewardL);
       sp.add(tri, surf, bowl, ...cornerL, ...rewardL);
       const toy = S.add(S.toy(-420, 365));
@@ -701,18 +747,23 @@ FILM.landscapes = FILM.landscapes || {};
         fade(A, [E3]), A.Write(F4, 1.4), S.writeIn(R4, 1.6), A.FadeIn(surf, { dur: 1.6 }), A.Set(refDot, { lift: 1 }, 1.6), A.Set(sp, TALL, 1.6), A.Set(sp, { theta: -70 }, 5, 'linear'));
 
       // 4. the bowl
-      const F5 = col.tex(S, '\\KL(\\pp \\,\\|\\, \\pref) \\;=\\; \\sum_{\\yy} \\pp(\\yy)\\, \\log\\frac{\\pp(\\yy)}{\\pref(\\yy)}', 20, 52);
-      const R5 = col.why(S, 'because: K L is never negative, and it is zero only when {π|pp} equals {π_ref|pref}', 140);
-      const E5 = col.say(S, 'at the corners: 0.51 (vague), 1.20 (helpful), 2.30 (flattering)', 225, 32);
+      const F5 = col.tex(S, '\\KL(\\pp \\,\\|\\, \\pref) \\;=\\; \\sum_{\\yy} \\pp(\\yy)\\, \\log\\frac{\\pp(\\yy)}{\\pref(\\yy)}', 10, 52);
+      const R5 = col.why(S, 'because: {KL|KL} is never negative, and it is zero only when {π|pp} equals the {reference|pref}', 125);
+      const E5 = col.say(S, '{KL|KL} at the corners: vague 0.51 · helpful 1.20 · flattering 2.30', 215, 32);
+      const N5 = col.why(S, 'drawn at half height: {β × KL|bt} with {β = 0.5|bt}', 285);
       S.beat('The leash is the K L divergence from the reference. Over the triangle it is a bowl: zero at the reference, rising toward the edges. It is steepest toward flattery, which the reference rarely gives: two point three at that corner.',
-        fade(A, [F4, R4, ...rewardL]), A.Set(surf, { fo: 0.12 }, 1), A.Write(F5, 1.6), A.FadeIn(bowl, { dur: 1.6 }), S.writeIn(R5, 1.4), S.writeIn(E5, 1.4),
+        fade(A, [F4, R4, ...rewardL]), A.Set(surf, { fo: 0.05 }, 1), A.Write(F5, 1.6), A.FadeIn(bowl, { dur: 1.6 }), S.writeIn(R5, 1.4), S.writeIn(E5, 1.4), S.writeIn(N5, 1),
         { cap: 'The leash is the KL divergence from the reference. Over the triangle it is a bowl: zero at the reference, rising toward the edges. It is steepest toward flattery, which the reference rarely gives: 2.30 at that corner.' });
 
       // 5. plane minus beta bowl
-      const F6 = col.tex(S, '\\JJ_{\\bt}(\\pp) \\;=\\; \\EE_{\\pp}[\\rr] \\;-\\; \\bt\\, \\KL(\\pp \\,\\|\\, \\pref)', -300, 52);
+      // its two terms can be spotlit as 'planeT' and 'bowlT'
+      const F6 = col.tex(S, '\\JJ_{\\bt}(\\pp) \\;=\\; \\class{s-planeT}{\\EE_{\\pp}[\\rr]} \\;-\\; \\class{s-bowlT}{\\bt\\, \\KL(\\pp \\,\\|\\, \\pref)}', -300, 52);
       const bLab = S.add(new Readout(() => `β = ${beta().toFixed(2)}`, { size: 44, color: C.ORANGE }).hidden()).at(RX, -205);
-      S.beat('The objective is the plane, minus beta times the bowl. With beta at zero point five, watch the plane bend: its edges sink, most of all toward flattery, and a dome rises in between.',
-        fade(A, [F3a, F3b, F5, R5, E5]), A.Write(F6, 1.8), A.FadeIn(bLab), A.Set(surf, { fo: 0.86 }, 0.8), A.Set(bowl, { o: 0 }, 1.6), A.Set(surf, { m: 1 }, 3.2), A.Set(sp, CAM, 4));
+      const say6 = 'The objective is the plane, minus beta times the bowl. With beta at zero point five, that is exactly the bowl as drawn. Subtract it, and watch the plane bend: its edges sink, most of all toward flattery, and a dome rises in between.';
+      S.beat(say6,
+        cued(S, say6, [[null, par(fade(A, [F3a, F3b, F5, R5, E5, N5]))], [null, A.Write(F6, 1.8)], ['plane', A.Spot(F6, 'planeT', { dur: 0.5 })], ['bowl.', A.Spot(F6, 'bowlT', { dur: 0.5 })],
+          [null, A.FadeIn(bLab)], ['Subtract', par(A.Unspot(F6, 0.5), A.Set(surf, { fo: 0.86 }, 0.8), A.Set(bowl, { o: 0 }, 1.6), A.Set(surf, { m: 1 }, 3.2), A.Set(sp, CAM, 4))]]),
+        { cap: 'The objective is the plane, minus β times the bowl. With β = 0.5, that is exactly the bowl as drawn. Subtract it, and watch the plane bend: its edges sink, most of all toward flattery, and a dome rises in between.' });
       const E7 = col.say(S, '{expected reward,|rr} minus a price for moving away from the {reference;|pref} {β|bt} sets the price', -100, 36);
       S.beat('Read it as: expected reward, minus a price for moving away from the reference. Beta sets the price.',
         S.writeIn(E7, 2), A.Spot(F6, 'bt'));
@@ -775,9 +826,9 @@ FILM.landscapes = FILM.landscapes || {};
       // 8. what it means
       const E13 = col.say(S, 'reward over-optimization: the {reward|rr} is only a model, and the climb finds its flaws', 140, 36);
       S.paper('gao2023');
-      S.beat('That slide is reward over-optimization, in one picture. The reward model is only a model of what we want. Gao, Schulman and Hilton measured it at scale: optimize hard against a learned reward, and the true reward first rises, then falls.',
+      S.beat('That slide is reward over-optimization. The reward model is only a model of what we want. Gao, Schulman and Hilton measured it, with a gold reward model standing in for people: optimize hard against a learned proxy, and the gold reward first rises, then falls.',
         fade(A, [F12a, F12b, toy, E11]), S.writeIn(E13, 2), A.Set(surf, { lb: Math.log(0.6) }, 4), A.Set(sp, CAM, 4),
-        { cap: 'That slide is reward over-optimization, in one picture. The reward model is only a model of what we want. Gao, Schulman and Hilton measured it at scale: optimize hard against a learned reward, and the true reward first rises, then falls.' });
+        { cap: 'That slide is reward over-optimization. The reward model is only a model of what we want. Gao, Schulman and Hilton measured it, with a gold reward model standing in for people: optimize hard against a learned proxy, and the gold reward first rises, then falls.' });
       const E14 = col.say(S, '{β|bt} decides how far the {policy|pt} may wander from where it started, and so how much it trusts the {reward|rr}', 260, 34);
       S.beat('Beta decides how far the policy may wander from where it started, and so how much it trusts the reward. And the peak has a closed form. Could we find it without climbing at all?',
         S.writeIn(E14, 2), A.Indicate(peak, { scale: 1.4 }));
