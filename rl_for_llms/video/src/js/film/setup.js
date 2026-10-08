@@ -13,7 +13,7 @@ window.buildVideo = function buildVideo(root, durations, words) {
   const { C, A, Text, Tex, Group, Line, Arrow, Creature, Bubble, circle, rect, path, dot, polyPath, seq, par, lag, wait, mix } = MV;
   if (!FILM.symbols) throw new Error('glossary.js must load before setup.js');
   const video = new MV.Video(root, { durations, words, kit });
-  video.poster = 'open.5';
+  video.poster = 'open.9';
 
   /* ---------- the running examples, computed once ---------- */
   // Chapter 1: next-token distribution after "The answer is" (toy logits)

@@ -68,9 +68,9 @@ FILM.parts.push(function ch01(ctx) {
     const rows = NEXT.labels.map((lab, i) => S.add(S.group(new Text(lab, { size: 40, font: 'mono' }).at(-100, 0), zVals[i]).at(230, RY[i])));
     const hdrZ = S.add(S.tex('\\zz', { size: 60 }).at(330, HY));
     const hdrW = S.add(S.txt('logits', { size: 40, color: PAR }).at(190, HY));
-    const note = S.add(S.txt('a real vocabulary: often 100,000 tokens or more', { size: 34, color: C.GREY_B, italic: true }).at(230, 92));
+    const note = S.add(S.txt('a real vocabulary: tens of thousands of tokens', { size: 34, color: C.GREY_B, italic: true }).at(230, 92));
     const toy = S.add(S.toy(760, -390));
-    S.beat('Given the text so far, a network computes one score for every token in its vocabulary, often a hundred thousand of them or more. Here are five, with everything else lumped together.',
+    S.beat('Given the text so far, a network computes one score for every token in its vocabulary: tens of thousands of them. Here are five, with everything else lumped together.',
       fade(toks, e1), A.FadeIn(ctxT, { dy: -20 }), A.Arrow(a0, 0.4), A.FadeIn(net), A.Arrow(a1, 0.6), A.FadeIn(hdrW), A.FadeIn(hdrZ), lag(0.25, rows.map((r) => A.FadeIn(r, { dx: -20, dur: 0.45 }))), A.FadeIn(note), A.FadeIn(toy));
 
     // 3. symbol cards: z and theta
@@ -124,7 +124,7 @@ FILM.parts.push(function ch01(ctx) {
     // 7. the two steps as one formula: the softmax
     const FX = 480;
     const FY = -130;
-    const SM = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{\\cData{c1num}{e^{\\zz_\\aa}}}{\\cData{c1den}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'}}}}', { size: 72 }).at(FX, FY));
+    const SM = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{\\cData{c1num}{e^{\\zz_\\aa}}}{\\cData{c1den}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'}}}}', { size: 72 }).at(FX - 30, FY));
     const say7 = 'Written once, for any token a, these two steps are the softmax. On top: e to the logit of a. Underneath: the same, summed over every token. That is the total.';
     const w7 = par(A.FadeOut(r6), A.Write(SM, 2));
     const s7 = seq(A.Spot(SM, 'c1num'), lag(0.12, eVals.map((m) => A.Indicate(m, { color: PAR, scale: 1.2 }))));
@@ -178,7 +178,7 @@ FILM.parts.push(function ch01(ctx) {
     // 12. temperature: a knob for sampling
     const SMT = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{e^{\\zz_\\aa / \\cKnob{c1T}{T}}}{\\sum_{\\aa\'} e^{\\zz_{\\aa\'} / \\cKnob{c1T}{T}}}', { size: 62 }).at(0, -310));
     const tl = [['T = 1/2', 'sharper'], ['T = 2', 'flatter'], ['T = 1', 'as built']].map(([t, w]) => S.add(S.english(`{${t}|knob}: ${w}`, { size: 44, width: 600 }).at(620, -120)));
-    const sayT = `One last knob: the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T equals one half, fifty-one rises to ${say2(PH[0])}: sharper. At T equals two, it falls to ${say2(P2[0])}: flatter. We keep T at one.`;
+    const sayT = `Last, the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T equals one half, fifty-one rises to ${say2(PH[0])}: sharper. At T equals two, it falls to ${say2(P2[0])}: flatter. We keep T at one.`;
     const tA = S.atWord(sayT, 'At T equals one');
     const tB = S.atWord(sayT, 'At T equals two');
     const tC = S.atWord(sayT, 'We keep');
@@ -188,7 +188,7 @@ FILM.parts.push(function ch01(ctx) {
       wT, at(tA, MV.durOf(wT)), par(A.FadeIn(tl[0], { dur: 0.4 }), bars.to(PH, 1.2)),
       at(tB, Math.max(tA, MV.durOf(wT)) + 1.2), A.FadeOut(tl[0], { dur: 0.3 }), par(A.FadeIn(tl[1], { dur: 0.4 }), bars.to(P2, 1.2)),
       at(tC, Math.max(tB, Math.max(tA, MV.durOf(wT)) + 1.2) + 1.5), A.FadeOut(tl[1], { dur: 0.3 }), par(A.FadeIn(tl[2], { dur: 0.4 }), bars.to(NEXT.p, 1.2), A.Unspot(SMT, 1.2)),
-      { cap: `One last knob: the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T = ½, 51 rises to ${PH[0].toFixed(2)}: sharper. At T = 2, it falls to ${P2[0].toFixed(2)}: flatter. We keep T at 1.` });
+      { cap: `Last, the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T = ½, 51 rises to ${PH[0].toFixed(2)}: sharper. At T = 2, it falls to ${P2[0].toFixed(2)}: flatter. We keep T at 1.` });
   });
 
   /*

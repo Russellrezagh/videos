@@ -284,10 +284,10 @@ FILM.parts.push(function ch04(ctx) {
       new Text(String(R10[a]), { size: 38, font: 'mono', color: S.color('rr') }).at(HX[4], 0)
     ).at(0, 10 + a * 64)));
     const res = S.add(S.tex(`\\bb^{*} = ${wts.map((w, a) => `${w.toFixed(3)} \\cdot ${R10[a]}`).join(' + ')} = ${VAR.bStar.toFixed(2)} \\qquad \\text{mean reward } ${J10.toFixed(2)}`, { size: 46 }).at(0, 250));
-    S.beat('Read it as a weighted average of the rewards: each answer counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so the low-reward answers count for more than their chances, and b star lands just under the mean reward.',
+    S.beat('Read it as a weighted average of the rewards: each counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so the low rewards count for more than their chances, and b star lands just under the mean.',
       par(A.FadeOut(r5), A.FadeOut(D1), par(A.MoveTo(BS, 0, -330), A.ScaleTo(BS, 0.55), A.MoveTo(boxS, 0, -330), A.ScaleTo(boxS, 0.55))),
       S.writeIn(e6, 2), lag(0.15, heads.map((m) => A.FadeIn(m))), lag(0.4, trows.map((r) => A.FadeIn(r, { dx: 20 }))), A.Write(res, 1.8),
-      { cap: `Read it as a weighted average of the rewards: each answer counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so the low-reward answers count for more than their chances, and b* = ${VAR.bStar.toFixed(2)} lands just under the mean reward, ${J10.toFixed(2)}.` });
+      { cap: `Read it as a weighted average of the rewards: each counts by how often it comes up, times how hard its score pushes. Rare answers push hardest, so the low rewards count for more than their chances, and b* = ${VAR.bStar.toFixed(2)} lands just under the mean reward, ${J10.toFixed(2)}.` });
 
     // 7. back to the picture: the mean is nearly as good
     const ax2 = S.add(S.axes({ x0: 9, x1: 12, y0: 0, y1: 1.6, w: 1100, h: 460, xticks: [9, 10, 11, 12], yticks: [0, 0.5, 1, 1.5], yfmt: (v) => String(v), xlabel: 'baseline b', ylabel: 'variance of the estimate' }).at(AX, AY));
