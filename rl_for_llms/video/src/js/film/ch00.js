@@ -4,46 +4,126 @@ FILM.parts.push(function ch00(ctx) {
   // eslint-disable-next-line no-unused-vars
   const { C, A, MV, Text, Tex, Group, Line, Arrow, Creature, Bubble, circle, rect, path, dot, polyPath, seq, par, lag, wait, mix, video, card, f2, f3, NEXT, ANSWER, BAND, R10, J10, VAR, TRAIN, CREDIT, RM, LEASH, DPO, GROUP, PASS } = ctx;
 
+  /* ---------------------------------------------------------- helpers */
+  // a point on a cubic Bezier curve, for marks placed on a drawn path
+  const bez = (p0, p1, p2, p3, t) => {
+    const u = 1 - t;
+    return [0, 1].map((k) => u * u * u * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t * t * t * p3[k]);
+  };
+
   /* =========================================================== OPEN */
   video.chapter('ch0', 'The question');
+  /*
+   * The story of the film in one scene: a model answers, sometimes wrongly;
+   * its answers come from probabilities; training should reshape them; but
+   * the reward is a judge's verdict on a sample, so the usual chain of
+   * derivatives breaks. The closing question, coloured: grad E[R] = ?
+   */
   video.scene('open', 'How do you take the gradient of a sample?', (S) => {
+    const POL = S.color('pt');
+    // 1. one question, a right answer
     const model = S.add(S.creature({ color: C.TEAL, kind: 'agent', size: 1.1 }).at(-560, 140));
     const prompt = S.add(S.box('What is 17 × 3?', { w: 520, h: 100, color: C.GREY_B, size: 46 }).at(-560, -200));
     const a1 = S.add(S.bubble('51', { size: 54 }).at(-180, -10));
     const a2 = S.add(S.bubble('41', { size: 54 }).at(-180, 250));
     const ok = S.add(S.check(54).at(-60, -10));
     const no = S.add(S.cross(48).at(-60, 250));
-    S.beat('Here is a language model answering a question. What is seventeen times three? It says fifty-one. Ask again, and it might say forty-one.',
-      A.FadeIn(model, { dy: 30 }), A.FadeIn(prompt, { dy: -20 }), A.FadeIn(a1), A.Write(a1.text, 0.5), A.Create(ok, 0.5), wait(1.2), A.FadeIn(a2), A.Write(a2.text, 0.5), A.Create(no, 0.5), A.Mood(model, 0.1),
-      { cap: 'Here is a language model answering a question. What is 17 × 3? It says 51. Ask again, and it might say 41.' });
-    const bars = S.add(S.bars({ labels: BAND.labels, values: BAND.pi, colors: [C.GREEN, C.YELLOW, C.RED], h: 420 }).at(470, 180));
-    const up = S.add(S.arrow(470 + bars.xs[0] - 110, 180 - 420 * BAND.pi[0] + 40, 470 + bars.xs[0] - 110, 180 - 420 * BAND.pi[0] - 120, { color: C.GREEN, width: 6 }));
-    S.beat('Both answers came out of the same probabilities. Training will change those probabilities, so that the good answer becomes more likely.',
-      A.FadeIn(bars, { dx: 40 }), A.Arrow(up, 0.8), bars.to([0.72, 0.18, 0.1], 1.6), A.Set(up, { y1: 180 - 420 * 0.72 + 40, y2: 180 - 420 * 0.72 - 120 }, 1.6));
-    const chain = [
-      S.add(S.tex('\\theta', { size: 90, color: C.YELLOW }).at(-720, -40)),
-      S.add(S.box('model', { w: 230, h: 110, color: C.TEAL, size: 44 }).at(-430, -40)),
-      S.add(S.box('sample', { w: 230, h: 110, color: C.GREY_B, size: 44 }).at(-110, -40)),
-      S.add(S.box('text', { w: 200, h: 110, color: C.WHITE, size: 44 }).at(190, -40)),
-      S.add(S.box('judge', { w: 220, h: 110, color: C.GOLD, size: 44 }).at(480, -40)),
-      S.add(S.tex('R', { size: 90, color: C.GOLD }).at(740, -40)),
+    S.beat('Here is a language model, answering a question. What is seventeen times three? It says fifty-one. That is right.',
+      A.FadeIn(model, { dy: 30 }), A.FadeIn(prompt, { dy: -20 }), wait(0.6), A.FadeIn(a1), A.Write(a1.text, 0.5), A.Create(ok, 0.5), A.Mood(model, 0.9),
+      { cap: 'Here is a language model, answering a question. What is 17 × 3? It says 51. That is right.' });
+    // 2. the same question again, a wrong answer
+    S.beat('Now ask it the very same question again. This time, it might say forty-one. Nothing inside the model changed between the two answers.',
+      A.FadeIn(a2), A.Write(a2.text, 0.5), A.Create(no, 0.5), A.Mood(model, 0.1),
+      { cap: 'Now ask it the very same question again. This time, it might say 41. Nothing inside the model changed between the two answers.' });
+
+    // 3. both came from the same probabilities
+    const BX = 470;
+    const BY = 200;
+    const BH = 420;
+    const bars = S.add(S.bars({ labels: BAND.labels, values: BAND.pi, color: POL, h: BH, w: 130, gap: 80, labelFont: 'serif', labelSize: 40 }).at(BX, BY));
+    const bcap = S.add(S.english('the model’s {chance|pt} for each answer', { size: 36, width: 700 }).at(BX, -330));
+    const toy = S.add(S.toy(BX, 330));
+    S.beat('Both answers came from the same probabilities. The model holds a chance for every possible answer, and draws one at random, like rolling a weighted die.',
+      A.FadeIn(bars, { dx: 40 }), A.FadeIn(bcap), A.FadeIn(toy), A.Indicate(bars.bars[0], { color: C.GREEN, scale: 1.04 }), A.Indicate(bars.bars[2], { color: C.RED, scale: 1.04 }));
+
+    // 4. training should move the chances: a few exact gradient steps on the toy
+    let zT = BAND.z.slice();
+    for (let k = 0; k < 3; k++) {
+      const g = RL.exactGradient(zT, BAND.r);
+      zT = zT.map((v, i) => v + 2 * g[i]);
+    }
+    const piT = RL.softmax(zT);
+    const up = S.add(S.arrow(BX + bars.xs[0] - 115, BY - BH * BAND.pi[0] + 30, BX + bars.xs[0] - 115, BY - BH * BAND.pi[0] - 110, { color: C.GREEN, width: 6 }));
+    S.beat('Training should change those chances, so that the right answer becomes more likely. That sounds like ordinary machine learning: compute a slope, take a small step, repeat.',
+      A.Arrow(up, 0.8), par(bars.to(piT, 1.8), A.Set(up, { y1: BY - BH * piT[0] + 30, y2: BY - BH * piT[0] - 110 }, 1.8)));
+
+    // 5. the chain from weights to reward
+    const CY = -60;
+    const items = [
+      S.add(S.tex('\\th', { size: 96 }).at(-800, CY)),
+      S.add(S.box('probabilities', { w: 300, h: 110, color: POL, size: 40 }).at(-540, CY)),
+      S.add(S.box('sample', { w: 220, h: 110, color: C.GREY_B, size: 40 }).at(-200, CY)),
+      S.add(S.box('text', { w: 180, h: 110, color: C.WHITE, size: 40 }).at(90, CY)),
+      S.add(S.box('judge', { w: 210, h: 110, color: S.color('rr'), size: 40 }).at(370, CY)),
+      S.add(S.tex('\\RR', { size: 96 }).at(640, CY)),
     ];
-    const links = [[-670, -540], [-310, -230], [10, 85], [295, 365], [595, 690]].map(([x1, x2]) => S.add(S.arrow(x1, -40, x2, -40, { color: C.GREY_B, width: 4 })));
-    const back = S.add(S.path('M 740 40 C 600 260 -560 260 -720 40', { stroke: C.RED, width: 4, dash: '16 14' }).with({ draw: 0 }));
-    const q = S.add(S.tex('\\frac{\\partial R}{\\partial \\theta}\\;?', { size: 80, color: C.RED }).at(0, 300));
-    const dice = S.add(S.txt('random, discrete', { size: 34, color: C.GREY_B, italic: true }).at(-110, -150));
-    S.beat('That sounds like ordinary machine learning. But there is a catch. The thing we want to increase, the reward, is not a smooth function of the model’s weights. It is a judge looking at a sampled piece of text.',
-      par([model, prompt, a1, a2, ok, no, bars, up].map((m) => A.FadeOut(m, { dur: 0.6 }))), lag(0.25, chain.map((m, i) => seq(A.FadeIn(m, { dur: 0.5, dx: -20 }), i < links.length ? A.Arrow(links[i], 0.35) : wait(0)))), A.FadeIn(dice), A.Create(back, 1.2), A.Write(q, 1));
-    const big = S.add(S.tex('\\nabla_\\theta\\, \\mathbb{E}\\big[\\,R\\,\\big] \\;=\\; ?', { size: 120 }).at(0, -20));
-    S.beat('So how do you take the gradient of something you can only sample? That one question is the whole subject of reinforcement learning for language models.',
-      par([...chain, ...links, back, q, dice].map((m) => A.FadeOut(m, { dur: 0.6 }))), A.Write(big, 1.6));
-    const title = S.add(S.head('The Gradient of Reward', { size: 108 }).at(0, -80));
-    const sub = S.add(S.txt('the mathematics of reinforcement learning for language models, from first principles', { size: 36, color: C.GREY_B }).at(0, 20));
-    const methods = ['softmax', 'REINFORCE', 'baselines', 'GAE', 'PPO', 'reward models', 'KL', 'DPO', 'GRPO'];
-    const ms = methods.map((m, i) => S.add(S.txt(m, { size: 34, color: [C.BLUE, C.TEAL, C.GREEN, C.GREEN, C.YELLOW, C.GOLD, C.ORANGE, C.RED, C.PINK][i], font: 'mono' }).at(-760 + i * 190, 190)));
-    S.beat('This is The Gradient of Reward. We will build it from first principles: from one softmax, all the way to P P O, D P O, and G R P O, the methods used to train today’s assistants and reasoning models.',
-      A.FadeOut(big, { dur: 0.6 }), A.Write(title, 1.6), A.FadeIn(sub, { dy: 20 }), lag(0.2, ms.map((m) => A.FadeIn(m, { dy: 20, dur: 0.5 }))),
-      { cap: 'This is The Gradient of Reward. We will build it from first principles: from one softmax, all the way to PPO, DPO and GRPO, the methods used to train today’s assistants and reasoning models.' });
+    const links = [[-760, -700], [-380, -320], [-80, -10], [190, 255], [485, 590]].map(([x1, x2]) => S.add(S.arrow(x1, CY, x2, CY, { color: C.GREY_B, width: 4 })));
+    const chainSay = 'But follow the chain. The weights, theta, set the probabilities. We draw a sample: a piece of text. A judge reads the text and hands back one number: the reward, R.';
+    S.beat(chainSay,
+      par([model, prompt, a1, a2, ok, no, bars, bcap, toy, up].map((m) => A.FadeOut(m, { dur: 0.6 }))),
+      lag(0.55, items.map((m, i) => seq(A.FadeIn(m, { dur: 0.5, dx: -20 }), i < links.length ? A.Arrow(links[i], 0.35) : wait(0)))),
+      { cap: 'But follow the chain. The weights, θ, set the probabilities. We draw a sample: a piece of text. A judge reads the text and hands back one number: the reward, R.' });
+
+    // 6. running backwards: two links break
+    const P0 = [640, 10];
+    const P1 = [500, 250];
+    const P2 = [-650, 250];
+    const P3 = [-800, 10];
+    const back = S.add(S.path(`M ${P0[0]} ${P0[1]} C ${P1[0]} ${P1[1]} ${P2[0]} ${P2[1]} ${P3[0]} ${P3[1]}`, { stroke: C.RED, width: 4, dash: '16 14' }).with({ draw: 0 }));
+    const brk = [0.25, 0.56].map((t) => S.add(S.cross(46).at(...bez(P0, P1, P2, P3, t))));
+    const dice = S.add(S.txt('random, and it jumps', { size: 34, color: C.GREY_B, italic: true }).at(-200, -170));
+    const dice2 = S.add(S.txt('between whole words', { size: 34, color: C.GREY_B, italic: true }).at(-200, -130));
+    const blind = S.add(S.txt('a black box', { size: 34, color: C.GREY_B, italic: true }).at(370, -150));
+    const q = S.add(S.tex('\\frac{\\partial \\RR}{\\partial \\th}\\;?', { size: 80, color: C.RED }).at(0, 290));
+    const breakSay = 'To get a slope, we would run backwards along this chain. But two links break. The sample is random, and it jumps between whole words. And the judge is a black box: a person, or a program.';
+    S.beat(breakSay,
+      A.Create(back, 1.4), A.Write(q, 1),
+      seq(wait(Math.max(0, S.atWord(breakSay, 'The sample') - 2.4)), A.Create(brk[1], 0.5), A.FadeIn(dice), A.FadeIn(dice2)),
+      seq(wait(1.0), A.Create(brk[0], 0.5), A.FadeIn(blind)),
+      { cap: 'To get a slope, we would run backwards along this chain. But two links break. The sample is random, and it jumps between whole words. And the judge is a black box: a person, or a program.' });
+
+    // 7. the question, coloured
+    const big = S.add(S.tex('\\grad\\, \\EE\\big[\\, \\RR \\,\\big] \\;=\\; ?', { size: 130 }).at(0, -80));
+    S.beat('Yet on average, better weights do earn more reward. So the real question is this. How do you take the gradient of an average that you can only sample?',
+      par([...items, ...links, back, ...brk, dice, dice2, blind, q].map((m) => A.FadeOut(m, { dur: 0.6 }))), A.Write(big, 1.8));
+    const read = S.add(S.english('{which way to nudge the weights|grad} so that the {average|EE} {reward|RR} goes up?', { size: 46, width: 1500 }).at(0, 140));
+    const readSay = 'Read it slowly. Nabla theta: which way to nudge the weights. E: the average, over answers the model draws. R: the reward. That one question is the whole subject of reinforcement learning for language models.';
+    S.beat(readSay,
+      par(S.writeIn(read, 2.4), seq(wait(Math.max(0, S.atWord(readSay, 'Nabla') - 0.2)), A.Spot(big, 'grad'), wait(Math.max(0, S.atWord(readSay, 'E:') - S.atWord(readSay, 'Nabla') - 0.7)), A.Spot(big, 'EE'),
+        wait(Math.max(0, S.atWord(readSay, 'R:') - S.atWord(readSay, 'E:') - 0.7)), A.Spot(big, 'RR'), wait(1.6), A.Unspot(big))),
+      { cap: 'Read it slowly. ∇θ: which way to nudge the weights. 𝔼: the average, over answers the model draws. R: the reward. That one question is the whole subject of reinforcement learning for language models.' });
+
+    // 8. the title, and the road
+    const title = S.add(S.head('The Gradient of Reward', { size: 108 }).at(0, -120));
+    const sub = S.add(S.txt('the mathematics of reinforcement learning for language models, from first principles', { size: 36, color: C.GREY_B }).at(0, -20));
+    const methods = [['softmax', 'pt'], ['REINFORCE', 'grad'], ['baselines', 'bb'], ['GAE', 'AA'], ['PPO', 'rat'], ['reward models', 'rr'], ['KL', 'KL'], ['DPO', 'pref'], ['GRPO', 'rbar']];
+    // lay the names out by their (monospace) widths, 56 px apart
+    const CW = 34 * 0.6;
+    const GAP = 56;
+    const total = methods.reduce((t, [m]) => t + m.length * CW, 0) + GAP * (methods.length - 1);
+    let mx = -total / 2;
+    const ms = methods.map(([m, key]) => {
+      const w = m.length * CW;
+      const t = S.add(S.txt(m, { size: 34, color: S.color(key), font: 'mono' }).at(mx + w / 2, 150));
+      mx += w + GAP;
+      return t;
+    });
+    S.beat('This is The Gradient of Reward. We will answer that question from first principles, starting from a single softmax and building up to P P O, D P O, and G R P O, the methods behind today’s assistants and reasoning models.',
+      A.FadeOut(big, { dur: 0.6 }), A.FadeOut(read, { dur: 0.6 }), A.Write(title, 1.6), A.FadeIn(sub, { dy: 20 }), lag(0.25, ms.map((m) => A.FadeIn(m, { dy: 20, dur: 0.5 }))),
+      { cap: 'This is The Gradient of Reward. We will answer that question from first principles, starting from a single softmax and building up to PPO, DPO and GRPO, the methods behind today’s assistants and reasoning models.' });
+    const slow = S.add(S.english('every symbol: a {colour|pt}, a {name|rr}, and a {reason to be there|AA}', { size: 40, width: 1500 }).at(0, 280));
+    S.beat('We will go slowly. Every formula will be built one step at a time, with a reason for each step, and every symbol will get a colour, a name, and a reason to be there.',
+      S.writeIn(slow, 2));
   });
 
   video.scene('colors', 'How to read the formulas', (S) => {
