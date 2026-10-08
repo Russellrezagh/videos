@@ -282,13 +282,14 @@ FILM.landscapes = FILM.landscapes || {};
 
       // the floor, seen from above, and our model on it
       const L = landscape(S);
+      const toyT = S.add(S.toy(760, -400)); // the bandit's numbers are toy numbers
       const M1 = S.add(S.tex('\\zz \\;=\\; (0.6,\\; 0.2,\\; -0.3)', { size: 54 })).at(RX, -170);
       const M2 = S.add(S.tex(`(${U},\\, ${V}) \\;=\\; (${fx(u0, 1)},\\; ${fx(v0, 1)})`, { size: 54 })).at(RX, -80);
       const R6 = col.why(S, 'because: 0.6 − (−0.3) = 0.9 and 0.2 − (−0.3) = 0.5', 20);
       const E6 = col.say(S, 'every point of the floor is a policy: a mixture of the three answers', 150, 36);
       S.beat('Here is that floor, seen from above. Our model sits at u equals zero point nine, v equals zero point five: its logits, minus forty-one’s. Far right, the model would be sure of fifty-one; far up, of about fifty; down and left, of forty-one.',
         S.endTour(F3), A.FadeOut(F2), par(A.MoveTo(F3, RX, -300), A.ScaleTo(F3, 0.68)),
-        A.FadeIn(L.sp), A.FadeIn(L.labU), A.FadeIn(L.labV), A.Write(M1, 1.2), A.Write(M2, 1.2), A.FadeIn(L.dot, { from: 2 }), S.writeIn(R6, 1),
+        A.FadeIn(L.sp), A.FadeIn(toyT), A.FadeIn(L.labU), A.FadeIn(L.labV), A.Write(M1, 1.2), A.Write(M2, 1.2), A.FadeIn(L.dot, { from: 2 }), S.writeIn(R6, 1),
         lag(0.8, L.corner.map((c) => A.FadeIn(c))), S.writeIn(E6, 1.4),
         { cap: 'Here is that floor, seen from above. Our model sits at u = 0.9, v = 0.5: its logits, minus 41’s. Far right, the model would be sure of 51; far up, of about 50; down and left, of 41.' });
 
@@ -364,6 +365,7 @@ FILM.landscapes = FILM.landscapes || {};
       AR.grad.init.draw = 1;
       AR.samples.forEach((m) => (m.init.draw = 1));
       const tag = S.add(S.txt('arrows drawn 8 × longer', { size: 30, color: C.GREY, italic: true })).at(-440, 360);
+      const toyT = S.add(S.toy(760, -400));
 
       const F1 = col.tex(S, '\\JJ_{+10} \\;=\\; \\sum_{\\aa} \\pt(\\aa)\\,\\big(\\rr(\\aa) + 10\\big) \\;=\\; \\JJ + 10', -300, 46);
       const R1 = col.why(S, 'because: the {chances|pt} add up to one, so the extra 10 comes out as 10 × 1', -210);
@@ -387,7 +389,7 @@ FILM.landscapes = FILM.landscapes || {};
       ));
       const ticks = [0, 1].map((j) => S.add(S.txt(String(j), { size: 32, color: C.GOLD, anchor: 'end' })).at(SL.cx - SL.w / 2 - 14, sy(j)));
       S.beat('Now chapter four’s generous judge: add ten to every reward. Every policy’s average reward rises by exactly ten, because the chances add up to one. The landscape lifts by ten, and keeps its shape.',
-        A.FadeIn(h), A.FadeIn(L.sp), A.FadeIn(tag), A.Write(F1, 1.8), S.writeIn(R1, 1.4), A.FadeIn(slice), par(ticks.map((t) => A.FadeIn(t))),
+        A.FadeIn(h), A.FadeIn(L.sp), A.FadeIn(tag), A.FadeIn(toyT), A.Write(F1, 1.8), S.writeIn(R1, 1.4), A.FadeIn(slice), par(ticks.map((t) => A.FadeIn(t))),
         { cap: 'Now chapter 4’s generous judge: add 10 to every reward. Every policy’s average reward rises by exactly 10, because the chances add up to one. The landscape lifts by 10, and keeps its shape.' });
       const F2 = col.tex(S, '\\grad\\big(\\JJ + 10\\big) \\;=\\; \\grad\\JJ', 230, 52);
       const F3 = col.tex(S, '\\ghat \\;=\\; \\big(\\rr(\\aa) + 10\\big)\\; \\grad\\lp(\\aa)', -300, 54);

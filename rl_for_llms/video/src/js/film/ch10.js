@@ -631,9 +631,9 @@ FILM.parts.push(function ch10(ctx) {
     const arr = [S.add(S.arrow(-340, -250, -220, -250, { color: C.GREY_B, width: 4 })), S.add(S.arrow(220, -250, 340, -250, { color: C.GREY_B, width: 4 }))];
     const rw = S.add(S.english('{reward|rr} = is the final answer correct? + is the response in the required format?', { size: 40 }).at(0, -100));
     S.paper('deepseek2025');
-    S.beat('Now the result that made this recipe famous. DeepSeek ran G R P O straight on a base model, with no supervised fine-tuning first, and two checker rewards: is the answer correct, and is the format right?',
+    S.beat('Now the best-known result of this recipe. DeepSeek ran G R P O straight on a base model, with no supervised fine-tuning first, and two checker rewards: is the answer correct, and is the format right?',
       A.FadeIn(h), lag(0.6, steps.map((s, i) => seq(A.FadeIn(s, { dx: -16 }), i < arr.length ? A.Arrow(arr[i], 0.4) : null))), S.writeIn(rw, 1.8),
-      { cap: 'Now the result that made this recipe famous. DeepSeek ran GRPO straight on a base model, with no supervised fine-tuning first, and two checker rewards: is the answer correct, and is the format right?' });
+      { cap: 'Now the best-known result of this recipe. DeepSeek ran GRPO straight on a base model, with no supervised fine-tuning first, and two checker rewards: is the answer correct, and is the format right?' });
 
     // 2. AIME 2024 pass@1
     const base = 300;

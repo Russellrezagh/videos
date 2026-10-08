@@ -107,7 +107,7 @@ FILM.parts.push(function ch01(ctx) {
     const zL = S.add(S.tex('\\zz', { size: 44 }).at(AXX + 300, AXY + 190));
     const dots = NEXT.z.map((z) => S.add(S.dot(11, PAR).at(AXX + ax.fx(z), AXY + ax.fy(Math.exp(z)))));
     const r5 = S.add(S.reason('because: {e to any power|zz} is above zero, and the curve always rises, so a bigger logit still gives a bigger number'));
-    S.beat('Step one: make every score positive, and keep their order. Raise e to the power of each logit. That is always above zero, and it always rises. Squaring would also be positive, but it would rank minus two above one.',
+    S.beat('Step one: make every score positive, and keep their order. Raise e to the power of each logit. That is always above zero, and it always rises. Squaring would also remove the minus signs, but it would rank minus two above one.',
       fade(need, fail), A.FadeIn(ax), A.Create(curve, 1.2), A.FadeIn(curL), A.FadeIn(zL), lag(0.2, dots.map((d) => A.FadeIn(d, { from: 2, dur: 0.4 }))),
       A.FadeIn(hdrE), lag(0.3, eVals.map((m) => A.FadeIn(m, { dx: -16, dur: 0.4 }))), S.writeIn(r5, 1.6), wait(0.6), A.Create(sq, 1.2), A.FadeIn(sqL));
 
@@ -171,24 +171,24 @@ FILM.parts.push(function ch01(ctx) {
     const bars = S.add(S.bars({ labels: NEXT.labels, values: NEXT.p, color: POL, h: BH, w: 130, gap: 90, labelFont: 'mono', labelSize: 40 }).at(0, 250));
     const after = S.add(S.txt('after “The answer is”', { size: 36, color: C.GREY_B, italic: true }).at(-600, -60));
     const e10b = S.add(S.english('only differences matter: {five logits|zz} carry just four numbers that count', { size: 36, color: C.GREY_B, width: 1400 }).at(0, -175));
-    S.beat('As a picture: blue bars, this film’s drawing of a policy. Since only differences matter, five logits carry just four numbers that count. In chapter four, that lets us draw every policy as a point on a floor.',
+    S.beat('As a picture: blue bars, this film’s drawing of a policy. Since only differences matter, five logits carry just four numbers that count. With three answers, two would be left: in chapter four, every policy becomes a point on a floor.',
       fade(rows, hdrT, hdrZ, hdrE, hdrP, eVals, pVals, rule, totL, zSum, eSum, pSum, RT, e10, r10), par(A.MoveTo(SM, 0, -310), A.ScaleTo(SM, 0.85)), A.Set(toy, { x: 700, y: 330 }, 0.1),
       A.FadeIn(bars, { dy: 30 }), A.FadeIn(after), wait(1.4), S.writeIn(e10b, 1.6));
 
     // 12. temperature: a knob for sampling
     const SMT = S.add(S.tex('\\pt(\\aa \\mid \\text{context}) \\;=\\; \\frac{e^{\\zz_\\aa / \\cKnob{c1T}{T}}}{\\sum_{b} e^{\\zz_b / \\cKnob{c1T}{T}}}', { size: 62 }).at(0, -310));
-    const tl = ['T = 1/2', 'T = 2', 'T = 1'].map((t) => S.add(S.english(`{${t}|knob}`, { size: 44, width: 400 }).at(620, -120)));
-    const sayT = `One last knob: the temperature. Divide every logit by T first. At T equals one half, fifty-one rises to ${say2(PH[0])}. At T equals two, it falls to ${say2(P2[0])}. In this film, T is one.`;
+    const tl = [['T = 1/2', 'sharper'], ['T = 2', 'flatter'], ['T = 1', 'as built']].map(([t, w]) => S.add(S.english(`{${t}|knob}: ${w}`, { size: 44, width: 600 }).at(620, -120)));
+    const sayT = `One last knob: the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T equals one half, fifty-one rises to ${say2(PH[0])}: sharper. At T equals two, it falls to ${say2(P2[0])}: flatter. We keep T at one.`;
     const tA = S.atWord(sayT, 'At T equals one');
     const tB = S.atWord(sayT, 'At T equals two');
-    const tC = S.atWord(sayT, 'In this film');
+    const tC = S.atWord(sayT, 'We keep');
     const wT = seq(fade(SM, e10b), par(A.FadeIn(SMT), A.Spot(SMT, 'c1T')));
     const at = (t, done) => wait(Math.max(0, t - done));
     S.beat(sayT,
       wT, at(tA, MV.durOf(wT)), par(A.FadeIn(tl[0], { dur: 0.4 }), bars.to(PH, 1.2)),
       at(tB, Math.max(tA, MV.durOf(wT)) + 1.2), A.FadeOut(tl[0], { dur: 0.3 }), par(A.FadeIn(tl[1], { dur: 0.4 }), bars.to(P2, 1.2)),
       at(tC, Math.max(tB, Math.max(tA, MV.durOf(wT)) + 1.2) + 1.5), A.FadeOut(tl[1], { dur: 0.3 }), par(A.FadeIn(tl[2], { dur: 0.4 }), bars.to(NEXT.p, 1.2), A.Unspot(SMT, 1.2)),
-      { cap: `One last knob: the temperature. Divide every logit by T first. At T = ½, 51 rises to ${PH[0].toFixed(2)}. At T = 2, it falls to ${P2[0].toFixed(2)}. In this film, T is 1.` });
+      { cap: `One last knob: the temperature T, which sets how adventurous sampling is. Divide every logit by T. At T = ½, 51 rises to ${PH[0].toFixed(2)}: sharper. At T = 2, it falls to ${P2[0].toFixed(2)}: flatter. We keep T at 1.` });
   });
 
   /*
@@ -230,20 +230,21 @@ FILM.parts.push(function ch01(ctx) {
 
     // 4. the symbols
     // (written out as beats, so the old lines leave before a card arrives)
-    const cY = S.add(S.symcard('yy', { w: 900, from: 'the model’s answer to x, one token at a time', why: 'it is what gets judged' }).at(0, 225));
+    const cY = S.add(S.symcard('yy', { w: 860, from: 'the model’s answer to the prompt x, one token at a time', why: 'it is what gets judged' }).at(-460, 225));
+    const cYt = S.add(S.symcard('c1ylt', { w: 860 }).at(460, 225));
     S.beat('x is the prompt and y the response. y t is its token at position t, for t from one to n, and y less-than t is every token before it: all the model has seen.',
-      fade(Pn, r3), A.Spot(PROD, ['xx', 'yy', 'c1ylt']), A.FadeIn(cY, { dy: 16 }),
+      fade(Pn, r3), A.Spot(PROD, ['xx', 'yy', 'c1ylt']), A.FadeIn(cY, { dy: 16 }), A.FadeIn(cYt, { dy: 16 }),
       { cap: 'x is the prompt and y the response. y_t is its token at position t, for t from 1 to n, and y_<t is every token before it: all the model has seen.' });
     const cP = S.add(S.symcard('c1prod', { w: 900 }).at(0, 225));
     S.beat('This capital pi is not the policy: it means multiply. Every token must be picked for the answer to appear, so their chances multiply. The colours keep the two apart: the policy is blue.',
-      A.FadeOut(cY, { dur: 0.4 }), A.Spot(PROD, 'c1prod'), A.FadeIn(cP, { dy: 16 }));
+      fade(cY, cYt), A.Spot(PROD, 'c1prod'), A.FadeIn(cP, { dy: 16 }));
 
     // 5. products shrink: underflow
     const e5 = S.add(S.english('a {1000-token answer|yy}, each token with chance {0.9|pt}:', { size: 40, width: 1400 }).at(0, 60));
     const UF = S.add(S.tex(`0.9^{1000} \\;\\approx\\; ${Math.pow(0.9, 1000).toExponential(1).replace(/e-(\d+)/, ' \\times 10^{-$1}')} \\;\\;\\longrightarrow\\;\\; 0`, { size: 64 }).at(0, 160));
     if (Math.fround(Math.pow(0.9, 1000)) !== 0) throw new Error('ch01: 0.9^1000 should underflow in 32-bit floats');
     const r5 = S.add(S.reason('because: 32-bit numbers, the kind a GPU computes with, cannot hold a positive number this small: it becomes exactly 0'));
-    S.beat('But products shrink fast. A thousand tokens at zero point nine each give about ten to the minus forty-six: too small for the 32-bit numbers a GPU uses. It rounds to zero, and every long answer looks impossible.',
+    S.beat('But products shrink fast. A thousand tokens at zero point nine each give about ten to the minus forty-six: too small for the thirty-two-bit numbers a G P U uses. It rounds to zero, and every long answer looks impossible.',
       par(A.Unspot(PROD), A.FadeOut(cP)), UP(PROD, -60, 0.6), S.writeIn(e5, 1.4), A.Write(UF, 1.8), S.writeIn(r5, 1.8),
       { cap: 'But products shrink fast. A thousand tokens at 0.9 each give about 10⁻⁴⁶: too small for the 32-bit numbers a GPU uses. It rounds to zero, and every long answer looks impossible.' });
 
