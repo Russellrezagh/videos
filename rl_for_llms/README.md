@@ -1,6 +1,6 @@
 # The Gradient of Reward
 
-A narrated film (about 100 minutes) on the mathematics of reinforcement learning
+A narrated film (1 hour 42 minutes) on the mathematics of reinforcement learning
 for language models, built from first principles and drawn in a 3Blue1Brown-like
 style with a Manim-style engine written in JavaScript and SVG, including 3D
 landscapes.
