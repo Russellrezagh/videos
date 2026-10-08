@@ -246,7 +246,8 @@ FILM.parts.push(function ch04(ctx) {
     const est = S.add(S.tex(`\\ghat \\;=\\; \\big(\\rr - \\bb\\big)\\, ${S_}, \\qquad ${S_} \\;=\\; \\grad\\lp(\\aa)`, { size: 76 }).at(0, -60));
     const cs = S.add(S.symcard('sc', { w: 1100, from: 'the gradient of the sampled answer’s log-probability, ∇ log π(a)', why: 'the direction that makes that answer more likely; one letter keeps the variance formulas short' }).at(0, 170));
     S.beat('Why a parabola, and where is its bottom? To keep the lines short, write s for the score of the sampled answer, the gradient of log pi. Then the estimate is r minus b, times s.',
-      par([ax, cv, off, toy, ...p10].map((m) => A.FadeOut(m))), A.Write(est, 1.8), A.Spot(est, 'sc'), A.FadeIn(cs, { dy: 16 }));
+      par([ax, cv, off, toy, ...p10].map((m) => A.FadeOut(m))), A.Write(est, 1.8), A.Spot(est, 'sc'), A.FadeIn(cs, { dy: 16 }),
+      { cap: 'Why a parabola, and where is its bottom? To keep the lines short, write s for the score of the sampled answer, ∇ log π. Then the estimate is (r − b) times s.' });
 
     // 3. the variance, written out
     const V1 = S.add(S.tex(`\\operatorname{Var}(\\bb) \\;=\\; \\EE\\Big[\\big(\\rr - \\bb\\big)^2\\, \\|${S_}\\|^2\\Big] \\;-\\; \\|\\grad\\JJ\\|^2`, { size: 76 }).at(0, -60));

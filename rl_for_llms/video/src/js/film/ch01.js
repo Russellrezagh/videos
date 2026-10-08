@@ -237,7 +237,8 @@ FILM.parts.push(function ch01(ctx) {
       { cap: 'x is the prompt and y the response. y_t is its token at position t, for t from 1 to n, and y_<t is every token before it: all the model has seen.' });
     const cP = S.add(S.symcard('c1prod', { w: 900 }).at(0, 225));
     S.beat('This capital pi is not the policy: it means multiply. Every token must be picked for the answer to appear, so their chances multiply. The colours keep the two apart: the policy is blue.',
-      fade(cY, cYt), A.Spot(PROD, 'c1prod'), A.FadeIn(cP, { dy: 16 }));
+      fade(cY, cYt), A.Spot(PROD, 'c1prod'), A.FadeIn(cP, { dy: 16 }),
+      { cap: 'This capital Π is not the policy: it means multiply. Every token must be picked for the answer to appear, so their chances multiply. The colours keep the two apart: the policy is blue.' });
 
     // 5. products shrink: underflow
     const e5 = S.add(S.english('a {1000-token answer|yy}, each token with chance {0.9|pt}:', { size: 40, width: 1400 }).at(0, 60));

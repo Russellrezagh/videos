@@ -239,7 +239,8 @@ FILM.parts.push(function ch02(ctx) {
     const Q = S.add(S.tex('\\grad\\, \\EE_{\\yy \\sim \\pt(\\cdot \\mid \\xx)}\\big[\\, \\RR(\\xx, \\yy) \\,\\big] \\;=\\; ?', { size: 100 }).at(0, 20));
     const e7 = S.add(S.english('{θ|th} hides in the sampling itself: in {which answers we draw|pt}', { size: 42, width: 1500 }).at(0, 220));
     S.beat('So the expected reward depends on theta smoothly, yet no chain of derivatives reaches it. Theta hides in the sampling: in which answers we draw. What is its gradient?',
-      fade(ax, xL, yL, fixed, rule, now, nowJ, avgL), A.Write(Q, 2), wait(0.4), A.Spot(Q, ['pt', 'grad']), S.writeIn(e7, 1.8), wait(1.6), A.Unspot(Q));
+      fade(ax, xL, yL, fixed, rule, now, nowJ, avgL), A.Write(Q, 2), wait(0.4), A.Spot(Q, ['pt', 'grad']), S.writeIn(e7, 1.8), wait(1.6), A.Unspot(Q),
+      { cap: 'So the expected reward depends on θ smoothly, yet no chain of derivatives reaches it. θ hides in the sampling: in which answers we draw. What is its gradient?' });
 
     // next: the trick
     const trick = S.add(S.head('the log-derivative trick', { size: 80, color: S.color('grad') }).at(0, 20));

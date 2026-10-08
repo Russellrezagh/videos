@@ -127,9 +127,11 @@ FILM.parts.push(function ch03(ctx) {
     const goal = S.add(S.english('Which way should we nudge the {weights|th} so that the {average reward|JJ} goes up?', { size: 46 }).at(0, -250));
     const g0 = S.add(S.tex('\\grad\\, \\JJ(\\th)', { size: 124 }).at(0, -40));
     S.beat('Here is the question this whole chapter answers. Which way should we nudge the weights, so that the average reward goes up? In symbols, that question has a name: the gradient of J, with respect to theta.',
-      A.FadeIn(h), S.writeIn(goal, 2.2), A.Write(g0, 1.4));
+      A.FadeIn(h), S.writeIn(goal, 2.2), A.Write(g0, 1.4),
+      { cap: 'Here is the question this whole chapter answers. Which way should we nudge the weights, so that the average reward goes up? In symbols, that question has a name: the gradient of J with respect to θ.' });
     S.tour(g0, [
-      { sym: 'grad', at: [0, 215], say: 'The upside-down triangle, nabla, means the gradient. For every single weight, it asks: if this weight moved a tiny bit, how much would the quantity change? Collected together, those answers form an arrow that points uphill.' },
+      { sym: 'grad', at: [0, 215], say: 'The upside-down triangle, nabla, means the gradient. For every single weight, it asks: if this weight moved a tiny bit, how much would the quantity change? Collected together, those answers form an arrow that points uphill.',
+        cap: 'The upside-down triangle, ∇ (nabla), means the gradient. For every single weight, it asks: if this weight moved a tiny bit, how much would the quantity change? Collected together, those answers form an arrow that points uphill.' },
       { sym: 'JJ', at: [0, 215], say: 'J is the objective: the average reward the model earns when we sample answers from it. It is one number, and training exists to push it up.' },
       { sym: 'th', at: [0, 215], say: 'And theta stands for every adjustable number inside the network. Training may change theta, and nothing else.',
         cap: 'And θ stands for every adjustable number inside the network. Training may change θ, and nothing else.' },
