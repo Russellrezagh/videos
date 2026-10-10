@@ -1,0 +1,1075 @@
+<title>Cumberbatch Voice Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: a rehearsal room. A score-like column of annotated text (the "script")
+   flanked by measurement panels; tabs move between rooms of the method. */
+:root {
+  --paper: #EFF0EB;
+  --panel: #FBFBF8;
+  --ink: #1A1F2B;
+  --muted: #586070;
+  --line: #D3D6CC;
+  --brass: #94601A;
+  --brass-soft: #EBDDC4;
+  --pause: #2C6A70;
+  --pause-soft: #D3E6E4;
+  --up: #A13D2C;
+  --down: #3B4F9A;
+  --good: #2E7548;
+  --warn: #9A6200;
+  --bad: #AE3A2D;
+  --shadow: 0 1px 0 rgba(26,31,43,.06), 0 8px 24px -12px rgba(26,31,43,.18);
+  --f-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --f-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121218; --panel: #1A1A22; --ink: #ECE7DE; --muted: #A29D95; --line: #2F2F3B;
+    --brass: #E2AA52; --brass-soft: #3A2D19; --pause: #72C2C7; --pause-soft: #17383B;
+    --up: #F28C74; --down: #93A8F2; --good: #6CC28E; --warn: #E7B04B; --bad: #EE7D70;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121218; --panel: #1A1A22; --ink: #ECE7DE; --muted: #A29D95; --line: #2F2F3B;
+  --brass: #E2AA52; --brass-soft: #3A2D19; --pause: #72C2C7; --pause-soft: #17383B;
+  --up: #F28C74; --down: #93A8F2; --good: #6CC28E; --warn: #E7B04B; --bad: #EE7D70;
+  --shadow: 0 1px 0 rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.6 var(--f-body); margin: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 24px 80px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 500; text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(34px, 6vw, 58px); letter-spacing: -.01em; }
+h2 { font-size: clamp(26px, 3.6vw, 36px); }
+h3 { font-size: 21px; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 500 11.5px/1.2 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--brass); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.hand { font-family: var(--f-hand); font-size: 1.3em; color: var(--brass); line-height: 1.1; }
+a { color: var(--brass); }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+/* header */
+body:not([data-room="voice"]) .hero-extra { display: none !important; }
+header.top { display: grid; gap: 18px; padding-block: 8px 22px; border-bottom: 1px solid var(--line); }
+.hero-line { font-family: var(--f-display); font-style: italic; font-size: clamp(19px, 2.6vw, 25px); line-height: 1.9; max-width: 34em; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.stat b { display: block; font: 500 28px/1 var(--f-display); }
+.stat span { font-size: 12.5px; color: var(--muted); }
+
+/* tabs */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); display: flex; gap: 4px; overflow-x: auto; padding-block: 10px; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+nav.tabs button { flex: none; border: 1px solid transparent; background: none; padding: 7px 13px; border-radius: 999px; font-weight: 500; color: var(--muted); }
+nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+nav.tabs button:hover:not([aria-selected="true"]) { border-color: var(--line); color: var(--ink); }
+section.room { display: grid; gap: 28px; padding-block: 30px 0; }
+.room-head { display: grid; gap: 8px; }
+
+/* generic */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 999px; padding: 8px 16px; font-weight: 500; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--ink); }
+.btn.rec { background: var(--bad); border-color: var(--bad); color: #fff; }
+.btn:disabled { opacity: .45; cursor: default; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; color: var(--muted); background: var(--panel); }
+.chip.on { border-color: var(--brass); color: var(--brass); background: var(--brass-soft); }
+.pill { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: var(--brass-soft); color: var(--brass); }
+select { max-width: 100%; }
+.lbl select { width: 100%; }
+.row > .lbl { flex: 1 1 200px; }
+.panel > *, .lbl { min-width: 0; max-width: 100%; }
+select, input[type="text"], textarea { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+textarea { width: 100%; min-height: 96px; resize: vertical; line-height: 1.5; }
+label.lbl { font-size: 12.5px; color: var(--muted); display: grid; gap: 4px; }
+.note { font-size: 13px; color: var(--muted); }
+.callout { border-left: 3px solid var(--brass); padding: 4px 0 4px 14px; }
+details summary { cursor: pointer; font-weight: 500; }
+hr.soft { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+/* score notation */
+.score { font-family: var(--f-display); font-size: clamp(19px, 2.3vw, 23px); line-height: 2.5; }
+.score .w { position: relative; border-radius: 4px; padding: 0 1px; transition: background .12s; }
+.score .w.stress { font-weight: 700; text-decoration: underline; text-decoration-color: var(--brass); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.score .w.stretch { letter-spacing: .12em; font-style: italic; }
+.score .w.up::before, .score .w.down::before { position: absolute; left: 50%; transform: translateX(-50%); font: 700 13px/1 var(--f-body); }
+.score .w.up::before { content: "↗"; top: -.95em; color: var(--up); }
+.score .w.down::before { content: "↘"; top: -.95em; color: var(--down); }
+.score .w.fast { color: var(--muted); font-style: italic; }
+.score .w.now { background: var(--brass-soft); color: var(--ink); }
+.score .w.done { opacity: .55; }
+.score .p { font-family: var(--f-body); color: var(--pause); font-weight: 600; margin: 0 .25em; white-space: nowrap; }
+.score .p.now { background: var(--pause-soft); border-radius: 4px; }
+.score .p.l3 { font-size: .8em; }
+.score .p.l3::after { content: " land it"; font: 500 15px var(--f-hand); color: var(--pause); }
+.score .br { display: block; height: .3em; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.legend b { color: var(--ink); font-weight: 600; }
+
+/* charts */
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font: 11px var(--f-mono); }
+.chart .lab { fill: var(--ink); font: 12px var(--f-body); }
+.scroll-x { overflow-x: auto; }
+.moments { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.moment { padding: 12px 12px 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); display: grid; gap: 4px; min-width: 0; }
+.moment q { font-family: var(--f-display); font-style: italic; font-size: 16px; }
+.moment q::before, .moment q::after { content: ""; }
+
+/* metrics */
+.metric { display: grid; grid-template-columns: minmax(120px, 1.1fr) 2fr; gap: 6px 14px; align-items: center; padding-block: 10px; border-bottom: 1px solid var(--line); }
+.metric:last-child { border-bottom: 0; }
+.metric .name { font-weight: 500; }
+.metric .name small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+.meter { position: relative; height: 26px; }
+.meter .track { position: absolute; inset: 11px 0; height: 4px; background: var(--line); border-radius: 4px; }
+.meter .zone { position: absolute; top: 8px; height: 10px; background: var(--brass-soft); border: 1px solid var(--brass); border-radius: 4px; }
+.meter .you { position: absolute; top: 2px; width: 3px; height: 22px; background: var(--ink); border-radius: 2px; transform: translateX(-1px); }
+.meter .valtag { position: absolute; top: -2px; font: 500 11px var(--f-mono); color: var(--ink); white-space: nowrap; transform: translateX(-50%); }
+.verdict { grid-column: 2; font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; transform: translateY(-1px); }
+.dot.good { background: var(--good); } .dot.warn { background: var(--warn); } .dot.bad { background: var(--bad); }
+.rec-live { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.level { width: 160px; height: 8px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.level i { display: block; height: 100%; width: 0; background: var(--brass); transition: width .08s; }
+.timer { font: 500 22px var(--f-mono); font-variant-numeric: tabular-nums; }
+.pausing { color: var(--pause); font-weight: 600; }
+canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); }
+
+/* techniques */
+.tech { display: grid; gap: 10px; }
+.tech .evidence { font-size: 13px; background: var(--paper); border: 1px dashed var(--line); border-radius: 10px; padding: 8px 10px; }
+.pillars { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* frames + lexicon */
+.frame-tpl { font-family: var(--f-display); font-size: 19px; line-height: 1.5; }
+.slot { font-family: var(--f-mono); font-size: 13px; color: var(--brass); background: var(--brass-soft); border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+.card { min-height: 220px; display: grid; align-content: center; gap: 10px; text-align: center; padding: 26px; }
+.card .phrase { font-family: var(--f-display); font-size: clamp(26px, 4vw, 36px); line-height: 1.15; }
+.boxes { display: flex; gap: 6px; justify-content: center; }
+.boxes i { width: 22px; height: 6px; border-radius: 3px; background: var(--line); }
+.boxes i.f { background: var(--brass); }
+.lex-list { display: grid; gap: 0; }
+.lex-item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 9px; border-bottom: 1px solid var(--line); }
+.lex-item:last-child { border-bottom: 0; }
+
+/* improv */
+.ring-prompt { font-family: var(--f-display); font-size: clamp(22px, 3vw, 30px); line-height: 1.3; }
+.big-timer { font: 500 clamp(44px, 9vw, 72px)/1 var(--f-display); font-variant-numeric: tabular-nums; }
+
+/* plan */
+.weeks { display: grid; gap: 18px; }
+.week { display: grid; gap: 10px; }
+.days { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.day { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: var(--panel); display: grid; gap: 8px; align-content: start; }
+.day.done { border-color: var(--good); }
+.day h4 { margin: 0; font: 600 13px var(--f-body); display: flex; justify-content: space-between; gap: 8px; }
+.day ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: grid; gap: 2px; }
+.day label { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.coach-out { display: grid; gap: 10px; }
+.coach-out .scores { display: flex; flex-wrap: wrap; gap: 6px; }
+.coach-out .rewrite { font-family: var(--f-display); font-style: italic; font-size: 18px; }
+.status-line { font-size: 13px; color: var(--muted); min-height: 1.4em; }
+@media (max-width: 560px) {
+  .metric { grid-template-columns: 1fr; }
+  .verdict { grid-column: 1; }
+  .score { line-height: 2.3; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Voice study · Letters Live, KOKO Camden · 7 Nov 2024</div>
+    <h1>Cumberbatch Voice Studio</h1>
+    <div class="hero-extra" style="display:grid;gap:18px">
+    <p class="hero-line" id="heroLine"></p>
+    <div class="stats" id="heroStats"></div>
+    <p class="note">Measured from the reel (106 s, his reading of Rik Mayall's Band Aid letter) and from 20 minutes of his unscripted podcast talk. Every target on this page comes from those measurements.</p>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Rooms" id="tabs"></nav>
+
+  <!-- ROOM: voice profile -->
+  <section class="room" id="room-voice" role="tabpanel">
+    <div class="room-head">
+      <div class="eyebrow">Room 1 · The instrument</div>
+      <h2>What his voice actually does</h2>
+      <p class="muted">Two modes of the same speaker. On stage he sprints and stops. In conversation he thinks out loud, steadily. You'll train both, because the stage tricks only sound natural once the conversational base is solid.</p>
+    </div>
+    <div class="panel scroll-x"><div id="profileTable"></div></div>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h3>Pace across the reel</h3><span class="note">words per minute in 10-second windows · teal bars are silences of a second or more</span></div>
+      <div id="paceChart"></div>
+      <p class="note" style="margin-top:8px">He swings between 96 and 228 words per minute. The slow windows are where the jokes land and he waits for the laugh. The fast ones are the story logistics, which he hurries through on purpose.</p>
+    </div>
+    <div class="room-head">
+      <h3>Ten melodies worth stealing</h3>
+      <p class="muted">Pitch in semitones relative to his median (158 Hz). Above the line is higher than his usual voice. Learn the shape, not the words: hum each one, then put your own sentence on it.</p>
+    </div>
+    <div class="moments" id="moments"></div>
+  </section>
+
+  <!-- ROOM: techniques -->
+  <section class="room" id="room-tech" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 2 · The method</div>
+      <h2>Six pillars, eighteen techniques</h2>
+      <p class="muted">Each technique names one thing he does, shows the evidence from the measurements, and gives you a 2-minute drill. Filter by pillar.</p>
+    </div>
+    <div class="pillars" id="pillarFilter"></div>
+    <div class="grid2" id="techList"></div>
+  </section>
+
+  <!-- ROOM: studio -->
+  <section class="room" id="room-studio" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 3 · The studio</div>
+      <h2>Read the score, then record</h2>
+      <p class="muted">Original practice scripts written in his two styles and marked up like a voice coach's copy. Run the conductor to feel the timing, then record yourself and compare against his numbers.</p>
+    </div>
+    <div class="panel" style="display:grid;gap:14px">
+      <div class="row">
+        <label class="lbl">Script<select id="scriptSel"></select></label>
+        <label class="lbl">Conductor speed<select id="speedSel"><option value="0.7">70% (first week)</option><option value="0.85" selected>85%</option><option value="1">100% (his pace)</option><option value="1.1">110% (overtraining)</option></select></label>
+        <label class="lbl" style="align-self:end;flex-direction:row;display:flex;gap:6px;align-items:center"><input type="checkbox" id="ttsChk"> Speak with a computer voice</label>
+      </div>
+      <div class="legend"><span><b>‖</b> short pause</span><span><b>‖‖</b> a beat</span><span><b>‖‖‖</b> land it and wait</span><span><b style="text-decoration:underline;text-decoration-color:var(--brass)">word</b> stress</span><span><b style="letter-spacing:.12em;font-style:italic">word</b> stretch it</span><span><b style="color:var(--up)">↗</b> jump up</span><span><b style="color:var(--down)">↘</b> drop low</span><span><i>grey italic</i> hurry through</span></div>
+      <div id="scriptMeta" class="note"></div>
+      <div class="score" id="score" aria-live="off"></div>
+      <div class="row">
+        <button class="btn" id="condBtn">Start conductor</button>
+        <span class="note" id="condNote">The highlight moves at his articulation rate and holds on every pause. Read along out loud.</span>
+      </div>
+    </div>
+    <div class="panel" id="studioRec"></div>
+  </section>
+
+  <!-- ROOM: frames -->
+  <section class="room" id="room-frames" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 4 · Sentence engine</div>
+      <h2>Think in his sentence shapes</h2>
+      <p class="muted">Fluent speakers don't build sentences word by word. They pull ready-made frames and pour content in. Fill a frame out loud five times a day and it becomes a groove your mind slides into on its own.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <label class="lbl">Frame<select id="frameSel"></select></label>
+        <div class="frame-tpl" id="frameTpl"></div>
+        <p class="note" id="frameWhy"></p>
+        <details><summary>Two worked examples</summary><div id="frameEx" style="display:grid;gap:8px;margin-top:8px"></div></details>
+      </div>
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <div class="row" style="justify-content:space-between"><span class="eyebrow">Your situation</span><button class="btn ghost" id="frameShuffle">New situation</button></div>
+        <p class="ring-prompt" id="frameScenario" style="font-size:20px"></p>
+        <label class="lbl" for="frameInput">Say it out loud first, then write what you said</label>
+        <textarea id="frameInput" placeholder="So there I was…"></textarea>
+        <div class="row"><button class="btn" id="frameCheck">Ask the coach</button><span class="status-line" id="frameStatus"></span></div>
+        <div id="frameOut" class="coach-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROOM: lexicon -->
+  <section class="room" id="room-lex" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 5 · Lexicon</div>
+      <h2>Words that do his work</h2>
+      <p class="muted">His comedy runs on register collisions: a Latinate, solicitor-ish phrase sitting right next to something blunt. In conversation he leans on a small set of warm intensifiers and soft hedges. Cards come back on a spaced schedule (1, 2, 4, 7, 15 days). Say a full sentence with the card before you grade yourself.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel card" id="lexCard"></div>
+      <div class="panel" style="display:grid;gap:10px;align-content:start">
+        <div class="row" style="justify-content:space-between"><h3>All phrases</h3><select id="lexGroup"></select></div>
+        <div class="lex-list" id="lexList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROOM: improv -->
+  <section class="room" id="room-ring" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 6 · The ring</div>
+      <h2>Unscripted, against the clock</h2>
+      <p class="muted">This is where it becomes yours. You get a situation, one required frame and three words. Talk for the full time without stopping. Silence is allowed; "um" is not. Replace every filler with a pause or a discourse marker.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel" style="display:grid;gap:14px;align-content:start">
+        <div class="row" style="justify-content:space-between">
+          <label class="lbl">Mode<select id="ringMode"><option value="perf">Stage: indignant storyteller</option><option value="nat">Conversation: thinking out loud</option></select></label>
+          <label class="lbl">Time<select id="ringTime"><option value="45">45 s</option><option value="60" selected>60 s</option><option value="90">90 s</option><option value="120">2 min</option></select></label>
+        </div>
+        <p class="ring-prompt" id="ringPrompt"></p>
+        <div id="ringReq" style="display:grid;gap:8px"></div>
+        <div class="row"><button class="btn ghost" id="ringNew">New round</button><button class="btn ghost" id="ringAi" hidden>Coach writes a round</button></div>
+        <div class="big-timer" id="ringTimer">1:00</div>
+      </div>
+      <div class="panel" id="ringRec"></div>
+    </div>
+  </section>
+
+  <!-- ROOM: plan -->
+  <section class="room" id="room-plan" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 7 · Four weeks</div>
+      <h2>Twenty minutes a day, in this order</h2>
+      <p class="muted">Ear and breath first, then melody, then words and frames, then free flow. Each day builds on the last, so do them in order and tick them off. Recordings you analyse are logged below so you can see the numbers move.</p>
+    </div>
+    <div class="panel callout" style="box-shadow:none" id="routine"></div>
+    <div class="row"><span class="pill" id="streak">0 days</span><span class="note" id="storeNote"></span></div>
+    <div class="weeks" id="weeks"></div>
+    <div class="panel"><h3 style="margin-bottom:8px">Your recordings</h3><div id="history" class="scroll-x"></div></div>
+  </section>
+</div>
+
+<script>
+/* =========================================================================
+   DOMAIN MODEL
+   VoiceProfile  measured target for one mode (stage | conversation)
+   Pillar        tone · pace · fluency · vocabulary · syntax · expression
+   Technique     one observable habit → evidence → drill
+   Frame         reusable sentence shape with slots and worked examples
+   Phrase        lexicon entry with register and a spaced-repetition box
+   Script        original practice text in score notation, tied to a mode
+   Round         improv prompt: situation + required frame + words + time
+   Attempt       one analysed recording: metrics measured against a profile
+   PlanDay       ordered daily tasks; progress = which days are done
+   ========================================================================= */
+
+const PROFILES = {
+  perf: {
+    id: "perf", name: "Stage (reel)", source: "106 s reading, Letters Live 2024",
+    wpm: 179, artWpm: 248, artRate: 5.59, sylRate: 4.04, pauseShare: 0.28, pausesPerMin: 11.9,
+    runMedian: 1.94, runMax: 10.3, longPauses: 11, f0Median: 158, rangeSt: 21.5, fillersPerMin: 0
+  },
+  nat: null /* filled from podcast analysis below */
+};
+
+const PILLARS = [
+  { id: "tone", name: "Tone" }, { id: "pace", name: "Pace" }, { id: "fluency", name: "Fluency" },
+  { id: "vocab", name: "Vocabulary" }, { id: "syntax", name: "Sentence shape" }, { id: "expr", name: "Expression" }
+];
+
+/* Short reel moments (2–6 words each) with pitch contour: [t, semitones re 158 Hz] */
+const MOMENTS = __MOMENTS__;
+const MOMENT_NOTES = {
+  "So there I was": "Opens high and bright, then the voice settles. The story starts mid-air.",
+  "they definitely all recognized me": "Self-belief: 'definitely' is stretched to 0.74 s, the longest word in the opening.",
+  "Undeterred": "Comes after a 4.2 s laugh-wait. Low, flat, a solicitor's word said with a straight face.",
+  "you know me Bob": "Drops to a confidential murmur, 14 semitones under his top notes.",
+  "I can only describe as solid": "Climbs through the build, then 'solid' falls to the floor. High setup, low punch.",
+  "I'll say this for you Bob": "Jumps 15 semitones on 'say'. Mock generosity is pitched high.",
+  "the sheer enormity": "Slow and grand. 'Enormity' gets half a second.",
+  "that backfired": "'Backfired' is stretched to 0.58 s and pushed up.",
+  "completely comfortable with that": "Bright, sing-song reassurance, his highest stretch of the reel.",
+  "But if it isn't": "The fork. High on 'if', a held breath, then the verdict comes down hard."
+};
+const PACE_WINDOWS = [216, 138, 222, 126, 126, 222, 96, 228, 204, 216, 114];
+const LONG_PAUSES = [[14.5, 4.2], [46.6, 4.1], [33.1, 3.6], [38.6, 2.6], [62.5, 1.8], [58.1, 1.6], [66.3, 1.5], [90.0, 1.5], [29.1, 1.4], [6.9, 1.2], [51.7, 1.0]];
+
+const TECHNIQUES = __TECHNIQUES__;
+const FRAMES = __FRAMES__;
+const PHRASES = __PHRASES__;
+const SCRIPTS = __SCRIPTS__;
+const SITUATIONS = __SITUATIONS__;
+const PLAN = __PLAN__;
+const NATURAL = __NATURAL__;
+PROFILES.nat = NATURAL.profile;
+</script>
+<script>
+__ANALYZER__
+</script>
+<script>
+/* ============================== STORE ===================================
+   Progress lives in the artifact's private per-user db doc when available,
+   with browser storage as the fallback (e.g. when opened as a local file). */
+const Store = (() => {
+  const KEY = "cvs-progress-v1";
+  let state = { days: {}, lex: {}, attempts: [] };
+  let ref = null, timer = null, writing = Promise.resolve(), mode = "browser";
+  const listeners = [];
+  try { const raw = localStorage.getItem(KEY); if (raw) state = Object.assign(state, JSON.parse(raw)); } catch (e) {}
+  async function connect() {
+    const use = window.claude && window.claude.use ? window.claude.use.bind(window.claude) : null;
+    if (!use) return;
+    try {
+      const [db, user] = await Promise.all([use("db"), use("user")]);
+      if (!db || !user) return;
+      const id = await user.id();
+      if (!id) return;
+      ref = db.collection("data/users/" + id).doc("progress");
+      const snap = await ref.get();
+      if (snap.exists) {
+        const remote = snap.data() || {};
+        state.days = Object.assign({}, remote.days || {}, state.days);
+        state.lex = Object.assign({}, remote.lex || {}, state.lex);
+        const seen = new Set((state.attempts || []).map(a => a.ts));
+        state.attempts = [...(remote.attempts || []).filter(a => !seen.has(a.ts)), ...(state.attempts || [])].sort((a, b) => a.ts - b.ts).slice(-150);
+      }
+      mode = "account";
+      listeners.forEach(f => f());
+      save();
+    } catch (e) { /* stay on browser storage */ }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    if (!ref) return;
+    clearTimeout(timer);
+    timer = setTimeout(() => { writing = writing.then(() => ref.set(JSON.parse(JSON.stringify(state)))).catch(() => {}); }, 1200);
+  }
+  return {
+    get: () => state, save, connect, onChange: f => listeners.push(f),
+    where: () => mode === "account" ? "Progress is saved to your account and follows you between devices." : "Progress is saved in this browser."
+  };
+})();
+
+/* ============================== HELPERS ================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k === "html") n.innerHTML = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else if (v !== false && v != null) n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(k));
+  return n;
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const fmtTime = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const slotify = t => esc(t).replace(/\[([^\]]+)\]/g, '<span class="slot">$1</span>');
+const today = () => new Date().toISOString().slice(0, 10);
+
+let samplePromise = null;
+const getSample = () => {
+  if (!samplePromise) samplePromise = (window.claude && window.claude.use) ? window.claude.use("sample").catch(() => null) : Promise.resolve(null);
+  return samplePromise;
+};
+const sampleErr = e => ({
+  not_granted: "The coach needs permission to use Claude. Allow it from this page's permissions, then try again.",
+  rate_limited: "The coach is busy. Wait a minute and try again.",
+  invalid_json: "The coach's reply came back garbled. Try again.",
+  prompt_too_large: "That was too long for one check. Shorten the text."
+}[e && e.code] || "The coach couldn't answer just now. Try again in a moment.");
+
+/* ============================== TABS ==================================== */
+const ROOMS = [["voice", "His voice"], ["tech", "Techniques"], ["studio", "Studio"], ["frames", "Sentence engine"], ["lex", "Lexicon"], ["ring", "Improv ring"], ["plan", "4-week plan"]];
+function showRoom(id) {
+  ROOMS.forEach(([r]) => { $("#room-" + r).hidden = r !== id; });
+  document.body.dataset.room = id;
+  document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.r === id));
+  try { localStorage.setItem("cvs-room", id); } catch (e) {}
+}
+function initTabs() {
+  const nav = $("#tabs");
+  ROOMS.forEach(([r, name]) => nav.append(el("button", { role: "tab", "data-r": r, onclick: () => { showRoom(r); window.scrollTo({ top: 0 }); } }, name)));
+  let start = (location.hash || "").slice(1);
+  if (!ROOMS.some(([r]) => r === start)) { try { start = localStorage.getItem("cvs-room") || "voice"; } catch (e) { start = "voice"; } }
+  showRoom(ROOMS.some(([r]) => r === start) ? start : "voice");
+}
+
+/* ============================== ROOM 1 ================================== */
+function renderHero() {
+  $("#heroLine").innerHTML = renderScoreInline("So there I was, | ^minding my own business, || when the universe | decided I was the ~punchline~. |||");
+  const s = $("#heroStats");
+  [["248", "words/min inside a phrase"], ["28%", "of the time is silence"], ["21.5", "semitones of pitch range"], ["0", "fillers in 106 seconds"]]
+    .forEach(([b, t]) => s.append(el("div", { class: "stat" }, el("b", {}, b), el("span", {}, t))));
+}
+function renderProfileTable() {
+  const P = PROFILES.perf, N = PROFILES.nat;
+  const rows = [
+    ["Overall pace", "words per minute, pauses included", P.wpm, N.wpm, "≈150", v => Math.round(v)],
+    ["Speed inside a phrase", "syllables per second, pauses removed", P.artRate, N.artRate, "≈4.5–5", v => v.toFixed(1)],
+    ["Silence", "share of total time in pauses ≥ 0.25 s", P.pauseShare, N.pauseShare, "≈15–20%", v => Math.round(v * 100) + "%"],
+    ["Pauses per minute", "", P.pausesPerMin, N.pausesPerMin, "", v => v.toFixed(1)],
+    ["Typical run between pauses", "median seconds of continuous speech", P.runMedian, N.runMedian, "", v => v.toFixed(1) + " s"],
+    ["Longest run", "seconds without a pause", P.runMax, N.runMax, "", v => v.toFixed(1) + " s"],
+    ["Median pitch", "", P.f0Median, N.f0Median, "", v => Math.round(v) + " Hz"],
+    ["Pitch range", "5th–95th percentile, semitones", P.rangeSt, N.rangeSt, "often under 12", v => v.toFixed(1)],
+    ["Fillers", "um / uh per minute", P.fillersPerMin, N.fillersPerMin, "", v => v.toFixed(1)]
+  ];
+  const t = el("table", { class: "mono", style: "width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px" });
+  t.innerHTML = `<thead><tr style="text-align:left;color:var(--muted)"><th style="padding:6px 8px 10px 0;font-weight:500">Measure</th><th style="padding:6px 8px 10px;font-weight:500">Stage</th><th style="padding:6px 8px 10px;font-weight:500">Conversation</th><th style="padding:6px 8px 10px;font-weight:500">Common reference</th></tr></thead>` +
+    "<tbody>" + rows.map(([n, sub, a, b, ref, f]) => `<tr style="border-top:1px solid var(--line)"><td style="padding:9px 8px 9px 0;font-family:var(--f-body)"><span style="font-weight:500">${n}</span>${sub ? `<br><span class="note">${sub}</span>` : ""}</td><td style="padding:9px 8px">${f(a)}</td><td style="padding:9px 8px">${b == null ? "–" : f(b)}</td><td style="padding:9px 8px;color:var(--muted)">${ref}</td></tr>`).join("") + "</tbody>";
+  $("#profileTable").append(t);
+  $("#profileTable").append(el("p", { class: "note", style: "margin-top:10px" }, NATURAL.summary));
+}
+function renderPaceChart() {
+  const W = 760, H = 220, L = 40, R = 10, T = 14, B = 34, max = 250, dur = 110;
+  const x = t => L + (t / dur) * (W - L - R), y = v => T + (1 - v / max) * (H - T - B);
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Words per minute in 10-second windows across the reel">`;
+  [0, 100, 200].forEach(v => { s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`; });
+  LONG_PAUSES.forEach(([t, len]) => { s += `<rect x="${x(t)}" y="${T}" width="${Math.max(2, x(t + len) - x(t))}" height="${H - T - B}" fill="var(--pause)" opacity=".22"/>`; });
+  PACE_WINDOWS.forEach((v, i) => {
+    const x0 = x(i * 10) + 4, w = x(10) - x(0) - 8, isFast = v >= 200;
+    s += `<rect x="${x0}" y="${y(v)}" width="${w}" height="${y(0) - y(v)}" rx="3" fill="${isFast ? "var(--brass)" : "var(--ink)"}" opacity="${isFast ? .85 : .55}"/>`;
+    s += `<text x="${x0 + w / 2}" y="${y(v) - 5}" text-anchor="middle" class="lab">${v}</text>`;
+  });
+  for (let t = 0; t <= 100; t += 20) s += `<text x="${x(t)}" y="${H - 12}" text-anchor="middle">${t}s</text>`;
+  s += `<line x1="${L}" x2="${W - R}" y1="${y(PROFILES.perf.wpm)}" y2="${y(PROFILES.perf.wpm)}" stroke="var(--brass)" stroke-dasharray="4 4"/><text x="${W - R}" y="${y(PROFILES.perf.wpm) - 5}" text-anchor="end" style="fill:var(--brass)">average ${PROFILES.perf.wpm}</text>`;
+  $("#paceChart").innerHTML = s + "</svg>";
+}
+function contourSvg(m, w = 260, h = 120) {
+  const L = 4, R = 4, T = 10, B = 26, lo = -16, hi = 18;
+  const x = t => L + (t / m.dur) * (w - L - R), y = v => T + (1 - (v - lo) / (hi - lo)) * (h - T - B);
+  let s = `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Pitch contour">`;
+  s += `<line x1="${L}" x2="${w - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)" stroke-dasharray="3 3"/>`;
+  let d = "", pen = false;
+  m.pts.forEach(([t, v]) => { if (v == null) { pen = false; return; } d += (pen ? "L" : "M") + x(t).toFixed(1) + " " + y(v).toFixed(1); pen = true; });
+  s += `<path d="${d}" fill="none" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+  m.words.forEach(wd => { const cx = x((wd.s + wd.e) / 2); s += `<text x="${cx}" y="${h - 8}" text-anchor="middle" class="lab" style="font-size:10.5px">${esc(wd.w.replace(/[.,]/g, ""))}</text><line x1="${x(wd.s)}" x2="${x(wd.e)}" y1="${h - 22}" y2="${h - 22}" stroke="var(--muted)" opacity=".5"/>`; });
+  return s + "</svg>";
+}
+function renderMoments() {
+  const box = $("#moments");
+  MOMENTS.forEach(m => {
+    const c = el("div", { class: "moment" });
+    c.innerHTML = `<div class="row" style="justify-content:space-between"><q>${esc(m.label)}</q><span class="note mono">${fmtTime(m.at)}</span></div>${contourSvg(m)}<p class="note">${esc(MOMENT_NOTES[m.label] || "")}</p>`;
+    box.append(c);
+  });
+}
+
+/* ============================== ROOM 2 ================================== */
+let pillarOn = "all";
+function renderTechniques() {
+  const f = $("#pillarFilter"); f.innerHTML = "";
+  [{ id: "all", name: "All" }, ...PILLARS].forEach(p => f.append(el("button", { class: "chip" + (pillarOn === p.id ? " on" : ""), onclick: () => { pillarOn = p.id; renderTechniques(); } }, p.name)));
+  const list = $("#techList"); list.innerHTML = "";
+  TECHNIQUES.filter(t => pillarOn === "all" || t.pillar === pillarOn).forEach(t => {
+    const p = PILLARS.find(p => p.id === t.pillar);
+    list.append(el("article", { class: "panel tech" },
+      el("div", { class: "row", style: "justify-content:space-between" }, el("span", { class: "pill" }, p.name), el("span", { class: "note" }, t.mode === "nat" ? "conversation" : t.mode === "both" ? "both modes" : "stage")),
+      el("h3", {}, t.name),
+      el("p", {}, t.what),
+      el("div", { class: "evidence" }, el("b", {}, "Evidence  "), t.evidence),
+      el("p", { class: "hand" }, "Drill: " + t.drill)
+    ));
+  });
+}
+
+/* ============================== SCORE =================================== */
+/* Notation: |, ||, ||| pauses · *stress* · ~stretch~ · ^up · _down · >> fast << · / line break */
+function parseScore(src) {
+  const toks = src.split(/\s+/).filter(Boolean), out = []; let fast = false;
+  for (let raw of toks) {
+    if (raw === ">>") { fast = true; continue; }
+    if (raw === "<<") { fast = false; continue; }
+    if (raw === "/") { out.push({ br: true }); continue; }
+    if (/^\|+$/.test(raw)) { const n = Math.min(3, raw.length); out.push({ pause: n, len: [0, 0.45, 1.1, 2.4][n] }); continue; }
+    const t = { word: raw, cls: [] };
+    if (t.word.startsWith("^")) { t.cls.push("up"); t.word = t.word.slice(1); }
+    if (t.word.startsWith("_")) { t.cls.push("down"); t.word = t.word.slice(1); }
+    const st = t.word.match(/^\*(.+)\*([^\w]*)$/); if (st) { t.cls.push("stress"); t.word = st[1] + st[2]; }
+    const sr = t.word.match(/^~(.+)~([^\w]*)$/); if (sr) { t.cls.push("stretch"); t.word = sr[1] + sr[2]; }
+    if (fast) t.cls.push("fast");
+    out.push(t);
+  }
+  return out;
+}
+function syllables(w) {
+  w = w.toLowerCase().replace(/[^a-z]/g, ""); if (!w) return 0;
+  let n = (w.match(/[aeiouy]+/g) || []).length;
+  if (w.endsWith("e") && n > 1 && !/le$/.test(w)) n--;
+  return Math.max(1, n);
+}
+function renderScoreInline(src) {
+  return parseScore(src).map(t => t.br ? "<br>" : t.pause ? `<span class="p l${t.pause}">${"‖".repeat(t.pause)}</span>` : `<span class="w ${t.cls.join(" ")}">${esc(t.word)}</span>`).join(" ");
+}
+
+/* ============================== ROOM 3 ================================== */
+let cond = null;
+function currentScript() { return SCRIPTS.find(s => s.id === $("#scriptSel").value) || SCRIPTS[0]; }
+function renderScript() {
+  stopConductor();
+  const s = currentScript();
+  $("#scriptMeta").innerHTML = `<span class="pill">${s.mode === "nat" ? "Conversation" : "Stage"}</span> &nbsp;${esc(s.title)} · <span class="hand" style="font-size:1.15em">${esc(s.coach)}</span>`;
+  const sc = $("#score"); sc.innerHTML = "";
+  parseScore(s.text).forEach((t, i) => {
+    if (t.br) { sc.append(el("span", { class: "br" })); return; }
+    const n = t.pause ? el("span", { class: "p l" + t.pause, "data-i": i }, "‖".repeat(t.pause)) : el("span", { class: "w " + t.cls.join(" "), "data-i": i }, t.word);
+    sc.append(n, " ");
+  });
+  studioRecorder.setContext({ mode: s.mode, label: s.title, text: s.text.replace(/[|*~^_<>\/]/g, " ").replace(/\s+/g, " ").trim() });
+}
+function stopConductor() {
+  if (cond) { cond.stop = true; cond = null; }
+  try { speechSynthesis.cancel(); } catch (e) {}
+  document.querySelectorAll("#score .now,#score .done").forEach(n => n.classList.remove("now", "done"));
+  $("#condBtn").textContent = "Start conductor";
+}
+function pickVoice() {
+  try {
+    const vs = speechSynthesis.getVoices();
+    return vs.find(v => /en-GB/i.test(v.lang) && /male|daniel|arthur|oliver|george|ryan/i.test(v.name)) || vs.find(v => /en-GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+  } catch (e) { return null; }
+}
+async function runConductor() {
+  if (cond) { stopConductor(); return; }
+  const s = currentScript(), toks = parseScore(s.text), prof = PROFILES[s.mode] || PROFILES.perf;
+  const speed = parseFloat($("#speedSel").value), useTts = $("#ttsChk").checked && "speechSynthesis" in window;
+  const nodes = [...document.querySelectorAll("#score [data-i]")].reduce((m, n) => (m[n.dataset.i] = n, m), {});
+  cond = { stop: false }; const me = cond;
+  $("#condBtn").textContent = "Stop";
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const rate = prof.artRate * speed;
+  // group into phrases between pauses (for TTS)
+  let i = 0;
+  while (i < toks.length && !me.stop) {
+    const t = toks[i];
+    if (t.br) { i++; continue; }
+    if (t.pause) { const n = nodes[i]; n && n.classList.add("now"); await sleep(t.len * 1000 / Math.min(1, speed)); n && n.classList.replace("now", "done"); i++; continue; }
+    let j = i; const phrase = [];
+    while (j < toks.length && !toks[j].pause) { if (!toks[j].br) phrase.push(j); j++; }
+    if (useTts) {
+      try {
+        const u = new SpeechSynthesisUtterance(phrase.map(k => toks[k].word).join(" "));
+        const v = pickVoice(); if (v) u.voice = v; u.lang = "en-GB"; u.rate = Math.max(.6, Math.min(1.6, rate / 4.6));
+        speechSynthesis.speak(u);
+      } catch (e) {}
+    }
+    for (const k of phrase) {
+      if (me.stop) break;
+      const w = toks[k], n = nodes[k];
+      let dur = Math.max(1, syllables(w.word)) / rate;
+      if (w.cls.includes("stretch")) dur *= 1.9; if (w.cls.includes("stress")) dur *= 1.25; if (w.cls.includes("fast")) dur *= 0.8;
+      n && n.classList.add("now");
+      await sleep(dur * 1000);
+      n && n.classList.replace("now", "done");
+    }
+    if (useTts) { const t0 = Date.now(); while (!me.stop && speechSynthesis.speaking && Date.now() - t0 < 6000) await sleep(60); }
+    i = j;
+  }
+  if (cond === me) { cond = null; $("#condBtn").textContent = "Start conductor"; $("#condNote").textContent = "Done. Now record yourself reading it below, at full voice."; }
+}
+
+/* ============================== RECORDER ================================
+   One component used by the Studio and the Ring: live mic when the page is
+   allowed to use it, audio upload otherwise. Output: an Attempt. */
+function makeRecorder(host, opts) {
+  let ctx = { mode: "perf", label: "", text: "" };
+  let rec = null, recog = null, transcript = "", last = null;
+  host.innerHTML = "";
+  const head = el("div", { class: "row", style: "justify-content:space-between" }, el("h3", {}, opts.title), el("span", { class: "note", id: opts.id + "-target" }));
+  const live = el("div", { class: "rec-live" });
+  const recBtn = el("button", { class: "btn rec" }, "● Record");
+  const upl = el("input", { type: "file", accept: "audio/*,video/*", id: opts.id + "-file", hidden: true });
+  const uplBtn = el("button", { class: "btn ghost", onclick: () => upl.click() }, "Upload a recording");
+  const level = el("div", { class: "level" }, el("i"));
+  const clock = el("span", { class: "timer" }, "0:00");
+  const pz = el("span", { class: "pausing" }, "");
+  live.append(recBtn, uplBtn, upl, level, clock, pz);
+  const status = el("p", { class: "status-line" }, "");
+  const tLabel = el("label", { class: "lbl", for: opts.id + "-tx" }, "What you said (filled in automatically where the browser supports it; otherwise type or dictate it)");
+  const tx = el("textarea", { id: opts.id + "-tx", placeholder: "Your words go here. The coach reads them for vocabulary, sentence shape and fillers." });
+  const out = el("div", { style: "display:grid;gap:14px" });
+  host.append(el("div", { style: "display:grid;gap:12px" }, head, live, status, tLabel, tx, out));
+  host.style.display = "grid";
+
+  const setTarget = () => { const p = PROFILES[ctx.mode]; head.querySelector(".note").textContent = "Measured against: " + p.name; };
+
+  async function startRec() {
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } });
+    } catch (e) {
+      status.textContent = "This view can't use your microphone. Record a voice memo on your phone and upload it, or open the downloaded file in Chrome to record live.";
+      return;
+    }
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ac.createMediaStreamSource(stream);
+    const proc = ac.createScriptProcessor(4096, 1, 1);
+    const chunks = []; let quietMs = 0; const t0 = performance.now();
+    proc.onaudioprocess = e => {
+      const d = e.inputBuffer.getChannelData(0); chunks.push(new Float32Array(d));
+      let s = 0; for (let i = 0; i < d.length; i++) s += d[i] * d[i];
+      const rms = Math.sqrt(s / d.length), dbv = 20 * Math.log10(rms + 1e-9);
+      level.firstChild.style.width = Math.max(0, Math.min(100, (dbv + 60) * 2)) + "%";
+      quietMs = dbv < -42 ? quietMs + d.length / ac.sampleRate * 1000 : 0;
+      pz.textContent = quietMs > 250 ? "pause " + (quietMs / 1000).toFixed(1) + "s" : "";
+      clock.textContent = fmtTime((performance.now() - t0) / 1000);
+      if (opts.onTick) opts.onTick((performance.now() - t0) / 1000);
+    };
+    src.connect(proc); proc.connect(ac.destination);
+    rec = { ac, stream, proc, chunks };
+    recBtn.textContent = "■ Stop"; uplBtn.disabled = true; status.textContent = "Recording. Speak at full performance volume.";
+    transcript = "";
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      try {
+        recog = new SR(); recog.lang = "en-GB"; recog.continuous = true; recog.interimResults = true;
+        let finalText = "";
+        recog.onresult = ev => {
+          let interim = "";
+          for (let i = ev.resultIndex; i < ev.results.length; i++) { const r = ev.results[i]; if (r.isFinal) finalText += r[0].transcript + " "; else interim += r[0].transcript; }
+          transcript = finalText; tx.value = (finalText + interim).trim();
+        };
+        recog.onend = () => { if (rec) try { recog.start(); } catch (e) {} };
+        recog.start();
+      } catch (e) { recog = null; }
+    }
+    if (opts.onStart) opts.onStart();
+  }
+  async function stopRec() {
+    if (!rec) return;
+    const r = rec; rec = null;
+    try { recog && recog.stop(); } catch (e) {} recog = null;
+    r.proc.disconnect(); r.stream.getTracks().forEach(t => t.stop());
+    const n = r.chunks.reduce((a, c) => a + c.length, 0), all = new Float32Array(n); let o = 0;
+    r.chunks.forEach(c => { all.set(c, o); o += c.length; });
+    const sr = r.ac.sampleRate; r.ac.close();
+    recBtn.textContent = "● Record"; uplBtn.disabled = false; pz.textContent = ""; level.firstChild.style.width = "0";
+    if (opts.onStop) opts.onStop();
+    await analyse(all, sr);
+  }
+  recBtn.onclick = () => rec ? stopRec() : startRec();
+  upl.onchange = async () => {
+    const f = upl.files && upl.files[0]; if (!f) return;
+    status.textContent = "Decoding " + f.name + "…";
+    try {
+      const buf = await f.arrayBuffer();
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const audio = await ac.decodeAudioData(buf);
+      const n = audio.length, mono = new Float32Array(n);
+      for (let c = 0; c < audio.numberOfChannels; c++) { const d = audio.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / audio.numberOfChannels; }
+      ac.close();
+      await analyse(mono, audio.sampleRate);
+    } catch (e) { status.textContent = "That file couldn't be decoded. Try an .m4a, .mp3, .wav or .webm recording."; }
+    upl.value = "";
+  };
+
+  async function analyse(samples, sr) {
+    status.textContent = "Analysing your pitch, pace and pauses…";
+    await new Promise(r => setTimeout(r, 30));
+    const m = VoiceAnalyzer.analyze(samples, sr);
+    if (!m.ok) { status.textContent = m.reason; return; }
+    if (m.seconds < 6) { status.textContent = "That was under 6 seconds. Record at least a full paragraph so the numbers mean something."; return; }
+    status.textContent = "";
+    last = m;
+    const p = PROFILES[ctx.mode];
+    const fillers = countFillers(tx.value);
+    m.fillersPerMin = tx.value.trim() ? fillers / (m.seconds / 60) : null;
+    const attempt = { ts: Date.now(), date: today(), where: opts.id, mode: ctx.mode, label: ctx.label, seconds: +m.seconds.toFixed(1), wpm: m.wpm, artRate: +m.artRate.toFixed(2), pauseShare: +m.pauseShare.toFixed(3), pausesPerMin: +m.pausesPerMin.toFixed(1), runMedian: +m.runMedian.toFixed(2), rangeSt: +m.rangeSt.toFixed(1), f0Median: Math.round(m.f0Median), fillersPerMin: m.fillersPerMin == null ? null : +m.fillersPerMin.toFixed(1) };
+    const st = Store.get(); st.attempts.push(attempt); st.attempts = st.attempts.slice(-150); Store.save(); renderHistory();
+    renderResult(m, p);
+  }
+
+  function renderResult(m, p) {
+    out.innerHTML = "";
+    const cmp = compareToProfile(m, p);
+    const box = el("div", { class: "panel", style: "box-shadow:none;background:var(--paper)" });
+    box.append(el("div", { class: "row", style: "justify-content:space-between;margin-bottom:6px" }, el("h3", {}, "Your numbers vs his"), el("span", { class: "note mono" }, fmtTime(m.seconds) + " analysed · ~" + m.wordsEst + " words")));
+    cmp.forEach(c => box.append(metricRow(c)));
+    out.append(box);
+    const cv = el("canvas", { class: "trace", width: 900, height: 200, "aria-label": "Your pitch over time against his range" });
+    out.append(el("div", { style: "display:grid;gap:6px" }, el("div", { class: "row", style: "justify-content:space-between" }, el("b", {}, "Your melody"), el("span", { class: "note" }, "shaded band = his typical range around your own median · teal = your pauses")), cv));
+    requestAnimationFrame(() => drawTrace(cv, m, p));
+    const coachBtn = el("button", { class: "btn" }, "Get coaching on this take");
+    const coachStatus = el("span", { class: "status-line" });
+    const coachOut = el("div", { class: "coach-out" });
+    const row = el("div", { class: "row" }, coachBtn, coachStatus);
+    out.append(row, coachOut);
+    getSample().then(s => { if (!s) { row.replaceChildren(el("p", { class: "note" }, "Coaching from Claude is available when this page is opened on claude.ai. Use the fixes above meanwhile: work on the red measure first.")); } });
+    coachBtn.onclick = async () => {
+      const s = await getSample(); if (!s) return;
+      coachBtn.disabled = true; coachStatus.textContent = "The coach is listening back…";
+      try {
+        const fb = await s.json(coachPrompt({ m, p, ctx, said: tx.value.trim(), cmp }), { modelTier: "default" });
+        renderCoach(coachOut, fb); coachStatus.textContent = "";
+      } catch (e) { coachStatus.textContent = sampleErr(e); }
+      coachBtn.disabled = false;
+    };
+  }
+  return {
+    setContext(c) { ctx = Object.assign(ctx, c); setTarget(); },
+    reset() { out.innerHTML = ""; tx.value = ""; status.textContent = ""; },
+    isRecording: () => !!rec, stop: stopRec, start: startRec
+  };
+}
+
+function countFillers(t) {
+  const m = (" " + t.toLowerCase() + " ").match(/\b(um+|uh+|erm+|er|ah+|hmm+)\b/g);
+  const likes = (t.toLowerCase().match(/\blike,/g) || []).length;
+  return (m ? m.length : 0) + likes;
+}
+
+/* Attempt vs VoiceProfile: each measure gets a target zone and a direction-specific fix */
+function compareToProfile(m, p) {
+  const nat = p.id === "nat";
+  const list = [
+    { key: "artRate", name: "Speed inside phrases", unit: "syl/s", you: m.artRate, his: p.artRate, zone: [p.artRate * .85, p.artRate * 1.08], min: 2, max: 7.5, f: v => v.toFixed(1),
+      lo: "You're slow inside the phrase. Join the words: say each run on one breath, as if it were one long word.", hi: "You're rushing even past his speed. Keep the sprint, but finish every consonant." },
+    { key: "pauseShare", name: "Silence", unit: "% of time", you: m.pauseShare, his: p.pauseShare, zone: [p.pauseShare * .75, p.pauseShare * 1.3], min: 0, max: .5, f: v => Math.round(v * 100) + "%",
+      lo: "Not enough silence. Stop dead after every punchline and count two in your head before the next word.", hi: "Too much silence. Your pauses are hesitations, not choices. Plan the next frame before you stop." },
+    { key: "pausesPerMin", name: "Pauses per minute", unit: "", you: m.pausesPerMin, his: p.pausesPerMin, zone: [p.pausesPerMin * .75, p.pausesPerMin * 1.35], min: 0, max: 30, f: v => v.toFixed(1),
+      lo: "Your runs are too long. Use the ‖ marks: break after the setup and before the reveal.", hi: "You stop too often. Link two short phrases into one run before you breathe." },
+    { key: "runMedian", name: "Typical run", unit: "s between pauses", you: m.runMedian, his: p.runMedian, zone: [p.runMedian * .7, p.runMedian * 1.4], min: 0, max: 6, f: v => v.toFixed(1) + " s",
+      lo: "Your phrases are choppy. Aim for runs of " + p.runMedian.toFixed(1) + " s: a full thought, then the pause.", hi: "Your runs are longer than his. Insert a pause at every comma in your head." },
+    { key: "rangeSt", name: "Pitch range", unit: "semitones", you: m.rangeSt, his: p.rangeSt, zone: [p.rangeSt * (nat ? .8 : .65), p.rangeSt * 1.25], min: 0, max: 30, f: v => v.toFixed(1),
+      lo: nat ? "Your melody is flat. Lift the key word of each sentence and let the end fall." : "Too flat for the stage. Go higher on the setup words (if, all, say) and much lower on the punch.", hi: "Your pitch is jumping more than his. Keep the big moves for the setup and the punch." }
+  ];
+  if (m.fillersPerMin != null) list.push({ key: "fillers", name: "Fillers", unit: "per minute", you: m.fillersPerMin, his: p.fillersPerMin == null ? 1 : p.fillersPerMin, zone: [0, nat ? 2 : 1], min: 0, max: 12, f: v => v.toFixed(1),
+    lo: "", hi: "Swap every um for silence or a marker: Now, / But, / Anyway, / I mean," });
+  return list.map(c => {
+    const inZone = c.you >= c.zone[0] && c.you <= c.zone[1];
+    const near = c.you >= c.zone[0] * .8 && c.you <= c.zone[1] * 1.2;
+    c.state = inZone ? "good" : near ? "warn" : "bad";
+    c.tip = inZone ? "In his zone. Keep it there." : (c.you < c.zone[0] ? c.lo : c.hi);
+    return c;
+  });
+}
+function metricRow(c) {
+  const pos = v => Math.max(0, Math.min(100, (v - c.min) / (c.max - c.min) * 100));
+  const r = el("div", { class: "metric" });
+  r.innerHTML = `<div class="name">${esc(c.name)}<small>you ${c.f(c.you)} · him ${c.f(c.his)}</small></div>
+    <div class="meter" aria-hidden="true"><div class="track"></div><div class="zone" style="left:${pos(c.zone[0])}%;width:${Math.max(1.5, pos(c.zone[1]) - pos(c.zone[0]))}%"></div><div class="you" style="left:${pos(c.you)}%"></div></div>
+    <div class="verdict"><span class="dot ${c.state}"></span><span>${esc(c.tip)}</span></div>`;
+  return r;
+}
+function drawTrace(cv, m, p) {
+  const css = getComputedStyle(document.documentElement);
+  const col = n => css.getPropertyValue(n).trim();
+  const W = cv.width = cv.clientWidth * (window.devicePixelRatio || 1), H = cv.height = 160 * (window.devicePixelRatio || 1);
+  const g = cv.getContext("2d"), dpr = window.devicePixelRatio || 1;
+  const lo = -14, hi = 16, x = t => (t / m.seconds) * W, y = v => (1 - (v - lo) / (hi - lo)) * H;
+  g.clearRect(0, 0, W, H);
+  // his band: p5..p95 around median (stage: -9.7..+11.8; conversation from profile)
+  const band = p.band || [-9.7, 11.8];
+  g.fillStyle = col("--brass-soft"); g.fillRect(0, y(band[1]), W, y(band[0]) - y(band[1]));
+  g.strokeStyle = col("--line"); g.setLineDash([4 * dpr, 4 * dpr]); g.beginPath(); g.moveTo(0, y(0)); g.lineTo(W, y(0)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = col("--pause"); g.globalAlpha = .25;
+  m.pauses.forEach(pz => g.fillRect(x(pz.at), 0, Math.max(2, x(pz.len)), H)); g.globalAlpha = 1;
+  g.strokeStyle = col("--ink"); g.lineWidth = 2 * dpr; g.lineJoin = "round"; g.beginPath(); let pen = false, prev = null;
+  // 5-point median smoothing; break the line on gaps and jumps over 4 semitones
+  const tr = m.track, med = tr.map((p, i) => {
+    if (p[1] == null) return null;
+    const w = tr.slice(Math.max(0, i - 2), i + 3).map(q => q[1]).filter(v => v != null).sort((a, b) => a - b);
+    return w.length >= 3 ? w[Math.floor(w.length / 2)] : null;
+  });
+  tr.forEach(([t], i) => {
+    const v = med[i];
+    if (v == null || (prev != null && Math.abs(v - prev) > 4)) { pen = false; prev = v; if (v == null) return; }
+    const X = x(t), Y = y(Math.max(lo, Math.min(hi, v))); pen ? g.lineTo(X, Y) : g.moveTo(X, Y); pen = true; prev = v;
+  });
+  g.stroke();
+  g.fillStyle = col("--muted"); g.font = `${11 * dpr}px IBM Plex Mono, monospace`; g.fillText("+" + hi + " st", 6 * dpr, 14 * dpr); g.fillText(lo + " st", 6 * dpr, H - 6 * dpr);
+}
+
+/* ============================== COACH (Claude) ========================== */
+const STYLE_BRIEF = () => `TARGET STYLE: Benedict Cumberbatch. Two modes.
+STAGE mode (comic letter reading): sprint-and-stop pacing (5.6 syllables/s inside phrases, 28% silence, long waits after punchlines); high pitch on setup/pivot words, low flat delivery of the punch word; stretched emphasis words instead of fillers; restarts after pauses with discourse markers (Now, / But, / Undeterred, / Obviously,); register collision of mock-formal Latinate phrasing ("on this occasion", "I can only presume", "in question", "the sheer enormity") with blunt colloquial words; total commitment to a deluded, wounded-dignity narrator; frames like "So there I was, X, when Y", "Now, you know me, NAME. I'm not well known for X", "something I can only describe as X", "I'll say this for you, NAME: X", "All I can presume is that X", "Obviously, if X, then Y. But if it isn't, then Z".
+CONVERSATION mode: ${NATURAL.brief}`;
+function coachPrompt({ m, p, ctx, said, cmp }) {
+  return `You are a warm, exacting voice and speech coach helping a non-native English speaker learn to speak like Benedict Cumberbatch: tone, pace, fluency, vocabulary range, sentence shapes and natural expression.
+${STYLE_BRIEF()}
+
+THE TAKE
+Mode: ${p.id === "nat" ? "CONVERSATION" : "STAGE"} · Task: ${ctx.label}
+${ctx.text ? "Script they were reading (original practice text): " + ctx.text.slice(0, 1800) : "Unscripted."}
+What they said (speech-to-text, may contain recognition errors; may be empty): ${said ? said.slice(0, 3000) : "(not available)"}
+Measured acoustics vs his target:
+${cmp.map(c => `- ${c.name}: theirs ${c.f(c.you)}, his ${c.f(c.his)} → ${c.state}`).join("\n")}
+
+Reply with only JSON of this shape:
+{"headline": "one sentence verdict, specific", "scores": {"tone":1-5,"pace":1-5,"fluency":1-5,"vocabulary":1-5,"syntax":1-5,"expression":1-5}, "wins": ["max 2 short items"], "fixes": [{"pillar":"one of tone|pace|fluency|vocabulary|syntax|expression","issue":"what you noticed, citing their words or numbers","try":"a concrete instruction they can do in the next take"}], "rewrite": "if words are available: 1–3 of their own sentences rewritten in his style, keeping their content; else empty string", "nextDrill": "one 2-minute drill for tomorrow"}
+Give 2–3 fixes, most important first. If no words are available, score vocabulary and syntax as 0 and base fixes on the acoustics. Plain, kind, direct English.`;
+}
+function renderCoach(box, fb) {
+  box.innerHTML = "";
+  if (!fb || typeof fb !== "object") { box.append(el("p", { class: "note" }, "The coach's reply was empty. Try again.")); return; }
+  if (fb.headline) box.append(el("p", { style: "font-weight:500" }, String(fb.headline)));
+  if (fb.scores) {
+    const sc = el("div", { class: "scores" });
+    PILLARS.forEach(p => { const key = p.id === "vocab" ? "vocabulary" : p.id === "expr" ? "expression" : p.id; const v = fb.scores[key]; if (v) sc.append(el("span", { class: "chip" + (v >= 4 ? " on" : "") }, `${p.name} ${v}/5`)); });
+    box.append(sc);
+  }
+  (fb.wins || []).slice(0, 2).forEach(w => box.append(el("p", { class: "note" }, "✓ " + w)));
+  (fb.fixes || []).slice(0, 3).forEach(f => box.append(el("div", { class: "callout" }, el("b", {}, (f.pillar || "") + ": "), String(f.issue || ""), el("br"), el("span", { class: "hand" }, "Try: " + (f.try || "")))));
+  if (fb.rewrite) box.append(el("div", {}, el("div", { class: "eyebrow", style: "margin-bottom:4px" }, "Your words, his way"), el("p", { class: "rewrite" }, String(fb.rewrite))));
+  if (fb.nextDrill) box.append(el("p", { class: "note" }, "Tomorrow: " + fb.nextDrill));
+}
+
+/* ============================== ROOM 4 ================================== */
+function renderFrameSel() {
+  const s = $("#frameSel");
+  FRAMES.forEach(f => s.append(el("option", { value: f.id }, (f.mode === "nat" ? "Conversation · " : "Stage · ") + f.name)));
+  s.onchange = renderFrame; renderFrame();
+  $("#frameShuffle").onclick = () => { $("#frameScenario").textContent = pick(SITUATIONS[currentFrame().mode] || SITUATIONS.perf); };
+  $("#frameCheck").onclick = checkFrame;
+  getSample().then(x => { if (!x) { $("#frameCheck").hidden = true; $("#frameStatus").textContent = "Coaching from Claude works on claude.ai. Compare your sentence with the worked examples meanwhile."; } });
+}
+function currentFrame() { return FRAMES.find(f => f.id === $("#frameSel").value) || FRAMES[0]; }
+function renderFrame() {
+  const f = currentFrame();
+  $("#frameTpl").innerHTML = slotify(f.template);
+  $("#frameWhy").textContent = f.why;
+  $("#frameEx").innerHTML = f.examples.map(e => `<p class="frame-tpl" style="font-size:16.5px;font-style:italic">${esc(e)}</p>`).join("");
+  $("#frameScenario").textContent = pick(SITUATIONS[f.mode] || SITUATIONS.perf);
+  $("#frameOut").innerHTML = ""; $("#frameInput").value = "";
+}
+async function checkFrame() {
+  const s = await getSample(); if (!s) return;
+  const f = currentFrame(), said = $("#frameInput").value.trim();
+  if (!said) { $("#frameStatus").textContent = "Write the sentence you said first."; return; }
+  $("#frameCheck").disabled = true; $("#frameStatus").textContent = "Reading it…";
+  try {
+    const fb = await s.json(`You coach a non-native English speaker to talk like Benedict Cumberbatch.
+${STYLE_BRIEF()}
+They practised this sentence frame: "${f.template}" (${f.why}).
+Situation given: "${$("#frameScenario").textContent}"
+What they said: "${said.slice(0, 1500)}"
+Reply with only JSON: {"fits": true|false, "score": 1-5, "good": "one short line on what works", "fix": "one short, concrete correction (grammar, word choice, or frame use)", "polished": "their idea said in his style, 1-3 sentences, keep their content", "stress": "the same polished line marked for delivery using | for pause, || for a beat, *word* for stress, ~word~ for stretch"}`, { modelTier: "default" });
+    const out = $("#frameOut"); out.innerHTML = "";
+    out.append(el("div", { class: "row" }, el("span", { class: "chip" + (fb.fits ? " on" : "") }, fb.fits ? "Frame used" : "Frame missed"), el("span", { class: "chip" }, (fb.score || "–") + "/5")));
+    if (fb.good) out.append(el("p", { class: "note" }, "✓ " + fb.good));
+    if (fb.fix) out.append(el("div", { class: "callout" }, fb.fix));
+    if (fb.polished) out.append(el("p", { class: "rewrite" }, fb.polished));
+    if (fb.stress) { const d = el("div", { class: "score", style: "font-size:19px" }); d.innerHTML = renderScoreInline(String(fb.stress)); out.append(el("div", {}, el("div", { class: "eyebrow" }, "Say it like this"), d)); }
+    $("#frameStatus").textContent = "";
+  } catch (e) { $("#frameStatus").textContent = sampleErr(e); }
+  $("#frameCheck").disabled = false;
+}
+
+/* ============================== ROOM 5 ================================== */
+const INTERVALS = [0, 1, 2, 4, 7, 15];
+function lexState(id) { const s = Store.get().lex[id]; return s || { box: 0, due: today() }; }
+function dueCards() { const t = today(); return PHRASES.filter(p => lexState(p.id).due <= t).sort((a, b) => lexState(a.id).box - lexState(b.id).box); }
+let lexCurrent = null, lexRevealed = false;
+function renderLexCard() {
+  const due = dueCards(), c = $("#lexCard"); c.innerHTML = "";
+  if (!due.length) { c.append(el("div", { class: "eyebrow" }, "All caught up"), el("p", { class: "phrase" }, "Nothing due today."), el("p", { class: "note", style: "margin:0 auto" }, "New cards appear tomorrow. Use today's phrases in the Improv ring instead.")); return; }
+  if (!lexCurrent || !due.includes(lexCurrent)) { lexCurrent = due[0]; lexRevealed = false; }
+  const p = lexCurrent, st = lexState(p.id);
+  const boxes = el("div", { class: "boxes", "aria-label": "Box " + st.box + " of 5" }); for (let i = 1; i <= 5; i++) boxes.append(el("i", { class: i <= st.box ? "f" : "" }));
+  c.append(el("div", { class: "eyebrow" }, `${p.group} · ${due.length} due`), el("p", { class: "phrase" }, p.text), el("p", { class: "note", style: "margin:0 auto" }, p.meaning));
+  if (lexRevealed) {
+    c.append(el("p", { class: "frame-tpl", style: "font-style:italic;font-size:17px;margin:0 auto" }, p.example), el("p", { class: "hand" }, "When: " + p.use));
+    c.append(el("div", { class: "row", style: "justify-content:center" },
+      el("button", { class: "btn ghost", onclick: () => grade(false) }, "I stumbled"),
+      el("button", { class: "btn", onclick: () => grade(true) }, "It came out naturally")));
+  } else {
+    c.append(el("p", { class: "hand" }, "Say your own sentence with it, out loud."), el("div", { class: "row", style: "justify-content:center" }, el("button", { class: "btn", onclick: () => { lexRevealed = true; renderLexCard(); } }, "Show example")));
+  }
+  c.append(boxes);
+}
+function grade(ok) {
+  const s = Store.get(), cur = lexState(lexCurrent.id);
+  const box = ok ? Math.min(5, cur.box + 1) : 1;
+  const d = new Date(); d.setDate(d.getDate() + INTERVALS[box]);
+  s.lex[lexCurrent.id] = { box, due: d.toISOString().slice(0, 10) };
+  Store.save(); lexCurrent = null; renderLexCard(); renderLexList();
+}
+function renderLexList() {
+  const g = $("#lexGroup");
+  if (!g.options.length) { ["All", ...new Set(PHRASES.map(p => p.group))].forEach(x => g.append(el("option", { value: x }, x))); g.onchange = renderLexList; }
+  const list = $("#lexList"); list.innerHTML = "";
+  PHRASES.filter(p => g.value === "All" || p.group === g.value).forEach(p => {
+    const st = lexState(p.id);
+    list.append(el("div", { class: "lex-item" }, el("div", {}, el("b", {}, p.text), el("div", { class: "note" }, p.meaning)), el("span", { class: "note mono" }, st.box ? "box " + st.box : "new")));
+  });
+}
+
+/* ============================== ROOM 6 ================================== */
+let round = null, ringTimer = null, ringRecorder;
+function newRound(r) {
+  const mode = $("#ringMode").value;
+  const frames = FRAMES.filter(f => f.mode === mode);
+  const words = shuffle(PHRASES.filter(p => p.mode === mode || p.mode === "both")).slice(0, 3);
+  round = r || { mode, situation: pick(SITUATIONS[mode]), frame: pick(frames).template, words: words.map(w => w.text) };
+  $("#ringPrompt").textContent = round.situation;
+  const req = $("#ringReq"); req.innerHTML = "";
+  req.append(el("div", {}, el("div", { class: "eyebrow" }, "Required frame"), el("p", { class: "frame-tpl", html: slotify(round.frame) })));
+  const w = el("div", { class: "row" }); round.words.forEach(x => w.append(el("span", { class: "chip on" }, x)));
+  req.append(el("div", {}, el("div", { class: "eyebrow", style: "margin-bottom:6px" }, "Use all three"), w));
+  $("#ringTimer").textContent = fmtTime(+$("#ringTime").value);
+  ringRecorder.setContext({ mode, label: "Improv: " + round.situation, text: "" });
+  ringRecorder.reset();
+}
+async function aiRound() {
+  const s = await getSample(); if (!s) return;
+  const mode = $("#ringMode").value, b = $("#ringAi"); b.disabled = true; b.textContent = "Writing…";
+  try {
+    const r = await s.json(`Invent one improv speaking prompt for a learner practising Benedict Cumberbatch's ${mode === "nat" ? "conversational interview style (thoughtful, self-deprecating, curious)" : "comic stage style (indignant letter of complaint, wounded dignity, absurd escalation)"}. Everyday, vivid, safe. Pick one frame from this list: ${FRAMES.filter(f => f.mode === mode).map(f => f.template).join(" || ")}. Pick three phrases from: ${PHRASES.filter(p => p.mode === mode || p.mode === "both").map(p => p.text).join("; ")}.
+Reply with only JSON: {"situation":"one or two sentences, second person","frame":"the frame exactly as given","words":["a","b","c"]}`, { modelTier: "quick", cache: false });
+    if (r && r.situation && r.frame && Array.isArray(r.words)) newRound({ mode, situation: String(r.situation), frame: String(r.frame), words: r.words.slice(0, 3).map(String) });
+  } catch (e) { $("#ringPrompt").textContent = sampleErr(e); }
+  b.disabled = false; b.textContent = "Coach writes a round";
+}
+function initRing() {
+  ringRecorder = makeRecorder($("#ringRec"), {
+    id: "ring", title: "Your round",
+    onStart: () => { const lim = +$("#ringTime").value; $("#ringTimer").textContent = fmtTime(lim); },
+    onTick: t => { const lim = +$("#ringTime").value, left = lim - t; $("#ringTimer").textContent = fmtTime(left); $("#ringTimer").style.color = left <= 10 ? "var(--bad)" : ""; if (left <= 0 && ringRecorder.isRecording()) ringRecorder.stop(); },
+    onStop: () => { $("#ringTimer").style.color = ""; }
+  });
+  $("#ringNew").onclick = () => newRound(); $("#ringMode").onchange = () => newRound(); $("#ringTime").onchange = () => { $("#ringTimer").textContent = fmtTime(+$("#ringTime").value); };
+  $("#ringAi").onclick = aiRound;
+  getSample().then(s => { if (s) $("#ringAi").hidden = false; });
+  newRound();
+}
+
+/* ============================== ROOM 7 ================================== */
+function renderPlan() {
+  $("#routine").innerHTML = `<h3 style="margin-bottom:8px">The daily 20 minutes</h3><ol style="margin:0;padding-left:20px;display:grid;gap:4px">${PLAN.routine.map(r => `<li><b>${esc(r[0])}</b> <span class="muted">· ${esc(r[1])}</span></li>`).join("")}</ol>`;
+  const box = $("#weeks"); box.innerHTML = "";
+  const st = Store.get();
+  PLAN.weeks.forEach((w, wi) => {
+    const wk = el("div", { class: "week" }, el("div", {}, el("div", { class: "eyebrow" }, "Week " + (wi + 1)), el("h3", {}, w.title), el("p", { class: "muted" }, w.goal)));
+    const days = el("div", { class: "days" });
+    w.days.forEach((d, di) => {
+      const id = `w${wi + 1}d${di + 1}`, done = !!st.days[id];
+      const cb = el("input", { type: "checkbox", id: "cb-" + id });
+      cb.checked = done;
+      cb.onchange = () => { if (cb.checked) st.days[id] = today(); else delete st.days[id]; Store.save(); renderPlan(); };
+      days.append(el("div", { class: "day" + (done ? " done" : "") },
+        el("h4", {}, el("span", {}, "Day " + (wi * 7 + di + 1)), el("span", { class: "note" }, d.focus)),
+        el("ul", {}, d.tasks.map(t => el("li", {}, t))),
+        el("label", { for: "cb-" + id }, cb, done ? "Done " + st.days[id] : "Mark done")));
+    });
+    wk.append(days); box.append(wk);
+  });
+  const n = Object.keys(st.days).length;
+  $("#streak").textContent = n + (n === 1 ? " day" : " days") + " done of 28";
+  $("#storeNote").textContent = Store.where();
+}
+function renderHistory() {
+  const h = $("#history"), a = Store.get().attempts.slice().reverse().slice(0, 40);
+  if (!a.length) { h.innerHTML = `<p class="note">No recordings yet. Your first one in the Studio or the Ring will appear here with its numbers, so you can watch them move toward his.</p>`; return; }
+  h.innerHTML = `<table class="mono" style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:620px"><thead><tr style="text-align:left;color:var(--muted)"><th style="padding:4px 6px">Date</th><th style="padding:4px 6px">Task</th><th style="padding:4px 6px">Mode</th><th style="padding:4px 6px">Length</th><th style="padding:4px 6px">wpm</th><th style="padding:4px 6px">syl/s</th><th style="padding:4px 6px">silence</th><th style="padding:4px 6px">range</th><th style="padding:4px 6px">fillers/min</th></tr></thead><tbody>${a.map(x => `<tr style="border-top:1px solid var(--line)"><td style="padding:6px">${x.date}</td><td style="padding:6px;font-family:var(--f-body);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.label || "")}</td><td style="padding:6px">${x.mode === "nat" ? "conv." : "stage"}</td><td style="padding:6px">${fmtTime(x.seconds)}</td><td style="padding:6px">${x.wpm}</td><td style="padding:6px">${x.artRate}</td><td style="padding:6px">${Math.round(x.pauseShare * 100)}%</td><td style="padding:6px">${x.rangeSt}</td><td style="padding:6px">${x.fillersPerMin == null ? "–" : x.fillersPerMin}</td></tr>`).join("")}</tbody></table>`;
+}
+
+/* ============================== BOOT ==================================== */
+let studioRecorder;
+function boot() {
+  initTabs();
+  renderHero(); renderProfileTable(); renderPaceChart(); renderMoments();
+  renderTechniques();
+  studioRecorder = makeRecorder($("#studioRec"), { id: "studio", title: "Record this script" });
+  const ss = $("#scriptSel");
+  SCRIPTS.forEach(s => ss.append(el("option", { value: s.id }, (s.mode === "nat" ? "Conversation · " : "Stage · ") + s.title)));
+  ss.onchange = renderScript; renderScript();
+  $("#condBtn").onclick = runConductor;
+  if (!("speechSynthesis" in window)) $("#ttsChk").disabled = true; else try { speechSynthesis.getVoices(); } catch (e) {}
+  renderFrameSel();
+  renderLexCard(); renderLexList();
+  initRing();
+  renderPlan(); renderHistory();
+  Store.onChange(() => { renderPlan(); renderHistory(); renderLexCard(); renderLexList(); });
+  Store.connect();
+}
+boot();
+</script>
