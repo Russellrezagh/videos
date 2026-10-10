@@ -1,46 +1,35 @@
 <title>Cumberbatch Voice Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=Vazirmatn:wght@400;500&display=swap">
 <style>
 /* Layout: a rehearsal room. A score-like column of annotated text (the "script")
    flanked by measurement panels; tabs move between rooms of the method. */
+/* Single deliberate light theme (bright rehearsal-room paper), chosen by the learner. */
 :root {
-  --paper: #EFF0EB;
-  --panel: #FBFBF8;
-  --ink: #1A1F2B;
-  --muted: #586070;
-  --line: #D3D6CC;
-  --brass: #94601A;
-  --brass-soft: #EBDDC4;
-  --pause: #2C6A70;
-  --pause-soft: #D3E6E4;
+  --paper: #F7F8F5;
+  --panel: #FFFFFF;
+  --ink: #1B2130;
+  --muted: #576071;
+  --line: #DDE0D8;
+  --brass: #93601B;
+  --brass-soft: #F3E8D4;
+  --pause: #2B6C72;
+  --pause-soft: #DDEEEC;
   --up: #A13D2C;
   --down: #3B4F9A;
   --good: #2E7548;
+  --good-soft: #E5F2E9;
   --warn: #9A6200;
   --bad: #AE3A2D;
-  --shadow: 0 1px 0 rgba(26,31,43,.06), 0 8px 24px -12px rgba(26,31,43,.18);
+  --bad-soft: #FBE9E6;
+  --shadow: 0 1px 0 rgba(27,33,48,.05), 0 8px 24px -14px rgba(27,33,48,.16);
   --f-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
   --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --f-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #121218; --panel: #1A1A22; --ink: #ECE7DE; --muted: #A29D95; --line: #2F2F3B;
-    --brass: #E2AA52; --brass-soft: #3A2D19; --pause: #72C2C7; --pause-soft: #17383B;
-    --up: #F28C74; --down: #93A8F2; --good: #6CC28E; --warn: #E7B04B; --bad: #EE7D70;
-    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #121218; --panel: #1A1A22; --ink: #ECE7DE; --muted: #A29D95; --line: #2F2F3B;
-  --brass: #E2AA52; --brass-soft: #3A2D19; --pause: #72C2C7; --pause-soft: #17383B;
-  --up: #F28C74; --down: #93A8F2; --good: #6CC28E; --warn: #E7B04B; --bad: #EE7D70;
-  --shadow: 0 1px 0 rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
-  color-scheme: dark;
+  --f-fa: "Vazirmatn", Tahoma, "Segoe UI", sans-serif;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
 body { background: var(--paper); color: var(--ink); font: 15px/1.6 var(--f-body); margin: 0; }
@@ -183,6 +172,40 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
 .coach-out .scores { display: flex; flex-wrap: wrap; gap: 6px; }
 .coach-out .rewrite { font-family: var(--f-display); font-style: italic; font-size: 18px; }
 .status-line { font-size: 13px; color: var(--muted); min-height: 1.4em; }
+/* Persian, traps, ladders, quiz */
+.fa { font-family: var(--f-fa); direction: rtl; unicode-bidi: isolate; font-size: 1.08em; }
+.tr { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.fa-line { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.wrong, .right { display: flex; gap: 8px; align-items: baseline; padding: 6px 10px; border-radius: 8px; }
+.wrong { background: var(--bad-soft); }
+.wrong::before { content: "✗"; color: var(--bad); font-weight: 700; }
+.right { background: var(--good-soft); }
+.right::before { content: "✓"; color: var(--good); font-weight: 700; }
+.subtabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.card-sit { font-size: 17px; max-width: 34ch; margin: 0 auto; }
+.timebar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; width: min(320px, 100%); margin: 0 auto; }
+.timebar i { display: block; height: 100%; width: 100%; background: var(--brass); }
+.ladder { display: grid; gap: 0; }
+.rung { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding-block: 7px; border-bottom: 1px solid var(--line); }
+.rung:last-child { border-bottom: 0; }
+.rung .lvl { height: 6px; border-radius: 3px; background: var(--brass); }
+.rung .w { font-weight: 500; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.rung.verb { grid-template-columns: minmax(110px, auto) minmax(0, 1fr); }
+.opt { text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 10px 12px; width: 100%; line-height: 1.45; }
+.opt:hover:not(:disabled) { border-color: var(--ink); }
+.opt.ok { border-color: var(--good); background: var(--good-soft); }
+.opt.no { border-color: var(--bad); background: var(--bad-soft); }
+.opt:disabled { cursor: default; color: var(--ink); }
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.flow .node { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: var(--panel); display: grid; gap: 4px; align-content: start; }
+.flow .node.q { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.flow .node b { font-weight: 600; }
+.flow .node i { font-family: var(--f-display); font-size: 16px; }
+table.weak { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 13.5px; }
+table.weak th, table.weak td { padding: 7px 8px; text-align: left; border-top: 1px solid var(--line); }
+table.weak th { color: var(--muted); font-weight: 500; border-top: 0; }
+.growth-line { font-family: var(--f-display); font-size: clamp(18px, 2.3vw, 22px); line-height: 1.5; }
+.chip.his { border-color: var(--brass); color: var(--brass); }
 @media (max-width: 560px) {
   .metric { grid-template-columns: 1fr; }
   .verdict { grid-column: 1; }
@@ -193,12 +216,12 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
 
 <div class="wrap">
   <header class="top">
-    <div class="eyebrow">Voice study · Letters Live, KOKO Camden · 7 Nov 2024</div>
+    <div class="eyebrow">Voice and English study · for a Persian speaker in the US</div>
     <h1>Cumberbatch Voice Studio</h1>
     <div class="hero-extra" style="display:grid;gap:18px">
     <p class="hero-line" id="heroLine"></p>
     <div class="stats" id="heroStats"></div>
-    <p class="note">Measured from the reel (106 s, his reading of Rik Mayall's Band Aid letter) and from 20 minutes of his unscripted podcast talk. Every target on this page comes from those measurements.</p>
+    <p class="note">Built for thinking in English without translating from Persian, widening your vocabulary, using chunks in the right context, and handling "what if" with confidence, all with his rhythm and sentence craft. Voice targets are measured from the reel (106 s, his reading of Rik Mayall's Band Aid letter, Letters Live 2024) and 20 minutes of his unscripted podcast talk.</p>
     </div>
   </header>
 
@@ -224,10 +247,104 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
     <div class="moments" id="moments"></div>
   </section>
 
+  <!-- ROOM: think in English -->
+  <section class="room" id="room-think" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 2 · Think in English</div>
+      <h2>From Persian to English, without the translation step</h2>
+      <p class="muted">Translating in your head is slow because it's two jobs: find the Persian thought, then rebuild it in English. The goal is one job: situation in, English out. Six habits get you there. Below them are the traps Persian sets for English, so you can fix each one once and stop worrying about it.</p>
+    </div>
+    <div class="panel callout" style="box-shadow:none" id="variety"></div>
+    <div class="grid3" id="method"></div>
+    <div class="panel"><h3 style="margin-bottom:10px">Stuck on a word? Describe it and keep going</h3><div class="row" id="stuck"></div></div>
+    <div class="room-head"><h3>Persian → English traps</h3><p class="muted">Each card shows the Persian habit, the English it produces, and the fix. Open "Check yourself", fix both sentences out loud, then reveal.</p></div>
+    <div class="pillars" id="trapFilter"></div>
+    <div class="grid2" id="trapList"></div>
+    <div class="room-head"><h3>Sound traps</h3><p class="muted">Pronunciation habits that come from Persian, and how fixing them unlocks his speed and rhythm.</p></div>
+    <div class="grid3" id="soundList"></div>
+    <div class="panel scroll-x"><h3 style="margin-bottom:8px">Weak forms: how the small words shrink</h3><div id="weakTable"></div></div>
+  </section>
+
+  <!-- ROOM: chunks & words -->
+  <section class="room" id="room-chunks" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 3 · Chunks and words</div>
+      <h2>Ready-made English for real moments</h2>
+      <p class="muted">Chunks are grouped by what you're trying to do, and many show the Persian phrase you'd reach for in the same moment. Cards give you the situation and ask you to produce the English. The Persian cue fades out as a card climbs its boxes. Ten new cards a day.</p>
+    </div>
+    <div class="subtabs" id="chunkTabs"></div>
+    <div id="cpane-cards" class="grid2">
+      <div class="panel card" id="lexCard"></div>
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <label class="lbl">Practice<select id="cardFn"></select></label>
+        <div id="cardStats" class="note"></div>
+        <div class="callout note" style="display:grid;gap:4px"><b style="color:var(--ink)">How the cue fades</b><span>Stage 1 (boxes 0–1): situation + Persian cue.</span><span>Stage 2 (boxes 2–3): situation only.</span><span>Stage 3 (boxes 4–5): situation with a 4-second clock.</span><span>"Instant" moves a card up; "Didn't know" sends it back to box 1.</span></div>
+      </div>
+    </div>
+    <div id="cpane-rapid" class="panel" style="display:grid;gap:14px" hidden></div>
+    <div id="cpane-ladders" class="grid2" hidden>
+      <div class="panel" style="display:grid;gap:12px;align-content:start"><label class="lbl">Instead of…<select id="ladderSel"></select></label><div id="ladder" class="ladder"></div><p class="frame-tpl" id="ladderEx" style="font-style:italic;font-size:17px"></p></div>
+      <div class="panel" style="display:grid;gap:12px;align-content:start" id="stackBox"></div>
+    </div>
+    <div id="cpane-all" class="panel" style="display:grid;gap:10px" hidden>
+      <div class="row" style="justify-content:space-between"><h3>All chunks</h3><select id="lexGroup" aria-label="Filter by situation"></select></div>
+      <div class="lex-list" id="lexList"></div>
+    </div>
+  </section>
+
+  <!-- ROOM: frames -->
+  <section class="room" id="room-frames" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 4 · Sentences</div>
+      <h2>Sentence shapes that carry you</h2>
+      <p class="muted">Fluent speakers don't build sentences word by word. They pull ready-made frames and pour content in. Fill a frame out loud five times a day and it becomes a groove your mind slides into on its own. Start with the everyday structures, then add his.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <label class="lbl">Frame<select id="frameSel"></select></label>
+        <div class="frame-tpl" id="frameTpl"></div>
+        <p class="note" id="frameWhy"></p>
+        <details><summary>Two worked examples</summary><div id="frameEx" style="display:grid;gap:8px;margin-top:8px"></div></details>
+      </div>
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <div class="row" style="justify-content:space-between"><span class="eyebrow">Your situation</span><button class="btn ghost" id="frameShuffle">New situation</button></div>
+        <p class="ring-prompt" id="frameScenario" style="font-size:20px"></p>
+        <label class="lbl" for="frameInput">Say it out loud first, then write what you said</label>
+        <textarea id="frameInput" placeholder="So there I was…"></textarea>
+        <div class="row"><button class="btn" id="frameCheck">Ask the coach</button><span class="status-line" id="frameStatus"></span></div>
+        <div id="frameOut" class="coach-out"></div>
+      </div>
+    </div>
+    <div class="panel" style="display:grid;gap:12px">
+      <div class="row" style="justify-content:space-between;align-items:end"><h3>Grow a sentence</h3><label class="lbl" style="flex:0 1 280px">Start from<select id="growSel"></select></label></div>
+      <p class="note">He rarely says a short, flat sentence. He grows it: a better word, a stack, a soft hedge, a clause, an afterthought, then a short landing. Before each reveal, try the move yourself out loud.</p>
+      <div id="growLines" style="display:grid;gap:10px"></div>
+      <div class="row"><button class="btn" id="growNext">I tried it. Show the next move</button><button class="btn ghost" id="growReset">Start over</button></div>
+    </div>
+  </section>
+
+  <!-- ROOM: what if -->
+  <section class="room" id="room-hypo" role="tabpanel" hidden>
+    <div class="room-head">
+      <div class="eyebrow">Room 5 · What if</div>
+      <h2>Hypotheticals, without hesitating</h2>
+      <p class="muted">Everyday Persian lets one sentence shape cover both the imaginary present and the imaginary past. English makes you choose, and that choice is where the hesitation comes from. Learn one question and the forms follow.</p>
+    </div>
+    <div class="panel" style="display:grid;gap:12px">
+      <h3>The one question: is the door still open?</h3>
+      <div class="flow" id="hypoFlow"></div>
+    </div>
+    <div class="grid2" id="hypoForms"></div>
+    <div class="grid2">
+      <div class="panel" id="hypoQuiz" style="display:grid;gap:12px;align-content:start"></div>
+      <div class="panel" id="hypoSpeak" style="display:grid;gap:12px;align-content:start"></div>
+    </div>
+  </section>
+
   <!-- ROOM: techniques -->
   <section class="room" id="room-tech" role="tabpanel" hidden>
     <div class="room-head">
-      <div class="eyebrow">Room 2 · The method</div>
+      <div class="eyebrow">Room 6 · His techniques</div>
       <h2>Six pillars, eighteen techniques</h2>
       <p class="muted">Each technique names one thing he does, shows the evidence from the measurements, and gives you a 2-minute drill. Filter by pillar.</p>
     </div>
@@ -238,7 +355,7 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
   <!-- ROOM: studio -->
   <section class="room" id="room-studio" role="tabpanel" hidden>
     <div class="room-head">
-      <div class="eyebrow">Room 3 · The studio</div>
+      <div class="eyebrow">Room 7 · The studio</div>
       <h2>Read the score, then record</h2>
       <p class="muted">Original practice scripts written in his two styles and marked up like a voice coach's copy. Run the conductor to feel the timing, then record yourself and compare against his numbers.</p>
     </div>
@@ -259,58 +376,17 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
     <div class="panel" id="studioRec"></div>
   </section>
 
-  <!-- ROOM: frames -->
-  <section class="room" id="room-frames" role="tabpanel" hidden>
-    <div class="room-head">
-      <div class="eyebrow">Room 4 · Sentence engine</div>
-      <h2>Think in his sentence shapes</h2>
-      <p class="muted">Fluent speakers don't build sentences word by word. They pull ready-made frames and pour content in. Fill a frame out loud five times a day and it becomes a groove your mind slides into on its own.</p>
-    </div>
-    <div class="grid2">
-      <div class="panel" style="display:grid;gap:12px;align-content:start">
-        <label class="lbl">Frame<select id="frameSel"></select></label>
-        <div class="frame-tpl" id="frameTpl"></div>
-        <p class="note" id="frameWhy"></p>
-        <details><summary>Two worked examples</summary><div id="frameEx" style="display:grid;gap:8px;margin-top:8px"></div></details>
-      </div>
-      <div class="panel" style="display:grid;gap:12px;align-content:start">
-        <div class="row" style="justify-content:space-between"><span class="eyebrow">Your situation</span><button class="btn ghost" id="frameShuffle">New situation</button></div>
-        <p class="ring-prompt" id="frameScenario" style="font-size:20px"></p>
-        <label class="lbl" for="frameInput">Say it out loud first, then write what you said</label>
-        <textarea id="frameInput" placeholder="So there I was…"></textarea>
-        <div class="row"><button class="btn" id="frameCheck">Ask the coach</button><span class="status-line" id="frameStatus"></span></div>
-        <div id="frameOut" class="coach-out"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ROOM: lexicon -->
-  <section class="room" id="room-lex" role="tabpanel" hidden>
-    <div class="room-head">
-      <div class="eyebrow">Room 5 · Lexicon</div>
-      <h2>Words that do his work</h2>
-      <p class="muted">His comedy runs on register collisions: a Latinate, solicitor-ish phrase sitting right next to something blunt. In conversation he leans on a small set of warm intensifiers and soft hedges. Cards come back on a spaced schedule (1, 2, 4, 7, 15 days). Say a full sentence with the card before you grade yourself.</p>
-    </div>
-    <div class="grid2">
-      <div class="panel card" id="lexCard"></div>
-      <div class="panel" style="display:grid;gap:10px;align-content:start">
-        <div class="row" style="justify-content:space-between"><h3>All phrases</h3><select id="lexGroup"></select></div>
-        <div class="lex-list" id="lexList"></div>
-      </div>
-    </div>
-  </section>
-
   <!-- ROOM: improv -->
   <section class="room" id="room-ring" role="tabpanel" hidden>
     <div class="room-head">
-      <div class="eyebrow">Room 6 · The ring</div>
+      <div class="eyebrow">Room 8 · The ring</div>
       <h2>Unscripted, against the clock</h2>
       <p class="muted">This is where it becomes yours. You get a situation, one required frame and three words. Talk for the full time without stopping. Silence is allowed; "um" is not. Replace every filler with a pause or a discourse marker.</p>
     </div>
     <div class="grid2">
       <div class="panel" style="display:grid;gap:14px;align-content:start">
         <div class="row" style="justify-content:space-between">
-          <label class="lbl">Mode<select id="ringMode"><option value="perf">Stage: indignant storyteller</option><option value="nat">Conversation: thinking out loud</option></select></label>
+          <label class="lbl">Mode<select id="ringMode"><option value="perf">Stage: indignant storyteller</option><option value="nat">Conversation: thinking out loud</option><option value="hypo">What if: hypothetical questions</option></select></label>
           <label class="lbl">Time<select id="ringTime"><option value="45">45 s</option><option value="60" selected>60 s</option><option value="90">90 s</option><option value="120">2 min</option></select></label>
         </div>
         <p class="ring-prompt" id="ringPrompt"></p>
@@ -325,9 +401,9 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
   <!-- ROOM: plan -->
   <section class="room" id="room-plan" role="tabpanel" hidden>
     <div class="room-head">
-      <div class="eyebrow">Room 7 · Four weeks</div>
-      <h2>Twenty minutes a day, in this order</h2>
-      <p class="muted">Ear and breath first, then melody, then words and frames, then free flow. Each day builds on the last, so do them in order and tick them off. Recordings you analyse are logged below so you can see the numbers move.</p>
+      <div class="eyebrow">Room 9 · Four weeks</div>
+      <h2>Twenty-five minutes a day, in this order</h2>
+      <p class="muted">Week 1 stops the translating, week 2 widens your words, week 3 handles "what if", week 4 is free flow. His voice work runs through every day. Do the days in order and tick them off. Recordings you analyze are logged below so you can watch the numbers move.</p>
     </div>
     <div class="panel callout" style="box-shadow:none" id="routine"></div>
     <div class="row"><span class="pill" id="streak">0 days</span><span class="note" id="storeNote"></span></div>
@@ -343,10 +419,14 @@ canvas.trace { width: 100%; height: 160px; display: block; border-radius: 10px; 
    Pillar        tone · pace · fluency · vocabulary · syntax · expression
    Technique     one observable habit → evidence → drill
    Frame         reusable sentence shape with slots and worked examples
-   Phrase        lexicon entry with register and a spaced-repetition box
+   Chunk         ready-made phrase tied to a situation; its Persian cue fades by box
+   Ladder        base word → richer words by intensity and register
+   HypoForm      hypothetical shape + quiz items + open what-if questions
+   Trap · Sound  Persian→English interference patterns and pronunciation traps
+   Growth        a kernel sentence grown step by step, his way
    Script        original practice text in score notation, tied to a mode
    Round         improv prompt: situation + required frame + words + time
-   Attempt       one analysed recording: metrics measured against a profile
+   Attempt       one analyzed recording: metrics measured against a profile
    PlanDay       ordered daily tasks; progress = which days are done
    ========================================================================= */
 
@@ -383,7 +463,11 @@ const LONG_PAUSES = [[14.5, 4.2], [46.6, 4.1], [33.1, 3.6], [38.6, 2.6], [62.5, 
 
 const TECHNIQUES = __TECHNIQUES__;
 const FRAMES = __FRAMES__;
-const PHRASES = __PHRASES__;
+const CHUNKS = __CHUNKS__;
+const LADDERS = __LADDERS__;
+const HYPO = __HYPO__;
+const THINK = __THINK__;
+const GROWTH = __GROWTH__;
 const SCRIPTS = __SCRIPTS__;
 const SITUATIONS = __SITUATIONS__;
 const PLAN = __PLAN__;
@@ -468,7 +552,8 @@ const sampleErr = e => ({
 }[e && e.code] || "The coach couldn't answer just now. Try again in a moment.");
 
 /* ============================== TABS ==================================== */
-const ROOMS = [["voice", "His voice"], ["tech", "Techniques"], ["studio", "Studio"], ["frames", "Sentence engine"], ["lex", "Lexicon"], ["ring", "Improv ring"], ["plan", "4-week plan"]];
+const ROOMS = [["voice", "His voice"], ["think", "Think in English"], ["chunks", "Chunks & words"], ["frames", "Sentences"], ["hypo", "What if"], ["tech", "Techniques"], ["studio", "Studio"], ["ring", "Improv ring"], ["plan", "4-week plan"]];
+const profileFor = mode => mode === "perf" ? PROFILES.perf : PROFILES.nat;
 function showRoom(id) {
   ROOMS.forEach(([r]) => { $("#room-" + r).hidden = r !== id; });
   document.body.dataset.room = id;
@@ -680,7 +765,7 @@ function makeRecorder(host, opts) {
   host.append(el("div", { style: "display:grid;gap:12px" }, head, live, status, tLabel, tx, out));
   host.style.display = "grid";
 
-  const setTarget = () => { const p = PROFILES[ctx.mode]; head.querySelector(".note").textContent = "Measured against: " + p.name; };
+  const setTarget = () => { const p = profileFor(ctx.mode); head.querySelector(".note").textContent = "Measured against: " + p.name; };
 
   async function startRec() {
     let stream;
@@ -734,7 +819,7 @@ function makeRecorder(host, opts) {
     const sr = r.ac.sampleRate; r.ac.close();
     recBtn.textContent = "● Record"; uplBtn.disabled = false; pz.textContent = ""; level.firstChild.style.width = "0";
     if (opts.onStop) opts.onStop();
-    await analyse(all, sr);
+    await analyze(all, sr);
   }
   recBtn.onclick = () => rec ? stopRec() : startRec();
   upl.onchange = async () => {
@@ -747,20 +832,20 @@ function makeRecorder(host, opts) {
       const n = audio.length, mono = new Float32Array(n);
       for (let c = 0; c < audio.numberOfChannels; c++) { const d = audio.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / audio.numberOfChannels; }
       ac.close();
-      await analyse(mono, audio.sampleRate);
+      await analyze(mono, audio.sampleRate);
     } catch (e) { status.textContent = "That file couldn't be decoded. Try an .m4a, .mp3, .wav or .webm recording."; }
     upl.value = "";
   };
 
-  async function analyse(samples, sr) {
-    status.textContent = "Analysing your pitch, pace and pauses…";
+  async function analyze(samples, sr) {
+    status.textContent = "Analyzing your pitch, pace and pauses…";
     await new Promise(r => setTimeout(r, 30));
     const m = VoiceAnalyzer.analyze(samples, sr);
     if (!m.ok) { status.textContent = m.reason; return; }
     if (m.seconds < 6) { status.textContent = "That was under 6 seconds. Record at least a full paragraph so the numbers mean something."; return; }
     status.textContent = "";
     last = m;
-    const p = PROFILES[ctx.mode];
+    const p = profileFor(ctx.mode);
     const fillers = countFillers(tx.value);
     m.fillersPerMin = tx.value.trim() ? fillers / (m.seconds / 60) : null;
     const attempt = { ts: Date.now(), date: today(), where: opts.id, mode: ctx.mode, label: ctx.label, seconds: +m.seconds.toFixed(1), wpm: m.wpm, artRate: +m.artRate.toFixed(2), pauseShare: +m.pauseShare.toFixed(3), pausesPerMin: +m.pausesPerMin.toFixed(1), runMedian: +m.runMedian.toFixed(2), rangeSt: +m.rangeSt.toFixed(1), f0Median: Math.round(m.f0Median), fillersPerMin: m.fillersPerMin == null ? null : +m.fillersPerMin.toFixed(1) };
@@ -772,7 +857,7 @@ function makeRecorder(host, opts) {
     out.innerHTML = "";
     const cmp = compareToProfile(m, p);
     const box = el("div", { class: "panel", style: "box-shadow:none;background:var(--paper)" });
-    box.append(el("div", { class: "row", style: "justify-content:space-between;margin-bottom:6px" }, el("h3", {}, "Your numbers vs his"), el("span", { class: "note mono" }, fmtTime(m.seconds) + " analysed · ~" + m.wordsEst + " words")));
+    box.append(el("div", { class: "row", style: "justify-content:space-between;margin-bottom:6px" }, el("h3", {}, "Your numbers vs his"), el("span", { class: "note mono" }, fmtTime(m.seconds) + " analyzed · ~" + m.wordsEst + " words")));
     cmp.forEach(c => box.append(metricRow(c)));
     out.append(box);
     const cv = el("canvas", { class: "trace", width: 900, height: 200, "aria-label": "Your pitch over time against his range" });
@@ -870,11 +955,13 @@ function drawTrace(cv, m, p) {
 }
 
 /* ============================== COACH (Claude) ========================== */
-const STYLE_BRIEF = () => `TARGET STYLE: Benedict Cumberbatch. Two modes.
+const LEARNER = `THE LEARNER: a native Persian (Farsi) speaker living in the US. Goals: speak fluently without translating from Persian; a wider vocabulary; natural chunks in the right context; varied sentence structures; correct, confident hypotheticals; and Cumberbatch's rhythm and expressiveness. Target variety: neutral English, US spelling, everyday words that work in both the US and the UK, no heavy British or American slang (do not suggest words like "knackered", "gutted", "chuffed", or heavy American slang). Watch for Persian interference: missing or wrong articles; he/she mix-ups; present simple instead of present perfect ("I live here since…"); question word order; a missing dummy "it/there"; "very" + verb; make/do; literal verb partners ("eat medicine", "give an exam"); preposition calques ("married with", "afraid from", "depends to", "discuss about", "explain me"); uncountables ("informations", "advices"); "In my idea", "I am agree"; literal ta'arof politeness; and conditionals that don't choose between imaginary now and imaginary past.`;
+const STYLE_BRIEF = () => `${LEARNER}
+TARGET STYLE: Benedict Cumberbatch. Two modes.
 STAGE mode (comic letter reading): sprint-and-stop pacing (5.6 syllables/s inside phrases, 28% silence, long waits after punchlines); high pitch on setup/pivot words, low flat delivery of the punch word; stretched emphasis words instead of fillers; restarts after pauses with discourse markers (Now, / But, / Undeterred, / Obviously,); register collision of mock-formal Latinate phrasing ("on this occasion", "I can only presume", "in question", "the sheer enormity") with blunt colloquial words; total commitment to a deluded, wounded-dignity narrator; frames like "So there I was, X, when Y", "Now, you know me, NAME. I'm not well known for X", "something I can only describe as X", "I'll say this for you, NAME: X", "All I can presume is that X", "Obviously, if X, then Y. But if it isn't, then Z".
 CONVERSATION mode: ${NATURAL.brief}`;
 function coachPrompt({ m, p, ctx, said, cmp }) {
-  return `You are a warm, exacting voice and speech coach helping a non-native English speaker learn to speak like Benedict Cumberbatch: tone, pace, fluency, vocabulary range, sentence shapes and natural expression.
+  return `You are a warm, exacting voice and English coach helping this learner speak fluent, natural English with Benedict Cumberbatch's style: tone, pace, fluency, vocabulary range, sentence shapes and natural expression.
 ${STYLE_BRIEF()}
 
 THE TAKE
@@ -885,7 +972,7 @@ Measured acoustics vs his target:
 ${cmp.map(c => `- ${c.name}: theirs ${c.f(c.you)}, his ${c.f(c.his)} → ${c.state}`).join("\n")}
 
 Reply with only JSON of this shape:
-{"headline": "one sentence verdict, specific", "scores": {"tone":1-5,"pace":1-5,"fluency":1-5,"vocabulary":1-5,"syntax":1-5,"expression":1-5}, "wins": ["max 2 short items"], "fixes": [{"pillar":"one of tone|pace|fluency|vocabulary|syntax|expression","issue":"what you noticed, citing their words or numbers","try":"a concrete instruction they can do in the next take"}], "rewrite": "if words are available: 1–3 of their own sentences rewritten in his style, keeping their content; else empty string", "nextDrill": "one 2-minute drill for tomorrow"}
+{"headline": "one sentence verdict, specific", "scores": {"tone":1-5,"pace":1-5,"fluency":1-5,"vocabulary":1-5,"syntax":1-5,"expression":1-5}, "wins": ["max 2 short items"], "fixes": [{"pillar":"one of tone|pace|fluency|vocabulary|syntax|expression","issue":"what you noticed, citing their words or numbers","try":"a concrete instruction they can do in the next take"}], "rewrite": "if words are available: 1–3 of their own sentences rewritten in his style, keeping their content; else empty string", "persian": "one short note naming any Persian-interference error you spotted and its fix, or empty string", "nextDrill": "one 2-minute drill for tomorrow"}
 Give 2–3 fixes, most important first. If no words are available, score vocabulary and syntax as 0 and base fixes on the acoustics. Plain, kind, direct English.`;
 }
 function renderCoach(box, fb) {
@@ -900,13 +987,16 @@ function renderCoach(box, fb) {
   (fb.wins || []).slice(0, 2).forEach(w => box.append(el("p", { class: "note" }, "✓ " + w)));
   (fb.fixes || []).slice(0, 3).forEach(f => box.append(el("div", { class: "callout" }, el("b", {}, (f.pillar || "") + ": "), String(f.issue || ""), el("br"), el("span", { class: "hand" }, "Try: " + (f.try || "")))));
   if (fb.rewrite) box.append(el("div", {}, el("div", { class: "eyebrow", style: "margin-bottom:4px" }, "Your words, his way"), el("p", { class: "rewrite" }, String(fb.rewrite))));
+  if (fb.persian) box.append(el("div", { class: "callout" }, el("b", {}, "Persian habit: "), String(fb.persian)));
   if (fb.nextDrill) box.append(el("p", { class: "note" }, "Tomorrow: " + fb.nextDrill));
 }
 
 /* ============================== ROOM 4 ================================== */
 function renderFrameSel() {
   const s = $("#frameSel");
-  FRAMES.forEach(f => s.append(el("option", { value: f.id }, (f.mode === "nat" ? "Conversation · " : "Stage · ") + f.name)));
+  [["core", "Everyday structures"], ["nat", "His conversation"], ["perf", "His stage letters"]].forEach(([m, label]) => {
+    const g = el("optgroup", { label }); FRAMES.filter(f => f.mode === m).forEach(f => g.append(el("option", { value: f.id }, f.name))); s.append(g);
+  });
   s.onchange = renderFrame; renderFrame();
   $("#frameShuffle").onclick = () => { $("#frameScenario").textContent = pick(SITUATIONS[currentFrame().mode] || SITUATIONS.perf); };
   $("#frameCheck").onclick = checkFrame;
@@ -927,12 +1017,12 @@ async function checkFrame() {
   if (!said) { $("#frameStatus").textContent = "Write the sentence you said first."; return; }
   $("#frameCheck").disabled = true; $("#frameStatus").textContent = "Reading it…";
   try {
-    const fb = await s.json(`You coach a non-native English speaker to talk like Benedict Cumberbatch.
+    const fb = await s.json(`You coach this learner to speak natural English with Benedict Cumberbatch's style.
 ${STYLE_BRIEF()}
-They practised this sentence frame: "${f.template}" (${f.why}).
+They practiced this sentence frame: "${f.template}" (${f.why}).
 Situation given: "${$("#frameScenario").textContent}"
 What they said: "${said.slice(0, 1500)}"
-Reply with only JSON: {"fits": true|false, "score": 1-5, "good": "one short line on what works", "fix": "one short, concrete correction (grammar, word choice, or frame use)", "polished": "their idea said in his style, 1-3 sentences, keep their content", "stress": "the same polished line marked for delivery using | for pause, || for a beat, *word* for stress, ~word~ for stretch"}`, { modelTier: "default" });
+Reply with only JSON: {"fits": true|false, "score": 1-5, "good": "one short line on what works", "fix": "one short, concrete correction (grammar, word choice, or frame use; name any Persian-interference habit)", "polished": "their idea said in his style, 1-3 sentences, keep their content", "stress": "the same polished line marked for delivery using | for pause, || for a beat, *word* for stress, ~word~ for stretch"}`, { modelTier: "default" });
     const out = $("#frameOut"); out.innerHTML = "";
     out.append(el("div", { class: "row" }, el("span", { class: "chip" + (fb.fits ? " on" : "") }, fb.fits ? "Frame used" : "Frame missed"), el("span", { class: "chip" }, (fb.score || "–") + "/5")));
     if (fb.good) out.append(el("p", { class: "note" }, "✓ " + fb.good));
@@ -944,55 +1034,349 @@ Reply with only JSON: {"fits": true|false, "score": 1-5, "good": "one short line
   $("#frameCheck").disabled = false;
 }
 
-/* ============================== ROOM 5 ================================== */
+/* ============================== ROOM 2: THINK IN ENGLISH ================ */
+const faSpan = (fa, tr) => el("span", { class: "fa-line" }, el("span", { class: "fa", lang: "fa", dir: "rtl" }, fa), tr ? el("span", { class: "tr" }, tr) : null);
+let trapArea = "All";
+function renderThink() {
+  $("#variety").innerHTML = `<b>Which English?</b> ${esc(THINK.variety)}`;
+  const m = $("#method"); m.innerHTML = "";
+  THINK.method.forEach(c => m.append(el("div", { class: "panel", style: "display:grid;gap:6px;align-content:start" }, el("h3", {}, c.t), el("p", { class: "note", style: "color:var(--ink)" }, c.d))));
+  const st = $("#stuck"); st.innerHTML = "";
+  THINK.stuck.forEach(x => st.append(el("span", { class: "chip on", style: "font-size:14px;padding:5px 12px" }, x)));
+  renderTraps();
+  const sl = $("#soundList"); sl.innerHTML = "";
+  THINK.sounds.forEach(x => sl.append(el("div", { class: "panel", style: "display:grid;gap:8px;align-content:start" },
+    el("h3", {}, x.title), el("p", { class: "note", style: "color:var(--ink)" }, x.issue), el("p", { class: "mono", style: "font-size:13px" }, x.words), el("p", { class: "hand" }, "Drill: " + x.drill))));
+  $("#weakTable").innerHTML = `<table class="weak"><thead><tr><th>Word</th><th>Careful</th><th>Natural (weak)</th><th>In a phrase</th></tr></thead><tbody>${THINK.weak.map(r => `<tr><td><b>${esc(r[0])}</b></td><td class="mono">/${esc(r[1])}/</td><td class="mono" style="color:var(--brass)">/${esc(r[2])}/</td><td>${esc(r[3])}</td></tr>`).join("")}</tbody></table>`;
+}
+function renderTraps() {
+  const f = $("#trapFilter"); f.innerHTML = "";
+  ["All", ...new Set(THINK.traps.map(t => t.area))].forEach(a => f.append(el("button", { class: "chip" + (trapArea === a ? " on" : ""), onclick: () => { trapArea = a; renderTraps(); } }, a)));
+  const list = $("#trapList"); list.innerHTML = "";
+  THINK.traps.filter(t => trapArea === "All" || t.area === trapArea).forEach(t => {
+    const checks = el("details", {}, el("summary", {}, "Check yourself"),
+      el("div", { style: "display:grid;gap:10px;margin-top:10px" }, t.checks.map(([w, r]) => {
+        const ans = el("div", { class: "right", hidden: true }, r);
+        return el("div", { style: "display:grid;gap:6px" }, el("div", { class: "wrong" }, w),
+          el("button", { class: "btn ghost", style: "justify-self:start;padding:4px 12px;font-size:13px", onclick: e => { ans.hidden = false; e.target.remove(); } }, "Show the fix"), ans);
+      })));
+    list.append(el("article", { class: "panel", style: "display:grid;gap:10px;align-content:start" },
+      el("div", { class: "row", style: "justify-content:space-between" }, el("span", { class: "pill" }, t.area), faSpan(t.fa, t.tr)),
+      el("h3", {}, t.title), el("div", { class: "wrong" }, t.wrong), el("div", { class: "right" }, t.right),
+      el("p", { class: "note", style: "color:var(--ink)" }, t.why), checks));
+  });
+}
+
+/* ============================== ROOM 3: CHUNKS & WORDS ================== */
 const INTERVALS = [0, 1, 2, 4, 7, 15];
-function lexState(id) { const s = Store.get().lex[id]; return s || { box: 0, due: today() }; }
-function dueCards() { const t = today(); return PHRASES.filter(p => lexState(p.id).due <= t).sort((a, b) => lexState(a.id).box - lexState(b.id).box); }
-let lexCurrent = null, lexRevealed = false;
+const NEW_PER_DAY = 10;
+const FNS = [...new Set(CHUNKS.map(c => c.fn))];
+let chunkTab = "cards", lexCurrent = null, lexRevealed = false, cardTimer = null;
+function lexState(id) { return Store.get().lex[id] || null; }
+function stageOf(st) { const b = st ? st.box : 0; return b <= 1 ? 1 : b <= 3 ? 2 : 3; }
+function cardPool() { const f = $("#cardFn").value || "all"; return CHUNKS.filter(c => f === "all" || c.fn === f); }
+function dueCards() {
+  const t = today(), lex = Store.get().lex, pool = cardPool();
+  const review = pool.filter(c => lex[c.id] && lex[c.id].due <= t).sort((a, b) => lex[a.id].box - lex[b.id].box);
+  const introduced = Object.values(lex).filter(s => s.intro === t).length;
+  const fresh = pool.filter(c => !lex[c.id]).slice(0, Math.max(0, NEW_PER_DAY - introduced));
+  return [...review, ...fresh];
+}
+function initChunks() {
+  const tabs = $("#chunkTabs");
+  [["cards", "Chunk cards"], ["rapid", "Rapid fire"], ["ladders", "Word ladders"], ["all", "All chunks"]].forEach(([id, name]) =>
+    tabs.append(el("button", { class: "chip", "data-t": id, style: "font-size:14px;padding:6px 14px", onclick: () => showChunkTab(id) }, name)));
+  const fsel = $("#cardFn");
+  fsel.append(el("option", { value: "all" }, "All situations"));
+  FNS.forEach(f => fsel.append(el("option", { value: f }, f)));
+  fsel.onchange = () => { lexCurrent = null; renderLexCard(); };
+  const ls = $("#ladderSel");
+  LADDERS.forEach((l, i) => ls.append(el("option", { value: i }, `${l.base} (${l.kind === "verb" ? "verb" : l.kind === "adv" ? "intensifier" : "adjective"})`)));
+  ls.onchange = renderLadder;
+  showChunkTab("cards");
+  renderLexCard(); renderLexList(); renderLadder(); renderRapidIntro();
+}
+function showChunkTab(id) {
+  chunkTab = id;
+  ["cards", "rapid", "ladders", "all"].forEach(t => { $("#cpane-" + t).hidden = t !== id; });
+  document.querySelectorAll("#chunkTabs .chip").forEach(b => b.classList.toggle("on", b.dataset.t === id));
+  if (id !== "rapid" && rapid) stopRapid();
+}
+function renderCardStats() {
+  const lex = Store.get().lex, all = CHUNKS.length;
+  const started = CHUNKS.filter(c => lex[c.id]).length, s3 = CHUNKS.filter(c => lex[c.id] && lex[c.id].box >= 4).length;
+  $("#cardStats").innerHTML = `<b style="color:var(--ink)">${started}</b> of ${all} chunks started · <b style="color:var(--ink)">${s3}</b> at stage 3 (no Persian, under the clock)`;
+}
 function renderLexCard() {
+  clearTimeout(cardTimer);
   const due = dueCards(), c = $("#lexCard"); c.innerHTML = "";
-  if (!due.length) { c.append(el("div", { class: "eyebrow" }, "All caught up"), el("p", { class: "phrase" }, "Nothing due today."), el("p", { class: "note", style: "margin:0 auto" }, "New cards appear tomorrow. Use today's phrases in the Improv ring instead.")); return; }
-  if (!lexCurrent || !due.includes(lexCurrent)) { lexCurrent = due[0]; lexRevealed = false; }
-  const p = lexCurrent, st = lexState(p.id);
-  const boxes = el("div", { class: "boxes", "aria-label": "Box " + st.box + " of 5" }); for (let i = 1; i <= 5; i++) boxes.append(el("i", { class: i <= st.box ? "f" : "" }));
-  c.append(el("div", { class: "eyebrow" }, `${p.group} · ${due.length} due`), el("p", { class: "phrase" }, p.text), el("p", { class: "note", style: "margin:0 auto" }, p.meaning));
-  if (lexRevealed) {
-    c.append(el("p", { class: "frame-tpl", style: "font-style:italic;font-size:17px;margin:0 auto" }, p.example), el("p", { class: "hand" }, "When: " + p.use));
-    c.append(el("div", { class: "row", style: "justify-content:center" },
-      el("button", { class: "btn ghost", onclick: () => grade(false) }, "I stumbled"),
-      el("button", { class: "btn", onclick: () => grade(true) }, "It came out naturally")));
+  renderCardStats();
+  if (!due.length) {
+    c.append(el("div", { class: "eyebrow" }, "All caught up"), el("p", { class: "phrase" }, "Nothing due today."),
+      el("p", { class: "note", style: "margin:0 auto" }, "New cards appear tomorrow. Meanwhile, try a Rapid fire round or use today's chunks in the Improv ring."));
+    return;
+  }
+  if (!lexCurrent || !due.some(d => d.id === lexCurrent.id)) { lexCurrent = due[0]; lexRevealed = false; }
+  const p = lexCurrent, st = lexState(p.id), stage = stageOf(st);
+  const boxes = el("div", { class: "boxes", "aria-label": "Box " + (st ? st.box : 0) + " of 5" });
+  for (let i = 1; i <= 5; i++) boxes.append(el("i", { class: st && i <= st.box ? "f" : "" }));
+  c.append(el("div", { class: "eyebrow" }, `${p.fn} · stage ${stage} · ${due.length} left today`));
+  c.append(el("p", { class: "card-sit" }, p.use));
+  if (stage === 1 && p.fa) c.append(el("div", { style: "display:flex;justify-content:center" }, faSpan(p.fa, p.tr)));
+  if (stage === 1 && !p.fa) c.append(el("p", { class: "note", style: "margin:0 auto" }, "Hint: " + p.meaning));
+  if (!lexRevealed) {
+    c.append(el("p", { class: "hand" }, "What would you say? Say it out loud."));
+    if (stage === 3) {
+      const bar = el("div", { class: "timebar" }, el("i"));
+      c.append(bar);
+      requestAnimationFrame(() => { const i = bar.firstChild; i.style.transition = "width 4s linear"; requestAnimationFrame(() => { i.style.width = "0"; }); });
+      cardTimer = setTimeout(() => { lexRevealed = true; renderLexCard(); }, 4000);
+    }
+    c.append(el("div", { class: "row", style: "justify-content:center" }, el("button", { class: "btn", onclick: () => { lexRevealed = true; renderLexCard(); } }, "Show the chunk")));
   } else {
-    c.append(el("p", { class: "hand" }, "Say your own sentence with it, out loud."), el("div", { class: "row", style: "justify-content:center" }, el("button", { class: "btn", onclick: () => { lexRevealed = true; renderLexCard(); } }, "Show example")));
+    c.append(el("p", { class: "phrase" }, p.text));
+    c.append(el("p", { class: "frame-tpl", style: "font-style:italic;font-size:17px;margin:0 auto;max-width:34ch" }, p.example));
+    const tags = el("div", { class: "row", style: "justify-content:center" }, el("span", { class: "chip" }, p.reg));
+    if (p.his) tags.append(el("span", { class: "chip his" }, "his habit"));
+    c.append(tags);
+    if (p.note) c.append(el("p", { class: "note", style: "margin:0 auto;max-width:36ch" }, p.note));
+    if (stage > 1 && p.fa) c.append(el("div", { style: "display:flex;justify-content:center;opacity:.7" }, faSpan(p.fa, p.tr)));
+    c.append(el("p", { class: "hand" }, "Now say one sentence of your own with it."));
+    c.append(el("div", { class: "row", style: "justify-content:center" },
+      el("button", { class: "btn ghost", onclick: () => grade("miss") }, "Didn't know"),
+      el("button", { class: "btn ghost", onclick: () => grade("slow") }, "Slow"),
+      el("button", { class: "btn", onclick: () => grade("instant") }, "Instant")));
   }
   c.append(boxes);
 }
-function grade(ok) {
-  const s = Store.get(), cur = lexState(lexCurrent.id);
-  const box = ok ? Math.min(5, cur.box + 1) : 1;
+function grade(how) {
+  const s = Store.get(), cur = lexState(lexCurrent.id), was = cur ? cur.box : 0;
+  const box = how === "instant" ? Math.min(5, was + 1) : how === "slow" ? Math.max(1, was) : 1;
   const d = new Date(); d.setDate(d.getDate() + INTERVALS[box]);
-  s.lex[lexCurrent.id] = { box, due: d.toISOString().slice(0, 10) };
+  s.lex[lexCurrent.id] = { box, due: d.toISOString().slice(0, 10), intro: cur ? cur.intro : today() };
   Store.save(); lexCurrent = null; renderLexCard(); renderLexList();
 }
 function renderLexList() {
   const g = $("#lexGroup");
-  if (!g.options.length) { ["All", ...new Set(PHRASES.map(p => p.group))].forEach(x => g.append(el("option", { value: x }, x))); g.onchange = renderLexList; }
+  if (!g.options.length) { ["All", ...FNS].forEach(x => g.append(el("option", { value: x }, x))); g.onchange = renderLexList; }
   const list = $("#lexList"); list.innerHTML = "";
-  PHRASES.filter(p => g.value === "All" || p.group === g.value).forEach(p => {
+  CHUNKS.filter(p => g.value === "All" || p.fn === g.value).forEach(p => {
     const st = lexState(p.id);
-    list.append(el("div", { class: "lex-item" }, el("div", {}, el("b", {}, p.text), el("div", { class: "note" }, p.meaning)), el("span", { class: "note mono" }, st.box ? "box " + st.box : "new")));
+    const left = el("div", { style: "display:grid;gap:3px;min-width:0" },
+      el("div", { class: "row", style: "gap:8px" }, el("b", {}, p.text), p.his ? el("span", { class: "chip his" }, "his") : null, el("span", { class: "chip" }, p.reg)),
+      el("div", { class: "note" }, p.use), p.fa ? faSpan(p.fa, p.tr) : null);
+    list.append(el("div", { class: "lex-item" }, left, el("span", { class: "note mono" }, st ? "box " + st.box : "new")));
   });
+}
+
+/* Rapid fire: 10 situations, 3 seconds each, English only */
+let rapid = null;
+function rapidPool(src) {
+  const lex = Store.get().lex;
+  if (src === "started") { const s = CHUNKS.filter(c => lex[c.id]); return s.length >= 5 ? s : CHUNKS; }
+  if (src === "all") return CHUNKS;
+  return CHUNKS.filter(c => c.fn === src);
+}
+function renderRapidIntro(summary) {
+  const pane = $("#cpane-rapid"); pane.innerHTML = "";
+  const src = el("select", { id: "rapidSrc", "aria-label": "Which chunks" });
+  src.append(el("option", { value: "started" }, "Chunks I've started"), el("option", { value: "all" }, "All chunks"));
+  FNS.forEach(f => src.append(el("option", { value: f }, f)));
+  pane.append(el("h3", {}, "Rapid fire"),
+    el("p", { class: "note", style: "color:var(--ink)" }, "Ten situations, three seconds each. Say an English chunk out loud before the bar runs out. No Persian, no translating. If nothing comes, say anything in English and move on; speed is the point."),
+    el("div", { class: "row" }, el("label", { class: "lbl" }, "Use", src), el("button", { class: "btn", style: "align-self:end", onclick: () => startRapid(src.value) }, "Start")));
+  if (summary) pane.append(summary);
+}
+function startRapid(src) {
+  rapid = { items: shuffle(rapidPool(src)).slice(0, 10), i: 0, hits: 0, missed: [], timer: null };
+  showRapidItem();
+}
+function stopRapid() { if (rapid) clearTimeout(rapid.timer); rapid = null; renderRapidIntro(); }
+function showRapidItem() {
+  const r = rapid, pane = $("#cpane-rapid"); if (!r) return;
+  pane.innerHTML = "";
+  if (r.i >= r.items.length) {
+    const sum = el("div", { style: "display:grid;gap:8px" }, el("p", { class: "big-timer", style: "font-size:44px" }, `${r.hits}/${r.items.length}`), el("p", { class: "note" }, r.hits >= 8 ? "Excellent. Your English is coming straight from the situation." : "Do another round tomorrow. The ones you missed went back to box 1."));
+    if (r.missed.length) sum.append(el("div", { style: "display:grid;gap:4px" }, el("b", {}, "Missed:"), r.missed.map(c => el("div", { class: "note" }, el("b", { style: "color:var(--ink)" }, c.text), " · " + c.use))));
+    const s = Store.get(); r.missed.forEach(c => { const cur = s.lex[c.id]; if (cur) { const d = new Date(); d.setDate(d.getDate() + 1); s.lex[c.id] = Object.assign({}, cur, { box: 1, due: d.toISOString().slice(0, 10) }); } });
+    Store.save(); rapid = null; renderRapidIntro(sum); renderLexCard(); renderLexList();
+    return;
+  }
+  const c = r.items[r.i];
+  const bar = el("div", { class: "timebar", style: "margin:0" }, el("i"));
+  pane.append(el("div", { class: "row", style: "justify-content:space-between" }, el("span", { class: "eyebrow" }, `${r.i + 1} / ${r.items.length} · ${c.fn}`), el("button", { class: "btn ghost", onclick: stopRapid }, "Stop")),
+    el("p", { class: "ring-prompt" }, c.use), bar);
+  requestAnimationFrame(() => { const i = bar.firstChild; i.style.transition = "width 3s linear"; requestAnimationFrame(() => { i.style.width = "0"; }); });
+  const reveal = () => {
+    pane.append(el("p", { class: "phrase", style: "font-family:var(--f-display);font-size:28px" }, c.text), el("p", { class: "note" }, c.example),
+      el("div", { class: "row" },
+        el("button", { class: "btn ghost", onclick: () => { r.missed.push(c); r.i++; showRapidItem(); } }, "Too slow"),
+        el("button", { class: "btn", onclick: () => { r.hits++; r.i++; showRapidItem(); } }, "I said something in time")));
+  };
+  r.timer = setTimeout(reveal, 3000);
+}
+
+/* Word ladders + stack builder */
+const FEELINGS = ["tired", "happy", "sad", "angry", "surprised"];
+const BAN_TOPICS = ["your last vacation", "your favorite restaurant", "your job", "a movie you saw recently", "your neighborhood", "last weekend", "your best friend", "the weather today"];
+let stackSel = [];
+function renderLadder() {
+  const L = LADDERS[+$("#ladderSel").value || 0], box = $("#ladder"); box.innerHTML = ""; stackSel = [];
+  if (L.kind === "verb") {
+    L.steps.forEach(([w, note]) => box.append(el("div", { class: "rung verb" }, el("b", {}, w), el("span", { class: "note" }, note))));
+  } else {
+    L.steps.slice().sort((a, b) => a[1] - b[1]).forEach(([w, lvl, reg, his]) => {
+      const cb = L.kind === "adj" ? el("input", { type: "checkbox", "aria-label": "Add " + w + " to the stack" }) : null;
+      if (cb) cb.onchange = () => { if (cb.checked) stackSel.push([w, lvl]); else stackSel = stackSel.filter(x => x[0] !== w); renderStack(L); };
+      box.append(el("div", { class: "rung" }, el("div", { class: "lvl", style: `width:${lvl * 20}%`, title: "intensity " + lvl + " of 5" }),
+        el("label", { class: "w" }, cb, w, his ? el("span", { class: "chip his" }, "his") : null), el("span", { class: "chip" }, reg)));
+    });
+  }
+  $("#ladderEx").textContent = L.example;
+  renderStack(L);
+}
+function renderStack(L) {
+  const b = $("#stackBox"); b.innerHTML = "";
+  if (L.kind === "adj") {
+    b.append(el("h3", {}, "Stack it, his way"), el("p", { class: "note" }, "Tick 2 or 3 words on the left. They're ordered from weakest to strongest, the way he escalates."));
+    const soft = el("input", { type: "checkbox", id: "softChk" });
+    const noun = el("input", { type: "text", id: "stackNoun", placeholder: FEELINGS.includes(L.base) ? "(not needed)" : "a noun, e.g. evening", value: "" });
+    const out = el("div", { style: "display:grid;gap:6px" });
+    const draw = () => {
+      out.innerHTML = "";
+      const ws = stackSel.slice().sort((a, c) => a[1] - c[1]).map(x => x[0]);
+      if (ws.length < 2) { out.append(el("p", { class: "note" }, "Pick at least two words.")); return; }
+      const last = (soft.checked ? "sort of " : "") + ws[ws.length - 1];
+      const list = [...ws.slice(0, -1), last];
+      const subj = FEELINGS.includes(L.base) ? "I was" : "It was";
+      out.append(el("p", { class: "growth-line" }, `${subj} ${list.slice(0, -1).join(", ")}, and honestly ${list[list.length - 1]}.`));
+      const n = noun.value.trim();
+      if (n && !FEELINGS.includes(L.base) && ws.every(w => !w.includes(" "))) out.append(el("p", { class: "growth-line" }, `It was a ${list.join(", ")} ${n}.`.replace(/ a ([aeiou])/i, " an $1")));
+    };
+    soft.onchange = draw; noun.oninput = draw;
+    b.append(el("label", { class: "lbl", style: "flex-direction:row;display:flex;gap:6px;align-items:center" }, soft, "Soften the strongest word with 'sort of' (his habit)"));
+    if (!FEELINGS.includes(L.base)) b.append(el("label", { class: "lbl" }, "Noun (optional)", noun));
+    b.append(out); draw();
+    b.append(el("hr", { class: "soft" }));
+  }
+  const topic = pick(BAN_TOPICS);
+  b.append(el("h3", {}, `Ban "${L.base}"`), el("p", { class: "ring-prompt", style: "font-size:20px" }, `Talk for 30 seconds about ${topic} without saying "${L.base}". Use three different words from the ladder.`),
+    el("button", { class: "btn ghost", style: "justify-self:start", onclick: () => renderStack(L) }, "Another topic"));
+}
+
+/* ============================== ROOM 4: GROW A SENTENCE ================= */
+let growStep = 0;
+function initGrowth() {
+  const s = $("#growSel");
+  GROWTH.forEach((g, i) => s.append(el("option", { value: i }, g.kernel)));
+  s.onchange = () => { growStep = 0; renderGrowth(); };
+  $("#growNext").onclick = () => { growStep++; renderGrowth(); };
+  $("#growReset").onclick = () => { growStep = 0; renderGrowth(); };
+  renderGrowth();
+}
+function renderGrowth() {
+  const g = GROWTH[+$("#growSel").value || 0], box = $("#growLines"); box.innerHTML = "";
+  box.append(el("div", {}, el("div", { class: "eyebrow" }, "Start"), el("p", { class: "growth-line" }, g.kernel)));
+  g.steps.slice(0, growStep).forEach(([move, line], i) => box.append(el("div", {}, el("div", { class: "eyebrow" }, `Move ${i + 1} · ${move}`), el("p", { class: "growth-line" }, line))));
+  const next = g.steps[growStep];
+  $("#growNext").disabled = !next;
+  $("#growNext").textContent = next ? `Next move: ${next[0]}. I tried it, show me` : "That's the whole sentence";
+}
+
+/* ============================== ROOM 5: WHAT IF ========================= */
+let quiz = null, speakIdx = 0;
+function renderHypo() {
+  $("#hypoFlow").innerHTML = [
+    ["q", "Could it still really happen?", "Ask this first, every time.", ""],
+    ["", "Yes → Real possibility", "If + present, will", "If it rains, we'll stay in."],
+    ["", "No, it isn't true now → Imaginary now", "If + past, would", "If I had time, I'd go."],
+    ["", "No, it's over → Imaginary past", "If + had done, would have done", "If I'd known, I would have gone."],
+    ["", "A past choice changes now → Mixed", "If + had done, would + verb", "If I'd slept, I wouldn't be tired."]
+  ].map(([k, t, f, e]) => `<div class="node ${k}"><b>${esc(t)}</b><span class="${k ? "" : "mono"}" style="font-size:12.5px">${esc(f)}</span>${e ? `<i>${esc(e)}</i>` : ""}</div>`).join("");
+  const fbox = $("#hypoForms"); fbox.innerHTML = "";
+  HYPO.forms.forEach(f => {
+    const card = el("article", { class: "panel", style: "display:grid;gap:8px;align-content:start" },
+      el("div", { class: "row", style: "justify-content:space-between" }, el("span", { class: "pill" }, "door open? " + f.open), el("span", { class: "note" }, f.when)),
+      el("h3", {}, f.name), el("p", { class: "frame-tpl", html: slotify(f.form), style: "font-size:17px" }),
+      el("div", { style: "display:grid;gap:4px" }, f.examples.map(x => el("p", { style: "font-family:var(--f-display);font-style:italic;font-size:16.5px" }, x))));
+    if (f.fa) card.append(el("div", { class: "callout", style: "display:grid;gap:4px" }, faSpan(f.fa, f.tr), el("span", { class: "note", style: "color:var(--ink)" }, f.note)));
+    else card.append(el("p", { class: "note", style: "color:var(--ink)" }, f.note));
+    card.append(el("p", { class: "note mono", style: "font-size:12.5px" }, f.trap));
+    fbox.append(card);
+  });
+  quiz = { order: shuffle(HYPO.quiz.map((_, i) => i)), i: 0, score: 0 };
+  renderQuiz();
+  speakIdx = Math.floor(Math.random() * HYPO.prompts.length);
+  renderSpeak();
+}
+function renderQuiz() {
+  const b = $("#hypoQuiz"); b.innerHTML = "";
+  if (quiz.i >= quiz.order.length) {
+    b.append(el("h3", {}, "Is the door still open?"), el("p", { class: "big-timer", style: "font-size:48px" }, `${quiz.score}/${quiz.order.length}`),
+      el("p", { class: "note" }, quiz.score >= 14 ? "That's the Persian ambiguity handled. Now use it out loud on the right." : "Go through the cards above once more, then try again."),
+      el("button", { class: "btn", style: "justify-self:start", onclick: () => { quiz = { order: shuffle(HYPO.quiz.map((_, i) => i)), i: 0, score: 0 }; renderQuiz(); } }, "Again"));
+    return;
+  }
+  const q = HYPO.quiz[quiz.order[quiz.i]];
+  b.append(el("div", { class: "row", style: "justify-content:space-between" }, el("h3", {}, "Choose the right one"), el("span", { class: "note mono" }, `${quiz.i + 1}/${quiz.order.length} · score ${quiz.score}`)),
+    el("p", { style: "font-size:16px" }, q.s));
+  if (q.fa) b.append(el("p", { class: "fa", lang: "fa", dir: "rtl", style: "font-size:20px" }, q.fa));
+  const why = el("p", { class: "note", style: "color:var(--ink)", hidden: true }, q.why);
+  const next = el("button", { class: "btn", style: "justify-self:start", hidden: true, onclick: () => { quiz.i++; renderQuiz(); } }, "Next");
+  const opts = q.opts.map((o, k) => el("button", { class: "opt", onclick: () => {
+    opts.forEach((x, j) => { x.disabled = true; if (j === q.a) x.classList.add("ok"); });
+    if (k === q.a) quiz.score++; else opts[k].classList.add("no");
+    why.hidden = false; next.hidden = false;
+  } }, o));
+  b.append(el("div", { style: "display:grid;gap:8px" }, opts), why, next);
+}
+function renderSpeak() {
+  const b = $("#hypoSpeak"), p = HYPO.prompts[speakIdx]; b.innerHTML = "";
+  const ta = el("textarea", { id: "hypoInput", placeholder: "Say it out loud first, then write what you said." });
+  const status = el("span", { class: "status-line" }), out = el("div", { class: "coach-out" });
+  const model = el("div", { hidden: true, style: "display:grid;gap:4px" }, el("div", { class: "eyebrow" }, "One way he might answer (original, in his conversational style)"), el("p", { class: "rewrite", style: "font-family:var(--f-display);font-style:italic;font-size:17px" }, p.model));
+  const coachBtn = el("button", { class: "btn", hidden: true }, "Ask the coach");
+  b.append(el("div", { class: "row", style: "justify-content:space-between" }, el("h3", {}, "What would you do?"), el("button", { class: "btn ghost", onclick: () => { speakIdx = (speakIdx + 1) % HYPO.prompts.length; renderSpeak(); } }, "Next question")),
+    el("p", { class: "ring-prompt", style: "font-size:21px" }, p.q), el("p", { class: "slot", style: "justify-self:start;white-space:normal" }, "Use: " + p.form),
+    el("label", { class: "lbl", for: "hypoInput" }, "Answer for 30–45 seconds out loud, then write it down"), ta,
+    el("div", { class: "row" }, coachBtn, el("button", { class: "btn ghost", onclick: () => { model.hidden = false; } }, "Show a model answer"), status),
+    out, model, el("p", { class: "note" }, "To get your voice numbers on an answer like this, record it in the Improv ring in What if mode."));
+  getSample().then(s => { if (s) coachBtn.hidden = false; });
+  coachBtn.onclick = async () => {
+    const s = await getSample(); if (!s) return;
+    const said = ta.value.trim(); if (!said) { status.textContent = "Write what you said first."; return; }
+    coachBtn.disabled = true; status.textContent = "Reading it…";
+    try {
+      const fb = await s.json(`${STYLE_BRIEF()}
+The learner answered a hypothetical question out loud and wrote down what they said.
+Question: "${p.q}"  Expected form: ${p.form}
+Their answer: "${said.slice(0, 2000)}"
+Check the hypothetical grammar first (did they choose correctly between imaginary now, imaginary past and mixed; no 'would' in the if-clause; were/had), then naturalness and his style.
+Reply with only JSON: {"forms": "correct|partly|wrong", "good": "one short line", "fix": "the single most important correction, quoting their words", "persian": "a Persian-interference note if relevant, else empty", "polished": "their answer rewritten in his conversational style, same content, 2-4 sentences"}`, { modelTier: "default" });
+      out.innerHTML = "";
+      out.append(el("div", { class: "row" }, el("span", { class: "chip" + (fb.forms === "correct" ? " on" : "") }, "Hypotheticals: " + (fb.forms || "–"))));
+      if (fb.good) out.append(el("p", { class: "note" }, "✓ " + fb.good));
+      if (fb.fix) out.append(el("div", { class: "callout" }, String(fb.fix)));
+      if (fb.persian) out.append(el("div", { class: "callout" }, el("b", {}, "Persian habit: "), String(fb.persian)));
+      if (fb.polished) out.append(el("p", { class: "rewrite" }, String(fb.polished)));
+      status.textContent = "";
+    } catch (e) { status.textContent = sampleErr(e); }
+    coachBtn.disabled = false;
+  };
 }
 
 /* ============================== ROOM 6 ================================== */
 let round = null, ringTimer = null, ringRecorder;
+const ringFrames = mode => mode === "hypo" ? HYPO.forms.map(f => f.form) : FRAMES.filter(f => f.mode === mode).map(f => f.template);
+const ringWords = mode => mode === "hypo" ? CHUNKS.filter(c => c.fn === "Hypotheticals") : CHUNKS.filter(c => c.mode === mode || c.mode === "both");
 function newRound(r) {
   const mode = $("#ringMode").value;
-  const frames = FRAMES.filter(f => f.mode === mode);
-  const words = shuffle(PHRASES.filter(p => p.mode === mode || p.mode === "both")).slice(0, 3);
-  round = r || { mode, situation: pick(SITUATIONS[mode]), frame: pick(frames).template, words: words.map(w => w.text) };
+  const frames = ringFrames(mode);
+  const words = shuffle(ringWords(mode)).slice(0, 3);
+  round = r || { mode, situation: pick(SITUATIONS[mode]), frame: pick(frames), words: words.map(w => w.text) };
   $("#ringPrompt").textContent = round.situation;
   const req = $("#ringReq"); req.innerHTML = "";
-  req.append(el("div", {}, el("div", { class: "eyebrow" }, "Required frame"), el("p", { class: "frame-tpl", html: slotify(round.frame) })));
+  req.append(el("div", {}, el("div", { class: "eyebrow" }, round.mode === "hypo" ? "Required form" : "Required frame"), el("p", { class: "frame-tpl", html: slotify(round.frame) })));
   const w = el("div", { class: "row" }); round.words.forEach(x => w.append(el("span", { class: "chip on" }, x)));
   req.append(el("div", {}, el("div", { class: "eyebrow", style: "margin-bottom:6px" }, "Use all three"), w));
   $("#ringTimer").textContent = fmtTime(+$("#ringTime").value);
@@ -1003,7 +1387,8 @@ async function aiRound() {
   const s = await getSample(); if (!s) return;
   const mode = $("#ringMode").value, b = $("#ringAi"); b.disabled = true; b.textContent = "Writing…";
   try {
-    const r = await s.json(`Invent one improv speaking prompt for a learner practising Benedict Cumberbatch's ${mode === "nat" ? "conversational interview style (thoughtful, self-deprecating, curious)" : "comic stage style (indignant letter of complaint, wounded dignity, absurd escalation)"}. Everyday, vivid, safe. Pick one frame from this list: ${FRAMES.filter(f => f.mode === mode).map(f => f.template).join(" || ")}. Pick three phrases from: ${PHRASES.filter(p => p.mode === mode || p.mode === "both").map(p => p.text).join("; ")}.
+    const r = await s.json(`${LEARNER}
+Invent one improv speaking prompt for this learner, practicing Benedict Cumberbatch's ${mode === "nat" ? "conversational interview style (thoughtful, self-deprecating, curious)" : mode === "hypo" ? "conversational style through a hypothetical 'what would you do / what would you have done' question" : "comic stage style (indignant letter of complaint, wounded dignity, absurd escalation)"}. Everyday, vivid, safe, set in ordinary life (the US is fine). Pick one ${mode === "hypo" ? "form" : "frame"} from this list: ${ringFrames(mode).join(" || ")}. Pick three phrases from: ${ringWords(mode).map(p => p.text).join("; ")}.
 Reply with only JSON: {"situation":"one or two sentences, second person","frame":"the frame exactly as given","words":["a","b","c"]}`, { modelTier: "quick", cache: false });
     if (r && r.situation && r.frame && Array.isArray(r.words)) newRound({ mode, situation: String(r.situation), frame: String(r.frame), words: r.words.slice(0, 3).map(String) });
   } catch (e) { $("#ringPrompt").textContent = sampleErr(e); }
@@ -1024,7 +1409,7 @@ function initRing() {
 
 /* ============================== ROOM 7 ================================== */
 function renderPlan() {
-  $("#routine").innerHTML = `<h3 style="margin-bottom:8px">The daily 20 minutes</h3><ol style="margin:0;padding-left:20px;display:grid;gap:4px">${PLAN.routine.map(r => `<li><b>${esc(r[0])}</b> <span class="muted">· ${esc(r[1])}</span></li>`).join("")}</ol>`;
+  $("#routine").innerHTML = `<h3 style="margin-bottom:8px">The daily 25 minutes</h3><ol style="margin:0;padding-left:20px;display:grid;gap:4px">${PLAN.routine.map(r => `<li><b>${esc(r[0])}</b> <span class="muted">· ${esc(r[1])}</span></li>`).join("")}</ol>`;
   const box = $("#weeks"); box.innerHTML = "";
   const st = Store.get();
   PLAN.weeks.forEach((w, wi) => {
@@ -1049,7 +1434,7 @@ function renderPlan() {
 function renderHistory() {
   const h = $("#history"), a = Store.get().attempts.slice().reverse().slice(0, 40);
   if (!a.length) { h.innerHTML = `<p class="note">No recordings yet. Your first one in the Studio or the Ring will appear here with its numbers, so you can watch them move toward his.</p>`; return; }
-  h.innerHTML = `<table class="mono" style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:620px"><thead><tr style="text-align:left;color:var(--muted)"><th style="padding:4px 6px">Date</th><th style="padding:4px 6px">Task</th><th style="padding:4px 6px">Mode</th><th style="padding:4px 6px">Length</th><th style="padding:4px 6px">wpm</th><th style="padding:4px 6px">syl/s</th><th style="padding:4px 6px">silence</th><th style="padding:4px 6px">range</th><th style="padding:4px 6px">fillers/min</th></tr></thead><tbody>${a.map(x => `<tr style="border-top:1px solid var(--line)"><td style="padding:6px">${x.date}</td><td style="padding:6px;font-family:var(--f-body);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.label || "")}</td><td style="padding:6px">${x.mode === "nat" ? "conv." : "stage"}</td><td style="padding:6px">${fmtTime(x.seconds)}</td><td style="padding:6px">${x.wpm}</td><td style="padding:6px">${x.artRate}</td><td style="padding:6px">${Math.round(x.pauseShare * 100)}%</td><td style="padding:6px">${x.rangeSt}</td><td style="padding:6px">${x.fillersPerMin == null ? "–" : x.fillersPerMin}</td></tr>`).join("")}</tbody></table>`;
+  h.innerHTML = `<table class="mono" style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:620px"><thead><tr style="text-align:left;color:var(--muted)"><th style="padding:4px 6px">Date</th><th style="padding:4px 6px">Task</th><th style="padding:4px 6px">Mode</th><th style="padding:4px 6px">Length</th><th style="padding:4px 6px">wpm</th><th style="padding:4px 6px">syl/s</th><th style="padding:4px 6px">silence</th><th style="padding:4px 6px">range</th><th style="padding:4px 6px">fillers/min</th></tr></thead><tbody>${a.map(x => `<tr style="border-top:1px solid var(--line)"><td style="padding:6px">${x.date}</td><td style="padding:6px;font-family:var(--f-body);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.label || "")}</td><td style="padding:6px">${x.mode === "perf" ? "stage" : x.mode === "hypo" ? "what if" : "conv."}</td><td style="padding:6px">${fmtTime(x.seconds)}</td><td style="padding:6px">${x.wpm}</td><td style="padding:6px">${x.artRate}</td><td style="padding:6px">${Math.round(x.pauseShare * 100)}%</td><td style="padding:6px">${x.rangeSt}</td><td style="padding:6px">${x.fillersPerMin == null ? "–" : x.fillersPerMin}</td></tr>`).join("")}</tbody></table>`;
 }
 
 /* ============================== BOOT ==================================== */
@@ -1064,8 +1449,10 @@ function boot() {
   ss.onchange = renderScript; renderScript();
   $("#condBtn").onclick = runConductor;
   if (!("speechSynthesis" in window)) $("#ttsChk").disabled = true; else try { speechSynthesis.getVoices(); } catch (e) {}
-  renderFrameSel();
-  renderLexCard(); renderLexList();
+  renderThink();
+  initChunks();
+  renderFrameSel(); initGrowth();
+  renderHypo();
   initRing();
   renderPlan(); renderHistory();
   Store.onChange(() => { renderPlan(); renderHistory(); renderLexCard(); renderLexList(); });

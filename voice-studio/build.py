@@ -3,6 +3,7 @@
 Usage: python3 build.py [moments.json] [analyzer.js]  (defaults: files next to this script)"""
 import json, sys, pathlib
 import content as C
+import english as E
 
 HERE = pathlib.Path(__file__).parent
 moments = json.load(open(sys.argv[1] if len(sys.argv) > 1 else HERE / "moments.json"))
@@ -17,7 +18,7 @@ NATURAL = {
     "runMedian": 3.22, "runMax": 15.9, "longPauses": 2, "f0Median": 90, "rangeSt": 14.3, "band": [-2.3, 12.0],
     "fillersPerMin": None
   },
-  "summary": "Conversation figures come from about 10.5 minutes of his own speech, separated from the host's by automatic voice clustering, so treat them as close estimates. The speech-to-text cleans up 'um' and 'uh', so fillers aren't measured for conversation; what it does keep is his habit of soft hedges, listed in the Lexicon. The big contrast: in conversation he talks faster overall (220 wpm) with far less silence (10%), in longer runs, and from a much lower home pitch (about 90 Hz). On stage he lifts his whole voice by roughly 10 semitones.",
+  "summary": "Conversation figures come from about 10.5 minutes of his own speech, separated from the host's by automatic voice clustering, so treat them as close estimates. The speech-to-text cleans up 'um' and 'uh', so fillers aren't measured for conversation; what it does keep is his habit of soft hedges, listed in Chunks & words. The big contrast: in conversation he talks faster overall (220 wpm) with far less silence (10%), in longer runs, and from a much lower home pitch (about 90 Hz). On stage he lifts his whole voice by roughly 10 semitones.",
   "brief": "fast, warm and thoughtful (220 wpm, only 10% silence, runs of about 3 s, low home pitch around 90 Hz with upward lifts on key words); sentences grow by 'and'-chaining and self-restarts ('it is, it is…'); soft hedges right before grand words ('sort of iconic', 'kind of extraordinary'); stacked, escalating adjectives; afterthoughts that correct themselves for a laugh; acted-out reported speech ('and he's going, …'); concession turns ('You can't X. Of course you can. But…'); frequent 'just', 'you know', 'really', 'kind of', 'I think', 'sort of', 'I mean'; generous praise words like extraordinary, exceptional, brilliant; self-deprecating.",
 }
 
@@ -59,37 +60,6 @@ NAT_FRAMES = [
                 "It was a terrifying but very, very funny evening."]},
 ]
 
-NAT_PHRASES = [
-  {"text": "I mean,", "group": "Conversation", "mode": "nat", "meaning": "let me put that better",
-   "use": "rephrase or soften what you just said", "example": "It was cold. I mean, properly cold, the kind that hurts your teeth."},
-  {"text": "sort of / kind of", "group": "Conversation", "mode": "nat", "meaning": "softener before a strong word",
-   "use": "make praise or opinion sound modest", "example": "It's a sort of magical little place."},
-  {"text": "you know,", "group": "Conversation", "mode": "nat", "meaning": "invites the listener in",
-   "use": "mid-sentence, to keep them with you", "example": "And it's, you know, a long way to walk in sandals."},
-  {"text": "genuinely", "group": "Conversation", "mode": "nat", "meaning": "honestly, really",
-   "use": "show you mean a compliment", "example": "I genuinely think it's the best soup in London."},
-  {"text": "extraordinary", "group": "Conversation", "mode": "nat", "meaning": "remarkable, amazing",
-   "use": "his go-to praise word for people and work", "example": "She's an extraordinary teacher. She makes maths feel like gossip."},
-  {"text": "exceptional", "group": "Conversation", "mode": "nat", "meaning": "unusually good",
-   "use": "praise a colleague generously", "example": "He was exceptional in it. Really exceptional."},
-  {"text": "incredibly", "group": "Conversation", "mode": "nat", "meaning": "very (stronger)",
-   "use": "intensify an adjective", "example": "It was incredibly bleak and somehow very funny."},
-  {"text": "quite a thing", "group": "Conversation", "mode": "nat", "meaning": "remarkable (understated)",
-   "use": "sum something up with dry admiration", "example": "Watching my nan play poker is quite a thing."},
-  {"text": "as it were", "group": "Conversation", "mode": "nat", "meaning": "so to speak",
-   "use": "flag a word used a bit playfully", "example": "That was the low point of the holiday, as it were."},
-  {"text": "it's nuts / it's silly", "group": "Conversation", "mode": "nat", "meaning": "it's absurd",
-   "use": "dismiss something affectionately", "example": "People argue about it online. It's nuts. It's a sandwich."},
-  {"text": "hang on a minute", "group": "Conversation", "mode": "nat", "meaning": "wait, think about this",
-   "use": "turn your own argument around", "example": "Hang on a minute. You're telling me the cat paid?"},
-  {"text": "do you know what I mean?", "group": "Conversation", "mode": "nat", "meaning": "do you see?",
-   "use": "end a point and hand it back", "example": "You can't rush bread. Do you know what I mean?"},
-  {"text": "very, very", "group": "Conversation", "mode": "nat", "meaning": "doubled intensifier",
-   "use": "with a contrast: horrible but very, very funny", "example": "It's a stressful but very, very happy day."},
-  {"text": "the thing is", "group": "Conversation", "mode": "nat", "meaning": "the real point is",
-   "use": "move from story to opinion", "example": "The thing is, nobody actually reads the instructions."},
-]
-
 NAT_SCRIPTS = [
   {"id": "nat-dinner", "mode": "nat", "title": "Answer: the worst dinner party you've been to",
    "coach": "Fast, warm, low. Few pauses. Let the sentence grow, then land it.",
@@ -103,7 +73,7 @@ NAT_SCRIPTS = [
    "text": "It's, | it's my music teacher, | Mrs Okafor. || I mean, | >> I was a sort of shy, quiet, slightly odd kid, << | and she was | ^kind of extraordinary, | because she never | ~once~ made me feel odd. || / "
            "You can't teach confidence. | Of course you can, | actually. || But you have to do it | without the child ^noticing. | And she did. || / "
            "I still hear her. | Do you know what I mean? | _I still hear her. ||"},
-  {"id": "nat-city", "mode": "nat", "title": "Answer: your favourite city",
+  {"id": "nat-city", "mode": "nat", "title": "Answer: your favorite city",
    "coach": "Lift the key word of each sentence, let the ends fall. Barely stop.",
    "text": "I think it's Lisbon, | really. || >> It's this steep, bright, crumbling, completely beautiful place, << | and it's sort of ^iconic, | because | everything is on a hill. || "
            "Everything. | You go out for bread | and you come back | a ~different~ person, | well, | _a more tired person. || / "
@@ -134,24 +104,33 @@ def j(x):
     return json.dumps(x, ensure_ascii=False, separators=(",", ":"))
 
 techniques = json.loads(fill_nat(json.dumps(C.TECHNIQUES)))
-frames = [f for f in C.FRAMES] + NAT_FRAMES
-phrases = C.PHRASES + NAT_PHRASES
-for i, p in enumerate(phrases):
-    p["id"] = "p%02d" % i
+frames = E.CORE_FRAMES + NAT_FRAMES + [f for f in C.FRAMES]
+import re as _re
+chunks = []
+seen = set()
+for c in E.CHUNKS:
+    cid = "c-" + _re.sub(r"[^a-z0-9]+", "-", c["text"].lower()).strip("-")[:40]
+    while cid in seen: cid += "x"
+    seen.add(cid); chunks.append(dict(c, id=cid))
 scripts = C.SCRIPTS + NAT_SCRIPTS
-situations = dict(C.SITUATIONS); situations["nat"] = NAT_SITUATIONS
+situations = dict(C.SITUATIONS); situations["nat"] = NAT_SITUATIONS; situations["core"] = E.CORE_SITUATIONS
+situations["hypo"] = [p["q"] for p in E.HYPO_PROMPTS]
 
 src = (HERE / "voice-studio.src.html").read_text()
 out = (src.replace("__MOMENTS__", j(moments))
           .replace("__TECHNIQUES__", j(techniques))
           .replace("__FRAMES__", j(frames))
-          .replace("__PHRASES__", j(phrases))
+          .replace("__CHUNKS__", j(chunks))
+          .replace("__LADDERS__", j(E.LADDERS))
+          .replace("__HYPO__", j({"forms": E.HYPO_FORMS, "quiz": E.HYPO_QUIZ, "prompts": E.HYPO_PROMPTS}))
+          .replace("__THINK__", j({"traps": E.TRAPS, "sounds": E.SOUNDS, "weak": E.WEAK_FORMS, "method": E.METHOD, "stuck": E.STUCK, "variety": E.VARIETY}))
+          .replace("__GROWTH__", j(E.GROWTH))
           .replace("__SCRIPTS__", j(scripts))
           .replace("__SITUATIONS__", j(situations))
           .replace("__PLAN__", j(C.PLAN))
           .replace("__NATURAL__", j(NATURAL))
           .replace("__ANALYZER__", analyzer.replace('if (typeof module !== "undefined") module.exports = VoiceAnalyzer;', "")))
-leftover = [k for k in ["__MOMENTS__", "__TECHNIQUES__", "__FRAMES__", "__PHRASES__", "__SCRIPTS__", "__SITUATIONS__", "__PLAN__", "__NATURAL__", "__ANALYZER__", "__NAT_"] if k in out]
+leftover = [k for k in ["__MOMENTS__", "__TECHNIQUES__", "__FRAMES__", "__CHUNKS__", "__LADDERS__", "__HYPO__", "__THINK__", "__GROWTH__", "__SCRIPTS__", "__SITUATIONS__", "__PLAN__", "__NATURAL__", "__ANALYZER__", "__NAT_"] if k in out]
 if leftover: raise SystemExit("unfilled: %s" % leftover)
 (HERE / "voice-studio.html").write_text(out)
 local = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
