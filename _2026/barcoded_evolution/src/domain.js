@@ -1,14 +1,15 @@
 // ───────────────────────────── domain model ─────────────────────────────
 // The film is built on a small model of the experiments it describes.
-//   Barcode            20 random nucleotides at a neutral landing pad; inherited, fitness-neutral
-//   Lineage            every cell sharing one barcode; has a frequency trajectory
-//   LineageTracking    the Levy et al. 2015 evolution: ~5e5 lineages, serial transfer, mean-fitness drag
-//   MutantClass        Venkataram 2016 / Kinsler 2020 adaptive mutant types (diploid, IRA1, GPB2, ...)
-//   Environment        one of 45 perturbations of the evolution condition (EC); subtle or strong
-//   FitnessAtlas       mutant × environment fitness matrix generated from a latent phenotype model,
-//                      then decomposed with SVD exactly as in Kinsler et al. 2020
-// All numbers drawn in plots come from these simulations (illustrative); numbers spoken or printed
-// as results are those reported in the papers.
+//   Barcode              20 random nucleotides at a neutral landing pad; inherited, fitness-neutral
+//   batchCulture         one 48 h serial-transfer cycle: lag, fermentation, diauxic shift, stationary
+//   LineageTracking      the Levy et al. 2015 evolution: ~5e5 lineages, serial transfer, mean-fitness drag
+//   PROTOCOL             the method's steps, each with what is done and the ambiguity it removes
+//   establishmentLottery a branching process of new beneficial mutants (drift until ~1/s cells)
+//   RaceModel            two strains sharing one batch culture: lag time versus growth rate
+//   DRUG_ENVS, DrugAtlas Schmidlin et al. 2024: 12 drug conditions, 774 lineages in 6 clusters + controls
+//   Pileup               a toy whole-genome alignment around one variant
+// Plots drawn from these simulations are labelled as simulated or schematic; numbers printed as
+// results are those reported in the papers.
 
 const BASES = 'ACGT';
 const Barcode = {
@@ -119,59 +120,6 @@ const LineageTracking = (() => {
   return { run, N, L };
 })();
 
-// Mutant classes from Venkataram et al. 2016 as analysed by Kinsler et al. 2020.
-// Counts are illustrative and sum to 292; phenotype signatures are invented to reproduce the
-// qualitative patterns the paper reports (e.g. IRA1 nonsense and PDE2 suffer in salt, GPB2 does not).
-const MUTANT_CLASSES = [
-  { key: 'dip',   label: 'Diploid',               n: 110, col: '#9aa7c7', f: 0.85, sig: [-0.30, 0.05, 0.00, 0.05, 0.00, 0.00, 0.00], sd: 0.06 },
-  { key: 'hdip',  label: 'High-fitness diploid',  n: 6,   col: '#e2e8f6', f: 1.15, sig: [-0.10, 0.10, 0.45, -0.35, 0.10, 0.00, 0.05], sd: 0.04 },
-  { key: 'dipx',  label: 'Diploid + extra mutation', n: 20, col: '#c46bff', f: 1.05, sig: [-0.15, 0.15, 0.05, 0.20, -0.25, 0.10, 0.10], sd: 0.32 },
-  { key: 'ira1n', label: 'IRA1 nonsense',         n: 22,  col: PAL.T,     f: 1.45, sig: [0.50, -0.20, 0.30, 0.30, 0.15, 1.00, 1.00], sd: 0.07 },
-  { key: 'ira1m', label: 'IRA1 missense',         n: 30,  col: '#ff9eb0', f: 1.05, sig: [0.35, -0.05, 0.10, 0.10, 0.00, 0.35, 0.35], sd: 0.38 },
-  { key: 'ira2',  label: 'IRA2',                  n: 8,   col: '#ff8a3d', f: 1.00, sig: [0.40, 0.10, -0.10, 0.25, -0.10, 0.25, 0.20], sd: 0.36 },
-  { key: 'gpb2',  label: 'GPB2',                  n: 35,  col: PAL.C,     f: 1.00, sig: [0.45, 1.00, -0.30, -0.40, -0.10, -0.05, -0.20], sd: 0.08 },
-  { key: 'pde2',  label: 'PDE2',                  n: 30,  col: PAL.A,     f: 1.00, sig: [0.45, -0.25, 0.80, -0.05, 0.35, 0.55, 0.15], sd: 0.08 },
-  { key: 'tor',   label: 'TOR/Sch9 pathway',      n: 3,   col: PAL.G,     f: 0.80, sig: [0.10, 0.40, -0.40, 0.60, -0.30, 0.05, -0.10], sd: 0.15 },
-  { key: 'ssk2',  label: 'SSK2 (HOG)',            n: 1,   col: '#ffe08a', f: 0.70, sig: [0.00, -0.30, 0.20, 0.50, 0.50, -0.30, 0.00], sd: 0.05 },
-  { key: 'other', label: 'Other / unidentified',  n: 27,  col: '#5f7090', f: 0.65, sig: [0.10, 0.10, 0.00, 0.10, 0.00, 0.10, 0.10], sd: 0.25 },
-];
-
-// 45 environments: 9 EC batches, 16 subtle perturbations, 20 strong perturbations.
-// Weight vectors e (8 phenotypes) say how much each latent phenotype matters to fitness there.
-const ENVIRONMENTS = (() => {
-  const r = rng(404), envs = [];
-  const subtleSd = [0.07, 0.5, 0.2, 0.17, 0.17, 0.1, 0.05, 0.05];
-  for (let b = 1; b <= 9; b++) envs.push({ name: `EC batch ${b}`, kind: 'EC', cat: 'EC', e: subtleSd.map((sd, k) => (k === 0 ? 1 : 0) + sd * gauss(r) * 0.9) });
-  const subtleCats = ['Glucose', 'Glucose', 'Glucose', 'Flask', 'Flask', 'Drug', 'Drug', 'Drug', 'Drug', 'Drug', 'Transfer', 'Glucose', 'Drug', 'Flask', 'Drug', 'Drug'];
-  subtleCats.forEach((cat, i) => envs.push({ name: `${cat} (subtle ${i + 1})`, kind: 'subtle', cat, e: subtleSd.map((sd, k) => (k === 0 ? 1 : 0) + sd * gauss(r) * 1.1) }));
-  const S = (name, cat, w, label) => {
-    const e = [0, 0, 0, 0, 0, 0, 0, 0].map((_, k) => (k === 0 ? 0.9 : 0) + 0.12 * gauss(r));
-    for (const k in w) e[k] = w[k] + 0.05 * gauss(r);
-    envs.push({ name, kind: 'strong', cat, e, label });
-  };
-  S('1 Day', 'Transfer', { 0: 0.85, 2: -1.3, 5: 0.5 }, '1 Day');
-  S('3 Day', 'Transfer', { 0: 1.0, 1: 0.05, 3: 0.5 });
-  S('5 Day', 'Transfer', { 0: 0.75, 7: -1.2 }, '5 Day');
-  S('6 Day', 'Transfer', { 0: 0.55, 7: -2.0, 4: 0.4 }, '6 Day');
-  S('7 Day', 'Transfer', { 0: 0.45, 7: -2.4 }, '7 Day');
-  S('0.5 M NaCl', 'Salt', { 0: 0.1, 6: -2.3, 1: 0.5 }, '0.5 M NaCl');
-  S('KCl', 'Salt', { 0: 0.4, 6: -1.4, 1: 0.3 }, 'KCl');
-  S('Baffle, 1.8% Glucose', 'Flask', { 0: 1.3, 1: 0.55, 3: 0.4 });
-  S('Baffle, 2.5% Glucose', 'Flask', { 0: 1.2, 1: 0.8 });
-  S('Baffle, 0.4 µg/mL Benomyl', 'Drug', { 0: 0.6, 1: 1.5 });
-  S('Baffle, 2 µg/mL Benomyl', 'Drug', { 0: 0.5, 1: 2.0 });
-  S('8.5 µM GdA (B9)', 'Drug', { 0: 0.8, 3: 1.0 });
-  S('Geldanamycin', 'Drug', { 0: 0.8, 3: 0.8, 4: 0.5 });
-  S('Geldanamycin', 'Drug', { 0: 0.7, 2: 0.6, 4: 0.7 });
-  S('Fluconazole', 'Drug', { 0: 0.9, 4: -0.9 });
-  S('Fluconazole', 'Drug', { 0: 0.8, 2: 0.7, 5: -0.6 });
-  S('Fluconazole', 'Drug', { 0: 0.95, 5: 0.9 });
-  S('Carbon source', 'Carbon', { 0: 0.5, 1: -0.7, 3: -0.6 });
-  S('Carbon source', 'Carbon', { 0: 0.6, 2: 0.8, 4: 0.6 });
-  S('Glucose', 'Glucose', { 0: 1.25, 3: -0.6, 5: 0.5 });
-  return envs;
-})();
-
 /** Symmetric eigen-decomposition by cyclic Jacobi rotations. Returns values (desc) and column vectors. */
 function jacobiEigen(A) {
   const n = A.length, a = A.map(r => r.slice()), v = A.map((_, i) => A.map((_, j) => +(i === j)));
@@ -193,57 +141,19 @@ function jacobiEigen(A) {
   return { values: idx.map(i => a[i][i]), vectors: idx.map(i => v.map(row => row[i])) };
 }
 
-/** Thin SVD of an m×n matrix (n small) via the eigenvectors of FᵀF. */
-function svd(F) {
-  const m = F.length, n = F[0].length;
-  const G = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => { let s = 0; for (let r = 0; r < m; r++) s += F[r][i] * F[r][j]; return s; }));
-  const { values, vectors } = jacobiEigen(G);
-  const sing = values.map(v => Math.sqrt(Math.max(0, v)));
-  const U = F.map(row => vectors.map((vec, k) => sing[k] > 1e-12 ? row.reduce((s, x, j) => s + x * vec[j], 0) / sing[k] : 0));
-  return { S: sing, U, V: vectors };
-}
-
-const FitnessAtlas = (() => {
-  const r = rng(2020);
-  const mutants = [];
-  for (const c of MUTANT_CLASSES) for (let i = 0; i < c.n; i++) {
-    const p = [c.f + 0.08 * gauss(r), ...c.sig.map(v => v + c.sd * gauss(r) * (0.6 + Math.abs(v)))];
-    mutants.push({ cls: c, p });
-  }
-  const F = mutants.map(mu => ENVIRONMENTS.map(env => env.e.reduce((s, w, k) => s + w * mu.p[k], 0) + 0.05 * gauss(r)));
-  // rows grouped by class, each sorted by fitness in the evolution condition
-  const ecIdx = ENVIRONMENTS.map((e, j) => j).filter(j => ENVIRONMENTS[j].kind === 'EC');
-  const ecFit = F.map(row => ecIdx.reduce((s, j) => s + row[j], 0) / ecIdx.length);
-  const rowOrder = mutants.map((_, i) => i).sort((a, b) =>
-    MUTANT_CLASSES.indexOf(mutants[a].cls) - MUTANT_CLASSES.indexOf(mutants[b].cls) || ecFit[b] - ecFit[a]);
-  // strength of each perturbation, relative to the batch-to-batch spread of the EC repeats
-  const dev = j => F.reduce((s, row, i) => s + (row[j] - ecFit[i]) ** 2, 0) / F.length;
-  const ecDev = ecIdx.map(dev), mu = ecDev.reduce((a, b) => a + b) / ecDev.length;
-  const sd = Math.sqrt(ecDev.reduce((a, b) => a + (b - mu) ** 2, 0) / (ecDev.length - 1));
-  const z = ENVIRONMENTS.map((_, j) => (dev(j) - mu) / sd);
-  const subtleCols = ENVIRONMENTS.map((e, j) => j).filter(j => ENVIRONMENTS[j].kind !== 'strong');
-  const Fs = F.map(row => subtleCols.map(j => row[j]));
-  const dec = svd(Fs);
-  const tot = dec.S.reduce((s, x) => s + x * x, 0);
-  const varFrac = dec.S.map(x => x * x / tot);
-  return { mutants, F, ecFit, rowOrder, z, subtleCols, dec, varFrac };
-})();
-
 // ───────────────────────────── the method itself ─────────────────────────────
 // The standard serial-transfer protocol, extended with barcoding. Each step records what is done
 // and the ambiguity it removes; the film's step rail and closing recap are drawn from this list.
 const PROTOCOL = [
   { key: 'clone',     label: 'clone',     what: 'Start from one clone',            so: 'any change is a new mutation' },
   { key: 'medium',    label: 'medium',    what: 'Define the environment',          so: 'the challenge is known and repeatable' },
-  { key: 'transfer',  label: 'transfer',  what: 'Transfer with a large bottleneck', so: 'evolution runs on, and selection beats chance' },
+  { key: 'transfer',  label: 'transfer',  what: 'Transfer, with a large bottleneck', so: 'evolution runs on and selection beats chance' },
   { key: 'freeze',    label: 'freeze',    what: 'Freeze every transfer',           so: 'the past can be revived and compared' },
   { key: 'replicate', label: 'replicate', what: 'Run replicate populations',       so: 'repeatable can be told from chance' },
   { key: 'compete',   label: 'compete',   what: 'Compete against the ancestor',    so: 'fitness means what selection means' },
   { key: 'barcode',   label: 'barcode',   what: 'Barcode every cell',              so: 'every lineage can be followed', ext: true },
-  { key: 'count',     label: 'count',     what: 'Count barcodes by sequencing',    so: 'the whole race becomes measurable', ext: true },
+  { key: 'count',     label: 'count',     what: 'Count barcodes, sequence winners', so: 'the race is measured and its causes found', ext: true },
 ];
-/** which protocol steps each chapter is about */
-const SCENE_STEPS = { clone: [0], medium: [1], transfer: [2], bottleneck: [2], freeze: [3, 4], compete: [5], limit: [5], idea: [6], build: [6], census: [7] };
 
 function poisson(r, lam) {
   if (lam > 30) return Math.max(0, Math.round(lam + Math.sqrt(lam) * gauss(r)));
@@ -277,3 +187,61 @@ const RaceModel = {
     return 48;
   },
 };
+
+// ───────────────────────────── Schmidlin et al. 2024: drug-resistance design ─────────────────────────────
+// Twelve evolution / competition environments (Table 1 of the paper).
+const DRUG_ENVS = [
+  { key: 'LF', label: 'Low FLU', flu: 1, rad: 0 }, { key: 'MF', label: 'Med FLU', flu: 2, rad: 0 }, { key: 'HF', label: 'High FLU', flu: 3, rad: 0 },
+  { key: 'LR', label: 'Low RAD', flu: 0, rad: 1 }, { key: 'MR', label: 'Med RAD', flu: 0, rad: 2 }, { key: 'HR', label: 'High RAD', flu: 0, rad: 3 },
+  { key: 'LRLF', label: 'LR + LF', flu: 1, rad: 1 }, { key: 'LRHF', label: 'LR + HF', flu: 3, rad: 1 }, { key: 'HRLF', label: 'HR + LF', flu: 1, rad: 3 },
+  { key: 'HRHF', label: 'HR + HF', flu: 3, rad: 3 }, { key: 'DMSO', label: 'DMSO', flu: 0, rad: 0 }, { key: 'ND', label: 'No drug', flu: 0, rad: 0 },
+];
+// Six clusters of adaptive mutants plus controls. Mean fitness profiles are illustrative shapes that follow
+// the qualitative descriptions in the paper (e.g. cluster 1 best in low FLU, clusters 2–3 best in high FLU
+// and cross-resistant to RAD, cluster 6 best without drug).
+const DRUG_CLUSTERS = [
+  { id: 1, genes: 'SUR1, UPC2', col: PAL.violet, n: 70,  prof: [0.9, 0.5, -0.1, 0.0, 0.05, 0.1, 0.6, -0.1, 0.4, -0.1, 0.0, 0.0] },
+  { id: 2, genes: 'PDR1, PDR3', col: PAL.blue,   n: 210, prof: [0.4, 0.8, 1.3, 0.3, 0.4, 0.5, 0.6, 1.2, 0.7, 1.1, 0.0, 0.05] },
+  { id: 3, genes: 'PDR1, PDR3', col: PAL.orange, n: 150, prof: [0.5, 1.0, 1.6, 0.5, 0.8, 1.0, 0.8, 1.5, 1.0, 1.5, -0.1, -0.1] },
+  { id: 4, genes: 'RAD-resistant', col: PAL.green, n: 110, prof: [0.1, 0.0, -0.2, 0.6, 0.9, 1.1, 0.4, -0.1, 0.4, 0.0, 0.3, 0.3] },
+  { id: 5, genes: 'RAD-resistant', col: PAL.yellow, n: 90, prof: [0.3, 0.1, -0.2, 0.7, 1.0, 1.3, 0.0, -0.2, 0.0, -0.2, 0.2, 0.2] },
+  { id: 6, genes: 'IRA1, IRA2, GPB2', col: PAL.red, n: 144, prof: [0.2, 0.1, -0.1, 0.4, 0.4, 0.5, 0.3, 0.0, 0.3, 0.0, 0.8, 0.8] },
+  { id: 7, genes: 'control strains', col: '#9a9a9a', n: 40, prof: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+];
+const DrugAtlas = (() => {
+  const r = rng(2024), rows = [];
+  for (const cl of DRUG_CLUSTERS) for (let i = 0; i < cl.n; i++) {
+    const amp = cl.id === 7 ? 0 : 0.75 + 0.5 * r();
+    rows.push({ cl, f: cl.prof.map(v => v * amp + 0.12 * gauss(r)) });
+  }
+  // standardise each environment (mean 0, sd 1), as the paper did before embedding
+  const nE = 12, mean = Array(nE).fill(0), sd = Array(nE).fill(0);
+  rows.forEach(rw => rw.f.forEach((v, j) => (mean[j] += v / rows.length)));
+  rows.forEach(rw => rw.f.forEach((v, j) => (sd[j] += (v - mean[j]) ** 2 / rows.length)));
+  rows.forEach(rw => (rw.z = rw.f.map((v, j) => (v - mean[j]) / Math.sqrt(sd[j]))));
+  // a linear embedding (PCA) stands in for UMAP in the film
+  const C = Array.from({ length: nE }, (_, a) => Array.from({ length: nE }, (_, b) => rows.reduce((s, rw) => s + rw.z[a] * rw.z[b], 0) / rows.length));
+  const { vectors } = jacobiEigen(C);
+  rows.forEach(rw => (rw.pc = [0, 1, 2].map(k => rw.z.reduce((s, v, j) => s + v * vectors[k][j], 0))));
+  return { rows };
+})();
+
+// ───────────────────────────── whole-genome sequencing: a toy pileup ─────────────────────────────
+const Pileup = (() => {
+  const r = rng(99), ref = Array.from({ length: 64 }, () => BASES[(r() * 4) | 0]).join('');
+  const site = 37, alt = ref[site] === 'C' ? 'T' : 'C';
+  const reads = [];
+  for (let i = 0; i < 26; i++) {
+    const start = Math.floor(r() * 44) - 8, len = 28;
+    let s = '';
+    for (let k = 0; k < len; k++) {
+      const p = start + k;
+      if (p < 0 || p >= ref.length) { s += ' '; continue; }
+      let b = p === site ? alt : ref[p];
+      if (r() < 0.006) b = BASES[(r() * 4) | 0];   // sequencing error
+      s += b;
+    }
+    reads.push({ start, s });
+  }
+  return { ref, site, alt, reads };
+})();

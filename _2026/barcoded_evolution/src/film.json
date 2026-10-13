@@ -1,0 +1,148 @@
+{
+  "readingRate": 3.3,
+  "beatBase": 1.3,
+  "holdScale": 0.75,
+  "scenes": [
+    { "key": "intro", "num": "", "title": "Evolution, Barcoded", "lead": 0.8, "tail": 5.5, "beats": [
+      { "t": "Evolution is history, and history normally happens only once.", "hold": 1.5 },
+      { "t": "Stephen Jay Gould asked what would happen if we could rewind the tape of life and play it again.", "hold": 3.5 },
+      { "t": "With a flask of yeast, we can. This film walks through how the experiment is done, and why each step exists.", "hold": 2 }
+    ]},
+    { "key": "why", "num": "01", "title": "Why evolve life in a flask", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "In nature we see only the survivors: never the losers, never the alternatives.", "hold": 2.5 },
+      { "t": "Control. We choose the ancestor and the environment, so we know what changed.", "hold": 1 },
+      { "t": "Replication. Many populations start identical, so we can tell what is repeatable from what is chance.", "hold": 1 },
+      { "t": "Time travel. Yeast survive freezing, so ancestors can be revived and raced against their descendants.", "hold": 1 },
+      { "t": "Scale. One 100 mL flask holds about 10¹⁰ cells, and about eight generations pass every 48 hours.", "hold": 1.5 }
+    ]},
+    { "key": "recipe", "num": "02", "title": "The standard recipe", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Most microbial evolution experiments follow one recipe. Each step removes one source of ambiguity.", "hold": 2.5 },
+      { "t": "Six steps make the classic experiment. Barcoding adds two more: tag every cell, then count the tags.", "hold": 3 }
+    ]},
+    { "key": "clone", "num": "03", "title": "Step 1 · Start from one clone", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Streak the ancestor across agar so the cells thin out, then pick one isolated colony: the descendants of a single cell.", "hold": 3.5 },
+      { "t": "Now every cell carries the same genome. Any genetic difference that appears later must be a new mutation.", "hold": 1.5 },
+      { "t": "Skip this, and a variant that rises might have been there from the start. New and old would look the same.", "hold": 2 },
+      { "t": "The ancestor's genome is sequenced once. Every evolved genome is compared against it.", "hold": 2.5 }
+    ]},
+    { "key": "medium", "num": "04", "title": "Step 2 · Define the environment", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "The yeast grow in M3, a defined minimal medium. Glucose runs out first; every other nutrient is in excess.", "hold": 4 },
+      { "t": "Defined means every ingredient is known and weighed, so the selective pressure is the same in every flask, every week.", "hold": 1 },
+      { "t": "M3 also lacks uracil. Only cells that keep the barcode construct, which carries the URA3 gene, can grow in it.", "hold": 1 },
+      { "t": "100 mL of medium in a 500 mL flask, 30 °C, shaken at about 200 rpm. Each of these is part of the environment.", "hold": 2 }
+    ]},
+    { "key": "transfer", "num": "05", "title": "Step 3 · Serial transfer", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Over 48 hours the cells wake up, ferment glucose, switch to respiring ethanol, and stop.", "hold": 4 },
+      { "t": "Then 400 µL of the 100 mL culture moves into fresh medium: a 1 in 250 dilution.", "hold": 3 },
+      { "t": "250 ≈ 2⁸. To refill the flask the cells must double about eight times, so each cycle is about eight generations.", "hold": 3 },
+      { "t": "The environment is a cycle of feast and famine. Selection acts on every phase: waking fast, growing fast, switching well.", "hold": 2.5 }
+    ]},
+    { "key": "bottleneck", "num": "06", "title": "Why the bottleneck is large", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Each transfer is a random draw of about 4 × 10⁷ cells. A mutant that is still rare can be left behind by luck.", "hold": 3 },
+      { "t": "A new mutant with a 5% advantage must reach roughly 1/s = 20 cells before chance stops mattering. Most never get there.", "hold": 5 },
+      { "t": "A large bottleneck also supplies mutations: N × μ ≈ 4 × 10⁷ × 10⁻⁶, about 40 new mutants worth more than 5% every generation.", "hold": 2 }
+    ]},
+    { "key": "freeze", "num": "07", "title": "Steps 4 & 5 · Freeze and replicate", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "After every transfer, the leftover culture is spun down, resuspended in 30% glycerol, split into three cryovials and stored at −80 °C.", "hold": 3 },
+      { "t": "The frozen record can be revived: ancestors raced against descendants, or evolution replayed from any point.", "hold": 2 },
+      { "t": "Populations are run in replicate. When independent populations hit the same gene again and again, chance is an unlikely explanation.", "hold": 3 }
+    ]},
+    { "key": "compete", "num": "08", "title": "Step 6 · Measure fitness by competition", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Fitness is relative. The evolved strain is mixed with a marked ancestor, and their ratio is followed over several cycles.", "hold": 3 },
+      { "t": "Why not just measure growth rate? A strain can grow faster and still lose the flask because it wakes up later.", "hold": 4 },
+      { "t": "Frequencies change as df/dt = f (s − s̄). For two strains, the log of their ratio is a straight line whose slope is s.", "hold": 3 }
+    ]},
+    { "key": "limit", "num": "09", "title": "The blind spot", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Sequencing a whole population detects a mutation only once it reaches about 1% of the cells.", "hold": 3 },
+      { "t": "By then the race is decided. Thousands of mutations arose and were lost or outcompeted below that line.", "hold": 3 },
+      { "t": "The classic experiment shows the winners, but not the race.", "hold": 2 }
+    ]},
+    { "key": "barcode", "num": "10", "title": "Step 7 · Tag every cell", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Levy et al. (2015) followed lineages instead of mutations. Before evolution starts, each cell receives a DNA barcode.", "hold": 2 },
+      { "t": "A barcode is a random stretch of about 20 bases between fixed sequences, inside an artificial intron of the URA3 gene.", "hold": 3 },
+      { "t": "Random: 4²⁰ ≈ 10¹² possible tags for a few hundred thousand cells. Neutral: spliced out, never expressed. Inherited by every descendant.", "hold": 2 },
+      { "t": "When a lineage gains a beneficial mutation, its barcode count rises. The mutation is detected by its effect, before anyone knows what it is.", "hold": 3 }
+    ]},
+    { "key": "build", "num": "11", "title": "Installing the barcodes", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Strain SHA185 carries a landing pad on chromosome II: Cre recombinase behind a galactose promoter, half of URA3, and a lox site.", "hold": 2.5 },
+      { "t": "A plasmid library (pBar3) carries the barcodes beside the other half of URA3. On galactose, Cre stitches a plasmid into the pad.", "hold": 4 },
+      { "t": "Only a correct insertion rebuilds URA3, so only barcoded cells grow without uracil. The leftover lox66/71 site makes the insertion one-way.", "hold": 3 },
+      { "t": "In practice, each transformation yields a limited number of barcodes. Schmidlin et al. (2024) ran 24 transformations and kept 14: about 300,000 barcodes.", "hold": 2 },
+      { "t": "They discarded transformations with 'monster' barcodes above 1% of cells: with too many cells, one barcode can collect several different mutations.", "hold": 3 }
+    ]},
+    { "key": "evolve", "num": "12", "title": "Evolving the barcoded pool", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "The barcoded pool is evolved exactly as before: M3, 48-hour cycles, about 4 × 10⁷ cells per transfer. Levy et al. ran two replicates for 168 generations.", "hold": 3 },
+      { "t": "Barcoding is slightly mutagenic, so many beneficial mutations already exist at the start. The number of rising lineages peaks after a few dozen generations.", "hold": 3 },
+      { "t": "Every transfer is frozen. Later, the barcodes in each sample are extracted, amplified and counted.", "hold": 1.5 }
+    ]},
+    { "key": "extract", "num": "13", "title": "Counting barcodes I · Extract the DNA", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Zymolyase digests the yeast cell wall; a detergent then opens the cells and releases their DNA.", "hold": 2.5 },
+      { "t": "Guanidine thiocyanate, a chaotropic salt, makes DNA stick to a silica membrane at about pH 5. Washes remove proteins and salts.", "hold": 3 },
+      { "t": "A low-salt buffer releases clean DNA. About 200 ng is the DNA of 10⁷ cells, so every barcode is represented by many template copies.", "hold": 2.5 }
+    ]},
+    { "key": "pcr", "num": "14", "title": "Counting barcodes II · Two-step PCR", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Step one runs only 3 cycles. Primers bind the fixed sequences around the barcode and add a random 8-base UMI on each side, plus a sample index.", "hold": 3.5 },
+      { "t": "Each original molecule gets its own pair of UMIs. Copies made later share them, so duplicates can be recognised and counted once.", "hold": 3 },
+      { "t": "Magnetic SPRI beads clean up the product. The bead-to-sample ratio sets a size cutoff: amplicons bind to the beads; short primers wash away.", "hold": 4 },
+      { "t": "Step two runs about 25–35 cycles with primers that add the Illumina adapters and indexes. A 0.8× bead cleanup removes primer dimers.", "hold": 3 }
+    ]},
+    { "key": "count", "num": "15", "title": "Counting barcodes III · Reads to frequencies", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Libraries are quantified, pooled in equal amounts and sequenced. Dual indexes keep reads from being assigned to the wrong sample.", "hold": 2 },
+      { "t": "Each read is parsed into UMI, index, priming site and barcode. Barcodes are matched to the known list, allowing up to two errors.", "hold": 3.5 },
+      { "t": "Identical UMI–barcode pairs are PCR duplicates and collapse to one count. A barcode's count divided by all counts is its frequency.", "hold": 3 },
+      { "t": "Rules of thumb: pass at least 100 cells per barcode (better 1,000), read at least 100 reads per barcode per time point, stay under 50 generations.", "hold": 2.5 }
+    ]},
+    { "key": "infer", "num": "16", "title": "Inferring fitness", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "The model: each lineage changes as dfᵢ/dt = fᵢ (sᵢ − s̄), where s̄ = Σ fᵢ sᵢ is the mean fitness of the flask.", "hold": 3 },
+      { "t": "Then ln(fᵢ / f_ref) is a straight line in time. Its slope is sᵢ, measured against a reference set to zero.", "hold": 3 },
+      { "t": "With five time points, s comes from a weighted fit or a maximum-likelihood fit to the read counts. Points with few reads count less.", "hold": 3 },
+      { "t": "Neutral barcoded lineages show the noise floor: drift at every bottleneck plus the sampling of reads.", "hold": 3 }
+    ]},
+    { "key": "revealed", "num": "17", "title": "What lineage tracking revealed", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "In Levy's replicate E1, about 25,000 of roughly 500,000 lineages carried beneficial mutations.", "hold": 5 },
+      { "t": "Mutations worth more than 5% arose at about 10⁻⁶ per cell per generation. Most benefits were 2–5%.", "hold": 2.5 },
+      { "t": "Whole-population sequencing would have seen about 15 of them.", "hold": 3 }
+    ]},
+    { "key": "assay", "num": "18", "title": "Measuring hundreds of mutants at once", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Adaptive clones keep their barcodes, so hundreds can be pooled and measured in one flask.", "hold": 2 },
+      { "t": "The pool is mixed with about 90% ancestor (95% in strong drug). Each mutant then races the ancestor, and the mean fitness barely moves.", "hold": 3 },
+      { "t": "The ancestor must not use up the reads. Kinsler et al. (2020) cut its barcode with the enzyme ApaLI; Schmidlin et al. used an ancestor with no barcode.", "hold": 3 },
+      { "t": "About 1% barcoded ancestral control strains define fitness = 0 and anchor every slope.", "hold": 2.5 }
+    ]},
+    { "key": "design", "num": "19", "title": "Design · Twelve drug environments", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Schmidlin et al. (2024) asked whether drug-resistant mutants all pay the same costs elsewhere.", "hold": 1.5 },
+      { "t": "Twelve evolutions from one pool: fluconazole (FLU) at three doses, radicicol (RAD) at three doses, four combinations, DMSO, and no drug.", "hold": 3 },
+      { "t": "Doses came from plate-reader growth curves: 'low' did not slow growth, 'high' cut growth rate by about 15%, so barcode diversity survived.", "hold": 3 },
+      { "t": "After 3–6 cycles, while many lineages were rising, 2,000 colonies per condition (1,000 in high FLU) were scraped and pooled: about 21,000 isolates.", "hold": 3 },
+      { "t": "That pool was competed in all 12 conditions, twice each: 24 competitions of about 40 generations.", "hold": 2.5 }
+    ]},
+    { "key": "fingerprint", "num": "20", "title": "Fitness profiles as fingerprints", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "774 lineages had more than 500 reads in all 12 conditions: 9,288 fitness values.", "hold": 2.5 },
+      { "t": "Each lineage's 12 fitnesses form a fingerprint. Standardised and embedded with UMAP, they fall into 6 clusters plus the controls.", "hold": 4 },
+      { "t": "Clusters differ in tradeoffs. PDR1/PDR3 mutants resist high fluconazole; SUR1/UPC2 mutants win only at low doses; some RAD-resistant mutants also win with no drug.", "hold": 3 },
+      { "t": "Kinsler et al. (2020) used the same idea with 292 mutants in 45 environments: near home a few traits explain fitness; far away, hidden ones matter.", "hold": 2.5 }
+    ]},
+    { "key": "wgs1", "num": "21", "title": "Whole-genome sequencing I · Colony to library", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "A barcode says which lineage is fit, not why. To find the mutation, single clones are isolated and their whole genomes sequenced.", "hold": 2 },
+      { "t": "Cells from the pooled sample are plated, single colonies are grown in YPD, and their genomic DNA is purified.", "hold": 2.5 },
+      { "t": "Tagmentation: bead-bound transposomes cut the genome into fragments and attach adapter sequences in a single step (Illumina DNA Prep).", "hold": 4 },
+      { "t": "A short PCR of 6–10 cycles adds unique dual indexes. A double-sided bead selection keeps fragments of the right size.", "hold": 3 }
+    ]},
+    { "key": "wgs2", "num": "22", "title": "Whole-genome sequencing II · Sequencing by synthesis", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "On the flow cell, each fragment is copied in place into a cluster of about a thousand identical molecules.", "hold": 3 },
+      { "t": "Each cycle adds one fluorescent, reversibly blocked base to every cluster. A camera records the colour, the block and dye are removed, and the next cycle begins.", "hold": 5 },
+      { "t": "150 cycles from each end give 2 × 150 base paired reads: millions of them per genome.", "hold": 2.5 }
+    ]},
+    { "key": "wgs3", "num": "23", "title": "Whole-genome sequencing III · Finding the mutation", "lead": 0.8, "tail": 1.5, "beats": [
+      { "t": "Reads are aligned to the reference genome (sacCer3). They pile up, so every base is read many times over.", "hold": 3 },
+      { "t": "Where the reads disagree with the reference, GATK calls a variant. In a haploid clone, a real mutation appears in almost every read.", "hold": 3.5 },
+      { "t": "Variants also present in the ancestor, or shared by many unrelated lineages, are background and are removed. SnpEff names the gene and the amino-acid change.", "hold": 2.5 },
+      { "t": "Typically one or a few mutations per lineage: PDR1, PDR3, SUR1, UPC2, HDA1, IRA1… Changes in ploidy are checked separately by DNA staining and flow cytometry.", "hold": 3 }
+    ]},
+    { "key": "closing", "num": "24", "title": "The logic of the method", "lead": 0.8, "tail": 2.5, "beats": [
+      { "t": "Every step exists to remove one ambiguity.", "hold": 13 },
+      { "t": "Twenty random letters of DNA, copied faithfully, let us count evolution as it happens.", "hold": 4 }
+    ]},
+    { "key": "credits", "num": "", "title": "Sources", "lead": 0, "tail": 12, "beats": [] }
+  ]
+}

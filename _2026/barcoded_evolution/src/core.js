@@ -1,18 +1,17 @@
 // ───────────────────────────── core: math, easing, randomness ─────────────────────────────
 const W = 1920, H = 1080;
 
+// Welch-Labs-like: a black void, white type, a few saturated accents used sparingly
 const PAL = {
-  bg: '#08101f', bg2: '#0e1930', panel: 'rgba(18,30,56,0.72)', line: '#26365a',
-  ink: '#eaf0fb', dim: '#93a2c3', faint: '#4a5a80',
-  // nucleotides double as the categorical palette of the whole film
-  A: '#3fd49b', C: '#58a6ff', G: '#ffbf47', T: '#ff5f72',
-  violet: '#a98bff', ref: '#7d8aa6',
+  bg: '#000000', ink: '#f2f2f2', dim: '#8f8f8f', faint: '#3d3d3d', line: '#5c5c5c',
+  yellow: '#ffc845', blue: '#4ea8ff', green: '#3fd39b', red: '#ff5d5d', violet: '#b28cff', orange: '#ff9b40',
 };
-const BASE_COL = { A: PAL.A, C: PAL.C, G: PAL.G, T: PAL.T };
+// the four nucleotides double as the film's categorical colours
+const BASE_COL = { A: PAL.green, C: PAL.blue, G: PAL.yellow, T: PAL.red };
 const FONT = {
-  disp: '"Instrument Serif", "Iowan Old Style", Georgia, serif',
-  body: '"IBM Plex Sans", "Segoe UI", system-ui, sans-serif',
-  mono: '"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace',
+  sans: '"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif',
+  mono: '"IBM Plex Mono", ui-monospace, Menlo, monospace',
+  math: '"STIX Two Text", "Times New Roman", Times, serif',
 };
 
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
