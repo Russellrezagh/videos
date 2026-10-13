@@ -12,7 +12,7 @@ const data = [
   `const TIMING = ${JSON.stringify(timing)};`,
   `const NARRATION_SRC = ${JSON.stringify(audio)};`,
 ].join('\n');
-const js = ['core.js', 'domain.js', 'draw.js', 'scenes1.js', 'scenes2.js', 'music.js', 'player.js'].map(src).join('\n');
+const js = ['core.js', 'domain.js', 'draw.js', 'kit.js', 'scenes_a.js', 'scenes_b.js', 'music.js', 'player.js'].map(src).join('\n');
 const html = src('page.html').replace('/*@SCRIPT@*/', () => data).replace('/*@JS@*/', () => js);
 // standalone file for opening locally; the artifact copy omits the skeleton (the host adds it)
 const standalone = `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n${html}\n</body>\n</html>\n`;

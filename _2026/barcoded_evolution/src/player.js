@@ -242,9 +242,9 @@ function drawCaption(T, sc) {
     seek(0); rec.start(1000); play();
   };
 
-  // deep link to a chapter: #tracking, #svd, …
+  // deep link to a chapter: #clone, #bottleneck, …
   // behind the start card, show the bloom of barcoded cells (the title is on the card itself)
-  if (LINKED) seek(LINKED.start + 0.01); else seek(FILM.scenes[0].lines[1] ? FILM.scenes[0].start + FILM.scenes[0].lines[1].start + 4.8 : 10);
+  if (LINKED) seek(LINKED.start + 0.01); else seek(FILM.scenes[0].lines[2] ? FILM.scenes[0].start + FILM.scenes[0].lines[2].start + 4.6 : 10);
   $('runtime').textContent = fmt(FILM.total);
   bar.setAttribute('aria-valuemax', String(Math.round(FILM.total)));
   FILM.scenes.filter(sc => sc.num).forEach(sc => {

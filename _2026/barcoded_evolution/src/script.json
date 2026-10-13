@@ -1,178 +1,194 @@
 {
   "voice": "en_US-lessac-high",
-  "lengthScale": 0.98,
-  "gap": 0.7,
+  "lengthScale": 0.97,
+  "gap": 0.6,
   "scenes": [
     {
-      "key": "intro", "num": "", "title": "Evolution, Barcoded", "lead": 1.2, "tail": 9.0,
+      "key": "intro", "num": "", "title": "Evolution, Barcoded", "lead": 1.2, "tail": 7.5,
       "lines": [
-        {"t": "Evolution is usually reconstructed after the fact, from fossils and from the DNA of the survivors."},
-        {"t": "But what if we could watch it happen, live, in a flask, and follow every family of cells as it rises or falls?"}
+        {"t": "Evolution is history. And history, normally, happens only once."},
+        {"t": "Stephen Jay Gould asked what would happen if we could rewind the tape of life and play it again."},
+        {"t": "In a laboratory, we can. This film is about how it is done, and why each step of the method exists."}
       ]
     },
     {
-      "key": "experiment", "num": "01", "title": "What is an evolution experiment?", "lead": 1.0, "tail": 2.0,
+      "key": "why", "num": "01", "title": "Why evolve life in a flask?", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "That is the promise of an evolution experiment."},
-        {"t": "The recipe is simple. Start with an ancestor: a single clone, so every cell begins genetically identical."},
-        {"t": "Place it in an environment that poses a challenge. Here, a medium in which glucose, the yeast's favourite food, runs out."},
-        {"t": "Let it grow for hundreds or thousands of generations. Yeast in these experiments manage about eight generations every two days."},
-        {"t": "A thousand human generations take about twenty-five thousand years. For this yeast, about eight months."},
-        {"t": "Keep a frozen fossil record. Samples stored at minus eighty degrees can be revived, so the past can be compared directly with the present."},
-        {"t": "Run replicates, and you can ask which parts of evolution repeat, and which are chance."}
+        {"t": "In nature, we meet evolution after the fact. We see the survivors, never the losers, and never the alternatives."},
+        {"t": "An evolution experiment turns that history into a controlled experiment. It rests on four ideas."},
+        {"t": "Control: we choose the ancestor and the environment, so we know exactly what changed."},
+        {"t": "Replication: many populations start out identical, so we can separate what is repeatable from what is chance."},
+        {"t": "Time travel: microbes survive freezing, so the past stays alive and can be compared with the present."},
+        {"t": "And scale: one flask holds billions of cells, and hundreds of generations pass in a few months."}
       ]
     },
     {
-      "key": "transfer", "num": "02", "title": "Serial batch transfer", "lead": 1.0, "tail": 2.0,
+      "key": "recipe", "num": "02", "title": "The standard recipe", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "The most common format is serial batch transfer."},
-        {"t": "Cells go into fresh medium, wake up, and divide exponentially, fermenting glucose."},
-        {"t": "When the glucose is gone, they switch to respiring the ethanol they made, and growth slows to a crawl."},
-        {"t": "Every 48 hours, 400 µL of the 100 mL culture moves into a fresh flask: a 1-in-250 dilution.",
-         "say": "Every forty-eight hours, four hundred microlitres of the hundred-millilitre culture move into a fresh flask: a one-in-two-hundred-fifty dilution."},
-        {"t": "250 is roughly 2⁸, so each cycle is about eight generations of growth.",
-         "say": "Two hundred fifty is roughly two to the eighth power, so each cycle is about eight generations of growth."},
-        {"t": "The bottleneck still carries tens of millions of cells. The leftovers go into the freezer."},
-        {"t": "Meanwhile, every division risks a copying error. Most mutations do nothing or do harm. A rare few let cells grow faster."},
-        {"t": "A mutant just 5% fitter grows exponentially relative to everyone else, and can eventually take over.",
-         "say": "A mutant just five percent fitter grows exponentially relative to everyone else, and can eventually take over."}
+        {"t": "Most microbial evolution experiments follow the same recipe, and each step removes one source of ambiguity."},
+        {"t": "Start from one clone. Define the environment. Propagate by serial transfer. Freeze samples. Replicate. Measure fitness by competition."},
+        {"t": "Let's take the steps one at a time, and ask of each: what do we do, and why?"}
       ]
     },
     {
-      "key": "invisible", "num": "03", "title": "The invisible race", "lead": 1.0, "tail": 2.0,
+      "key": "clone", "num": "03", "title": "Step 1 · Start from one clone", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Here is the catch. Sequencing a whole population only reveals mutations that are already common, roughly 1% or more.",
-         "say": "Here is the catch. Sequencing a whole population only reveals mutations that are already common, roughly one percent or more."},
-        {"t": "By then the race is mostly over. Thousands of beneficial mutations arose and competed far below that line."},
-        {"t": "Most are lost to chance while still rare, or are outcompeted by fitter neighbours. This is clonal interference."},
-        {"t": "To truly see evolution, we would need to follow every lineage from its first cell. We would need to give every cell a name."}
+        {"t": "First, the ancestor is streaked thinly across a plate, and a single colony is picked: the descendants of one cell."},
+        {"t": "Why? Because then every cell in the starting population carries the same genome."},
+        {"t": "Any genetic difference that appears later must be a new mutation, born during the experiment."},
+        {"t": "Without this, a variant that rises might have been there from the start, and we could not tell new from old."},
+        {"t": "The ancestor's genome is sequenced too. It is the reference that every later genome is compared against."}
       ]
     },
     {
-      "key": "barcode", "num": "04", "title": "A name for every cell", "lead": 1.0, "tail": 2.0,
+      "key": "medium", "num": "04", "title": "Step 2 · Define the environment", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "That name is a DNA barcode."},
-        {"t": "A barcode is a short stretch of random DNA, about twenty letters, inserted at the same neutral spot in every cell's genome."},
-        {"t": "With four possible letters at each of twenty positions, there are over a trillion possible sequences, so two cells almost never share one."},
-        {"t": "The barcode does nothing for the cell. It does not change fitness. But it is copied every time the cell divides."},
-        {"t": "So every descendant inherits the same tag. A barcode marks a lineage: an entire family of cells."},
-        {"t": "And because every barcode sits between the same fixed sequences, all of them can be read at once: amplify with PCR, sequence, and count.",
-         "say": "And because every barcode sits between the same fixed sequences, all of them can be read at once: amplify with P C R, sequence, and count."}
+        {"t": "Next, choose the challenge. Here, a defined minimal medium in which glucose runs out before anything else."},
+        {"t": "Why defined? Every ingredient is known and weighed, so the selective pressure is the same in every flask, every week."},
+        {"t": "Why limit one nutrient? It makes the currency of competition clear: above all, the cells are racing for glucose."},
+        {"t": "Temperature, volume, flask shape and shaking speed are fixed as well, because each of them is part of the environment."},
+        {"t": "Change any of them, and the meaning of fitter changes too. That idea returns at the end."}
       ]
     },
     {
-      "key": "crelox", "num": "05", "title": "Installing the barcodes", "lead": 1.0, "tail": 2.5,
+      "key": "transfer", "num": "05", "title": "Step 3 · Serial transfer", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Levy and colleagues built this system in baker's yeast in 2015. First, they engineered a landing pad into the genome.",
-         "say": "Levy and colleagues built this system in baker's yeast in twenty fifteen. First, they engineered a landing pad into the genome."},
-        {"t": "It carries the Cre recombinase gene, switched on by galactose, half of the URA3 gene, and a modified lox site.",
-         "say": "It carries the Cree recombinase gene, switched on by galactose, half of the U R A 3 gene, and a modified lox site."},
-        {"t": "Next, a plasmid library: each plasmid with its own random barcode, the other half of URA3, and a partner lox site.",
-         "say": "Next, a plasmid library: each plasmid with its own random barcode, the other half of U R A 3, and a partner lox site."},
-        {"t": "On galactose, cells make Cre, which recombines the two lox sites and stitches the plasmid into the chromosome.",
-         "say": "On galactose, cells make Cree, which recombines the two lox sites and stitches the plasmid into the chromosome."},
-        {"t": "The two URA3 halves join into one working gene, with the barcode inside an artificial intron that is spliced out.",
-         "say": "The two U R A 3 halves join into one working gene, with the barcode inside an artificial intron that is spliced out."},
-        {"t": "Only integrated cells can grow without uracil. And one of the new lox sites is doubly mutated, so Cre can barely pull the barcode back out.",
-         "say": "Only integrated cells can grow without uracil. And one of the new lox sites is doubly mutated, so Cree can barely pull the barcode back out."}
+        {"t": "Now the population grows. Over 48 hours the cells wake up, ferment glucose, switch to respiring ethanol, and finally stop.",
+         "say": "Now the population grows. Over forty-eight hours the cells wake up, ferment glucose, switch to respiring ethanol, and finally stop."},
+        {"t": "Then a small sample, 400 µL of the 100 mL, is moved into fresh medium, and the cycle repeats.",
+         "say": "Then a small sample, four hundred microlitres of the hundred millilitres, is moved into fresh medium, and the cycle repeats."},
+        {"t": "Why transfer at all? A closed flask is a dead end. Transfers let evolution run for as long as we like."},
+        {"t": "Why this dilution? After a 250-fold dilution, the cells must double about eight times to refill the flask: eight generations per cycle.",
+         "say": "Why this dilution? After a two-hundred-fifty-fold dilution, the cells must double about eight times to refill the flask: eight generations per cycle."},
+        {"t": "And the environment is a cycle of feast and famine, not a constant. Selection acts on every phase: waking quickly, growing fast, switching well."},
+        {"t": "A chemostat, the main alternative, holds conditions constant instead. Each design asks a slightly different question."}
       ]
     },
     {
-      "key": "reading", "num": "06", "title": "Reading half a million names", "lead": 1.0, "tail": 2.0,
+      "key": "bottleneck", "num": "06", "title": "Why the bottleneck size matters", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "The result: about half a million yeast lineages, each carrying its own unique barcode."},
-        {"t": "At every transfer, cells left over after the bottleneck are frozen. Later, their DNA is extracted and the barcode region is amplified by PCR.",
-         "say": "At every transfer, cells left over after the bottleneck are frozen. Later, their DNA is extracted and the barcode region is amplified by P C R."},
-        {"t": "Each primer carries a random unique molecular identifier, so copies of the same original molecule are counted only once."},
-        {"t": "Sample-specific index sequences let many time points share a single sequencing run."},
-        {"t": "Millions of reads are matched to known barcodes. Counting them gives the frequency of every lineage at every time point."},
-        {"t": "A barcode's frequency over time is a lineage's life story."}
+        {"t": "How many cells to transfer is not a detail. It sets the balance between selection and chance."},
+        {"t": "Every transfer is a random draw. A new mutant that is still a single cell is easily left behind, however good it is."},
+        {"t": "A mutant with a 5% advantage must reach roughly twenty cells, about one over its advantage, before it is reliably safe from that lottery.",
+         "say": "A mutant with a five percent advantage must reach roughly twenty cells, about one over its advantage, before it is reliably safe from that lottery."},
+        {"t": "Large transfers also mean a large supply of mutations: the number arising each generation is population size times mutation rate."},
+        {"t": "With tens of millions of cells per transfer, many good mutations arise and some survive. With a tiny bottleneck, chance would throw most of them away."}
       ]
     },
     {
-      "key": "tracking", "num": "07", "title": "Watching 500,000 lineages", "lead": 1.0, "tail": 2.5,
+      "key": "freeze", "num": "07", "title": "Steps 4 & 5 · Freeze and replicate", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Two replicate populations, E1 and E2, evolved under glucose limitation for about 168 generations, sampled every eight.",
-         "say": "Two replicate populations, E one and E two, evolved under glucose limitation for about one hundred sixty-eight generations, sampled every eight."},
-        {"t": "At first every lineage is tiny, about two cells in a million. As the population improves, neutral lineages slowly decline."},
-        {"t": "But some lineages bend upward. Each rising line carries a beneficial mutation."},
-        {"t": "From each curve's shape, the authors inferred two numbers: how much fitter the mutant is, and when the mutation arose."},
-        {"t": "In replicate E1, about 25,000 lineages carried beneficial mutations worth more than 2%.",
-         "say": "In replicate E one, about twenty-five thousand lineages carried beneficial mutations worth more than two percent."},
-        {"t": "Mutations worth more than 5% arose at roughly one per million cells per generation.",
-         "say": "Mutations worth more than five percent arose at roughly one per million cells per generation."},
-        {"t": "Most benefits were small, 2 to 5%, but the distribution was not a simple exponential. It had bumps at larger effects.",
-         "say": "Most benefits were small, two to five percent, but the distribution was not a simple exponential. It had bumps at larger effects."},
-        {"t": "Many adaptive mutations were already present at the start, arising during the growth that followed barcoding."},
-        {"t": "Whole-population sequencing would have caught perhaps fifteen of them."}
+        {"t": "At every transfer, the leftover cells are frozen at minus eighty degrees, in a solution that protects them from ice."},
+        {"t": "Why? The frozen samples are a fossil record that can be revived. Ancestors and descendants can be grown side by side and compared directly."},
+        {"t": "They also let evolution be replayed from any point, and they are insurance against contamination."},
+        {"t": "And the experiment is run in replicate: several populations from the same ancestor, in identical conditions."},
+        {"t": "Why? If independent populations hit the same gene again and again, chance is an unlikely explanation. Parallel evolution is a signature of selection."}
       ]
     },
     {
-      "key": "mutants", "num": "08", "title": "Who are the winners?", "lead": 1.0, "tail": 2.0,
+      "key": "compete", "num": "08", "title": "Step 6 · Measure fitness by competition", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Next, thousands of barcoded clones were isolated, and hundreds were whole-genome sequenced by Venkataram and colleagues in 2016.",
-         "say": "Next, thousands of barcoded clones were isolated, and hundreds were whole-genome sequenced by Venkataram and colleagues in twenty sixteen."},
-        {"t": "Many had simply doubled their genome and become diploid. Most others carried a single mutation in a nutrient-sensing pathway."},
-        {"t": "Above all Ras/PKA, with hits in IRA1, IRA2, GPB2 and PDE2, all brakes on the pathway, plus a few in TOR/Sch9.",
-         "say": "Above all, Ras P K A, with hits in I R A 1, I R A 2, G P B 2 and P D E 2, all brakes on the pathway, plus a few in TOR, S C H 9."},
-        {"t": "Hundreds of distinct mutations, but only a handful of genes, and essentially two pathways."},
-        {"t": "So do these adaptive mutants all change the same few traits? In 2020, Kinsler, Geiler-Samerotte and Petrov set out to ask.",
-         "say": "So do these adaptive mutants all change the same few traits? In twenty twenty, Kinsler, Geiler-Samerotte and Petrov set out to ask."}
+        {"t": "Finally, how do we know a population has adapted? We measure fitness, and fitness is always relative."},
+        {"t": "The evolved strain is mixed with a marked copy of the ancestor in one flask, and their ratio is tracked over several cycles."},
+        {"t": "Why compete, instead of measuring growth rate? Because selection sees the whole cycle: lag, growth, the switch, and survival. A head-to-head race adds them all up."},
+        {"t": "Because both grow exponentially, the log of their ratio changes along a straight line. Its slope is the fitness advantage."},
+        {"t": "This is the core measurement of the field. And it has a blind spot."}
       ]
     },
     {
-      "key": "assay", "num": "09", "title": "Measuring fitness with barcodes", "lead": 1.0, "tail": 2.5,
+      "key": "limit", "num": "09", "title": "The blind spot", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Because each mutant is barcoded, all of their fitnesses can be measured at once, in one flask."},
-        {"t": "A pool of barcoded mutants is mixed with the ancestral reference strain, which makes up 90% of the cells.",
-         "say": "A pool of barcoded mutants is mixed with the ancestral reference strain, which makes up ninety percent of the cells."},
-        {"t": "Each mutant competes against the ancestor, and the population's average fitness barely moves."},
-        {"t": "The pool is propagated as in the evolution: 48-hour cycles, about fifty million cells per transfer, five time points.",
-         "say": "The pool is propagated as in the evolution: forty-eight-hour cycles, about fifty million cells per transfer, five time points."},
-        {"t": "The reference barcode carries a restriction site, so it is cut away before sequencing, saving reads for the mutants."},
-        {"t": "Fitness is the slope of each barcode's log frequency over time, corrected for mean fitness, which is tracked with neutral lineages."}
+        {"t": "Sequencing a whole population reveals a mutation only once it is common, about 1% or more.",
+         "say": "Sequencing a whole population reveals a mutation only once it is common, about one percent or more."},
+        {"t": "But every beneficial mutation starts as a single cell, and most of the story happens long before that."},
+        {"t": "Thousands arise. Most are lost to chance. Others are outcompeted by fitter neighbours, which is called clonal interference."},
+        {"t": "So the standard approach shows us the winners, but not the race: not how many contenders there were, or how good they were."},
+        {"t": "To see the race, we would need to follow every lineage from its very first cell."}
       ]
     },
     {
-      "key": "environments", "num": "10", "title": "Forty-five environments", "lead": 1.0, "tail": 2.5,
+      "key": "idea", "num": "10", "title": "Step 7 · Barcode every cell", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "They measured 292 adaptive mutants in 45 environments.",
-         "say": "They measured two hundred ninety-two adaptive mutants in forty-five environments."},
-        {"t": "Nine were repeats of the original evolution condition. The rest nudged it: more glucose, a baffled flask, shorter or longer transfers, salt, or drugs."},
-        {"t": "Variation between the repeats set the yardstick for what counts as a subtle perturbation."},
-        {"t": "Twenty-five environments fell within that range. Twenty were strong perturbations."},
-        {"t": "Near home, the ranking of mutants is largely preserved. IRA1 nonsense mutants stay on top.",
-         "say": "Near home, the ranking of mutants is largely preserved. I R A 1 nonsense mutants stay on top."},
-        {"t": "Far from home, surprises appear. In salt, IRA1 and PDE2 mutants suffer, but GPB2 mutants do not. With long transfers, IRA1 nonsense mutants become deleterious.",
-         "say": "Far from home, surprises appear. In salt, I R A 1 and P D E 2 mutants suffer, but G P B 2 mutants do not. With long transfers, I R A 1 nonsense mutants become deleterious."}
+        {"t": "In 2015, Levy and colleagues flipped the problem. Instead of following mutations, which we cannot predict, follow lineages, which we can label in advance.",
+         "say": "In twenty fifteen, Levy and colleagues flipped the problem. Instead of following mutations, which we cannot predict, follow lineages, which we can label in advance."},
+        {"t": "Before evolution starts, every cell receives a DNA barcode: a short random sequence, about twenty letters long."},
+        {"t": "When a lineage gains a beneficial mutation, its barcode becomes more common. We detect the mutation by its effect, without knowing what it is."},
+        {"t": "Each property of the barcode has a reason. Random, so half a million lineages each get a unique tag: there are over a trillion possible sequences."},
+        {"t": "Neutral, so the tag itself never changes fitness. Stable and inherited, so every descendant carries it."},
+        {"t": "And always at the same spot, between fixed sequences, so one PCR reaction can read them all at once.",
+         "say": "And always at the same spot, between fixed sequences, so one P C R reaction can read them all at once."}
       ]
     },
     {
-      "key": "svd", "num": "11", "title": "Counting hidden phenotypes", "lead": 1.0, "tail": 2.5,
+      "key": "build", "num": "11", "title": "Installing half a million barcodes", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Different fitness profiles imply different effects on phenotype. But how many phenotypes?"},
-        {"t": "The trick is to treat fitness as a matrix, mutants by environments, and factor it with singular value decomposition."},
-        {"t": "Each mutant becomes a point in an abstract phenotype space. Each environment becomes a set of weights: how much each phenotype matters there."},
-        {"t": "Across the subtle environments, eight components rose above measurement noise. The first alone explained 95% of the variation.",
-         "say": "Across the subtle environments, eight components rose above measurement noise. The first alone explained ninety-five percent of the variation."},
-        {"t": "Trained on just 60 mutants, the model predicted the other 232, including mutants in genes it had never seen.",
-         "say": "Trained on just sixty mutants, the model predicted the other two hundred thirty-two, including mutants in genes it had never seen."},
-        {"t": "Then the real test: the strong environments. There, the eight-component model explained 29 to 95% of the variation.",
-         "say": "Then the real test: the strong environments. There, the eight-component model explained twenty-nine to ninety-five percent of the variation."},
-        {"t": "In high salt, the first component alone does worse than guessing the average. With all eight, the model explains 72%.",
-         "say": "In high salt, the first component alone does worse than guessing the average. With all eight, the model explains seventy-two percent."}
+        {"t": "Putting half a million barcodes into the same spot of the genome takes efficient and precise DNA surgery."},
+        {"t": "So a landing pad was built into chromosome II, carrying the Cre recombinase gene behind a galactose switch, and half of the URA3 gene.",
+         "say": "So a landing pad was built into chromosome two, carrying the Cree recombinase gene behind a galactose switch, and half of the U R A 3 gene."},
+        {"t": "A plasmid library carries the barcodes, each beside the other half of URA3. Cre stitches a plasmid into the landing pad at matching lox sites.",
+         "say": "A plasmid library carries the barcodes, each beside the other half of U R A 3. Cree stitches a plasmid into the landing pad at matching lox sites."},
+        {"t": "Why split URA3? Only a correct integration rebuilds a working gene, so only correctly barcoded cells can grow without uracil. Selection does the quality control.",
+         "say": "Why split U R A 3? Only a correct integration rebuilds a working gene, so only correctly barcoded cells can grow without uracil. Selection does the quality control."},
+        {"t": "Why the galactose switch? Cre acts only when we want it to. And the leftover lox site is doubly crippled, so the integration is one-way and the barcode stays put.",
+         "say": "Why the galactose switch? Cree acts only when we want it to. And the leftover lox site is doubly crippled, so the integration is one-way and the barcode stays put."}
       ]
     },
     {
-      "key": "meaning", "num": "12", "title": "Locally modular, globally pleiotropic", "lead": 1.0, "tail": 2.0,
+      "key": "census", "num": "12", "title": "Step 8 · Count the lineages", "lead": 1.0, "tail": 2.0,
       "lines": [
-        {"t": "Here is the twist. The three smallest components explained only about 1% of fitness variation near home.",
-         "say": "Here is the twist. The three smallest components explained only about one percent of fitness variation near home."},
-        {"t": "Far away, they mattered: in the six-day transfer environment, they added nearly half of the explained variation."},
-        {"t": "Adaptive mutations, the authors conclude, are locally modular: they affect only a few traits that matter where they evolved."},
-        {"t": "But they are globally pleiotropic, carrying hidden side effects that surface in new environments."},
-        {"t": "Mutants that look alike today may answer tomorrow's challenges very differently. That matters for cancer, for infections, and for predicting evolution itself."},
-        {"t": "And it all rests on a simple idea: twenty random letters of DNA, copied faithfully, that let us count evolution as it happens."}
+        {"t": "Two replicate populations of about half a million lineages were then evolved by serial transfer for about 168 generations.",
+         "say": "Two replicate populations of about half a million lineages were then evolved by serial transfer for about one hundred sixty-eight generations."},
+        {"t": "At each transfer, DNA is extracted from millions of frozen cells, so that every lineage is fairly represented, and the barcode region is amplified by PCR.",
+         "say": "At each transfer, DNA is extracted from millions of frozen cells, so that every lineage is fairly represented, and the barcode region is amplified by P C R."},
+        {"t": "PCR copies some molecules more than others. So each molecule is first tagged with a random identifier, a UMI, and copies sharing a UMI are counted once.",
+         "say": "P C R copies some molecules more than others. So each molecule is first tagged with a random identifier, a U M I, and copies sharing a U M I are counted once."},
+        {"t": "Index sequences label each sample, so many time points share one sequencing run. Reads per barcode give each lineage's frequency."},
+        {"t": "Even neutral lineages wobble, through drift and sampling. Measuring that noise is what lets real selection be told apart from luck."}
+      ]
+    },
+    {
+      "key": "revealed", "num": "13", "title": "What the census revealed", "lead": 1.0, "tail": 2.5,
+      "lines": [
+        {"t": "The trajectories tell the story. Neutral lineages slowly sink as the population improves. Lineages carrying beneficial mutations bend upward."},
+        {"t": "From each curve's shape, the authors inferred how strong the mutation is and when it arose."},
+        {"t": "In one replicate, about 25,000 lineages carried beneficial mutations. Those worth more than 5% arose at about one per million cells per generation.",
+         "say": "In one replicate, about twenty-five thousand lineages carried beneficial mutations. Those worth more than five percent arose at about one per million cells per generation."},
+        {"t": "Most benefits were small, and many mutations were already present before the experiment began."},
+        {"t": "Bulk sequencing would have seen about fifteen. The barcodes turned one history into a measurement of the whole range of possibilities."}
+      ]
+    },
+    {
+      "key": "instrument", "num": "14", "title": "Barcodes as a measuring instrument", "lead": 1.0, "tail": 2.0,
+      "lines": [
+        {"t": "The barcodes stay useful after evolution ends. Adaptive clones, still tagged, can be pooled and measured all at once."},
+        {"t": "In 2020, Kinsler, Geiler-Samerotte and Petrov competed hundreds of them together, against the ancestor at 90% of the flask.",
+         "say": "In twenty twenty, Kinsler, Geiler-Samerotte and Petrov competed hundreds of them together, against the ancestor at ninety percent of the flask."},
+        {"t": "Why 90%? Each mutant then races the ancestor rather than the other mutants, and the average fitness of the flask barely moves.",
+         "say": "Why ninety percent? Each mutant then races the ancestor rather than the other mutants, and the average fitness of the flask barely moves."},
+        {"t": "Why cut the ancestor's barcode with a restriction enzyme? Otherwise nine reads in ten would be spent on the ancestor."},
+        {"t": "And neutral barcoded lineages show how the mean fitness drifts, so that every mutant's slope can be corrected."}
+      ]
+    },
+    {
+      "key": "environments", "num": "15", "title": "Why change the environment?", "lead": 1.0, "tail": 2.5,
+      "lines": [
+        {"t": "One number says how fit a mutant is, but not why. So they measured 292 mutants in 45 environments.",
+         "say": "One number says how fit a mutant is, but not why. So they measured two hundred ninety-two mutants in forty-five environments."},
+        {"t": "Some were subtle nudges, judged against the variation between repeats of the original condition. Others were strong: salt, drugs, longer transfers."},
+        {"t": "A mutant's fitness across environments is a fingerprint of its phenotype. Mutants that respond alike probably change similar traits."},
+        {"t": "Near home, the fingerprints reduce to eight hidden traits, and the first explains 95% of the variation.",
+         "say": "Near home, the fingerprints reduce to eight hidden traits, and the first explains ninety-five percent of the variation."},
+        {"t": "But traits that barely mattered at home mattered a lot far away. In high salt, mutants that looked alike behaved very differently."}
+      ]
+    },
+    {
+      "key": "closing", "num": "16", "title": "The logic of the method", "lead": 1.0, "tail": 3.0,
+      "lines": [
+        {"t": "Adaptive mutations, the authors conclude, are locally modular but globally pleiotropic: simple where they evolved, complex elsewhere."},
+        {"t": "Look back at the chain of reasoning. One clone, so change means mutation. A defined medium, so we know the challenge. Large transfers, so selection beats chance."},
+        {"t": "Frozen samples and replicates, so history can be compared and repeated. Competition, so fitness means what selection means."},
+        {"t": "And barcodes, so the whole race becomes countable, not just the winners."},
+        {"t": "Twenty random letters of DNA, copied faithfully, let us count evolution as it happens."}
       ]
     },
     {

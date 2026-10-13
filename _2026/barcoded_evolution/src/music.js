@@ -9,7 +9,7 @@ const Score = (() => {
     [34, 46, 57, 62, 65, 69], [38, 50, 57, 60, 64, 69],
   ];
   const SCALE = [62, 65, 67, 69, 72, 74, 77, 79, 81, 84];
-  const DENS = { intro: 0.3, tracking: 0.32, meaning: 0.28, credits: 0.2 };
+  const DENS = { intro: 0.3, why: 0.24, revealed: 0.32, closing: 0.28, credits: 0.2 };
   const BEAT = 0.6;
   const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 

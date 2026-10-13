@@ -228,3 +228,52 @@ const FitnessAtlas = (() => {
   const varFrac = dec.S.map(x => x * x / tot);
   return { mutants, F, ecFit, rowOrder, z, subtleCols, dec, varFrac };
 })();
+
+// ───────────────────────────── the method itself ─────────────────────────────
+// The standard serial-transfer protocol, extended with barcoding. Each step records what is done
+// and the ambiguity it removes; the film's step rail and closing recap are drawn from this list.
+const PROTOCOL = [
+  { key: 'clone',     label: 'clone',     what: 'Start from one clone',            so: 'any change is a new mutation' },
+  { key: 'medium',    label: 'medium',    what: 'Define the environment',          so: 'the challenge is known and repeatable' },
+  { key: 'transfer',  label: 'transfer',  what: 'Transfer with a large bottleneck', so: 'evolution runs on, and selection beats chance' },
+  { key: 'freeze',    label: 'freeze',    what: 'Freeze every transfer',           so: 'the past can be revived and compared' },
+  { key: 'replicate', label: 'replicate', what: 'Run replicate populations',       so: 'repeatable can be told from chance' },
+  { key: 'compete',   label: 'compete',   what: 'Compete against the ancestor',    so: 'fitness means what selection means' },
+  { key: 'barcode',   label: 'barcode',   what: 'Barcode every cell',              so: 'every lineage can be followed', ext: true },
+  { key: 'count',     label: 'count',     what: 'Count barcodes by sequencing',    so: 'the whole race becomes measurable', ext: true },
+];
+/** which protocol steps each chapter is about */
+const SCENE_STEPS = { clone: [0], medium: [1], transfer: [2], bottleneck: [2], freeze: [3, 4], compete: [5], limit: [5], idea: [6], build: [6], census: [7] };
+
+function poisson(r, lam) {
+  if (lam > 30) return Math.max(0, Math.round(lam + Math.sqrt(lam) * gauss(r)));
+  let L = Math.exp(-lam), k = 0, p = 1;
+  do { k++; p *= r(); } while (p > L);
+  return k - 1;
+}
+/** The establishment lottery: new mutants start as one cell; each generation every cell leaves
+ *  Poisson(1 + s) offspring. Most lineages die out by chance; those that reach ~1/s cells grow on
+ *  almost deterministically. Returns cell counts per generation. */
+function establishmentLottery(n = 40, s = 0.05, gens = 160, seed = 8) {
+  const r = rng(seed), out = [];
+  for (let i = 0; i < n; i++) {
+    let x = 1; const y = [1];
+    for (let t = 1; t <= gens; t++) { x = x > 3000 ? x * (1 + s) : x > 0 ? poisson(r, x * (1 + s)) : 0; y.push(x); }
+    out.push(y);
+  }
+  return out;
+}
+/** Two strains sharing one batch culture: growth rate alone can mislead, the shared cycle decides. */
+const RaceModel = {
+  X: { r: 0.50, lag: 4.0, label: 'faster growth, long lag' },
+  Y: { r: 0.42, lag: 1.0, label: 'slower growth, short lag' },
+  logN(st, h) { return Math.log10(5e7) + Math.max(0, h - st.lag) * st.r * Math.LOG10E; },
+  /** glucose runs out when the shared culture reaches ~1.25e10 cells */
+  depletion() {
+    for (let h = 0; h < 48; h += 0.01) {
+      const tot = 0.5 * Math.pow(10, this.logN(this.X, h)) + 0.5 * Math.pow(10, this.logN(this.Y, h));
+      if (tot > 1.25e10) return h;
+    }
+    return 48;
+  },
+};
