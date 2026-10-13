@@ -1860,7 +1860,7 @@ SCENES.infer = {
     // weighting by reads
     const wA = vis(t, c(2), c(3), 0.6, 0.6);
     if (wA > 0) {
-      math('L  =  C ∏ f_i(t)^{n_i(t)}', 1100, 390, { size: 40, color: PAL.dim, alpha: wA });
+      math('L  =  C ∏ f_i(t)^{nᵢ(t)}', 1100, 390, { size: 40, color: PAL.dim, alpha: wA });
       const P = axes({ x: 200, y: 470, w: 760, h: 330 }, [0, 4], [-0.8, 2.2], { xt: [[0, 'T0'], [1, 'T1'], [2, 'T2'], [3, 'T3'], [4, 'T4']], yt: [[0, '0']], yl: 'ln(fᵢ / f_ref), one lineage' });
       P.draw(wA);
       const reads = [900, 640, 380, 60, 25], vals = [0, 0.42, 0.85, 1.6, 0.9];
