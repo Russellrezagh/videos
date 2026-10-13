@@ -1,0 +1,29 @@
+// Render frames at given film times to JPEGs, and report console errors.
+// Usage: node build/shots.js <outdir> <t1> <t2> ... | node build/shots.js <outdir> --scenes
+const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const path = require('path'), fs = require('fs');
+(async () => {
+  const [outdir, ...args] = process.argv.slice(2);
+  fs.mkdirSync(outdir, { recursive: true });
+  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+  const errors = [];
+  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('pageerror', e => errors.push(String(e)));
+  await page.goto('file://' + path.resolve(__dirname, '..', 'evolution_barcoded.html'));
+  await page.waitForFunction(() => window.FILM_API);
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(500);
+  let times = args.map(Number);
+  if (args[0] === '--scenes') {
+    const sc = await page.evaluate(() => FILM_API.scenes);
+    times = sc.flatMap(s => [0.25, 0.5, 0.75].map(f => +(s.start + s.dur * f).toFixed(1)));
+  }
+  await page.screenshot({ path: path.join(outdir, 'page.png') });
+  for (const T of times) {
+    const url = await page.evaluate(([T]) => FILM_API.frame(T, 960, 0.8), [T]);
+    fs.writeFileSync(path.join(outdir, `t${String(T.toFixed(1)).padStart(6, '0')}.jpg`), Buffer.from(url.split(',')[1], 'base64'));
+  }
+  console.log('frames:', times.length, 'errors:', errors.length ? errors.slice(0, 10) : 'none');
+  await browser.close();
+})();

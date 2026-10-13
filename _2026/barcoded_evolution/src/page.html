@@ -1,0 +1,112 @@
+<title>Evolution, Barcoded</title>
+<meta name="description" content="A 10-minute animated, narrated explainer on evolution experiments and DNA barcode lineage tracking in yeast (Levy et al. 2015; Kinsler, Geiler-Samerotte & Petrov 2020).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+  /* Layout: a cinema — one 16:9 screen, a quiet transport bar under it, the chapter index below. */
+  :root {
+    --bg: #050a14;          /* the room */
+    --screen: #08101f;      /* the film's own ground */
+    --ink: #eaf0fb;
+    --dim: #93a2c3;
+    --line: #22325a;
+    --accent: #ffbf47;      /* G, the amber nucleotide */
+    --a: #3fd49b; --c: #58a6ff; --t: #ff5f72;
+    --disp: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); padding-inline: 16px; padding-block: 16px 40px; box-sizing: border-box; }
+  .wrap { max-width: min(1280px, calc((100vh - 120px) * 16 / 9)); min-width: 0; margin-inline: auto; display: grid; gap: 12px; }
+  #stage { position: relative; background: var(--screen); border-radius: 10px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px var(--line); }
+  #stage:fullscreen { border-radius: 0; display: grid; place-items: center; background: #000; }
+  #stage:fullscreen canvas { max-height: 100vh; width: auto; max-width: 100vw; }
+  canvas { display: block; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; cursor: pointer; }
+  #overlay { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(5,10,20,0.72), rgba(5,10,20,0.92)); }
+  #sub { min-height: 3em; margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink); text-align: center; text-wrap: balance; }
+  .card { text-align: center; padding-inline: 16px; display: grid; gap: clamp(6px, 1.4vw, 14px); justify-items: center; }
+  .eyebrow { font: 600 clamp(10px, 1.1vw, 13px) var(--mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); }
+  .card h1 { margin: 0; font: italic 400 clamp(34px, 7vw, 92px)/1 var(--disp); text-wrap: balance; }
+  .card p { margin: 0; color: var(--dim); max-width: 60ch; font-size: clamp(12px, 1.4vw, 17px); text-wrap: balance; }
+  #start { font: 600 clamp(14px, 1.6vw, 18px) var(--body); color: #061022; background: var(--accent); border: 0; border-radius: 999px; padding: clamp(8px, 1.2vw, 14px) clamp(20px, 3vw, 34px); cursor: pointer; display: inline-flex; gap: 10px; align-items: center; }
+  #start:hover { filter: brightness(1.08); }
+  #start::before { content: ""; border-left: 12px solid currentColor; border-block: 8px solid transparent; }
+  .keys { font: 12px var(--mono); color: #66789f; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+  button, select { font: 500 13px var(--body); color: var(--ink); background: #0f1a33; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  button:hover, select:hover { border-color: #3a4f80; }
+  button:focus-visible, select:focus-visible, #bar:focus-visible, #start:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button[aria-pressed="false"] { color: var(--dim); text-decoration: line-through; text-decoration-color: rgba(147,162,195,0.6); }
+  #play { min-width: 78px; background: var(--ink); color: #061022; border-color: var(--ink); font-weight: 600; }
+  #rec.on { background: var(--t); border-color: var(--t); color: #fff; }
+  #time { font: 13px var(--mono); color: var(--dim); font-variant-numeric: tabular-nums; min-width: 92px; }
+  .spacer { flex: 1 1 auto; }
+  #bar { position: relative; flex: 1 1 100%; order: -1; height: 22px; cursor: pointer; touch-action: none; }
+  #bar::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 4px; background: var(--line); border-radius: 2px; }
+  #fill { position: absolute; left: 0; top: 9px; height: 4px; background: var(--accent); border-radius: 2px; width: 0; }
+  #fill::after { content: ""; position: absolute; right: -6px; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(255,191,71,0.18); }
+  .tick { position: absolute; top: 6px; width: 2px; height: 10px; background: #50618c; transform: translateX(-1px); }
+  #tip { position: absolute; bottom: 24px; transform: translateX(-50%); white-space: nowrap; font: 12px var(--mono); background: #0f1a33; border: 1px solid var(--line); padding: 3px 8px; border-radius: 6px; pointer-events: none; }
+  .about { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; padding-top: 8px; border-top: 1px solid var(--line); }
+  .about h2 { font: 400 26px/1.15 var(--disp); margin: 4px 0 8px; text-wrap: balance; }
+  .about p { margin: 0 0 10px; color: var(--dim); max-width: 65ch; }
+  .about ol { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 20px; font-size: 13px; }
+  .about li { break-inside: avoid; padding: 3px 0; }
+  .about li a { color: var(--ink); text-decoration: none; }
+  .about li a:hover { color: var(--accent); }
+  .about li span { font-family: var(--mono); color: var(--accent); margin-right: 6px; font-size: 12px; }
+  .about .src a { color: var(--c); }
+  @media (max-width: 720px) {
+    .about { grid-template-columns: minmax(0, 1fr); }
+    .about ol { columns: 1; }
+    .keys, .card p { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { #fill::after { box-shadow: none; } }
+</style>
+
+<div class="wrap">
+  <div id="stage">
+    <canvas id="cv" width="1280" height="720" aria-label="Animated film: Evolution, Barcoded"></canvas>
+    <div id="overlay">
+      <div class="card">
+        <div class="eyebrow">A narrated film · <span id="runtime">10:00</span> · <span id="chaptercount">12</span> chapters</div>
+        <h1>Evolution, Barcoded</h1>
+        <p>What an evolution experiment is, how DNA barcodes let us follow 500,000 yeast lineages at once, and what they revealed about the hidden side effects of adaptation.</p>
+        <button id="start" type="button">Play with sound</button>
+        <div class="keys">space play/pause · ← → 5 s · [ ] chapters · c captions · m music · f fullscreen</div>
+      </div>
+    </div>
+  </div>
+  <p id="sub" hidden></p>
+  <div class="controls">
+    <div id="bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="621"><div id="fill"></div><div id="tip" hidden></div></div>
+    <button id="play" type="button">Play</button>
+    <span id="time">0:00 / 0:00</span>
+    <select id="chapters" aria-label="Chapter"></select>
+    <span class="spacer"></span>
+    <button id="cc" type="button" aria-pressed="true" title="Captions (c)">Captions</button>
+    <button id="voice" type="button" aria-pressed="true" title="Narration voice">Voice</button>
+    <button id="music" type="button" aria-pressed="true" title="Music (m)">Music</button>
+    <select id="rate" aria-label="Playback speed"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select>
+    <button id="fs" type="button" title="Fullscreen (f)">Fullscreen</button>
+    <button id="rec" type="button" hidden title="Plays the whole film and saves it as a video file">Record WebM</button>
+  </div>
+  <section class="about">
+    <div>
+      <h2>Counting evolution as it happens</h2>
+      <p>Part one explains how a laboratory evolution experiment works: a clonal ancestor, a challenging environment, serial batch transfers every 48 hours, and a frozen fossil record. Part two follows the Levy et al. (2015) barcoding system, where a random 20-nucleotide tag is stitched into each yeast genome by Cre–lox recombination, so that sequencing can track every lineage in a population of 10⁸ cells.</p>
+      <p>Part three follows Kinsler, Geiler-Samerotte &amp; Petrov (2020), who used the same barcodes to measure 292 adaptive mutants in 45 environments and found them locally modular yet globally pleiotropic.</p>
+      <p class="src">Read the paper: <a href="https://elifesciences.org/articles/61271" target="_blank" rel="noopener">eLife 2020;9:e61271</a> · <a href="https://doi.org/10.1038/nature14279" target="_blank" rel="noopener">Nature 519, 181–186</a></p>
+    </div>
+    <ol id="index"></ol>
+  </section>
+</div>
+
+<script>
+/*@SCRIPT@*/
+/*@JS@*/
+</script>
