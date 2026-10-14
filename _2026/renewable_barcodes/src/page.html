@@ -1,0 +1,98 @@
+<title>Renewable Barcodes</title>
+<meta name="description" content="A silent animated film on renewable DNA barcoding — how Nguyen Ba, Cvijović, Rojas Echenique and colleagues followed thousands of competing yeast lineages, and found a travelling wave of adaptation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital@0;1&display=swap">
+<style>
+  :root {
+    --bg: #f6f5f1; --panel: #ffffff; --ink: #1b1b1b; --dim: #6d6a63; --line: #d8d5cb;
+    --accent: #e07d12; --navy: #2c3c66;
+    --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    color-scheme: light;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); padding-inline: 16px; padding-block: 18px 48px; box-sizing: border-box; }
+  .wrap { max-width: min(1320px, calc((100vh - 120px) * 16 / 9)); min-width: 0; margin-inline: auto; display: grid; gap: 16px; }
+  header.top { display: grid; gap: 2px; }
+  header.top .k { font: 500 12px var(--mono); color: var(--dim); letter-spacing: 0.06em; text-transform: uppercase; }
+  header.top h1 { margin: 0; font: 600 clamp(22px, 3.3vw, 34px)/1.05 var(--sans); letter-spacing: -0.015em; }
+  #stage { position: relative; background: var(--panel); border: 1px solid var(--line); }
+  #stage:fullscreen { display: grid; place-items: center; border: 0; }
+  #stage:fullscreen canvas { max-height: 100vh; width: auto; max-width: 100vw; }
+  canvas { display: block; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; cursor: pointer; background: var(--bg); }
+  #overlay { position: absolute; inset: 0; display: grid; place-items: center start; padding-inline: 7%; background: rgba(246,245,241,0.72); }
+  .card { text-align: left; display: grid; gap: clamp(8px, 1.4vw, 16px); justify-items: start; max-width: min(640px, 60%); }
+  .meta { font: 500 clamp(11px, 1.1vw, 13px) var(--mono); color: var(--dim); letter-spacing: 0.04em; }
+  .card h2 { margin: 0; font: 600 clamp(28px, 5vw, 60px)/1.03 var(--sans); letter-spacing: -0.02em; }
+  .card p { margin: 0; color: var(--dim); max-width: 54ch; font-size: clamp(12px, 1.4vw, 16px); }
+  #start { font: 500 clamp(14px, 1.5vw, 17px) var(--sans); color: #fff; background: var(--navy); border: 0; padding: 12px 28px; cursor: pointer; border-radius: 2px; }
+  #start:hover { background: var(--accent); }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  button, select { font: 500 13px var(--sans); color: var(--ink); background: var(--panel); border: 1px solid var(--line); padding: 7px 12px; cursor: pointer; border-radius: 2px; }
+  button:hover, select:hover { border-color: #b3afa3; }
+  select option { background: #fff; }
+  button:focus-visible, select:focus-visible, #bar:focus-visible, #start:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #play { min-width: 76px; }
+  #time { font: 13px var(--mono); color: var(--dim); font-variant-numeric: tabular-nums; min-width: 96px; }
+  .spacer { flex: 1 1 auto; }
+  #bar { position: relative; flex: 1 1 100%; order: -1; height: 20px; cursor: pointer; touch-action: none; }
+  #bar::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 2px; background: var(--line); }
+  #fill { position: absolute; left: 0; top: 9px; height: 2px; background: var(--navy); width: 0; }
+  .tick { position: absolute; top: 6px; width: 1px; height: 8px; background: #c3bfb3; }
+  #tip { position: absolute; bottom: 22px; transform: translateX(-50%); white-space: nowrap; font: 12px var(--mono); background: #fff; border: 1px solid var(--line); padding: 3px 8px; pointer-events: none; }
+  #sub { min-height: 3em; margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink); }
+  .about { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .about h3 { font: 600 20px/1.2 var(--sans); margin: 0 0 10px; text-wrap: balance; }
+  .about p { margin: 0 0 10px; color: var(--dim); max-width: 64ch; }
+  .about ol { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 24px; font-size: 13px; }
+  .about li { break-inside: avoid; padding: 3px 0; }
+  .about li a { color: var(--ink); text-decoration: none; }
+  .about li a:hover { color: var(--accent); }
+  .about .src a { color: var(--navy); }
+  @media (max-width: 720px) { .about { grid-template-columns: minmax(0, 1fr); } .about ol { columns: 1; } .card p { display: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="k">A silent film · <span id="runtime">14:00</span> · <span id="chaptercount">19</span> chapters</div>
+    <h1>Renewable Barcodes</h1>
+  </header>
+  <div id="stage">
+    <canvas id="cv" width="1280" height="720" aria-label="Animated film: Renewable Barcodes"></canvas>
+    <div id="overlay">
+      <div class="card">
+        <div class="meta">After Nguyen Ba, Cvijović, Rojas Echenique et&nbsp;al., <em>Nature</em> 575 (2019)</div>
+        <h2>Renewable Barcodes</h2>
+        <p>How re-writing DNA barcodes into the genome as evolution runs let researchers follow thousands of competing yeast lineages — and watch a travelling wave of adaptation, built entirely from the paper's own data.</p>
+        <button id="start" type="button">Play</button>
+      </div>
+    </div>
+  </div>
+  <p id="sub" hidden></p>
+  <div class="controls">
+    <div id="bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="840"><div id="fill"></div><div id="tip" hidden></div></div>
+    <button id="play" type="button">Play</button>
+    <span id="time">0:00 / 0:00</span>
+    <select id="chapters" aria-label="Chapter"></select>
+    <span class="spacer"></span>
+    <select id="rate" aria-label="Playback speed"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select>
+    <button id="fs" type="button" title="Fullscreen (f)">Fullscreen</button>
+    <button id="rec" type="button" hidden title="Plays the whole film and saves it as a video file">Record WebM</button>
+  </div>
+  <section class="about">
+    <div>
+      <h3>Writing history as it happens</h3>
+      <p>A single DNA barcode labels a lineage, but it is inherited by every descendant, so later mutations inside an expanding lineage disappear from view. Renewable barcoding solves this by inserting a fresh barcode at the same locus every 100 generations, using the Cre recombinase and a set of one-way lox sites.</p>
+      <p>Each cell ends up carrying a string of barcodes that reads like a family tree. Reading those strings over 1,000 generations let the authors resolve thousands of competing lineages far below the limit of genome sequencing, and watch the distribution of fitness move as a travelling wave. Every plot here is drawn from the authors' published data. Space plays and pauses; [ and ] jump between chapters.</p>
+      <p class="src">Sources: <a href="https://www.nature.com/articles/s41586-019-1749-3" target="_blank" rel="noopener">Nguyen Ba et al. 2019</a> · data &amp; code <a href="https://github.com/icvijovic/lineage-tracking" target="_blank" rel="noopener">icvijovic/lineage-tracking</a> · <a href="https://doi.org/10.1038/nature14279" target="_blank" rel="noopener">Levy et al. 2015</a></p>
+    </div>
+    <ol id="index"></ol>
+  </section>
+</div>
+
+<script>
+/*@SPEC@*/
+/*@JS@*/
+</script>

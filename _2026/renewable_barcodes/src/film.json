@@ -1,0 +1,119 @@
+{
+  "readingRate": 3.4,
+  "beatBase": 1.2,
+  "holdScale": 0.75,
+  "scenes": [
+    { "key": "intro", "num": "", "title": "Renewable Barcodes", "lead": 1.2, "tail": 2.5, "beats": [
+      { "t": "Fifty thousand yeast lineages share one tube. Whenever a cell gains a beneficial mutation, its descendants start to take over.", "hold": 2.5 },
+      { "t": "Most of these mutations never become common enough to detect. In 2019, Nguyen Ba, Cvijović, Rojas Echenique and colleagues found a way to follow them anyway.", "hold": 2.5 },
+      { "t": "Their idea was to keep writing new DNA barcodes into the genome while evolution runs. This film walks through how it is done, and what it showed.", "hold": 2.5 }
+    ]},
+    { "key": "problem", "num": "01", "title": "Why one barcode is not enough", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "In a large asexual population, many beneficial mutations arise at once. Their lineages compete and most of them lose. This is clonal interference.", "hold": 3 },
+      { "t": "Sequencing the genomes of the whole population detects a mutation only once it passes a few percent. Most competing lineages never get that far.", "hold": 2.5 },
+      { "t": "Giving every cell a DNA barcode, as in Levy et al. 2015, resolves lineages down to about one cell in ten thousand.", "hold": 2 },
+      { "t": "But a barcode is inherited by every descendant. Once a lineage expands, later mutations inside it share its barcode and stay hidden.", "hold": 3.5 },
+      { "t": "The fix is to add fresh barcodes at intervals, so every lineage keeps splitting into newly labelled sublineages.", "hold": 2 }
+    ]},
+    { "key": "idea", "num": "02", "title": "Renewable barcoding", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Start with a clonal population and give every cell a random barcode. Each barcode now labels a small lineage.", "hold": 2.5 },
+      { "t": "Let the population evolve for 100 generations. A few lineages grow, and most shrink.", "hold": 2.5 },
+      { "t": "Then insert a second barcode right beside the first. Every lineage splits into sublineages, each with its own label.", "hold": 3 },
+      { "t": "Repeat every 100 generations. Each cell carries a growing string of barcodes, one per round.", "hold": 2 },
+      { "t": "The string reads like a family tree. This is a real one from the YPD population: a founding barcode, then eight more, added 100 generations apart.", "hold": 4 }
+    ]},
+    { "key": "needs", "num": "03", "title": "Three requirements", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "First, exactly one barcode locus per cell. A cell with two copies would carry two histories. Bacteria are hard to hold at one copy, so the authors chose budding yeast.", "hold": 2.5 },
+      { "t": "Haploid yeast often double their own genome over a long experiment, so the populations are diploid from the start, with the barcode locus on just one chromosome.", "hold": 2.5 },
+      { "t": "Second, no tight bottlenecks. If only a few cells were barcoded, the survivors would be a small random sample, and chance would reshuffle the competition.", "hold": 2 },
+      { "t": "Third, insertions that go one way and can be repeated ten times in the same place. In diploids a cut is usually healed by copying the other chromosome, so instead the authors used the recombinase Cre.", "hold": 2.5 }
+    ]},
+    { "key": "lox", "num": "04", "title": "Cre and orthogonal lox sites", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Cre recombinase swaps DNA between two lox sites. Two sites of the same kind react; two of different kinds, called orthogonal, ignore each other.", "hold": 3 },
+      { "t": "The authors used three orthogonal sites: loxP, lox5171 and lox2272. A landing pad in the genome waits with one of them.", "hold": 2.5 },
+      { "t": "A plasmid brings a new barcode flanked by matching sites. Cre lines them up and recombines, dropping the barcode into the landing pad.", "hold": 3 },
+      { "t": "The same reaction swaps the drug-resistance marker, so only cells that integrated correctly survive the next selection.", "hold": 2.5 }
+    ]},
+    { "key": "oneway", "num": "05", "title": "Making the reaction one-way", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Cre is reversible: it can cut a barcode back out as easily as it put it in. For re-barcoding, each site must fire once and then switch off.", "hold": 3 },
+      { "t": "Each lox site has two arms that Cre grips. A mutation in one arm barely matters; mutations in both arms together abolish the site.", "hold": 3 },
+      { "t": "So the design arranges each reaction to combine two single-arm mutations into a double-arm mutant. The old site is inactivated, while a fresh orthogonal site is added for the next round.", "hold": 3.5 },
+      { "t": "The authors screened arm mutations and found one, lox2, that stays fully active paired with a normal arm but dies when paired with itself, exactly the switch they needed.", "hold": 3 }
+    ]},
+    { "key": "plasmid", "num": "06", "title": "Two alternating plasmids", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Because each round rewrites the locus, odd and even rounds need mirror-image plasmids. The authors built two, swapping the KanMX and HygMX drug markers each time.", "hold": 3 },
+      { "t": "On the plasmid the marker is broken: its start codon is missing. Only correct integration joins it to a start codon in the genome, through an artificial intron that must splice out.", "hold": 3.5 },
+      { "t": "A random 16-base barcode is dropped into each plasmid by a Golden Gate reaction. The library is grown in a thin layer of soft agar, giving over a million distinct barcodes.", "hold": 3 }
+    ]},
+    { "key": "procedure", "num": "07", "title": "One round of barcoding", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Transform the population with the barcode library, selecting on soft agar for more than 100,000 colonies per population.", "hold": 2.5 },
+      { "t": "Switch to galactose for about 10 generations. Galactose turns on Cre, which performs the recombination.", "hold": 2.5 },
+      { "t": "Select on the new drug marker, so only recombined cells remain. Then counter-select with 5-FOA to throw away the spent plasmid.", "hold": 3 },
+      { "t": "Return the cells to the evolution medium. About 50,000 new barcodes have been written in, with no bottleneck tighter than the daily transfer.", "hold": 3 }
+    ]},
+    { "key": "evolve", "num": "08", "title": "The evolution experiment", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Two diploid populations were founded from the same ancestor, each labelled with about 50,000 barcodes.", "hold": 2 },
+      { "t": "One grew in rich medium, YPD. The other in rich medium with acetic acid, YPA, which acidifies the cell and pushes selection harder.", "hold": 3 },
+      { "t": "Each day the culture was diluted 1 to 1024: about ten generations, through a bottleneck of roughly half a million cells.", "hold": 2.5 },
+      { "t": "A sample was frozen every day. Every 100 generations the population was re-barcoded. Each 100-generation block is called an epoch.", "hold": 2.5 },
+      { "t": "YPD ran for nine usable epochs, YPA for ten: nine hundred and a thousand generations of evolution.", "hold": 2.5 }
+    ]},
+    { "key": "sequence", "num": "09", "title": "Reading the barcode locus", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "DNA is extracted from each frozen sample and the barcode locus is amplified. Unique molecular identifiers tag each starting molecule so it is counted once.", "hold": 3 },
+      { "t": "The locus soon grows longer than one sequencing read. But the four newest barcodes fit in a single paired-end read.", "hold": 3 },
+      { "t": "Because barcodes are diverse, each new barcode is uniquely tied to its ancestors. The older labels were already sequenced, so the full string can be reassembled.", "hold": 3.5 },
+      { "t": "Sequencing errors are cleaned up by merging near-identical reads, leaving on average about 360,000 lineage counts per timepoint.", "hold": 3 }
+    ]},
+    { "key": "raw", "num": "10", "title": "The raw trajectories", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Here is the result for the YPA population: every barcoded sublineage that reached one in a thousand, stacked by frequency, colour chosen at random.", "hold": 3.5 },
+      { "t": "Grey bands are the barcoding rounds. Across each one, lineages fan out into finer sublineages.", "hold": 3 },
+      { "t": "There is structure everywhere, at every scale. But which of these wiggles are real selection, and which are just noise? That is the next problem.", "hold": 3 }
+    ]},
+    { "key": "noise", "num": "11", "title": "A model of the noise", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Each lineage is a branching process. Between timepoints its count changes from two causes: selection, and chance.", "hold": 3 },
+      { "t": "Chance has two sources: the random sampling at each daily transfer, and the random sampling during DNA prep and sequencing. Together the authors call it drift.", "hold": 3.5 },
+      { "t": "Take all lineages near 40 reads and watch where they land next. Drift alone predicts a spread. The data match it, with one noise parameter kappa per interval.", "hold": 3.5 },
+      { "t": "Below about ten counts, a lineage is lost in this noise. Only once it climbs above it can selection be read from its slope.", "hold": 3 }
+    ]},
+    { "key": "fitness", "num": "12", "title": "From trajectories to fitness", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "A lineage grows relative to the population as its fitness exceeds the mean. On a log scale, the slope of its frequency is that fitness difference.", "hold": 3 },
+      { "t": "Any trajectory explained by drift alone is discarded, at a 5% false-discovery rate. The rest are fit jointly for their fitnesses and the population mean.", "hold": 3.5 },
+      { "t": "Grouping sublineages by their shared older barcodes averages out drift, so even small lineages give a usable fitness.", "hold": 3 }
+    ]},
+    { "key": "clones", "num": "13", "title": "Finding the mutations", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "A new mutation makes a sublineage fitter than its parent, and all of its descendants inherit that edge. So compare each lineage with the one it split from.", "hold": 3.5 },
+      { "t": "When a child is reliably fitter than its parent, a mutation established between those two barcodes, within one 100-generation epoch.", "hold": 3 },
+      { "t": "Each such event founds a clone. In YPD the authors called 72 clones; in YPA, 124, nested inside one another many layers deep.", "hold": 3 }
+    ]},
+    { "key": "muller", "num": "14", "title": "Clones in competition", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Now colour each lineage by its clone and stack them. This is the YPD population, redrawn from the called mutations. Stars mark where each one established.", "hold": 3.5 },
+      { "t": "Early on, many clones appear on the ancestral background and compete. Some pick up further mutations; a few stack several, interfering within their own parent clone.", "hold": 3.5 },
+      { "t": "Almost all of this is invisible to whole-population genome sequencing. Barcoding resolves it lineage by lineage.", "hold": 3 }
+    ]},
+    { "key": "wave", "num": "15", "title": "A travelling wave", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "Plot the population by fitness instead of by lineage. At each timepoint it is a distribution: a spread of fitnesses around a mean.", "hold": 3 },
+      { "t": "New mutations widen the spread; selection trims the slow lineages. The distribution holds its shape and marches to the right.", "hold": 3.5 },
+      { "t": "This is the travelling wave of adaptation that theory predicted, here watched directly for the first time.", "hold": 3 }
+    ]},
+    { "key": "leapfrog", "num": "16", "title": "Leapfrogging", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "In the simplest theory, the eventual winner is always near the leading edge of the wave. The data break that rule.", "hold": 3 },
+      { "t": "In YPA a lineage that was well behind acquired two strong mutations and leapfrogged everything ahead of it, sweeping to near fixation.", "hold": 3.5 },
+      { "t": "To check this was real, the authors re-evolved twelve populations from just before the sweep, without barcoding. All twelve replayed the same takeover.", "hold": 3.5 }
+    ]},
+    { "key": "rich", "num": "17", "title": "Rich get richer", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "A lineage's starting fitness only weakly predicts its fate. What matters more is whether it gains further mutations.", "hold": 3 },
+      { "t": "A fitter, faster-growing lineage is a larger, safer target: a new mutation in it is less likely to be lost to drift.", "hold": 3 },
+      { "t": "So fit backgrounds collect both weak and strong mutations, while slow ones need a rare strong hit to survive. Success compounds: the rich get richer.", "hold": 3.5 }
+    ]},
+    { "key": "wgs", "num": "18", "title": "Which genes mutated", "lead": 0.8, "tail": 1.2, "beats": [
+      { "t": "In parallel, the whole population was genome-sequenced each epoch to name the genes under selection. Far fewer mutations clear the few-percent limit.", "hold": 3.5 },
+      { "t": "In YPA the targets fit the stress: BNA3, ASG1 and ASC1 are known to help cells tolerate acetic acid.", "hold": 3 },
+      { "t": "These few named mutations and the thousands of barcoded lineages tell one story at two resolutions.", "hold": 3 }
+    ]},
+    { "key": "close", "num": "19", "title": "What renewable barcoding showed", "lead": 0.8, "tail": 4.5, "beats": [
+      { "t": "By rewriting the genome as evolution ran, the authors followed competing lineages far below the limit of genome sequencing.", "hold": 2.5 },
+      { "t": "Adaptation moves as a travelling wave, but a disorderly one: lineages leapfrog, fortunes reverse, and early success compounds.", "hold": 3 },
+      { "t": "None of this fits the older models cleanly. Seeing it at all took a barcode you could write again, and again, and again.", "hold": 3.5 }
+    ]}
+  ]
+}
